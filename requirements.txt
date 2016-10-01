@@ -1,6 +1,7 @@
 django>=1.10.1
 # mysql-python  # command: easy_install mysql-python
 django-tastypie
+docutils
 
 django-tinymce
 django-easy-select2

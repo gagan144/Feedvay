@@ -39,6 +39,7 @@ class ErrorLog(models.Model):
 
     class Meta:
         unique_together = ('server_name', 'class_name', 'checksum')
+        ordering = ('-last_seen_on',)
 
     def __unicode__(self):
         return str(self.id)

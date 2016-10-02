@@ -4,8 +4,9 @@
         - Registration using mobile number
         - Forget password
         - Deactivate/Reactivate account
-    - Exception handling
-    - Error/Suggestion module
+    - Watchdog
+        - Exception handling
+        - Error/Suggestion module
     - Communication module (pigeon)
         - SMS
         - Email

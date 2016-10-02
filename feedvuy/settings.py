@@ -1,3 +1,6 @@
+# Copyright (C) 2016 Feedvuy (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved
+# Content in this document can not be copied and/or distributed without the express
+# permission of Gagandeep Singh.
 """
 Django settings for feedvuy project.
 
@@ -39,6 +42,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django.contrib.admindocs',
+
+    # Packages
+    'django_extensions',
+    # 'django_mysql',
+
+    # Apps
+    'watchdog',
+
 ]
 
 MIDDLEWARE = [

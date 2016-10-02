@@ -6,7 +6,7 @@
         - Deactivate/Reactivate account
     - Exception handling
     - Error/Suggestion module
-    - Communication module
+    - Communication module (pigeon)
         - SMS
         - Email
     - Captcha

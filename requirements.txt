@@ -5,3 +5,5 @@ docutils
 
 django-tinymce
 django-easy-select2
+django-extensions
+django-mysql

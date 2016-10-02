@@ -1,0 +1,14 @@
+- Infrastructure
+    - Globalization & timezones
+    - User Management
+        - Registration using mobile number
+        - Forget password
+        - Deactivate/Reactivate account
+    - Exception handling
+    - Error/Suggestion module
+    - Communication module
+        - SMS
+        - Email
+    - Captcha
+    - User Roles
+

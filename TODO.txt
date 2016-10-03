@@ -1,15 +1,17 @@
 - Infrastructure
     - Globalization & timezones
     - User Management
+        - User Session
         - Registration using mobile number
         - Forget password
         - Deactivate/Reactivate account
     - Watchdog
-        - Exception handling
         - Error/Suggestion module
     - Communication module (pigeon)
         - SMS
         - Email
+    - Documentation
+        - Sphinx integration
     - Captcha
     - User Roles
 

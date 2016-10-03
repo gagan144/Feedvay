@@ -60,6 +60,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'watchdog.middleware.ErrorLogMiddleware',
 ]
 
 ROOT_URLCONF = 'feedvuy.urls'
@@ -154,3 +156,6 @@ MEDIA_URL = '/media/'
 import mimetypes
 mimetypes.add_type("image/svg+xml", ".svg", True)
 mimetypes.add_type("image/svg+xml", ".svgz", True)
+
+# Watchdog
+WATCHDOG_ERRORLOG_ENABLED = True

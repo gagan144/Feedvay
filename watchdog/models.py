@@ -16,7 +16,7 @@ from hashlib import md5
 # ---------- System Exceptions ----------
 class ErrorLog(models.Model):
     """
-    Model to log error occurring throughout the system during runtime.
+    Model to store all exceptions occurred during runtime as captured by ErrorLogMiddleware middleware.
     """
 
     server_name     = models.CharField(max_length=128, db_index=True, help_text='IP address of the server on which exception occured.')
@@ -44,10 +44,19 @@ class ErrorLog(models.Model):
     def __unicode__(self):
         return str(self.id)
 
+    def shortened_url(self):
+        if not self.url:
+            return _('no data')
+        url = self.url
+        if len(url) > 60:
+            url = url[:60] + '...'
+        return url
+    shortened_url.allow_tags = True
+    shortened_url.short_description = _('url')
+
     def full_url(self):
         return self.data.get('url') or self.url
     full_url.short_description = _('url')
-    full_url.admin_order_field = 'url'
 
     def save(self, *args, **kwargs):
         if self.is_resolved:
@@ -55,14 +64,18 @@ class ErrorLog(models.Model):
                 raise Exception("'Resolved By' or 'Resolved On' cannot be empty since error has been resolved.")
 
         if not self.checksum:
-            self.checksum = ErrorLog.construct_checksum(self)
+            self.checksum = ErrorLog.construct_checksum(self.class_name, self.message, self.traceback)
 
         super(ErrorLog, self).save(*args, **kwargs)
 
     @staticmethod
-    def construct_checksum(error):
-        checksum = md5(error.class_name)
-        message = error.traceback or error.message
+    def construct_checksum(class_name, message, traceback_text=None):
+        """
+        Constructs a checksum based on class name, error message and traceback text.
+        Class name is always used along with traceback text if not null otherwise message.
+        """
+        checksum = md5(class_name)
+        message = traceback_text or message
         if isinstance(message, unicode):
             message = message.encode('utf-8', 'replace')
         checksum.update(message)

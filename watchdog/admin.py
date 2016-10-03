@@ -9,9 +9,10 @@ from django.utils import timezone
 
 @admin.register(ErrorLog)
 class ErrorLogAdmin(admin.ModelAdmin):
-    list_display = ('url', 'server_name', 'class_name', 'message', 'times_seen', 'is_resolved')
+    list_display = ('shortened_url', 'server_name', 'class_name', 'message', 'times_seen', 'is_resolved')
     list_filter = ('server_name', 'class_name', 'last_seen_on', 'is_resolved')
     raw_id_fields = ('last_seen_by', 'resolved_by')
+    search_fields = ('server_name', 'class_name', 'url')
 
     fieldsets = (
         ('Error source', {

@@ -8,6 +8,7 @@ from django.http import Http404
 import traceback
 import socket
 import warnings
+import json
 from django.utils import timezone
 
 from watchdog.models import ErrorLog
@@ -31,6 +32,7 @@ class ErrorLogMiddleware(MiddlewareMixin):
 
             checksum = ErrorLog.construct_checksum(class_name, message, traceback_text)
             user = request.user
+            data = request.POST if request.method.lower() == 'post' else {}
 
             try:
                 error_log, is_new = ErrorLog.objects.update_or_create(
@@ -42,6 +44,7 @@ class ErrorLogMiddleware(MiddlewareMixin):
                         url = request.build_absolute_uri(),
                         message = getattr(exception, 'message', ''),
                         traceback = traceback_text,
+                        data = data,
                         last_seen_by = None if user.is_anonymous() else user
                     )
                 )

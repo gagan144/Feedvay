@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 
+from django.db.models.signals import post_save
 # from django_mysql.models import JSONField
 from django_extensions.db.fields.json import JSONField
 from django.utils.translation import ugettext_lazy as _
@@ -18,6 +19,10 @@ from hashlib import md5
 class ErrorLog(models.Model):
     """
     Model to store all system errors occurred during runtime as captured by ErrorLogMiddleware middleware.
+
+    Authors
+    -------
+    Gagandeep Singh
     """
 
     server_name     = models.CharField(max_length=128, db_index=True, help_text='IP address of the server on which exception occured.')
@@ -60,17 +65,33 @@ class ErrorLog(models.Model):
     full_url.short_description = _('url')
 
     def clean(self):
-        if self.is_resolved:
-            if self.resolved_by is None or self.resolved_on is None:
-                raise ValidationError("'Resolved by' or 'Resolved on' cannot be empty since error has been resolved.")
+        """
+        Method to clean & validate data fields.
 
+        Authors
+        -------
+        Gagandeep Singh
+        """
         if not self.checksum:
             self.checksum = ErrorLog.construct_checksum(self.class_name, self.message, self.traceback)
 
         super(self.__class__, self).clean()
 
     def save(self, *args, **kwargs):
+        """
+        Pre-save method for this model.
+
+        Authors
+        -------
+        Gagandeep Singh
+        """
         self.clean()
+
+        # Note: Cannot be in clean() since this might give error in django admin as 'resolved_by' has not been set yet
+        if self.is_resolved:
+            if self.resolved_by is None or self.resolved_on is None:
+                raise ValidationError("'Resolved by' or 'Resolved on' cannot be empty since error has been resolved.")
+
         super(self.__class__, self).save(*args, **kwargs)
 
     @staticmethod
@@ -78,7 +99,12 @@ class ErrorLog(models.Model):
         """
         Constructs a checksum based on class name, error message and traceback text.
         Class name is always used along with traceback text if not null otherwise message.
+
+        Authors
+        -------
+        Gagandeep Singh
         """
+
         checksum = md5(class_name)
         message = traceback_text or message
         if isinstance(message, unicode):
@@ -89,6 +115,130 @@ class ErrorLog(models.Model):
 
 # ---------- /System Exceptions ----------
 
+# ---------- Suggestions ----------
+class Suggestion(models.Model):
+    """
+    Model to store suggestions made by user for various areas in the system.
+    Suggestion is not an error, but rather an area of improvement that user
+    feels must be present.
+
+    Note
+    -----
+
+        - Only logged-in user can make suggestions
+
+    Authors
+    -------
+    Gagandeep Singh
+    """
+
+    PLTFM_MOBILE = 'mobile'
+    PLTFM_PORTAL = 'portal'
+    CH_PLATFORM = (
+        (PLTFM_PORTAL, 'Portal'),
+        (PLTFM_MOBILE, 'Mobile')
+    )
+
+    ST_NEW = 'new'
+    ST_ACCEPTED = 'accepted'
+    ST_REJECTED = 'rejected'
+    ST_IMPLEMENTED = 'implemented'
+
+    CH_STATUS = (
+        (ST_NEW, 'New'),
+        (ST_REJECTED, 'Rejected'),
+        (ST_ACCEPTED, 'Accepted'),
+        (ST_IMPLEMENTED, 'Implemented')
+    )
+
+    parent      = models.ForeignKey('self', null=True, blank=True, db_index=True, limit_choices_to={'parent':None}, help_text='In case this suggestion is duplicate, link to previously reported suggestion. (For staff use only)')
+
+    platform    = models.CharField(max_length=64, choices=CH_PLATFORM, editable=False, db_index=True, help_text='Platform for which suggestion is made.')
+    url         = models.URLField(null=True, blank=True, editable=False, help_text='Page url of the suggestion.')
+    suggestion_area = models.CharField(max_length=512, null=True, blank=True, editable=False, help_text='In case url is not specified, this defines user specified area in the system.')
+
+    title       = models.CharField(max_length=512, editable=False, help_text='Title of the suggestion.')
+    description = models.TextField(editable=False, help_text='Detailed description of the suggestion.')
+
+    user        = models.ForeignKey(User, null=True, blank=True, editable=False, db_index=True, help_text='User that made this suggestion.')
+
+    status      = models.CharField(max_length=32, default=ST_NEW, choices=CH_STATUS, help_text='Status of the suggestion. (For staff use only)')
+    remarks     = models.TextField(null=True, blank=True, help_text='Remarks/Reason in case of rejection. (For staff use only)')
+
+    created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this suggestion was made.')
+    modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
+
+    @property
+    def is_duplicate(self):
+        # Tells if suggestion is duplicate or not
+        return True if self.parent_id else False
+
+
+    def __unicode__(self):
+        return "{} - {}".format(self.id, self.title)
+
+    class Meta:
+        ordering = ('-created_on', )
+
+    def clean(self):
+        """
+        Method to clean & validate data fields.
+
+        Authors
+        -------
+        Gagandeep Singh
+        """
+        # Parent check
+        if self.parent_id == self.pk:
+            raise ValidationError('Parent cannot be itself.')
+        elif self.parent_id is not None:
+            self.status = self.parent.status
+            self.remarks = self.parent.remarks
+
+        # Suggestion area check
+        if self.url is None and self.suggestion_area is None:
+            raise ValidationError('Either page url or suggestion area is required.')
+
+        # Status checks
+        if self.status == Suggestion.ST_REJECTED and (self.remarks is None or self.remarks==''):
+            raise ValidationError('Please enter remark for rejecting this suggestion.')
+
+        if self.pk:
+            self.modified_on = timezone.now()
+
+        super(self.__class__, self).clean()
+
+    def save(self, *args, **kwargs):
+        """
+        Pre-save method for this model.
+
+        Authors
+        -------
+        Gagandeep Singh
+        """
+
+        self.clean()
+        super(self.__class__, self).save(*args, **kwargs)
+
+    @classmethod
+    def post_save(cls, sender, instance, **kwargs):
+        """
+        Post save trigger for this model. This will will called after the record has
+        been created or updated.
+
+        Authors
+        -------
+        Gagandeep Singh
+        """
+
+        # Update all children
+        if instance.parent_id is None:
+            # Using 'update'; no save() or signals will be triggered
+            Suggestion.objects.filter(parent=instance).update(status=instance.status, remarks=instance.remarks)
+
+post_save.connect(Suggestion.post_save, sender=Suggestion)
+
+'''
 # ---------- Reported Problems ----------
 class ReportedProblem(models.Model):
     """
@@ -102,6 +252,10 @@ class ReportedProblem(models.Model):
         - A problems can be linked to :model:`watchdog.ErrorLog`.
         - A Problem can be reported by logged in user or public user. Incase of public user, email id is referred.
         - In case of rejecting problem, remark must be provided.
+
+    Authors
+    -------
+    Gagandeep Singh
     """
 
     PLTFM_MOBILE = 'mobile'
@@ -120,7 +274,7 @@ class ReportedProblem(models.Model):
         (ST_REJECTED, 'Rejected')
     )
 
-    parent      = models.ForeignKey('self', null=True, blank=True, db_index=True, help_text='Link to previously reported error incase it is duplicate. (For staff use only)', limit_choices_to={'parent':None})
+    parent      = models.ForeignKey('self', null=True, blank=True, db_index=True, limit_choices_to={'parent':None}, help_text='Link to previously reported error incase it is duplicate. (For staff use only)')
 
     platform    = models.CharField(max_length=64, choices=CH_PLATFORM, editable=False, db_index=True, help_text='Platform where error was seen.')
     url         = models.URLField(null=True, blank=True, editable=False, help_text='Page url where error was seen. This can be null if it general error reporting.')
@@ -144,7 +298,7 @@ class ReportedProblem(models.Model):
 
     def is_duplicate(self):
         # Tells if problem is duplicated based on the fact that 'parent' field is linked.
-        return True if self.parent else False
+        return True if self.parent_id else False
 
     def clean(self):
         # Reporter checks
@@ -168,3 +322,4 @@ class ReportedProblem(models.Model):
         super(self.__class__, self).save(*args, **kwargs)
 
 # ---------- /Reported Problems ----------
+'''

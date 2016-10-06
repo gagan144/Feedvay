@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # Packages
     'django_extensions',
     # 'django_mysql',
+    'easy_select2',
 
     # Apps
     'watchdog',

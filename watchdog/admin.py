@@ -17,9 +17,10 @@ class ErrorLogAdmin(admin.ModelAdmin):
     Gagandeep Singh
     """
     list_display = ('id', 'shortened_url', 'server_name', 'class_name', 'message', 'times_seen', 'is_resolved')
-    list_filter = ('server_name', 'class_name', 'last_seen_on', 'is_resolved')
+    list_filter = ('is_resolved', 'server_name', 'class_name', 'last_seen_on')
     raw_id_fields = ('last_seen_by', 'resolved_by')
     search_fields = ('server_name', 'class_name', 'url')
+    list_per_page = 20
 
     fieldsets = (
         ('Error source', {
@@ -69,14 +70,15 @@ class SuggestionAdmin(admin.ModelAdmin):
     -------
     Gagandeep Singh
     """
-    list_display = ('id', 'title', 'suggestion_area', 'is_duplicate', 'status', 'created_on')
-    search_fields = ('url', 'suggestion_area', 'title')
+    list_display = ('id', 'title', 'url', 'is_duplicate', 'status', 'created_on')
+    search_fields = ('url', 'title')
     list_filter = ('platform', 'status', 'created_on')
     raw_id_fields = ('user', )
+    list_per_page = 20
 
     fieldsets = (
         ('System area', {
-            'fields': ('platform', 'url', 'suggestion_area')
+            'fields': ('platform', 'url')
         }),
         ('Suggestion', {
             'fields': ('title', 'description', 'user')

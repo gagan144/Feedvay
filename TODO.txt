@@ -5,6 +5,7 @@
         - Registration using mobile number
         - Forget password
         - Deactivate/Reactivate account
+        - User Roles
     - Watchdog
         - ErrorLog save signal to set status of ReportedProblem
     - Communication module (pigeon)
@@ -13,5 +14,5 @@
     - Documentation
         - Sphinx integration
     - Captcha
-    - User Roles
+    - New Feature Promotion
 

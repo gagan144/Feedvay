@@ -155,7 +155,6 @@ class Suggestion(models.Model):
 
     platform    = models.CharField(max_length=64, choices=CH_PLATFORM, editable=False, db_index=True, help_text='Platform for which suggestion is made.')
     url         = models.URLField(null=True, blank=True, editable=False, help_text='Page url of the suggestion.')
-    suggestion_area = models.CharField(max_length=512, null=True, blank=True, editable=False, help_text='In case url is not specified, this defines user specified area in the system.')
 
     title       = models.CharField(max_length=512, editable=False, help_text='Title of the suggestion.')
     description = models.TextField(editable=False, help_text='Detailed description of the suggestion.')
@@ -194,10 +193,6 @@ class Suggestion(models.Model):
         elif self.parent_id is not None:
             self.status = self.parent.status
             self.remarks = self.parent.remarks
-
-        # Suggestion area check
-        if self.url is None and self.suggestion_area is None:
-            raise ValidationError('Either page url or suggestion area is required.')
 
         # Status checks
         if self.status == Suggestion.ST_REJECTED and (self.remarks is None or self.remarks==''):

@@ -6,8 +6,6 @@
         - Forget password
         - Deactivate/Reactivate account
         - User Roles
-    - Watchdog
-        - ErrorLog save signal to set status of ReportedProblem
     - Communication module (pigeon)
         - SMS
         - Email

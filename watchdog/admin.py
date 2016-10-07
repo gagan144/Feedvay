@@ -108,3 +108,51 @@ class SuggestionAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+@admin.register(ReportedProblem)
+class ReportedProblemAdmin(admin.ModelAdmin):
+    """
+    Django admin settings for :model:`watchdog.ReportedProblem`.
+
+    Authors
+    -------
+    Gagandeep Singh
+    """
+    list_display = ('id', 'title', 'url', 'is_duplicate', 'status', 'created_on')
+    search_fields = ('url', 'title')
+    list_filter = ('platform', 'status', 'created_on')
+    raw_id_fields = ('user', 'error_log')
+    list_per_page = 20
+
+    fieldsets = (
+        ('System area', {
+            'fields': ('platform', 'url')
+        }),
+        ('Problem', {
+            'fields': ('title', 'description', 'user', 'email_id', 'error_log')
+        }),
+        ('For staff use', {
+            'fields': ('parent', 'status', 'remarks')
+        }),
+        ('Miscellaneous', {
+            'fields': ('created_on', 'modified_on')
+        }),
+    )
+
+    form = select2_modelform(Suggestion, attrs={'width': '250px'})
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            readonly_fields = [field.name for field in obj.__class__._meta.fields if field.editable==False]
+
+            if obj.parent_id is not None:
+                readonly_fields.append('status')
+                readonly_fields.append('remarks')
+            self.readonly_fields = readonly_fields
+        return self.readonly_fields
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

@@ -94,6 +94,10 @@ class ErrorLog(models.Model):
 
         super(self.__class__, self).save(*args, **kwargs)
 
+    def delete(self, using=None, keep_parents=False):
+        # Override delete method to prevent record deletion.
+        raise ValidationError("Denied! You cannot delete error log.")
+
     @staticmethod
     def construct_checksum(class_name, message, traceback_text=None):
         """
@@ -111,6 +115,27 @@ class ErrorLog(models.Model):
             message = message.encode('utf-8', 'replace')
         checksum.update(message)
         return checksum.hexdigest()
+
+    @classmethod
+    def post_save(cls, sender, instance, **kwargs):
+        """
+        Post save trigger for this model. This will will called after the record has
+        been created or updated.
+
+        Authors
+        -------
+        Gagandeep Singh
+        """
+
+        # Update all ReportedProblems
+        # Using 'update'; no save() or signals will be triggered
+        instance.reportedproblem_set.all().update(
+            status = ReportedProblem.ST_RESOLVED if instance.is_resolved else ReportedProblem.ST_NEW,
+            remarks = 'Resolved by ErrorLog:{}'.format(instance.pk) if instance.is_resolved else 'Pending',
+            modified_on = instance.resolved_on
+        )
+
+post_save.connect(ErrorLog.post_save, sender=ErrorLog)
 
 
 # ---------- /System Exceptions ----------
@@ -172,6 +197,10 @@ class Suggestion(models.Model):
         # Tells if suggestion is duplicate or not
         return True if self.parent_id else False
 
+    @property
+    def children(self):
+        # Returns all children (duplicates) for this suggestion
+        return self.suggestion_set.all()
 
     def __unicode__(self):
         return "{} - {}".format(self.id, self.title)
@@ -187,18 +216,21 @@ class Suggestion(models.Model):
         -------
         Gagandeep Singh
         """
+
         # Parent check
-        if self.parent_id == self.pk:
-            raise ValidationError('Parent cannot be itself.')
-        elif self.parent_id is not None:
-            self.status = self.parent.status
-            self.remarks = self.parent.remarks
+        if self.parent_id is not None:
+            if self.pk and self.parent_id == self.pk:
+                raise ValidationError('Parent cannot be itself.')
+            elif self.parent_id is not None:
+                self.status = self.parent.status
+                self.remarks = self.parent.remarks
 
         # Status checks
         if self.status == Suggestion.ST_REJECTED and (self.remarks is None or self.remarks==''):
             raise ValidationError('Please enter remark for rejecting this suggestion.')
 
         if self.pk:
+            # Update modified date
             self.modified_on = timezone.now()
 
         super(self.__class__, self).clean()
@@ -215,6 +247,10 @@ class Suggestion(models.Model):
         self.clean()
         super(self.__class__, self).save(*args, **kwargs)
 
+    def delete(self, using=None, keep_parents=False):
+        # Override delete method to prevent record deletion.
+        raise ValidationError("Denied! You cannot delete suggestions made by user.")
+
     @classmethod
     def post_save(cls, sender, instance, **kwargs):
         """
@@ -229,24 +265,24 @@ class Suggestion(models.Model):
         # Update all children
         if instance.parent_id is None:
             # Using 'update'; no save() or signals will be triggered
-            Suggestion.objects.filter(parent=instance).update(status=instance.status, remarks=instance.remarks)
+            Suggestion.objects.filter(parent=instance).update(status=instance.status, remarks=instance.remarks, modified_on=instance.modified_on)
 
 post_save.connect(Suggestion.post_save, sender=Suggestion)
 
-'''
 # ---------- Reported Problems ----------
 class ReportedProblem(models.Model):
     """
-    Model to store all errors reported by the users. These do not include errors reported by the system however,
-    may be linked to one.
+    Model to store errors reported by the users. These do not include errors reported by the system
+    however, may be linked to one.
 
     Points
     ------
 
-        - It must not include system problem but only those reported by user
+        - It must not include system problem but only those reported by user.
         - A problems can be linked to :model:`watchdog.ErrorLog`.
         - A Problem can be reported by logged in user or public user. Incase of public user, email id is referred.
-        - In case of rejecting problem, remark must be provided.
+        - In case of rejecting a problem, remark must be provided.
+        - Records inherit from parent first and then from error_log.
 
     Authors
     -------
@@ -282,21 +318,50 @@ class ReportedProblem(models.Model):
 
     error_log   = models.ForeignKey(ErrorLog, null=True, blank=True, db_index=True, help_text='Reference to error log for debugger convenience. (For staff use only)')
 
-    status      = models.CharField(max_length=32, default=ST_NEW, help_text='Status of the problem')
+    status      = models.CharField(max_length=32, choices=CH_STATUS, default=ST_NEW, help_text='Status of the problem')
     remarks     = models.TextField(null=True, blank=True, help_text='Remarks/Reason in case of rejection. (For staff use only)')
 
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this problem was reported')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
 
-    class Meta:
-        ordering = ('-created_on',)
-
+    @property
     def is_duplicate(self):
         # Tells if problem is duplicated based on the fact that 'parent' field is linked.
         return True if self.parent_id else False
 
+    @property
+    def children(self):
+        # Returns all children (duplicates) for this problem
+        return self.reportedproblem_set.all()
+
+    class Meta:
+        ordering = ('-created_on',)
+
+    def __unicode__(self):
+        return "{} - {}".format(self.pk, self.title)
+
     def clean(self):
-        # Reporter checks
+        """
+        Method to clean & validate data fields.
+
+        Authors
+        -------
+        Gagandeep Singh
+        """
+
+        # Parent check
+        if self.parent is not None:
+            if self.pk and self.parent_id == self.pk:
+                raise ValidationError('Parent cannot be itself.')
+            else:
+                self.status = self.parent.status
+                self.remarks = self.parent.remarks
+                self.error_log_id = self.parent.error_log_id
+        else:
+            if self.error_log_id:
+                self.status = ReportedProblem.ST_RESOLVED if self.error_log.is_resolved else ReportedProblem.ST_NEW
+
+        # User & email check
         if self.user:
             self.email_id = self.user.email
         else:
@@ -308,13 +373,49 @@ class ReportedProblem(models.Model):
             raise ValidationError('Please enter remark for rejecting this problem.')
 
         if self.pk:
+            # Update modified date
             self.modified_on = timezone.now()
 
         super(self.__class__, self).clean()
 
     def save(self, *args, **kwargs):
+        """
+        Post save trigger for this model. This will will called after the record has
+        been created or updated.
+
+        Authors
+        -------
+        Gagandeep Singh
+        """
         self.clean()
         super(self.__class__, self).save(*args, **kwargs)
 
+
+    def delete(self, using=None, keep_parents=False):
+        # Override delete method to prevent record deletion.
+        raise ValidationError("Denied! You cannot delete reported by the users.")
+
+    @classmethod
+    def post_save(cls, sender, instance, **kwargs):
+        """
+        Post save trigger for this model. This will will called after the record has
+        been created or updated.
+
+        Authors
+        -------
+        Gagandeep Singh
+        """
+
+        # Update all children
+        if instance.parent_id is None:
+            # Using 'update'; no save() or signals will be triggered
+            ReportedProblem.objects.filter(parent=instance).update(
+                error_log = instance.error_log,
+                status = instance.status,
+                remarks = instance.remarks,
+                modified_on = instance.modified_on
+            )
+
+post_save.connect(ReportedProblem.post_save, sender=ReportedProblem)
+
 # ---------- /Reported Problems ----------
-'''

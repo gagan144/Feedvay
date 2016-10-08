@@ -1,5 +1,5 @@
 - Infrastructure
-    - Globalization & timezones
+    - Globalization & timezones *
     - User Management
         - User Session
         - Registration using mobile number
@@ -10,7 +10,7 @@
         - SMS
         - Email
     - Documentation
-        - Sphinx integration
-    - Captcha
+        - Sphinx integration *
+    - Captcha *
     - New Feature Promotion
 

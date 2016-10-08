@@ -5,10 +5,11 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import User
+from django_mysql import models as models57
 
 from django.db.models.signals import post_save
-# from django_mysql.models import JSONField
-from django_extensions.db.fields.json import JSONField
+from django_mysql.models import JSONField
+# from django_extensions.db.fields.json import JSONField
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.utils import timezone
@@ -16,7 +17,7 @@ from hashlib import md5
 
 
 # ---------- System Exceptions ----------
-class ErrorLog(models.Model):
+class ErrorLog(models57.Model):
     """
     Model to store all system errors occurred during runtime as captured by ErrorLogMiddleware middleware.
 

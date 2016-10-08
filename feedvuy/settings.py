@@ -44,8 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.admindocs',
 
     # Packages
+    'django_mysql',
     'django_extensions',
-    # 'django_mysql',
     'easy_select2',
 
     # Apps
@@ -94,11 +94,18 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'feedvuy',
         'USER': 'root',
-        'PASSWORD': '!root@',
+        'PASSWORD': '!root1234@',
         'HOST': '127.0.0.1',
         'PORT': '3306',
+        'OPTIONS': {
+            # Tell MySQLdb to connect with 'utf8mb4' character set
+            'charset': 'utf8',   # recommended: 'utf8', or 'utf8mb4' for emoji & custom unicode characters
+        },
     }
 }
+SILENCED_SYSTEM_CHECKS = [
+    'django_mysql.W003',    # To silent 'utf8mb4' character-set warning
+]
 
 # Mongo Database
 # MONGO_DATABASE = {

@@ -9,7 +9,5 @@
     - Communication module (pigeon)
         - SMS
         - Email
-    - Documentation
-        - Sphinx integration *
     - Captcha (POC Done)
     - New Feature Promotion

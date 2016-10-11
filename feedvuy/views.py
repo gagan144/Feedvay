@@ -38,7 +38,7 @@ def docs(request, filename=None):
     This is done to prevent django to load file into memory and perform unnecessary processing
     that consumes CPU & memory and blocks web server threads.
 
-    Reference: `http://zacharyvoase.com/2009/09/08/sendfile/`_
+    Reference: http://zacharyvoase.com/2009/09/08/sendfile/
     """
 
     abs_filename = get_absolute_filename(filename)

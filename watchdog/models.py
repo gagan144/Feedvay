@@ -19,7 +19,7 @@ from hashlib import md5
 # ---------- System Exceptions ----------
 class ErrorLog(models57.Model):
     """
-    Model to store all system errors occurred during runtime as captured by ErrorLogMiddleware middleware.
+    Model to store all system errors occurred during runtime as captured by :class:`watchdog.middleware.ErrorLogMiddleware` middleware.
 
     **Authors**: Gagandeep Singh
     """
@@ -258,7 +258,7 @@ class ReportedProblem(models.Model):
 
     Points:
         - It must not include system problem but only those reported by user.
-        - A problems can be linked to :model:`watchdog.ErrorLog`.
+        - A problems can be linked to :class:`watchdog.models.ErrorLog`.
         - A Problem can be reported by logged in user or public user. Incase of public user, email id is referred.
         - In case of rejecting a problem, remark must be provided.
         - Records inherit from parent first and then from error_log.

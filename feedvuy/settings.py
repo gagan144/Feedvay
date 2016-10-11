@@ -165,5 +165,11 @@ import mimetypes
 mimetypes.add_type("image/svg+xml", ".svg", True)
 mimetypes.add_type("image/svg+xml", ".svgz", True)
 
+# General project settings
+LOGIN_URL_STAFF = '/admin/login/'
+
+# Documentation
+DOCS_PATH = os.path.join(BASE_DIR, "docs/build/html")
+
 # Watchdog
 WATCHDOG_ERRORLOG_ENABLED = True

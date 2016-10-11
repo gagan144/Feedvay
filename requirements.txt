@@ -8,3 +8,6 @@ django-tinymce
 django-easy-select2
 django-extensions
 
+# Documentation
+# sphinx
+# sphinx_rtd_theme

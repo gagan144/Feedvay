@@ -18,8 +18,11 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from . import views
 
 urlpatterns = [
+
     url(r'^admin/', admin.site.urls),
-    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),    # Django admindocs
+    url(r'^admin/doc/(?P<filename>.*)$', views.docs, name='docs'),  # Sphinx documentation
 ]

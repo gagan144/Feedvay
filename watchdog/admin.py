@@ -12,9 +12,7 @@ class ErrorLogAdmin(admin.ModelAdmin):
     """
     Django admin settings for :model:`watchdog.ErrorLog`.
 
-    Authors
-    -------
-    Gagandeep Singh
+    **Authors**: Gagandeep Singh
     """
     list_display = ('id', 'shortened_url', 'server_name', 'class_name', 'message', 'times_seen', 'is_resolved')
     list_filter = ('is_resolved', 'server_name', 'class_name', 'last_seen_on')
@@ -66,9 +64,7 @@ class SuggestionAdmin(admin.ModelAdmin):
     """
     Django admin settings for :model:`watchdog.Suggestion`.
 
-    Authors
-    -------
-    Gagandeep Singh
+    **Authors**: Gagandeep Singh
     """
     list_display = ('id', 'title', 'url', 'is_duplicate', 'status', 'created_on')
     search_fields = ('url', 'title')
@@ -114,9 +110,7 @@ class ReportedProblemAdmin(admin.ModelAdmin):
     """
     Django admin settings for :model:`watchdog.ReportedProblem`.
 
-    Authors
-    -------
-    Gagandeep Singh
+    **Authors**: Gagandeep Singh
     """
     list_display = ('id', 'title', 'url', 'is_duplicate', 'status', 'created_on')
     search_fields = ('url', 'title')

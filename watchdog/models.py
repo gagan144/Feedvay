@@ -21,9 +21,7 @@ class ErrorLog(models57.Model):
     """
     Model to store all system errors occurred during runtime as captured by ErrorLogMiddleware middleware.
 
-    Authors
-    -------
-    Gagandeep Singh
+    **Authors**: Gagandeep Singh
     """
 
     server_name     = models.CharField(max_length=128, db_index=True, help_text='IP address of the server on which exception occured.')
@@ -69,9 +67,7 @@ class ErrorLog(models57.Model):
         """
         Method to clean & validate data fields.
 
-        Authors
-        -------
-        Gagandeep Singh
+        **Authors**: Gagandeep Singh
         """
         if not self.checksum:
             self.checksum = ErrorLog.construct_checksum(self.class_name, self.message, self.traceback)
@@ -82,9 +78,7 @@ class ErrorLog(models57.Model):
         """
         Pre-save method for this model.
 
-        Authors
-        -------
-        Gagandeep Singh
+        **Authors**: Gagandeep Singh
         """
         self.clean()
 
@@ -105,9 +99,7 @@ class ErrorLog(models57.Model):
         Constructs a checksum based on class name, error message and traceback text.
         Class name is always used along with traceback text if not null otherwise message.
 
-        Authors
-        -------
-        Gagandeep Singh
+        **Authors**: Gagandeep Singh
         """
 
         checksum = md5(class_name)
@@ -123,9 +115,7 @@ class ErrorLog(models57.Model):
         Post save trigger for this model. This will will called after the record has
         been created or updated.
 
-        Authors
-        -------
-        Gagandeep Singh
+        **Authors**: Gagandeep Singh
         """
 
         # Update all ReportedProblems
@@ -148,14 +138,10 @@ class Suggestion(models.Model):
     Suggestion is not an error, but rather an area of improvement that user
     feels must be present.
 
-    Note
-    -----
-
+    Points:
         - Only logged-in user can make suggestions
 
-    Authors
-    -------
-    Gagandeep Singh
+    **Authors**: Gagandeep Singh
     """
 
     PLTFM_MOBILE = 'mobile'
@@ -213,9 +199,7 @@ class Suggestion(models.Model):
         """
         Method to clean & validate data fields.
 
-        Authors
-        -------
-        Gagandeep Singh
+        **Authors**: Gagandeep Singh
         """
 
         # Parent check
@@ -240,9 +224,7 @@ class Suggestion(models.Model):
         """
         Pre-save method for this model.
 
-        Authors
-        -------
-        Gagandeep Singh
+        **Authors**: Gagandeep Singh
         """
 
         self.clean()
@@ -258,9 +240,7 @@ class Suggestion(models.Model):
         Post save trigger for this model. This will will called after the record has
         been created or updated.
 
-        Authors
-        -------
-        Gagandeep Singh
+        **Authors**: Gagandeep Singh
         """
 
         # Update all children
@@ -276,18 +256,14 @@ class ReportedProblem(models.Model):
     Model to store errors reported by the users. These do not include errors reported by the system
     however, may be linked to one.
 
-    Points
-    ------
-
+    Points:
         - It must not include system problem but only those reported by user.
         - A problems can be linked to :model:`watchdog.ErrorLog`.
         - A Problem can be reported by logged in user or public user. Incase of public user, email id is referred.
         - In case of rejecting a problem, remark must be provided.
         - Records inherit from parent first and then from error_log.
 
-    Authors
-    -------
-    Gagandeep Singh
+    **Authors**: Gagandeep Singh
     """
 
     PLTFM_MOBILE = 'mobile'
@@ -345,9 +321,7 @@ class ReportedProblem(models.Model):
         """
         Method to clean & validate data fields.
 
-        Authors
-        -------
-        Gagandeep Singh
+        **Authors**: Gagandeep Singh
         """
 
         # Parent check
@@ -384,9 +358,7 @@ class ReportedProblem(models.Model):
         Post save trigger for this model. This will will called after the record has
         been created or updated.
 
-        Authors
-        -------
-        Gagandeep Singh
+        **Authors**: Gagandeep Singh
         """
         self.clean()
         super(self.__class__, self).save(*args, **kwargs)
@@ -402,9 +374,7 @@ class ReportedProblem(models.Model):
         Post save trigger for this model. This will will called after the record has
         been created or updated.
 
-        Authors
-        -------
-        Gagandeep Singh
+        **Authors**: Gagandeep Singh
         """
 
         # Update all children

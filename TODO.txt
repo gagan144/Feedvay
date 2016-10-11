@@ -11,6 +11,5 @@
         - Email
     - Documentation
         - Sphinx integration *
-    - Captcha *
+    - Captcha (POC Done)
     - New Feature Promotion
-

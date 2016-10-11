@@ -18,8 +18,10 @@ WATCHDOG_ERRORLOG_ENABLED = getattr(settings, 'WATCHDOG_ERRORLOG_ENABLED', True)
 
 class ErrorLogMiddleware(MiddlewareMixin):
     """
-    Middleware to capture exceptions occurred during runtime for a request and
-    log it into database if error logging is enabled.
+    Middleware to capture exceptions occurred at runtime for a request and
+    log it into database if error logging is enabled through ``settings.WATCHDOG_ERRORLOG_ENABLED``
+
+    **Authors**: Gagandeep Singh
     """
     def process_exception(self, request, exception):
         if isinstance(exception, PermissionDenied) or isinstance(exception, Http404):

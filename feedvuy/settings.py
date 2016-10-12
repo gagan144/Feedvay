@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django_mysql',
     'django_extensions',
     'easy_select2',
+    'django_fsm_log',
 
     # Apps
     'watchdog',

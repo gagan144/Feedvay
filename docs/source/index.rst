@@ -10,6 +10,7 @@ Apps and modules
    :maxdepth: 4
 
    modules/main/index
+   modules/accounts/index
    modules/watchdog/index
    modules/utilities/index
 

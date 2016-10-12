@@ -21,14 +21,19 @@ class RegisteredUser(models.Model):
         - Username of these users is the mobile phone no with country code as prefix. Example: +919999999999
         - All login related process such as session allocation etc are done using traditional django 'User' model whereas
           other business related functionality are done using this model.
-        - Detailed personal information are not kept in this model. It only contains basic information only such as name, email.
+        - Detailed personal information are not kept in this model. It only contains basic information only such as name, email id.
         - Registration methods:
-            - Website: User can register directly on website using mobile no.
-            - Mobile app: User can register using mobile app.
-            - Enterprise app: Passive registration of the user that is automatically created as a lead while using enterprise app.
+            - **Website**: User can register directly on website using mobile no.
+            - **Mobile app**: User can register using mobile app.
+            - **Enterprise app**: Passive registration of the user that is automatically created as a **lead** while using enterprise app.
               The account remains inactive until user register himself manually using any of the methods.
+
             For registration flow, refer the document.
         - Registration can be multiple times. Only last registration information is kept for now.
+
+    .. warning::
+        This model must not trigger any update to django 'User' model since it can trigger model's save.
+        However, you can update this model without any intervention of 'User' model.
 
     **Authors**: Gagandeep Singh
     """
@@ -52,7 +57,7 @@ class RegisteredUser(models.Model):
     reg_method  = models.CharField(max_length=32, choices=CH_REG_METHOD, db_index=True, editable=False, help_text='Last registration method used by the user')
     reg_count   = models.SmallIntegerField(default=1, editable=False, help_text='No of times this user registered himself.')
     last_reg_date = models.DateTimeField(auto_now_add=True, editable=False, help_text='Last registration datetime.')
-    status      = FSMField(default=ST_LEAD, protected=True)
+    status      = FSMField(default=ST_LEAD, protected=True, db_index=True, editable=False, help_text='Status of user registration.')
 
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this suggestion was made.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
@@ -61,13 +66,21 @@ class RegisteredUser(models.Model):
         ordering = ('-created_on', )
 
     # ----- Transitions -----
-    @transition(field=status, source=ST_LEAD, target=ST_VERIFICATION_PENDING)
+    @fsm_log_by
+    @transition(field=status, source=[ST_LEAD, ST_VERIFIED], target=ST_VERIFICATION_PENDING)
     def trans_registered(self):
         """
-        User has registered. Status is transitioned from 'Lead' to 'Verification pending'.
+        User has registered. Status is transitioned from ``lead`` to ``verification_pending``.
         """
         pass
 
+    @fsm_log_by
+    @transition(field=status, source=ST_VERIFICATION_PENDING, target=ST_VERIFIED)
+    def trans_verification_completed(self):
+        """
+        User has verified himself. Status is transitioned from ``verification_pending`` to ``verified``.
+        """
+        pass
 
     # ----- /Transitions -----
 

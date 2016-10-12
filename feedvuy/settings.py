@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django_fsm_log',
 
     # Apps
+    'accounts',
     'watchdog',
 
 ]

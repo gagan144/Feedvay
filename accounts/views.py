@@ -14,6 +14,53 @@ from accounts.forms import *
 from accounts.models import *
 from accounts.utilities import *
 
+# ----- Login ----
+def login(request):
+    data={
+        'next': request.GET.get('next',None),
+        'username': request.GET.get('username', None)
+    }
+
+    if request.POST:
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = auth.authenticate(username=username,password=password)
+
+        # Check if user is verified
+        try:
+            if not user.registereduser.is_verified:
+                return HttpResponseRedirect(reverse('accounts_resend_activation_link')+"?username="+str(user.username))
+        except:
+            pass
+
+        if user:
+            if user.is_active:
+                auth.login(request,user)
+
+                # Check for 'Remember Me'
+                if not request.POST.get('remember_me',None):
+                    # 'Remember Me' was not selected, so expire session after browser is closed.
+                    request.session.set_expiry(0) # 0: expire when the user's Web browser is closed
+
+                next = request.GET.get('next',None)
+                if next and next != '':
+                    return HttpResponseRedirect(request.GET['next'])
+                else:
+                    return HttpResponseRedirect(reverse('home_user'))
+            else:
+                # request.session['user_id'] = user.id
+                return HttpResponseRedirect(reverse('accounts_inactive_user'))
+        else:
+            data['login_fail']=True
+            data['username']=username
+
+    return render(request, 'accounts/login.html', data)
+
+def logout(request):
+    auth.logout(request)
+    return HttpResponseRedirect(reverse('home'))
+
 # ---------- Registration ----------
 def registration(request):
     """
@@ -23,7 +70,7 @@ def registration(request):
     **Authors**: Gagandeep Singh
     """
     if request.user.is_authenticated():
-        return HttpResponseRedirect(reverse('home_user'))
+        return HttpResponseRedirect(reverse('home'))
     if not settings.REGISTRATION_OPEN:
         return HttpResponseRedirect(reverse('accounts_registration_closed'))
 
@@ -38,6 +85,7 @@ def registration(request):
         data_reg = request.POST.copy()
         data_reg['country_tel_code'] = country_tel_code
         form_reg = RegistrationForm(data_reg)
+        form_reg.is_valid() # BandAid: `form_reg.cleaned_data` throws error if this is not called
 
         form_data = form_reg.cleaned_data
         username = "{}-{}".format(country_tel_code, form_data['mobile_no'])
@@ -55,14 +103,19 @@ def registration(request):
                 # Bypass: Send token & redirect to verification
                 registered_user = RegisteredUser.objects.get(user__username=username)
 
-                # Create OTP token
-                user_token, is_utoken_new = UserToken.objects.update_or_create(
-                    registered_user = registered_user,
-                    purpose = UserToken.PUR_OTP_VERF,
-                    defaults = {
-                        "created_on" : timezone.now()
-                    }
-                )
+                with transaction.atomic():
+                    # Update last registration date
+                    registered_user.last_reg_date = timezone.now()
+                    registered_user.save()
+
+                    # Create OTP token
+                    user_token, is_utoken_new = UserToken.objects.update_or_create(
+                        registered_user = registered_user,
+                        purpose = UserToken.PUR_OTP_VERF,
+                        defaults = {
+                            "created_on" : timezone.now()
+                        }
+                    )
 
                 # TODO: Send all owls
 
@@ -170,7 +223,8 @@ def registration_verify(request):
         user_token = UserToken.objects.get(registered_user=new_registered_user, purpose=UserToken.PUR_OTP_VERF, expire_on__gt=now)
 
         # Check expiry
-        if (timezone.now() - user_token.created_on).total_seconds() >= settings.VERIFICATION_EXPIRY:
+        time_lapsed_sec = (timezone.now() - user_token.created_on).total_seconds()
+        if time_lapsed_sec >= settings.VERIFICATION_EXPIRY:
             raise Http404("Invalid or expired link! Sign in or sign up again to re-initiate activation.")
 
         data = {

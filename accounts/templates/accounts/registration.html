@@ -19,6 +19,9 @@
                                 {% endfor %}
                             </div>
                         {% endif %}
+                        {% if username_exists %}
+                            <div class="error">* Already registered!</div>
+                        {% endif %}
                     </td>
                 </tr>
                 <tr>

@@ -2,7 +2,6 @@
     - Globalization & timezones *
     - User Management
         - User Session
-        - Registration using mobile number
         - Forget password
         - Deactivate/Reactivate account
         - User Roles
@@ -15,5 +14,7 @@
 
 - Accounts
     - Delete expired token cron
+    - Resend OTP: verification page
+
 - Geography
     - Country tel code

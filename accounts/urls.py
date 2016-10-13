@@ -6,6 +6,10 @@ from django.conf.urls import url
 from accounts import views
 
 urlpatterns = [
+    # Login
+    url(r'^login/$', views.login, name="accounts_login"),
+    url(r'^logout/$', views.logout, name="accounts_logout"),
+
     # Registration
     url(r'^signup/$', views.registration, name='accounts_registration'),
     url(r'^registration/verify/$', views.registration_verify, name='accounts_registration_verify'),

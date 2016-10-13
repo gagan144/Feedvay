@@ -1,6 +1,7 @@
 # Copyright (C) 2016 Feedvuy (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
+from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -9,6 +10,11 @@ from django.conf import settings
 import os
 
 from utilities.decorators import staff_user_only
+
+
+def home(request):
+    data = {}
+    return render(request, 'home.html', data)
 
 
 # ---------- Project Documentation serve ----------

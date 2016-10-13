@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.conf import settings
 import jwt
+from django.contrib import auth
 
 from django.contrib.auth.models import User
 from accounts.forms import *
@@ -46,9 +47,11 @@ def registration(request):
 
             # Create all database entries in one atomic process
             with transaction.atomic():
+                username = "{}-{}".format(country_tel_code, form_data['mobile_no'])
+
                 # Create 'User' model
                 new_user = User(
-                    username = form_data['mobile_no'],
+                    username = username,
                     first_name = form_data['first_name'],
                     last_name =  form_data['last_name'],
                     is_active = False
@@ -63,19 +66,31 @@ def registration(request):
 
                 # Transit status from 'lead' to 'verification_pending'
                 new_registered_user.trans_registered()
+                new_registered_user.save()
+
+                # Create OTP token
+                user_token, is_utoken_new = UserToken.objects.update_or_create(
+                    registered_user = new_registered_user,
+                    purpose = UserToken.PUR_OTP_VERF,
+
+                    defaults = {
+                        "created_on" : timezone.now()
+                    }
+                )
 
             # TODO: Send all owls
 
             # Generate token & redirect to verification
             token = jwt.encode(
                 {
-                    'reg_user_id': new_registered_user.pk
+                    'reg_user_id': new_registered_user.id,
+                    'user_token': user_token.id
                 },
                 settings.JWT_SECRET_KEY,
                 algorithm = settings.JWT_ALOG
             )
             return HttpResponseRedirect(
-                "{url}/?q={token}".format(
+                "{url}?q={token}".format(
                     url = reverse('accounts_registration_verify'),
                     token = token
                 )
@@ -106,19 +121,58 @@ def registration_verify(request):
     **Authors**: Gagandeep Singh
     """
 
-    token = request.GET['q']
+    jwtoken = request.POST['q'] if request.method.lower() == 'post' else request.GET['q']
 
     # Decode token
-    data_token = jwt.decode(token, 'secret')
-    new_registered_user = RegisteredUser.objects.get(id=data_token['reg_user_id'])
+    data_jwtoken = jwt.decode(jwtoken, settings.JWT_SECRET_KEY)
+    new_registered_user = RegisteredUser.objects.get(id=data_jwtoken['reg_user_id'])
 
     # Check expiry
     if (timezone.now() - new_registered_user.last_reg_date).total_seconds() >= settings.VERIFICATION_EXPIRY:
         raise Http404("Link expired! Please register again.")
 
     data = {
-        'token': token,
+        'token': jwtoken,
         'new_registered_user': new_registered_user
     }
+    if request.method.lower() == 'post':
+        entered_otp = request.POST['otp']
+
+        now = timezone.now()
+        try:
+            user_token = UserToken.objects.get(registered_user=new_registered_user, purpose=UserToken.PUR_OTP_VERF, expire_on__lt=now)
+
+            # Verify otp value
+            if entered_otp == user_token.value:
+                with transaction.atomic():
+                    # Mark user active
+                    user = new_registered_user.user
+                    user.is_active = True
+                    user.save()
+
+                    # Transit 'RegisteredUser' to 'verified'
+                    new_registered_user.trans_verification_completed()
+                    new_registered_user.save()
+
+                    # Delete UserToken
+                    user_token.delete()
+
+                    # Login User
+                    user = user
+                    backend = auth.get_backends()[0]
+                    user.backend = '%s.%s' % (backend.__module__, backend.__class__.__name__)
+                    auth.login(request,user)
+
+                    # Redirect to root page
+                    return HttpResponseRedirect(reverse('home_user')+"?welcome=true")
+
+            else:
+                data['status'] = 'failed'
+                data['message'] = 'OTP verification failed.'
+        except UserToken.DoesNotExist:
+            data['status'] = 'failed'
+            data['message'] = 'OTP verification failed.'
+
+
     return render(request, 'accounts/registration_verify.html', data)
 # ---------- /Registration ----------

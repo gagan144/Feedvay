@@ -10,7 +10,7 @@
         <br/>
         Kindly enter OTP to verify yourself.
 
-        <form>
+        <form method="post" >{% csrf_token %}
             <input type="hidden" name="token" value="{{ token }}">
             <input type="text" name="otp" placeholder="Enter OTP here" required>
 

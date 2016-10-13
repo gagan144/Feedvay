@@ -10,7 +10,7 @@ from accounts.models import *
 
 class RegisteredUserInline(admin.StackedInline):
     """
-    Admin inline for displaying 'RegistrationUser' details.
+    Admin inline for displaying :class:`accounts.models.RegistrationUser` details.
 
     **Authors**: Gagandeep Singh
     """
@@ -38,7 +38,7 @@ class UserProxyForRegUser(User):
 @admin.register(UserProxyForRegUser)
 class RegisteredUserProxyAdmin(admin.ModelAdmin):
     """
-    Django admin for 'RegisteredUser'.
+    Django admin for :class:`accounts.models.RegisteredUser`.
 
     **Authors**: Gagandeep Singh
     """
@@ -59,8 +59,8 @@ class RegisteredUserProxyAdmin(admin.ModelAdmin):
     readonly_fields = ('username', 'password', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser', 'last_login', 'date_joined')
     inlines = [RegisteredUserInline]
 
-    # def has_add_permission(self, request):
-    #     return False
+    def has_add_permission(self, request):
+        return False
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -68,6 +68,29 @@ class RegisteredUserProxyAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super(RegisteredUserProxyAdmin, self).get_queryset(request)
         return qs.filter(registereduser__isnull=False)
+
+
+@admin.register(UserToken)
+class UserTokenAdmin(admin.ModelAdmin):
+    """
+    Django admin for :class:`accounts.models.UserToken`.
+
+    **Authors**: Gagandeep Singh
+    """
+    list_display = ('registered_user', 'purpose', 'expire_on', 'created_on')
+    list_filter = ('purpose', 'expire_on', 'created_on')
+    search_fields = ('registered_user__user__username', )
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = [field.name for field in obj.__class__._meta.fields]
+        self.readonly_fields = readonly_fields
+        return self.readonly_fields
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 # ---------- Override Django User Admin ----------

@@ -7,6 +7,8 @@ from django.db import models
 from django.utils import timezone
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
+import random
+import string
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -110,6 +112,74 @@ class RegisteredUser(models.Model):
 
         self.clean()
         super(self.__class__, self).save(*args, **kwargs)
+
+class UserToken(models.Model):
+    """
+    Model to store tokens issued to a registered user for various purposes such as registration.
+
+    **Points**:
+        - Uniqueness of a token is based on :class:`accounts.model.RegisteredUser` and purpose.
+        - Tokens are only issued to registered user.
+        - Token can be overridden for same user & purpose. This is possible when the same process is again executed.
+        - No audit trail is maintained for a token. Present is the only truth.
+        - Token must be deleted after use or will be automatically deleted after they cross their expiry date.
+
+    .. note::
+        Tokens are not user sessions.
+
+    **Authors**: Gagandeep Singh
+    """
+
+    PUR_OTP_VERF = 'otp_verification'
+    CH_PURPOSE = (
+        (PUR_OTP_VERF, 'OTP Verification'),
+    )
+
+    registered_user = models.ForeignKey(RegisteredUser, db_index=True, editable=False, help_text='Reference to the registered user to whom this token belongs.')
+    purpose     = models.CharField(max_length=64, choices=CH_PURPOSE, db_index=True, editable=False, help_text='Purpose for which this token is issued')
+
+    value       = models.CharField(max_length=512, editable=False, help_text='Value of the token')
+    expire_on   = models.DateTimeField(editable=False, db_index=True, help_text='Date after which this token will expire.')
+
+    created_on  = models.DateTimeField(auto_now_add=True, editable=False, help_text='Date on which this token was issued.')
+
+    def __unicode__(self):
+        return "{} - {}".format(self.registered_user.user.username, self.purpose)
+
+    class Meta:
+        unique_together = ('registered_user', 'purpose')
+
+    def clean(self):
+        """
+        Method to clean & validate data fields.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        # Set expiry date
+        if self.purpose == UserToken.PUR_OTP_VERF:
+            self.value = UserToken.gen_verification_otp()
+            self.expire_on = timezone.now() + timezone.timedelta(seconds=settings.VERIFICATION_EXPIRY)
+
+        super(self.__class__, self).clean()
+
+    def save(self, *args, **kwargs):
+        """
+        Pre-save method for this model.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        self.clean()
+        super(self.__class__, self).save(*args, **kwargs)
+
+    @staticmethod
+    def gen_verification_otp():
+        charset = string.digits
+        return ''.join(random.sample(charset,6))
+
+
+
 
 # ----- Global Methods -----
 def set_user_password(user, new_password, send_owls=True):

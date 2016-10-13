@@ -9,6 +9,7 @@ django-easy-select2
 django-extensions
 django-fsm
 django-fsm-log
+pyjwt
 
 # Documentation
 # sphinx

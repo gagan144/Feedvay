@@ -32,4 +32,3 @@ class RegistrationForm(forms.Form):
             del form_data['password']
             del form_data['confirm_password']
         return form_data
-

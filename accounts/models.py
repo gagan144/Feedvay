@@ -8,6 +8,7 @@ from django.utils import timezone
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
 
+from django.conf import settings
 from django.contrib.auth.models import User
 
 class RegisteredUser(models.Model):
@@ -109,4 +110,32 @@ class RegisteredUser(models.Model):
 
         self.clean()
         super(self.__class__, self).save(*args, **kwargs)
+
+# ----- Global Methods -----
+def set_user_password(user, new_password, send_owls=True):
+    """
+    Method to set a user password and save it.
+    This also sends any owls (Email or SMS) if required. Any errors are silently ignored.
+
+    :param user: 'User' model object
+    :param new_password: New password
+    :param send_owls: Set True to send mail/SMS to the user. Default:True
+    :return: None
+
+    .. note::
+        To prevent logout, call 'auth.update_session_auth_hash(request, user)'
+        after this function.
+
+    **Authors**: Gagandeep Singh
+    """
+    user.set_password(new_password)
+    user.save()
+
+    # if send_mail and settings.MAIL_PASS_RESET_SUCCESS:
+    #     try:
+    #         result = mailing.send_password_reset_success_email(user)
+    #     except SMTPAuthenticationError:
+    #         pass
+    #     except:
+    #         pass
 

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Verify</h1>
+    <hr/>
+
+    <div align="center">
+        {{ new_registered_user.user.first_name }} you are one step away.
+        An OTP has been send to you mobile number {{ new_registered_user.user.username }}.
+        <br/>
+        Kindly enter OTP to verify yourself.
+
+        <form>
+            <input type="hidden" name="token" value="{{ token }}">
+            <input type="text" name="otp" placeholder="Enter OTP here" required>
+
+            <br/>
+            <button type="submit">Verify</button>
+        </form>
+    </div>
+
+
+{% endblock %}

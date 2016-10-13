@@ -31,7 +31,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-# Application definition
+# ----- Application definition -----
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -89,7 +89,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'feedvuy.wsgi.application'
 
 
-# Database
+# ----- Database -----
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 DATABASES = {
     'default': {
@@ -109,7 +109,7 @@ SILENCED_SYSTEM_CHECKS = [
     'django_mysql.W003',    # To silent 'utf8mb4' character-set warning
 ]
 
-# Mongo Database
+# ----- Mongo Database -----
 # MONGO_DATABASE = {
 #     "HOST": "127.0.0.1",
 #     "PORT": 27017,
@@ -117,7 +117,7 @@ SILENCED_SYSTEM_CHECKS = [
 # }
 
 
-# Password validation
+# ----- Password validation -----
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 # AUTH_PASSWORD_VALIDATORS = [
 #     {
@@ -135,7 +135,7 @@ SILENCED_SYSTEM_CHECKS = [
 # ]
 
 
-# Internationalization
+# ----- Internationalization -----
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
@@ -149,7 +149,7 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
+# ----- Static files (CSS, JavaScript, Images) -----
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 STATIC_URL = '/static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, "static")
@@ -157,22 +157,28 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
-# Media
+# ----- Media -----
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = '/media/'
 
 
-# Add SVG to Mime-Types
+# ----- Add SVG to Mime-Types -----
 import mimetypes
 mimetypes.add_type("image/svg+xml", ".svg", True)
 mimetypes.add_type("image/svg+xml", ".svgz", True)
 
-# General project settings
+# ----- General project settings -----
 LOGIN_URL_STAFF = '/admin/login/'
 REGISTRATION_OPEN = True
 
-# Documentation
+JWT_ALOG = 'HS256'
+JWT_SECRET_KEY = 'be16bad4-5c8b-4482-a7f0-e2ab0f70b088'
+
+# ----- Accounts -----
+VERIFICATION_EXPIRY = 15*60 # In seconds
+
+# ----- Documentation -----
 DOCS_PATH = os.path.join(BASE_DIR, "docs/build/html")
 
-# Watchdog
+# ----- Watchdog -----
 WATCHDOG_ERRORLOG_ENABLED = True

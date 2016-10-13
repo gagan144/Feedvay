@@ -6,6 +6,7 @@
         - Forget password
         - Deactivate/Reactivate account
         - User Roles
+        - Default Group for public user
     - Communication module (pigeon/Owlery)
         - SMS
         - Email

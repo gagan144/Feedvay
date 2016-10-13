@@ -6,7 +6,7 @@
         - Forget password
         - Deactivate/Reactivate account
         - User Roles
-    - Communication module (pigeon)
+    - Communication module (pigeon/Owlery)
         - SMS
         - Email
     - Captcha (POC Done)

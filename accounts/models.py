@@ -62,6 +62,9 @@ class RegisteredUser(models.Model):
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this suggestion was made.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
 
+    def __unicode__(self):
+        return self.user.username
+
     class Meta:
         ordering = ('-created_on', )
 

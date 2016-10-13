@@ -193,8 +193,10 @@ def set_user_password(user, new_password, send_owls=True):
     :return: None
 
     .. note::
-        To prevent logout, call 'auth.update_session_auth_hash(request, user)'
-        after this function.
+        To prevent logout, execute following after this function.
+
+            >>> auth.update_session_auth_hash(request, user)
+
 
     **Authors**: Gagandeep Singh
     """

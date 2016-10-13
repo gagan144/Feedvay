@@ -12,4 +12,6 @@ Contents
        :titlesonly:
 
        models
+       forms
+       views
 

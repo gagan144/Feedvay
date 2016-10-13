@@ -35,9 +35,14 @@ class RegisteredUser(models.Model):
             For registration flow, refer the document.
         - Registration can be multiple times. Only last registration information is kept for now.
 
+    **State chart diagram for state machine**:
+        .. image:: ../../_static/accounts/registereduser_statechart.jpg
+
     .. warning::
         This model must not trigger any update to django 'User' model since it can trigger model's save.
         However, you can update this model without any intervention of 'User' model.
+
+
 
     **Authors**: Gagandeep Singh
     """

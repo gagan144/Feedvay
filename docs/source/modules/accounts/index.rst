@@ -14,4 +14,5 @@ Contents
        models
        forms
        views
+       utilities
 

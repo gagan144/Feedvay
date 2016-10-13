@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'easy_select2',
     'django_fsm_log',
+    'captcha',
 
     # Apps
     'accounts',
@@ -176,6 +177,12 @@ JWT_SECRET_KEY = 'be16bad4-5c8b-4482-a7f0-e2ab0f70b088'
 
 # ----- Accounts -----
 VERIFICATION_EXPIRY = 15*60 # In seconds
+
+# ----- ReCaptcha -----
+RECAPTCHA_PUBLIC_KEY = '6LftyggUAAAAAG2J4egQHiCfdDIKr0VH9LmqkYmG'
+RECAPTCHA_PRIVATE_KEY = '6LftyggUAAAAAMn37jxqIe8E51c1s9LqMGhQLGMT'
+NOCAPTCHA = True
+# RECAPTCHA_PROXY = 'http://127.0.0.1:8000'
 
 # ----- Documentation -----
 DOCS_PATH = os.path.join(BASE_DIR, "docs/build/html")

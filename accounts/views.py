@@ -8,6 +8,7 @@ from django.db import transaction
 from django.conf import settings
 import jwt
 from django.contrib import auth
+import json
 
 from django.contrib.auth.models import User
 from accounts.forms import *
@@ -16,6 +17,13 @@ from accounts.utilities import *
 
 # ----- Login ----
 def login(request):
+    """
+    View to login a valid registered user only.
+
+    **Type**: GET/POST
+
+    **Authors**: Gagandeep Singh
+    """
     data={
         'next': request.GET.get('next',None),
         'username': request.GET.get('username', None)
@@ -58,6 +66,13 @@ def login(request):
     return render(request, 'accounts/login.html', data)
 
 def logout(request):
+    """
+    View to logout a user.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
     auth.logout(request)
     return HttpResponseRedirect(reverse('home'))
 
@@ -66,6 +81,8 @@ def registration(request):
     """
     View to handle registration. If called with GET opens registrations form otherwise on POST
     register a user with given details.
+
+    **Type**: GET/POST
 
     **Authors**: Gagandeep Singh
     """
@@ -102,6 +119,11 @@ def registration(request):
             elif user_class == ClassifyRegisteredUser.UNVERIFIED:
                 # Bypass: Send token & redirect to verification
                 registered_user = RegisteredUser.objects.get(user__username=username)
+
+                # If this registered user is a lead, transit its state
+                if registered_user.status == RegisteredUser.ST_LEAD:
+                    registered_user.trans_registered()
+                    registered_user.save()
 
                 with transaction.atomic():
                     # Update last registration date
@@ -195,6 +217,8 @@ def registration_closed(request):
     """
     This view is called when user tries to register in case registration is closed via ``settings.REGISTRATION_OPEN``.
 
+    **Type**: GET
+
     **Authors**: Gagandeep Singh
     """
     data = {}
@@ -208,6 +232,8 @@ def registration_verify(request):
         - **Normal registration flow**: After user has signed up with his details, he is redirected to this view to verify himself.
         - **Direct call withing expiry**: In case user was unable to finish verification, he can directly use url before this link expires
           according to :class:`accounts.models.RegisteredUser`.``last_reg_date``.
+
+    **Type**: GET/POST
 
     **Authors**: Gagandeep Singh
     """
@@ -229,7 +255,8 @@ def registration_verify(request):
 
         data = {
             'token': jwtoken,
-            'new_registered_user': new_registered_user
+            'new_registered_user': new_registered_user,
+            'VERIFICATION_EXPIRY_MIN': (settings.VERIFICATION_EXPIRY/60)
         }
 
         if request.method.lower() == 'post':
@@ -267,4 +294,39 @@ def registration_verify(request):
 
     except UserToken.DoesNotExist:
         raise Http404("Invalid or expired link! Sign in or sign up again to re-initiate activation.")
+
+def registration_resend_otp(request):
+    """
+    View to send OTP during verification process. No limitation on number of request is set for now.
+    Call to this view is only valid for registered user who's status is `verification_pending`.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+
+    if request.method.lower() == 'post':
+        reg_user_id = request.POST['id']
+
+        try:
+            reg_user = RegisteredUser.objects.get(id=reg_user_id, status=RegisteredUser.ST_VERIFICATION_PENDING)
+
+            # Create OTP token
+            user_token, is_utoken_new = UserToken.objects.update_or_create(
+                registered_user = reg_user,
+                purpose = UserToken.PUR_OTP_VERF,
+                defaults = {
+                    "created_on" : timezone.now()
+                }
+            )
+
+            # TODO: send SMS owl
+
+            return HttpResponse(json.dumps({"status":"success"}), content_type='application/json')
+
+        except RegisteredUser.DoesNotExist:
+            return HttpResponseForbidden('Request denied.')
+    else:
+        return HttpResponseForbidden('Use post.')
+
 # ---------- /Registration ----------

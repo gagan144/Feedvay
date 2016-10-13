@@ -12,7 +12,7 @@
 
         <form method="post" >{% csrf_token %}
             <input type="hidden" name="token" value="{{ token }}">
-            <input type="text" name="otp" placeholder="Enter OTP here" required>
+            <input type="text" name="otp" placeholder="Enter OTP here" autocomplete="off" required>
 
             {% if status == 'failed' %}
                 <p>{{ message }}</p>
@@ -20,8 +20,30 @@
 
             <br/>
             <button type="submit">Verify</button>
+            <button type="button" onclick="resend_otp();">Resend OTP</button>
         </form>
+
+        <small>You OTP will expire in {{ VERIFICATION_EXPIRY_MIN }} minutes.</small>
     </div>
+
+    <script>
+        function resend_otp(){
+            $.ajax({
+                type: "POST",
+                url: '{% url 'accounts_registration_resend_otp' %}',
+                data: {
+                    "id": {{ new_registered_user.id }},
+                    "csrfmiddlewaretoken": "{{ csrf_token }}"
+                },
+                success: function (result) {
+                    location.reload();
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    //location.reload();
+                }
+            });
+        }
+    </script>
 
 
 {% endblock %}

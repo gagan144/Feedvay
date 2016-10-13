@@ -2,6 +2,7 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from django import forms
+from captcha.fields import ReCaptchaField
 
 from accounts.models import *
 
@@ -24,6 +25,8 @@ class RegistrationForm(forms.Form):
     confirm_password = forms.CharField(widget=forms.PasswordInput())
 
     terms_n_conditions = forms.BooleanField(required=True, label='I agree to terms and conditions.')
+
+    captcha = ReCaptchaField(required=True)
 
     def clean(self):
         form_data = self.cleaned_data

@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'^signup/$', views.registration, name='accounts_registration'),
     url(r'^registration/verify/$', views.registration_verify, name='accounts_registration_verify'),
     url(r'^registration/closed/$', views.registration_closed, name='accounts_registration_closed'),
+    url(r'^registration/resend-otp/$', views.registration_resend_otp, name='accounts_registration_resend_otp'),
 ]

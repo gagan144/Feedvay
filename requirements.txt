@@ -10,6 +10,7 @@ django-extensions
 django-fsm
 django-fsm-log
 pyjwt
+django-recaptcha
 
 # Documentation
 # sphinx

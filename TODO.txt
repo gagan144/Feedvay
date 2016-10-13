@@ -9,12 +9,11 @@
     - Communication module (pigeon/Owlery)
         - SMS
         - Email
-    - Captcha (POC Done)
     - New Feature Promotion
+    - API JSON Response class
 
 - Accounts
     - Delete expired token cron
-    - Resend OTP: verification page
 
 - Geography
     - Country tel code

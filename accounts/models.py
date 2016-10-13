@@ -26,10 +26,11 @@ class RegisteredUser(models.Model):
           other business related functionality are done using this model.
         - Detailed personal information are not kept in this model. It only contains basic information only such as name, email id.
         - Registration methods:
-            - **Website**: User can register directly on website using mobile no.
-            - **Mobile app**: User can register using mobile app.
-            - **Enterprise app**: Passive registration of the user that is automatically created as a **lead** while using enterprise app.
-              The account remains inactive until user register himself manually using any of the methods.
+            - **Website** (Only one time): User can register directly on website using mobile no.
+            - **Mobile app** (Multiple times): User can register using mobile app.
+            - **Enterprise app** (Only one time): Passive registration of the user that is automatically created as a **lead** while using enterprise app.
+              The account remains inactive until user register himself manually using any of the methods. Only one time record is created
+              and ignore in further cases.
 
             For registration flow, refer the document.
         - Registration can be multiple times. Only last registration information is kept for now.

@@ -1,9 +1,8 @@
 # Copyright (C) 2016 Feedvuy (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
-
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseForbidden
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.conf import settings
@@ -13,6 +12,7 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from accounts.forms import *
 from accounts.models import *
+from accounts.utilities import *
 
 # ---------- Registration ----------
 def registration(request):
@@ -39,62 +39,100 @@ def registration(request):
         data_reg['country_tel_code'] = country_tel_code
         form_reg = RegistrationForm(data_reg)
 
-        # TODO: Check username/ if already registered, redirect to verification
+        form_data = form_reg.cleaned_data
+        username = "{}-{}".format(country_tel_code, form_data['mobile_no'])
 
         # Validate form
         if form_reg.is_valid():
-            form_data = form_reg.cleaned_data
 
-            # Create all database entries in one atomic process
-            with transaction.atomic():
-                username = "{}-{}".format(country_tel_code, form_data['mobile_no'])
+            # Classify user and take actions accordingly
+            user_class = ClassifyRegisteredUser.classify(username)
 
-                # Create 'User' model
-                new_user = User(
-                    username = username,
-                    first_name = form_data['first_name'],
-                    last_name =  form_data['last_name'],
-                    is_active = False
-                )
-                set_user_password(new_user, form_data['password'], False) # This will save user
-
-                # Create 'RegisterUser'
-                new_registered_user = RegisteredUser.objects.create(
-                    user = new_user,
-                    reg_method = RegisteredUser.REG_WEB_PORTAL,
-                )
-
-                # Transit status from 'lead' to 'verification_pending'
-                new_registered_user.trans_registered()
-                new_registered_user.save()
+            if user_class in [ClassifyRegisteredUser.STAFF, ClassifyRegisteredUser.VERIFIED, ClassifyRegisteredUser.SUSPENDED]:
+                # Deny
+                data['username_exists'] = True
+            elif user_class == ClassifyRegisteredUser.UNVERIFIED:
+                # Bypass: Send token & redirect to verification
+                registered_user = RegisteredUser.objects.get(user__username=username)
 
                 # Create OTP token
                 user_token, is_utoken_new = UserToken.objects.update_or_create(
-                    registered_user = new_registered_user,
+                    registered_user = registered_user,
                     purpose = UserToken.PUR_OTP_VERF,
-
                     defaults = {
                         "created_on" : timezone.now()
                     }
                 )
 
-            # TODO: Send all owls
+                # TODO: Send all owls
 
-            # Generate token & redirect to verification
-            token = jwt.encode(
-                {
-                    'reg_user_id': new_registered_user.id,
-                    'user_token': user_token.id
-                },
-                settings.JWT_SECRET_KEY,
-                algorithm = settings.JWT_ALOG
-            )
-            return HttpResponseRedirect(
-                "{url}?q={token}".format(
-                    url = reverse('accounts_registration_verify'),
-                    token = token
+                # Generate token & redirect to verification
+                token = jwt.encode(
+                    {
+                        'reg_user_id': registered_user.id,
+                        'is_new': False
+                    },
+                    settings.JWT_SECRET_KEY,
+                    algorithm = settings.JWT_ALOG
                 )
-            )
+                return HttpResponseRedirect(
+                    "{url}?q={token}".format(
+                        url = reverse('accounts_registration_verify'),
+                        token = token
+                    )
+                )
+
+            elif user_class == ClassifyRegisteredUser.NEW:
+                # Allow
+                # Create all database entries in one atomic process
+                with transaction.atomic():
+                    # Create 'User' model
+                    new_user = User(
+                        username = username,
+                        first_name = form_data['first_name'],
+                        last_name = form_data['last_name'],
+                        is_active = False
+
+                    )
+                    set_user_password(new_user, form_data['password'], False) # This will save user
+
+                    # Create'RegisterUser'
+                    new_registered_user = RegisteredUser.objects.create(
+                        user = new_user,
+                        reg_method = RegisteredUser.REG_WEB_PORTAL
+                    )
+
+                    # Transit status from 'lead' to 'verification_pending'
+                    if new_registered_user.status == RegisteredUser.ST_LEAD:
+                        new_registered_user.trans_registered()
+                        new_registered_user.save()
+
+                    # Create OTP token
+                    user_token, is_utoken_new = UserToken.objects.update_or_create(
+                        registered_user = new_registered_user,
+                        purpose = UserToken.PUR_OTP_VERF,
+                        defaults = {
+                            "created_on" : timezone.now()
+                        }
+                    )
+
+                # TODO: Send all owls
+
+                # Generate token & redirect to verification
+                token = jwt.encode(
+                    {
+                        'reg_user_id': new_registered_user.id,
+                        'is_new': True
+                    },
+                    settings.JWT_SECRET_KEY,
+                    algorithm = settings.JWT_ALOG
+                )
+                return HttpResponseRedirect(
+                    "{url}?q={token}".format(
+                        url = reverse('accounts_registration_verify'),
+                        token = token
+                    )
+                )
 
 
     data['form_reg'] = form_reg
@@ -121,26 +159,27 @@ def registration_verify(request):
     **Authors**: Gagandeep Singh
     """
 
-    jwtoken = request.POST['q'] if request.method.lower() == 'post' else request.GET['q']
+    jwtoken = request.POST['token'] if request.method.lower() == 'post' else request.GET['q']
 
     # Decode token
     data_jwtoken = jwt.decode(jwtoken, settings.JWT_SECRET_KEY)
     new_registered_user = RegisteredUser.objects.get(id=data_jwtoken['reg_user_id'])
 
-    # Check expiry
-    if (timezone.now() - new_registered_user.last_reg_date).total_seconds() >= settings.VERIFICATION_EXPIRY:
-        raise Http404("Link expired! Please register again.")
+    now = timezone.now()
+    try:
+        user_token = UserToken.objects.get(registered_user=new_registered_user, purpose=UserToken.PUR_OTP_VERF, expire_on__gt=now)
 
-    data = {
-        'token': jwtoken,
-        'new_registered_user': new_registered_user
-    }
-    if request.method.lower() == 'post':
-        entered_otp = request.POST['otp']
+        # Check expiry
+        if (timezone.now() - user_token.created_on).total_seconds() >= settings.VERIFICATION_EXPIRY:
+            raise Http404("Invalid or expired link! Sign in or sign up again to re-initiate activation.")
 
-        now = timezone.now()
-        try:
-            user_token = UserToken.objects.get(registered_user=new_registered_user, purpose=UserToken.PUR_OTP_VERF, expire_on__lt=now)
+        data = {
+            'token': jwtoken,
+            'new_registered_user': new_registered_user
+        }
+
+        if request.method.lower() == 'post':
+            entered_otp = request.POST['otp']
 
             # Verify otp value
             if entered_otp == user_token.value:
@@ -158,21 +197,20 @@ def registration_verify(request):
                     user_token.delete()
 
                     # Login User
-                    user = user
+                    # user = user
                     backend = auth.get_backends()[0]
                     user.backend = '%s.%s' % (backend.__module__, backend.__class__.__name__)
                     auth.login(request,user)
 
-                    # Redirect to root page
-                    return HttpResponseRedirect(reverse('home_user')+"?welcome=true")
+                # Redirect to root page
+                return HttpResponseRedirect(reverse('home')+"?welcome=true")
 
             else:
                 data['status'] = 'failed'
                 data['message'] = 'OTP verification failed.'
-        except UserToken.DoesNotExist:
-            data['status'] = 'failed'
-            data['message'] = 'OTP verification failed.'
 
+        return render(request, 'accounts/registration_verify.html', data)
 
-    return render(request, 'accounts/registration_verify.html', data)
+    except UserToken.DoesNotExist:
+        raise Http404("Invalid or expired link! Sign in or sign up again to re-initiate activation.")
 # ---------- /Registration ----------

@@ -13,7 +13,12 @@ from utilities.decorators import staff_user_only
 
 
 def home(request):
-    data = {}
+    """
+    View for main site page.
+    """
+    data = {
+        "welcome": request.GET.get('welcome',False)
+    }
     return render(request, 'home.html', data)
 
 

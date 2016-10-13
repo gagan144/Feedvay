@@ -169,6 +169,7 @@ mimetypes.add_type("image/svg+xml", ".svgz", True)
 
 # General project settings
 LOGIN_URL_STAFF = '/admin/login/'
+REGISTRATION_OPEN = True
 
 # Documentation
 DOCS_PATH = os.path.join(BASE_DIR, "docs/build/html")

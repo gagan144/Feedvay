@@ -9,6 +9,11 @@ from django.contrib.auth.models import User
 from accounts.models import *
 
 class RegisteredUserInline(admin.StackedInline):
+    """
+    Admin inline for displaying 'RegistrationUser' details.
+
+    **Authors**: Gagandeep Singh
+    """
     model = RegisteredUser
     verbose_name = 'Registration details'
     can_delete = False
@@ -23,6 +28,8 @@ class UserProxyForRegUser(User):
     """
     This is a proxy model of :class:`django.contrib.auth.models.User` model to override its behavior for registered user.
     This does not include any users that are not registered (i.e. Staff user etc).
+
+    **Authors**: Gagandeep Singh
     """
     class Meta:
         verbose_name = 'Registered User'
@@ -32,6 +39,8 @@ class UserProxyForRegUser(User):
 class RegisteredUserProxyAdmin(admin.ModelAdmin):
     """
     Django admin for 'RegisteredUser'.
+
+    **Authors**: Gagandeep Singh
     """
     fieldsets = (
         (None, {'fields': ('username', ('first_name', 'last_name'), 'email', 'password')}),
@@ -68,6 +77,8 @@ class UserAdminOverride(auth_admin.UserAdmin):
         - NOT a registered users
         - staff user
         - superuser
+
+    **Authors**: Gagandeep Singh
     """
     def get_queryset(self, request):
         qs = super(UserAdminOverride, self).get_queryset(request)

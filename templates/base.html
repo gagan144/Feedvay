@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="http://cdn.jsdelivr.net/jquery.validation/1.15.0/jquery.validate.min.js"></script>
+
+    <style>
+        .error{
+            color: red;
+            font-size: small;
+        }
+    </style>
+
+    {% block head %}
+    {% endblock %}
+</head>
+<body>
+    {% block content %}
+    {% endblock %}
+
+    <!-- Scripts -->
+    {% block scripts %}
+    {% endblock %}
+    <!-- /Scripts -->
+</body>
+</html>

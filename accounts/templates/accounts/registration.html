@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Registration</h1>
+    <hr/>
+
+    <form id="form_registration" action="{% url 'accounts_registration' %}" method="post" >{% csrf_token %}
+        <table>
+            <tbody>
+                <tr>
+                    <td>Mobile No:</td>
+                    <td>
+                        {{ country_tel_code }}
+                        <input type="number" name="mobile_no" value="{{ form_reg.mobile_no.value|default_if_none:"" }}" min="{{ form_reg.fields.mobile_no.min_value }}" max="{{ form_reg.fields.mobile_no.max_value }}" required>
+                        {% if form_reg.mobile_no.errors %}
+                            <div class="error">
+                                {% for err in form_reg.mobile_no.errors %}
+                                    * {{ err }} <br/>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Name:
+                    </td>
+                    <td>
+                        <input type="text" name="first_name" value="{{ form_reg.first_name.value|default_if_none:"" }}" placeholder="First name" required>
+                        <input type="text" name="middle_name" value="{{ form_reg.middle_name.value|default_if_none:"" }}" placeholder="Middle name">
+                        <input type="text" name="last_name" value="{{ form_reg.last_name.value|default_if_none:"" }}" placeholder="Last name" required>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Password:</td>
+                    <td>
+                        <input type="password" name="password" required>
+                        {% if form_reg.password.errors %}
+                            <div class="error">
+                                {% for err in form_reg.password.errors %}
+                                    * {{ err }} <br/>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Confirm password:</td>
+                    <td>
+                        <input type="password" name="confirm_password" required>
+                        {% if form_reg.confirm_password.errors %}
+                            <div class="error">
+                                {% for err in form_reg.confirm_password.errors %}
+                                    * {{ err }} <br/>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>
+                        <input type="checkbox" name="terms_n_conditions" required>
+                        I agree to terms and conditions.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button type="submit">Register</button>
+    </form>
+{% endblock %}

@@ -20,8 +20,7 @@ class RegisteredUserInline(admin.StackedInline):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = [field.name for field in obj.registereduser.__class__._meta.fields]
-        self.readonly_fields = readonly_fields
-        return self.readonly_fields
+        return readonly_fields
 
 # ----- User proxy model for registered user ------
 class UserProxyForRegUser(User):
@@ -58,6 +57,7 @@ class RegisteredUserProxyAdmin(admin.ModelAdmin):
     filter_horizontal = ('groups', 'user_permissions',)
     readonly_fields = ('username', 'password', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser', 'last_login', 'date_joined')
     inlines = [RegisteredUserInline]
+    list_per_page = 20
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = self.readonly_fields
@@ -88,11 +88,11 @@ class UserTokenAdmin(admin.ModelAdmin):
     list_display = ('registered_user', 'purpose', 'expire_on', 'created_on')
     list_filter = ('purpose', 'expire_on', 'created_on')
     search_fields = ('registered_user__user__username', )
+    list_per_page = 20
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = [field.name for field in obj.__class__._meta.fields]
-        self.readonly_fields = readonly_fields
-        return self.readonly_fields
+        return readonly_fields
 
     def has_add_permission(self, request):
         return False

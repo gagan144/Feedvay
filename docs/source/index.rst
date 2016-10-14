@@ -12,6 +12,7 @@ Apps and modules
    modules/main/index
    modules/accounts/index
    modules/watchdog/index
+   modules/owlery/index
    modules/utilities/index
 
 

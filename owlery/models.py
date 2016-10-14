@@ -13,15 +13,11 @@ import re
 def validate_sms_no(value):
     """
     Validator to check validity of a mobile number to which sms is to be send.
-    Criteria: +<code: 1-4 digit><10-difit mobile number>
 
-    Parameters
-    ----------
-    value: Mobile number
+    Criteria: +<code: 1-4 digit><10-digit mobile number>
 
-    Returns
-    -------
-    None if valid else raises ValidationError.
+    :param value: Mobile number
+    :return: None if valid else raises ValidationError.
 
     **Authors**: Gagandeep Singh
     """
@@ -86,6 +82,9 @@ class Sms(models.Model):
 
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this SMS was created. This is NOT send date.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was updated.')
+
+    class Meta:
+        ordering = ('-created_on', )
 
     def __unicode__(self):
         return "{}".format(self.pk)

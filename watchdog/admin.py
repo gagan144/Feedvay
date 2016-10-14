@@ -43,8 +43,7 @@ class ErrorLogAdmin(admin.ModelAdmin):
         else:
             readonly_fields.remove('is_resolved')
 
-        self.readonly_fields = readonly_fields
-        return self.readonly_fields
+        return readonly_fields
 
     def has_add_permission(self, request):
         return False
@@ -92,12 +91,12 @@ class SuggestionAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if obj:
             readonly_fields = [field.name for field in obj.__class__._meta.fields if field.editable==False]
-
             if obj.parent_id is not None:
                 readonly_fields.append('status')
                 readonly_fields.append('remarks')
-            self.readonly_fields = readonly_fields
-        return self.readonly_fields
+        else:
+            readonly_fields = self.readonly_fields
+        return readonly_fields
 
     def has_add_permission(self, request):
         return False
@@ -138,12 +137,12 @@ class ReportedProblemAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if obj:
             readonly_fields = [field.name for field in obj.__class__._meta.fields if field.editable==False]
-
             if obj.parent_id is not None:
                 readonly_fields.append('status')
                 readonly_fields.append('remarks')
-            self.readonly_fields = readonly_fields
-        return self.readonly_fields
+        else:
+            readonly_fields = self.readonly_fields
+        return readonly_fields
 
     def has_add_permission(self, request):
         return False

@@ -1,7 +1,0 @@
-Urls
-====
-
-Main app views to handle request.
-
-.. automodule:: feedvuy.urls
-    :members:

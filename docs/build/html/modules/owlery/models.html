@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Decorators &mdash; feedvuy 1.0 documentation</title>
+  <title>Models &mdash; feedvuy 1.0 documentation</title>
   
 
   
@@ -34,8 +34,9 @@
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="feedvuy 1.0 documentation" href="../../index.html"/>
-        <link rel="up" title="Utilities" href="index.html"/>
-        <link rel="prev" title="Utilities" href="index.html"/> 
+        <link rel="up" title="Owlery" href="index.html"/>
+        <link rel="next" title="Utilities" href="../utilities/index.html"/>
+        <link rel="prev" title="Owlery" href="index.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -88,14 +89,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../main/index.html">Main App</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../accounts/index.html">Accounts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../watchdog/index.html">Watchdog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../owlery/index.html">Owlery</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Utilities</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Owlery</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Decorators</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Models</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities/index.html">Utilities</a></li>
 </ul>
 
             
@@ -126,13 +127,13 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../../index.html">Docs</a> &raquo;</li>
       
-          <li><a href="index.html">Utilities</a> &raquo;</li>
+          <li><a href="index.html">Owlery</a> &raquo;</li>
       
-    <li>Decorators</li>
+    <li>Models</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../_sources/modules/utilities/decorators.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/modules/owlery/models.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -142,14 +143,48 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="decorators">
-<h1>Decorators<a class="headerlink" href="#decorators" title="Permalink to this headline">¶</a></h1>
-<p>General usage decorators.</p>
-<span class="target" id="module-utilities.decorators"></span><dl class="function">
-<dt id="utilities.decorators.staff_user_only">
-<code class="descclassname">utilities.decorators.</code><code class="descname">staff_user_only</code><span class="sig-paren">(</span><em>function</em>, <em>login_url='/admin/login/'</em>, <em>redirect_field_name='next'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/utilities/decorators.html#staff_user_only"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utilities.decorators.staff_user_only" title="Permalink to this definition">¶</a></dt>
-<dd><p>Django view decorator to only allow logged in &#8216;staff&#8217; or &#8216;superuser&#8217; users only.
-If user is not logged in, it redirects to login page, otherwise returns 404.</p>
+  <div class="section" id="models">
+<h1>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h1>
+<p>List of database models (MySQL &amp; MongoDb) for owlery app.</p>
+<span class="target" id="module-owlery.models"></span><dl class="class">
+<dt id="owlery.models.Sms">
+<em class="property">class </em><code class="descclassname">owlery.models.</code><code class="descname">Sms</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/models.html#Sms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.models.Sms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to store all SMS send to the users. This model act as a buffer/queue which is picked up
+by an independent process executing periodically at specific time interval. This is process reads
+unsent SMS from this model in a batch and dispatch them for sending. The result is then updated
+accordingly.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="owlery.models.Sms.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/models.html#Sms.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.models.Sms.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="owlery.models.Sms.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/models.html#Sms.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.models.Sms.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="owlery.models.validate_sms_no">
+<code class="descclassname">owlery.models.</code><code class="descname">validate_sms_no</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/models.html#validate_sms_no"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.models.validate_sms_no" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validator to check validity of a mobile number to which sms is to be send.</p>
+<p>Criteria: +&lt;code: 1-4 digit&gt;&lt;10-digit mobile number&gt;</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> &#8211; Mobile number</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None if valid else raises ValidationError.</td>
+</tr>
+</tbody>
+</table>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
@@ -162,8 +197,10 @@ If user is not logged in, it redirects to login page, otherwise returns 404.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="../utilities/index.html" class="btn btn-neutral float-right" title="Utilities" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="index.html" class="btn btn-neutral" title="Utilities" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="index.html" class="btn btn-neutral" title="Owlery" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

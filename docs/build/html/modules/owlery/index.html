@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Urls &mdash; feedvuy 1.0 documentation</title>
+  <title>Owlery &mdash; feedvuy 1.0 documentation</title>
   
 
   
@@ -34,9 +34,8 @@
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="feedvuy 1.0 documentation" href="../../index.html"/>
-        <link rel="up" title="Main App" href="index.html"/>
-        <link rel="next" title="Views" href="views.html"/>
-        <link rel="prev" title="Main App" href="index.html"/> 
+        <link rel="next" title="Models" href="models.html"/>
+        <link rel="prev" title="Middleware" href="../watchdog/middleware.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -86,15 +85,16 @@
             
             
                 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Main App</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Urls</a></li>
-<li class="toctree-l3"><a class="reference internal" href="views.html">Views</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../main/index.html">Main App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../accounts/index.html">Accounts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../watchdog/index.html">Watchdog</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Owlery</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#contents">Contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="models.html">Models</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../utilities/index.html">Utilities</a></li>
 </ul>
 
@@ -126,13 +126,11 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../../index.html">Docs</a> &raquo;</li>
       
-          <li><a href="index.html">Main App</a> &raquo;</li>
-      
-    <li>Urls</li>
+    <li>Owlery</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../_sources/modules/main/urls.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/modules/owlery/index.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -142,36 +140,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="urls">
-<h1>Urls<a class="headerlink" href="#urls" title="Permalink to this headline">¶</a></h1>
-<p>Main app views to handle request.</p>
-<span class="target" id="module-feedvuy.urls"></span><p>feedvuy URL Configuration</p>
-<dl class="docutils">
-<dt>The <cite>urlpatterns</cite> list routes URLs to views. For more information please see:</dt>
-<dd><a class="reference external" href="https://docs.djangoproject.com/en/1.10/topics/http/urls/">https://docs.djangoproject.com/en/1.10/topics/http/urls/</a></dd>
-</dl>
-<p>Examples:
-Function views</p>
+  <div class="section" id="owlery">
+<h1>Owlery<a class="headerlink" href="#owlery" title="Permalink to this headline">¶</a></h1>
+<p>Owlery inspired from famous &#8216;Harry Potter&#8217; series is an app responsible for delivering messages to the user.
+As depicted in the series, owlery is a place where all the school owls and the owls belonging to students
+are kept. Anyone who wishes to send a message must handover it over to intended owl which then delivers the
+message to the receiver.</p>
+<p>This app follows the same concept. For each delivery mechanism (SMS/Email) an owl is kept with predefined templates.
+Any process/routine that wants to send a message must handover the message to the corresponding owl using template,
+which then handles all delivery challenges. All log are maintained in the database for future reference.</p>
+<div class="section" id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><ol class="arabic simple">
-<li>Add an import:  from my_app import views</li>
-<li>Add a URL to urlpatterns:  url(r&#8217;^$&#8217;, views.home, name=&#8217;home&#8217;)</li>
-</ol>
+<div><div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
+</ul>
+</div>
 </div></blockquote>
-<dl class="docutils">
-<dt>Class-based views</dt>
-<dd><ol class="first last arabic simple">
-<li>Add an import:  from other_app.views import Home</li>
-<li>Add a URL to urlpatterns:  url(r&#8217;^$&#8217;, Home.as_view(), name=&#8217;home&#8217;)</li>
-</ol>
-</dd>
-<dt>Including another URLconf</dt>
-<dd><ol class="first last arabic simple">
-<li>Import the include() function: from django.conf.urls import url, include</li>
-<li>Add a URL to urlpatterns:  url(r&#8217;^blog/&#8217;, include(&#8216;blog.urls&#8217;))</li>
-</ol>
-</dd>
-</dl>
+</div>
 </div>
 
 
@@ -181,10 +168,10 @@ Function views</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="views.html" class="btn btn-neutral float-right" title="Views" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="models.html" class="btn btn-neutral float-right" title="Models" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Main App" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../watchdog/middleware.html" class="btn btn-neutral" title="Middleware" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

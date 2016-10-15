@@ -150,6 +150,7 @@
 <span class="kn">from</span> <span class="nn">accounts.forms</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">accounts.models</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">accounts.utilities</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">owlery</span> <span class="k">import</span> <span class="n">owls</span>
 
 <span class="c1"># ----- Login ----</span>
 <div class="viewcode-block" id="login"><a class="viewcode-back" href="../../modules/accounts/views.html#accounts.views.login">[docs]</a><span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
@@ -275,7 +276,7 @@
                         <span class="p">}</span>
                     <span class="p">)</span>
 
-                <span class="c1"># TODO: Send all owls</span>
+                <span class="n">owls</span><span class="o">.</span><span class="n">SmsOwl</span><span class="o">.</span><span class="n">send_reg_verification</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">user_token</span><span class="p">,</span> <span class="n">registered_user</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
 
                 <span class="c1"># Generate token &amp; redirect to verification</span>
                 <span class="n">token</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
@@ -327,7 +328,7 @@
                         <span class="p">}</span>
                     <span class="p">)</span>
 
-                <span class="c1"># TODO: Send all owls</span>
+                <span class="n">owls</span><span class="o">.</span><span class="n">SmsOwl</span><span class="o">.</span><span class="n">send_reg_verification</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">user_token</span><span class="p">,</span> <span class="n">new_user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
 
                 <span class="c1"># Generate token &amp; redirect to verification</span>
                 <span class="n">token</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
@@ -456,7 +457,7 @@
                 <span class="p">}</span>
             <span class="p">)</span>
 
-            <span class="c1"># TODO: send SMS owl</span>
+            <span class="n">owls</span><span class="o">.</span><span class="n">SmsOwl</span><span class="o">.</span><span class="n">send_reg_verification</span><span class="p">(</span><span class="n">reg_user</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">user_token</span><span class="p">,</span> <span class="n">reg_user</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span><span class="s2">&quot;success&quot;</span><span class="p">}),</span> <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
 

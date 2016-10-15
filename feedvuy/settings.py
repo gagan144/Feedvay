@@ -198,6 +198,6 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'gagandeep.taurus91@gmail.com'
-EMAIL_HOST_PASSWORD = open('email_pass.txt').read()
+EMAIL_HOST_PASSWORD = open( os.path.join(BASE_DIR,'email_pass.txt')).read()
 
 SMS_HOST_NUMBER = '+91999999'

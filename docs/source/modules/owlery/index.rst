@@ -19,4 +19,5 @@ Contents
        :titlesonly:
 
        models
+       owls
 

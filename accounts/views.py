@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 from accounts.forms import *
 from accounts.models import *
 from accounts.utilities import *
+from owlery import owls
 
 # ----- Login ----
 def login(request):
@@ -139,7 +140,7 @@ def registration(request):
                         }
                     )
 
-                # TODO: Send all owls
+                owls.SmsOwl.send_reg_verification(username, user_token, registered_user.user.username)
 
                 # Generate token & redirect to verification
                 token = jwt.encode(
@@ -191,7 +192,7 @@ def registration(request):
                         }
                     )
 
-                # TODO: Send all owls
+                owls.SmsOwl.send_reg_verification(username, user_token, new_user.username)
 
                 # Generate token & redirect to verification
                 token = jwt.encode(
@@ -320,7 +321,7 @@ def registration_resend_otp(request):
                 }
             )
 
-            # TODO: send SMS owl
+            owls.SmsOwl.send_reg_verification(reg_user.user.username, user_token, reg_user.user.username)
 
             return HttpResponse(json.dumps({"status":"success"}), content_type='application/json')
 

@@ -107,6 +107,11 @@ class SmsMessage(models.Model):
         **Authors**: Gagandeep Singh
         """
 
+        # Validate mobile numbers; Validators are not called on save()
+        validate_sms_no(self.mobile_no)
+        if self.sender:
+            validate_sms_no(self.sender)
+
         # Check status
         if self.status == SmsMessage.ST_SEND:
             if self.send_on is None:

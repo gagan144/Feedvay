@@ -1,0 +1,1 @@
+Code is {{otp}} for verification at Feevuy.com. Valid till {{expire_time}}. Do not share this with anyone for security reasons.

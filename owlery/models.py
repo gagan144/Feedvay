@@ -24,10 +24,7 @@ def validate_sms_no(value):
     """
 
     if re.match('^\+\d{1,4}\d{10}$', value) is None:
-        raise ValidationError(
-            _('%(value) is not an valid mobile number.'),
-            params={'value': value},
-        )
+        raise ValidationError('{} is not an valid mobile number.'.format(value))
 # ---------- /Validators ----------
 
 class SmsMessage(models.Model):

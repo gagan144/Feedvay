@@ -7,9 +7,7 @@
         - User Roles
         - Default Group for public user
         - Expired token remover command
-    - Owlery
-        - Owls
-        - SMS mobile no validator no working
+
     - New Feature Promotion
     - API JSON Response class
 

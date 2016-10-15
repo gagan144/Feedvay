@@ -165,7 +165,7 @@
         <span class="p">)</span></div>
 <span class="c1"># ---------- /Validators ----------</span>
 
-<div class="viewcode-block" id="Sms"><a class="viewcode-back" href="../../modules/owlery/models.html#owlery.models.Sms">[docs]</a><span class="k">class</span> <span class="nc">Sms</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<div class="viewcode-block" id="SmsMessage"><a class="viewcode-back" href="../../modules/owlery/models.html#owlery.models.SmsMessage">[docs]</a><span class="k">class</span> <span class="nc">SmsMessage</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Model to store all SMS send to the users. This model act as a buffer/queue which is picked up</span>
 <span class="sd">    by an independent process executing periodically at specific time interval. This is process reads</span>
@@ -210,10 +210,11 @@
     <span class="n">mobile_no</span>   <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">validate_sms_no</span><span class="p">],</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Receiver&#39;s mobile number of E.164 format: +&lt;code: 1-4 digits&gt;&lt;10-digit mobile no&gt; i.e +919999999999.&quot;</span><span class="p">)</span>
     <span class="n">message</span>     <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;SMS text message.&#39;</span><span class="p">)</span>
 
-    <span class="nb">type</span>        <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">CH_TYPE</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Type of this SMS.&#39;</span><span class="p">)</span>
+    <span class="nb">type</span>        <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">CH_TYPE</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Type of this SMS.&#39;</span><span class="p">)</span>
     <span class="n">priority</span>    <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">CH_PRIORITY</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">PR_NORMAL</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Priority of this SMS.&#39;</span><span class="p">)</span>
 
     <span class="n">status</span>      <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">CH_STATUS</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">ST_NEW</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Message status.&#39;</span><span class="p">)</span>
+    <span class="n">sender</span>      <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">validate_sms_no</span><span class="p">],</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Sender&#39;s mobile number of E.164 format. This is configured &amp; fixed mobile no of the business.&quot;</span><span class="p">)</span>
     <span class="n">send_on</span>     <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Date on which this SMS was successfully send.&#39;</span><span class="p">)</span>
 
     <span class="n">created_on</span>  <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Date on which this SMS was created. This is NOT send date.&#39;</span><span class="p">)</span>
@@ -226,12 +227,18 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">mark_send</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">Sms</span><span class="o">.</span><span class="n">ST_SEND</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">send_on</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<div class="viewcode-block" id="SmsMessage.mark_send"><a class="viewcode-back" href="../../modules/owlery/models.html#owlery.models.SmsMessage.mark_send">[docs]</a>    <span class="k">def</span> <span class="nf">mark_send</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to mark SMS as send. Required values are automatically filled.</span>
 
-<div class="viewcode-block" id="Sms.clean"><a class="viewcode-back" href="../../modules/owlery/models.html#owlery.models.Sms.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="sd">        **Authors**: Gagandeep Singh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">SmsMessage</span><span class="o">.</span><span class="n">ST_SEND</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_on</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="c1"># self.sender = #TODO: Add sender</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SmsMessage.clean"><a class="viewcode-back" href="../../modules/owlery/models.html#owlery.models.SmsMessage.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method to clean &amp; validate data fields.</span>
 
@@ -239,8 +246,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Check status</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">Sms</span><span class="o">.</span><span class="n">ST_SEND</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_on</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s1">&#39;Please provide send date for this SMS.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">SmsMessage</span><span class="o">.</span><span class="n">ST_SEND</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_on</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s1">&#39;Please provide send date for this SMS.&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sender</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Please provide sender&#39;s mobile number.&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span>
             <span class="c1"># Update modified date</span>
@@ -248,7 +258,7 @@
 
         <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Sms.save"><a class="viewcode-back" href="../../modules/owlery/models.html#owlery.models.Sms.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="SmsMessage.save"><a class="viewcode-back" href="../../modules/owlery/models.html#owlery.models.SmsMessage.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pre-save method for this model.</span>
 
@@ -259,6 +269,107 @@
         <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 
 
+<div class="viewcode-block" id="EmailMessage"><a class="viewcode-back" href="../../modules/owlery/models.html#owlery.models.EmailMessage">[docs]</a><span class="k">class</span> <span class="nc">EmailMessage</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model to store all emails send to the users. This model acts like a buffer/queue which is picked</span>
+<span class="sd">    up by an independent process that sends emails and update its status.</span>
+
+<span class="sd">    **Authors**: Gagandeep Singh</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># --- enums ---</span>
+    <span class="n">ST_NEW</span> <span class="o">=</span> <span class="s1">&#39;new&#39;</span>
+    <span class="n">ST_SEND</span> <span class="o">=</span> <span class="s1">&#39;send&#39;</span>
+    <span class="n">ST_FAILED</span> <span class="o">=</span> <span class="s1">&#39;failed&#39;</span>
+    <span class="n">CH_STATUS</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">ST_NEW</span><span class="p">,</span> <span class="s1">&#39;New&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">ST_SEND</span><span class="p">,</span> <span class="s1">&#39;Send&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">ST_FAILED</span><span class="p">,</span> <span class="s1">&#39;Failed&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">TYPE_REG_VERIF</span> <span class="o">=</span> <span class="s1">&#39;reg_verification&#39;</span>
+    <span class="n">TYPE_REG_RESULT</span> <span class="o">=</span> <span class="s1">&#39;reg_result&#39;</span>  <span class="c1"># Result can by anything; success, failure, info etc</span>
+    <span class="n">TYPE_PROMOTION</span> <span class="o">=</span> <span class="s1">&#39;promotion&#39;</span>
+    <span class="n">CH_TYPE</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">TYPE_REG_VERIF</span><span class="p">,</span> <span class="s1">&#39;Registration Verification&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">TYPE_REG_RESULT</span><span class="p">,</span> <span class="s1">&#39;Registration Result&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">TYPE_PROMOTION</span><span class="p">,</span> <span class="s1">&#39;Promotion&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">PR_LOW</span> <span class="o">=</span> <span class="s1">&#39;low&#39;</span>
+    <span class="n">PR_NORMAL</span> <span class="o">=</span> <span class="s1">&#39;normal&#39;</span>
+    <span class="n">PR_HIGH</span> <span class="o">=</span> <span class="s1">&#39;high&#39;</span>
+    <span class="n">PR_URGENT</span> <span class="o">=</span> <span class="s1">&#39;urgent&#39;</span>    <span class="c1"># Will be send immediately</span>
+    <span class="n">CH_PRIORITY</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">PR_LOW</span><span class="p">,</span> <span class="s1">&#39;Low&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">PR_NORMAL</span><span class="p">,</span> <span class="s1">&#39;Normal&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">PR_HIGH</span><span class="p">,</span> <span class="s1">&#39;High&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">PR_URGENT</span><span class="p">,</span> <span class="s1">&#39;Urgent&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># --- Fields ---</span>
+    <span class="n">username</span>    <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;User to whom this message is send. (Leave blank is not unknown)&#39;</span><span class="p">)</span>
+    <span class="n">email_id</span>    <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">EmailField</span><span class="p">(</span><span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Receiver&#39;s email address.&quot;</span><span class="p">)</span>
+
+    <span class="n">subject</span>     <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Mail Subject.&#39;</span><span class="p">)</span>
+    <span class="n">message</span>     <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Message body (HTML/ non HTML).&#39;</span><span class="p">)</span>
+
+    <span class="nb">type</span>        <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">CH_TYPE</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Type of this email.&#39;</span><span class="p">)</span>
+    <span class="n">priority</span>    <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">CH_PRIORITY</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">PR_NORMAL</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Priority of this email.&#39;</span><span class="p">)</span>
+
+    <span class="n">status</span>      <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">CH_STATUS</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">ST_NEW</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Message status.&#39;</span><span class="p">)</span>
+    <span class="n">sender</span>      <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">EmailField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Sender&#39;s email address. This is usually configured &amp; fixed email address of the business.&quot;</span><span class="p">)</span>
+    <span class="n">send_on</span>     <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Date on which this email was successfully send.&#39;</span><span class="p">)</span>
+
+    <span class="n">created_on</span>  <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Date on which this email was created. This is NOT send date.&#39;</span><span class="p">)</span>
+    <span class="n">modified_on</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Date on which this record was updated.&#39;</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;-created_on&#39;</span><span class="p">,</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EmailMessage.mark_send"><a class="viewcode-back" href="../../modules/owlery/models.html#owlery.models.EmailMessage.mark_send">[docs]</a>    <span class="k">def</span> <span class="nf">mark_send</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to mark email as send. Required values are automatically filled.</span>
+
+<span class="sd">        **Authors**: Gagandeep Singh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">SmsMessage</span><span class="o">.</span><span class="n">ST_SEND</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_on</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="c1"># self.sender = #TODO: Add sender</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EmailMessage.clean"><a class="viewcode-back" href="../../modules/owlery/models.html#owlery.models.EmailMessage.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to clean &amp; validate data fields.</span>
+
+<span class="sd">        **Authors**: Gagandeep Singh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check status</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">SmsMessage</span><span class="o">.</span><span class="n">ST_SEND</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_on</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s1">&#39;Please provide send date for this email.&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sender</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Please provide sender&#39;s email address.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span>
+            <span class="c1"># Update modified date</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">modified_on</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EmailMessage.save"><a class="viewcode-back" href="../../modules/owlery/models.html#owlery.models.EmailMessage.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pre-save method for this model.</span>
+
+<span class="sd">        **Authors**: Gagandeep Singh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

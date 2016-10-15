@@ -7,9 +7,8 @@
         - User Roles
         - Default Group for public user
         - Expired token remover command
-    - Communication module (pigeon/Owlery)
-        - SMS
-        - Email
+    - Owlery
+        - Owls
     - New Feature Promotion
     - API JSON Response class
 

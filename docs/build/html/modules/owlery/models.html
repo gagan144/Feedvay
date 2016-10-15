@@ -147,23 +147,59 @@
 <h1>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h1>
 <p>List of database models (MySQL &amp; MongoDb) for owlery app.</p>
 <span class="target" id="module-owlery.models"></span><dl class="class">
-<dt id="owlery.models.Sms">
-<em class="property">class </em><code class="descclassname">owlery.models.</code><code class="descname">Sms</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/models.html#Sms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.models.Sms" title="Permalink to this definition">¶</a></dt>
+<dt id="owlery.models.EmailMessage">
+<em class="property">class </em><code class="descclassname">owlery.models.</code><code class="descname">EmailMessage</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/models.html#EmailMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.models.EmailMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to store all emails send to the users. This model acts like a buffer/queue which is picked
+up by an independent process that sends emails and update its status.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="owlery.models.EmailMessage.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/models.html#EmailMessage.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.models.EmailMessage.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="owlery.models.EmailMessage.mark_send">
+<code class="descname">mark_send</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/models.html#EmailMessage.mark_send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.models.EmailMessage.mark_send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to mark email as send. Required values are automatically filled.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="owlery.models.EmailMessage.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/models.html#EmailMessage.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.models.EmailMessage.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="owlery.models.SmsMessage">
+<em class="property">class </em><code class="descclassname">owlery.models.</code><code class="descname">SmsMessage</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/models.html#SmsMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.models.SmsMessage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Model to store all SMS send to the users. This model act as a buffer/queue which is picked up
 by an independent process executing periodically at specific time interval. This is process reads
 unsent SMS from this model in a batch and dispatch them for sending. The result is then updated
 accordingly.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 <dl class="method">
-<dt id="owlery.models.Sms.clean">
-<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/models.html#Sms.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.models.Sms.clean" title="Permalink to this definition">¶</a></dt>
+<dt id="owlery.models.SmsMessage.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/models.html#SmsMessage.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.models.SmsMessage.clean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to clean &amp; validate data fields.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="owlery.models.Sms.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/models.html#Sms.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.models.Sms.save" title="Permalink to this definition">¶</a></dt>
+<dt id="owlery.models.SmsMessage.mark_send">
+<code class="descname">mark_send</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/models.html#SmsMessage.mark_send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.models.SmsMessage.mark_send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to mark SMS as send. Required values are automatically filled.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="owlery.models.SmsMessage.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/models.html#SmsMessage.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.models.SmsMessage.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pre-save method for this model.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>

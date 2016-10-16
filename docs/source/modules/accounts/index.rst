@@ -11,6 +11,7 @@ Modules
        :maxdepth: 2
        :titlesonly:
 
+       mod_registration.rst
        mod_sessions.rst
 
 Contents

@@ -11,7 +11,10 @@ import random
 import string
 
 from django.conf import settings
+from importlib import import_module
 from django.contrib.auth.models import User
+from django.contrib.sessions.models import Session
+from django.contrib.auth.signals import user_logged_in, user_logged_out
 
 class RegisteredUser(models.Model):
     """
@@ -185,9 +188,69 @@ class UserToken(models.Model):
         return ''.join(random.sample(charset,6))
 
 
+# ---------- User Sessions ----------
+class UserSession(models.Model):
+    """
+    Model to link user to its session. Currently, django does not provide direct linking of
+    user to its sessions. On login, a session is created and send session_id to the browser
+    in the cookie, which is received back in the request from where server resolve session.
+    So, there is no way to find all sessions of a user.
+
+    This model keeps a track of session and its user. Whenever a user logs in, django fires
+    a 'logged in' signal which is captured and an entry is made with user and session key.
+
+    .. note:
+        There can be multiple sessions for a user.
+
+    **Authors**: Gagandeep Singh
+    """
+
+    user        = models.ForeignKey(User, db_index=True, help_text='Reference to the user.')
+    session_id  = models.CharField(max_length=40, db_index=True, help_text='Session id (key). This is not a foriegn key since session model can be shifted to different database.')
+
+    @property
+    def session(self):
+        return Session.objects.get(session_key=self.session_id)
+
+    def __unicode__(self):
+        return self.session_id
+
+# --- User signal handlers ---
+def user_logged_in_handler(sender, request, user, **kwargs):
+    """
+    User login signal handler that creates an entry in :class:`accounts.model.UserSession` to
+    map the session to current user.
+
+    Here session has already been created, hence it can be easily accessed from ``request.session``.
+
+    **Authors**: Gagandeep Singh
+    """
+    UserSession.objects.get_or_create(
+        user = user,
+        session_id = request.session.session_key
+    )
+
+def user_logged_out_handler(sender, request, user, **kwargs):
+    """
+    User logout signal handler that deletes user-session entry from :class:`accounts.model.UserSession`.
+
+    **Authors**: Gagandeep Singh
+    """
+
+    # Get session key from request.session
+    session_key = request.session.session_key
+
+    if session_key:
+        try:
+            UserSession.objects.get(user=user, session_id=session_key).delete()
+        except:
+            pass
+
+user_logged_in.connect(user_logged_in_handler)
+user_logged_out.connect(user_logged_out_handler)
 
 
-# ----- Global Methods -----
+# ---------- Global Methods ----------
 def set_user_password(user, new_password, send_owls=True):
     """
     Method to set a user password and save it.
@@ -217,3 +280,39 @@ def set_user_password(user, new_password, send_owls=True):
     #     except:
     #         pass
 
+def force_logout_user(user_id):
+    """
+    Method to forcefully logout a user from all web login only.
+    Technically, this method finds all session references of a user from :class:`accounts.models.UserSession`.
+    and delete them from SessionStore one-by-one.
+
+    :param user_id: User object id
+    :return: Number of deleted sessions from SessionStore
+
+    **Authors**: Gagandeep Singh
+    """
+
+    # Get all UserSession
+    list_user_sessions = UserSession.objects.filter(user_id=user_id)
+
+    count = 0
+    # If there are any session
+    if len(list_user_sessions):
+        # Get SessionStore. This can be the same db or some other db (redis).
+        engine = import_module(settings.SESSION_ENGINE)
+        _SessionStore = engine.SessionStore
+
+        # loop over all user sessions
+        for user_session in list_user_sessions:
+            # Get actual session instance by creating SessionStore object using session key
+            session = _SessionStore(user_session.session_id)
+
+            # Delete session from store
+            session.delete()
+
+            count += 1
+
+        # Delete all UserSession
+        list_user_sessions.delete()
+
+    return count

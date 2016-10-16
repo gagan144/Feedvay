@@ -1,18 +1,18 @@
 - Infrastructure
     - Globalization & timezones *
     - User Management
-        - User Session
         - Forget password
         - Deactivate/Reactivate account
         - User Roles
         - Default Group for public user
-        - Expired token remover command
 
     - New Feature Promotion
     - API JSON Response class
 
-- Accounts
-    - Delete expired token cron
 
 - Geography
     - Country tel code
+
+- Crons
+    - Delete expired token cron
+    - Delete orphan sessions & UserSessions

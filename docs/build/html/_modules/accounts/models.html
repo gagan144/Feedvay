@@ -147,7 +147,10 @@
 <span class="kn">import</span> <span class="nn">string</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">import_module</span>
 <span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="k">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">django.contrib.sessions.models</span> <span class="k">import</span> <span class="n">Session</span>
+<span class="kn">from</span> <span class="nn">django.contrib.auth.signals</span> <span class="k">import</span> <span class="n">user_logged_in</span><span class="p">,</span> <span class="n">user_logged_out</span>
 
 <div class="viewcode-block" id="RegisteredUser"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.RegisteredUser">[docs]</a><span class="k">class</span> <span class="nc">RegisteredUser</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -321,9 +324,69 @@
         <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">charset</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span></div>
 
 
+<span class="c1"># ---------- User Sessions ----------</span>
+<div class="viewcode-block" id="UserSession"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.UserSession">[docs]</a><span class="k">class</span> <span class="nc">UserSession</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model to link user to its session. Currently, django does not provide direct linking of</span>
+<span class="sd">    user to its sessions. On login, a session is created and send session_id to the browser</span>
+<span class="sd">    in the cookie, which is received back in the request from where server resolve session.</span>
+<span class="sd">    So, there is no way to find all sessions of a user.</span>
+
+<span class="sd">    This model keeps a track of session and its user. Whenever a user logs in, django fires</span>
+<span class="sd">    a &#39;logged in&#39; signal which is captured and an entry is made with user and session key.</span>
+
+<span class="sd">    .. note:</span>
+<span class="sd">        There can be multiple sessions for a user.</span>
+
+<span class="sd">    **Authors**: Gagandeep Singh</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">user</span>        <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Reference to the user.&#39;</span><span class="p">)</span>
+    <span class="n">session_id</span>  <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Session id (key). This is not a foriegn key since session model can be shifted to different database.&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Session</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">session_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_id</span></div>
+
+<span class="c1"># --- User signal handlers ---</span>
+<div class="viewcode-block" id="user_logged_in_handler"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.user_logged_in_handler">[docs]</a><span class="k">def</span> <span class="nf">user_logged_in_handler</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    User login signal handler that creates an entry in :class:`accounts.model.UserSession` to</span>
+<span class="sd">    map the session to current user.</span>
+
+<span class="sd">    Here session has already been created, hence it can be easily accessed from ``request.session``.</span>
+
+<span class="sd">    **Authors**: Gagandeep Singh</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">UserSession</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">user</span><span class="p">,</span>
+        <span class="n">session_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">session_key</span>
+    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="user_logged_out_handler"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.user_logged_out_handler">[docs]</a><span class="k">def</span> <span class="nf">user_logged_out_handler</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    User logout signal handler that deletes user-session entry from :class:`accounts.model.UserSession`.</span>
+
+<span class="sd">    **Authors**: Gagandeep Singh</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Get session key from request.session</span>
+    <span class="n">session_key</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">session_key</span>
+
+    <span class="k">if</span> <span class="n">session_key</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">UserSession</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="n">session_key</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<span class="n">user_logged_in</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user_logged_in_handler</span><span class="p">)</span>
+<span class="n">user_logged_out</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user_logged_out_handler</span><span class="p">)</span>
 
 
-<span class="c1"># ----- Global Methods -----</span>
+<span class="c1"># ---------- Global Methods ----------</span>
 <div class="viewcode-block" id="set_user_password"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.set_user_password">[docs]</a><span class="k">def</span> <span class="nf">set_user_password</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">new_password</span><span class="p">,</span> <span class="n">send_owls</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Method to set a user password and save it.</span>
@@ -353,6 +416,42 @@
     <span class="c1">#     except:</span>
     <span class="c1">#         pass</span>
 
+<div class="viewcode-block" id="force_logout_user"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.force_logout_user">[docs]</a><span class="k">def</span> <span class="nf">force_logout_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Method to forcefully logout a user from all web login only.</span>
+<span class="sd">    Technically, this method finds all session references of a user from :class:`accounts.models.UserSession`.</span>
+<span class="sd">    and delete them from SessionStore one-by-one.</span>
+
+<span class="sd">    :param user_id: User object id</span>
+<span class="sd">    :return: Number of deleted sessions from SessionStore</span>
+
+<span class="sd">    **Authors**: Gagandeep Singh</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Get all UserSession</span>
+    <span class="n">list_user_sessions</span> <span class="o">=</span> <span class="n">UserSession</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span>
+
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># If there are any session</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_user_sessions</span><span class="p">):</span>
+        <span class="c1"># Get SessionStore. This can be the same db or some other db (redis).</span>
+        <span class="n">engine</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SESSION_ENGINE</span><span class="p">)</span>
+        <span class="n">_SessionStore</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">SessionStore</span>
+
+        <span class="c1"># loop over all user sessions</span>
+        <span class="k">for</span> <span class="n">user_session</span> <span class="ow">in</span> <span class="n">list_user_sessions</span><span class="p">:</span>
+            <span class="c1"># Get actual session instance by creating SessionStore object using session key</span>
+            <span class="n">session</span> <span class="o">=</span> <span class="n">_SessionStore</span><span class="p">(</span><span class="n">user_session</span><span class="o">.</span><span class="n">session_id</span><span class="p">)</span>
+
+            <span class="c1"># Delete session from store</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Delete all UserSession</span>
+        <span class="n">list_user_sessions</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">count</span></div>
 </pre></div>
 
            </div>

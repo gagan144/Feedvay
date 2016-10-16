@@ -223,6 +223,18 @@ However, you can update this model without any intervention of &#8216;User&#8217
 </dd></dl>
 
 <dl class="class">
+<dt id="accounts.models.UserSession">
+<em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserSession</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserSession"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserSession" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to link user to its session. Currently, django does not provide direct linking of
+user to its sessions. On login, a session is created and send session_id to the browser
+in the cookie, which is received back in the request from where server resolve session.
+So, there is no way to find all sessions of a user.</p>
+<p>This model keeps a track of session and its user. Whenever a user logs in, django fires
+a &#8216;logged in&#8217; signal which is captured and an entry is made with user and session key.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
 <dt id="accounts.models.UserToken">
 <em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserToken</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserToken"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserToken" title="Permalink to this definition">¶</a></dt>
 <dd><p>Model to store tokens issued to a registered user for various purposes such as registration.</p>
@@ -259,6 +271,25 @@ However, you can update this model without any intervention of &#8216;User&#8217
 </dd></dl>
 
 <dl class="function">
+<dt id="accounts.models.force_logout_user">
+<code class="descclassname">accounts.models.</code><code class="descname">force_logout_user</code><span class="sig-paren">(</span><em>user_id</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#force_logout_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.force_logout_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to forcefully logout a user from all web login only.
+Technically, this method finds all session references of a user from <a class="reference internal" href="#accounts.models.UserSession" title="accounts.models.UserSession"><code class="xref py py-class docutils literal"><span class="pre">accounts.models.UserSession</span></code></a>.
+and delete them from SessionStore one-by-one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>user_id</strong> &#8211; User object id</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Number of deleted sessions from SessionStore</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="accounts.models.set_user_password">
 <code class="descclassname">accounts.models.</code><code class="descname">set_user_password</code><span class="sig-paren">(</span><em>user</em>, <em>new_password</em>, <em>send_owls=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#set_user_password"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.set_user_password" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to set a user password and save it.
@@ -286,6 +317,22 @@ This also sends any owls (Email or SMS) if required. Any errors are silently ign
 </pre></div>
 </div>
 </div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="accounts.models.user_logged_in_handler">
+<code class="descclassname">accounts.models.</code><code class="descname">user_logged_in_handler</code><span class="sig-paren">(</span><em>sender</em>, <em>request</em>, <em>user</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#user_logged_in_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.user_logged_in_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>User login signal handler that creates an entry in <code class="xref py py-class docutils literal"><span class="pre">accounts.model.UserSession</span></code> to
+map the session to current user.</p>
+<p>Here session has already been created, hence it can be easily accessed from <code class="docutils literal"><span class="pre">request.session</span></code>.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="accounts.models.user_logged_out_handler">
+<code class="descclassname">accounts.models.</code><code class="descname">user_logged_out_handler</code><span class="sig-paren">(</span><em>sender</em>, <em>request</em>, <em>user</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#user_logged_out_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.user_logged_out_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>User logout signal handler that deletes user-session entry from <code class="xref py py-class docutils literal"><span class="pre">accounts.model.UserSession</span></code>.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 

@@ -25,44 +25,105 @@ def login(request):
 
     **Authors**: Gagandeep Singh
     """
+    country_tel_code = '+91'    #TODO: Set default country_tel_code
     data={
         'next': request.GET.get('next',None),
-        'username': request.GET.get('username', None)
+        'username': request.GET.get('username', None),
+        'country_tel_code': country_tel_code
     }
 
     if request.POST:
-        username = request.POST['username']
+        username = request.POST['username']     # Warning: Not actual username
+        actual_username = "{}-{}".format(country_tel_code, username)    # Use this for authentication
         password = request.POST['password']
 
-        user = auth.authenticate(username=username,password=password)
-
-        # Check if user is verified
         try:
-            if not user.registereduser.is_verified:
-                return HttpResponseRedirect(reverse('accounts_resend_activation_link')+"?username="+str(user.username))
-        except:
-            pass
+            # Get 'User' instance
+            # Note: Here `auth.authenticate()` has not been called since 'inactive & verified' user is suspended user.
+            # `auth.authenticate()` returns None if user is inactive.
+            user = User.objects.get(username=actual_username)
 
-        if user:
-            if user.is_active:
-                auth.login(request,user)
+            try:
+                # Get 'RegisteredUser' instance
+                registered_user = user.registereduser
 
-                # Check for 'Remember Me'
-                if not request.POST.get('remember_me',None):
-                    # 'Remember Me' was not selected, so expire session after browser is closed.
-                    request.session.set_expiry(0) # 0: expire when the user's Web browser is closed
+                # Classify the user
+                user_class = ClassifyRegisteredUser.classify(actual_username)
 
-                next = request.GET.get('next',None)
-                if next and next != '':
-                    return HttpResponseRedirect(request.GET['next'])
-                else:
-                    return HttpResponseRedirect(reverse('home_user'))
-            else:
-                # request.session['user_id'] = user.id
-                return HttpResponseRedirect(reverse('accounts_inactive_user'))
-        else:
-            data['login_fail']=True
-            data['username']=username
+                # Class 'NEW' & 'STAFF' are unreachable here; already check and handled
+                if user_class == ClassifyRegisteredUser.UNVERIFIED:
+                    # --- Unverified user; redirect to verification ---
+                    # Create OTP token
+                    user_token, is_utoken_new = UserToken.objects.update_or_create(
+                        registered_user = registered_user,
+                        purpose = UserToken.PUR_OTP_VERF,
+                        defaults = {
+                            "created_on" : timezone.now()
+                        }
+                    )
+
+                    # Send owls
+                    owls.SmsOwl.send_reg_verification(
+                        mobile_no = actual_username,
+                        user_token = user_token,
+                        username = actual_username
+                    )
+                    # Sens email owl
+
+                    # Generate token & redirect to verification
+                    token = jwt.encode(
+                        {
+                            'reg_user_id': registered_user.id,
+                            'is_new': False
+                        },
+                        settings.JWT_SECRET_KEY,
+                        algorithm = settings.JWT_ALOG
+                    )
+                    return HttpResponseRedirect(
+                        "{url}?q={token}".format(
+                            url = reverse('accounts_registration_verify'),
+                            token = token
+                        )
+                    )
+
+                elif user_class == ClassifyRegisteredUser.SUSPENDED:
+                    # --- User's account suspended; show message ---
+                    data['username'] = username
+                    return render(request, 'accounts/account_suspended.html', data)
+
+                elif user_class == ClassifyRegisteredUser.VERIFIED:
+                    # Authenticate user credentials
+                    auth_user = auth.authenticate(username=actual_username,password=password)
+
+                    if auth_user:
+                        # --- Authentic user; provide session ---
+                        auth.login(request, user)
+
+                        # Check for 'Remember Me'
+                        if not request.POST.get('remember_me',None):
+                            # 'Remember Me' was not selected, so expire session after browser is closed.
+                            request.session.set_expiry(0) # 0: expire when the user's Web browser is closed
+
+                        next = request.GET.get('next',None)
+                        if next and next != '':
+                            return HttpResponseRedirect(request.GET['next'])
+                        else:
+                            return HttpResponseRedirect(reverse('home'))
+
+                    else:
+                        # --- Invalid password ---
+                        data['login_fail'] = True
+                        data['username'] = username
+
+            except RegisteredUser.DoesNotExist:
+                # --- Staff user; Login not allowed here, use django admin ---
+                # Unreachable since country tel code is prefixed to input username
+                data['login_fail'] = True
+                data['username'] = username
+        except User.DoesNotExist:
+            # --- New user ---
+            data['login_fail'] = True
+            data['username'] = username
 
     return render(request, 'accounts/login.html', data)
 

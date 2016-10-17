@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Login</h2>
+    <hr/>
+
+    <script>
+        $(function(){
+            $("#form_login").validate({
+                errorClass: "error",
+                errorElement: "div",
+                rules: {
+                    username: {
+                        required: true,
+                    },
+                    password: {
+	                    required: true,
+	                    minlength: 3,
+	                }
+                },
+                messages: {
+                    username: {
+	                    required: "Please enter your username",
+	                },
+                    password: {
+                        required: "Please enter your password",
+                        minlength: "The number should be minimum 3 digits",
+                    }
+                }
+            });
+        });
+    </script>
+    <form id="form_login" method="post">{% csrf_token %}
+        <table>
+            <tr>
+                <td>Mobile No: </td>
+                <td>
+                    {{ country_tel_code }} - <input type="text" name="username" value="{{ username|default_if_none:"" }}" autocomplete="off" required>
+                </td>
+            </tr>
+            <tr>
+                <td>Password: </td>
+                <td>
+                    <input type="password" name="password" required>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>
+                    <input type="checkbox" name="remember_me">Keep me logged in
+                </td>
+            </tr>
+            {% if login_fail %}
+                <tr style="color: red;">
+                    <td>&nbsp;</td>
+                    <td>
+                        * Invalid Credentials
+                    </td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td>&nbsp;</td>
+                <td>
+                    <button type="submit" value="login">Login</button>
+                    <a href="#">Forgot password?</a>
+                </td>
+            </tr>
+        </table>
+
+        <hr/>
+        <a href="{% url 'accounts_registration' %}">Not a member? Sign Up now.</a>
+    </form>
+{% endblock %}

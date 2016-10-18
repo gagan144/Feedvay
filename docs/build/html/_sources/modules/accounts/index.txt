@@ -12,7 +12,9 @@ Modules
        :titlesonly:
 
        mod_registration.rst
+       mod_user_login.rst
        mod_sessions.rst
+
 
 Contents
 --------

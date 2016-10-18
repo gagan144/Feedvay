@@ -161,44 +161,105 @@
 
 <span class="sd">    **Authors**: Gagandeep Singh</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">country_tel_code</span> <span class="o">=</span> <span class="s1">&#39;+91&#39;</span>    <span class="c1">#TODO: Set default country_tel_code</span>
     <span class="n">data</span><span class="o">=</span><span class="p">{</span>
         <span class="s1">&#39;next&#39;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;next&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">),</span>
-        <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="s1">&#39;country_tel_code&#39;</span><span class="p">:</span> <span class="n">country_tel_code</span>
     <span class="p">}</span>
 
     <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">:</span>
-        <span class="n">username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span>     <span class="c1"># Warning: Not actual username</span>
+        <span class="n">actual_username</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">country_tel_code</span><span class="p">,</span> <span class="n">username</span><span class="p">)</span>    <span class="c1"># Use this for authentication</span>
         <span class="n">password</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
 
-        <span class="n">user</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span><span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">)</span>
-
-        <span class="c1"># Check if user is verified</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">registereduser</span><span class="o">.</span><span class="n">is_verified</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;accounts_resend_activation_link&#39;</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;?username=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">))</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">pass</span>
+            <span class="c1"># Get &#39;User&#39; instance</span>
+            <span class="c1"># Note: Here `auth.authenticate()` has not been called since &#39;inactive &amp; verified&#39; user is suspended user.</span>
+            <span class="c1"># `auth.authenticate()` returns None if user is inactive.</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">actual_username</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">is_active</span><span class="p">:</span>
-                <span class="n">auth</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">request</span><span class="p">,</span><span class="n">user</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Get &#39;RegisteredUser&#39; instance</span>
+                <span class="n">registered_user</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">registereduser</span>
 
-                <span class="c1"># Check for &#39;Remember Me&#39;</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;remember_me&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">):</span>
-                    <span class="c1"># &#39;Remember Me&#39; was not selected, so expire session after browser is closed.</span>
-                    <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">set_expiry</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># 0: expire when the user&#39;s Web browser is closed</span>
+                <span class="c1"># Classify the user</span>
+                <span class="n">user_class</span> <span class="o">=</span> <span class="n">ClassifyRegisteredUser</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span><span class="n">actual_username</span><span class="p">)</span>
 
-                <span class="nb">next</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;next&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">next</span> <span class="ow">and</span> <span class="nb">next</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">[</span><span class="s1">&#39;next&#39;</span><span class="p">])</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;home_user&#39;</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># request.session[&#39;user_id&#39;] = user.id</span>
-                <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;accounts_inactive_user&#39;</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;login_fail&#39;</span><span class="p">]</span><span class="o">=</span><span class="kc">True</span>
-            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">username</span>
+                <span class="c1"># Class &#39;NEW&#39; &amp; &#39;STAFF&#39; are unreachable here; already check and handled</span>
+                <span class="k">if</span> <span class="n">user_class</span> <span class="o">==</span> <span class="n">ClassifyRegisteredUser</span><span class="o">.</span><span class="n">UNVERIFIED</span><span class="p">:</span>
+                    <span class="c1"># --- Unverified user; redirect to verification ---</span>
+                    <span class="c1"># Create OTP token</span>
+                    <span class="n">user_token</span><span class="p">,</span> <span class="n">is_utoken_new</span> <span class="o">=</span> <span class="n">UserToken</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">update_or_create</span><span class="p">(</span>
+                        <span class="n">registered_user</span> <span class="o">=</span> <span class="n">registered_user</span><span class="p">,</span>
+                        <span class="n">purpose</span> <span class="o">=</span> <span class="n">UserToken</span><span class="o">.</span><span class="n">PUR_OTP_VERF</span><span class="p">,</span>
+                        <span class="n">defaults</span> <span class="o">=</span> <span class="p">{</span>
+                            <span class="s2">&quot;created_on&quot;</span> <span class="p">:</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                        <span class="p">}</span>
+                    <span class="p">)</span>
+
+                    <span class="c1"># Send owls</span>
+                    <span class="n">owls</span><span class="o">.</span><span class="n">SmsOwl</span><span class="o">.</span><span class="n">send_reg_verification</span><span class="p">(</span>
+                        <span class="n">mobile_no</span> <span class="o">=</span> <span class="n">actual_username</span><span class="p">,</span>
+                        <span class="n">user_token</span> <span class="o">=</span> <span class="n">user_token</span><span class="p">,</span>
+                        <span class="n">username</span> <span class="o">=</span> <span class="n">actual_username</span>
+                    <span class="p">)</span>
+                    <span class="c1"># Sens email owl</span>
+
+                    <span class="c1"># Generate token &amp; redirect to verification</span>
+                    <span class="n">token</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+                        <span class="p">{</span>
+                            <span class="s1">&#39;reg_user_id&#39;</span><span class="p">:</span> <span class="n">registered_user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                            <span class="s1">&#39;is_new&#39;</span><span class="p">:</span> <span class="kc">False</span>
+                        <span class="p">},</span>
+                        <span class="n">settings</span><span class="o">.</span><span class="n">JWT_SECRET_KEY</span><span class="p">,</span>
+                        <span class="n">algorithm</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">JWT_ALOG</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="si">{url}</span><span class="s2">?q=</span><span class="si">{token}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;accounts_registration_verify&#39;</span><span class="p">),</span>
+                            <span class="n">token</span> <span class="o">=</span> <span class="n">token</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">user_class</span> <span class="o">==</span> <span class="n">ClassifyRegisteredUser</span><span class="o">.</span><span class="n">SUSPENDED</span><span class="p">:</span>
+                    <span class="c1"># --- User&#39;s account suspended; show message ---</span>
+                    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">username</span>
+                    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;accounts/account_suspended.html&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">user_class</span> <span class="o">==</span> <span class="n">ClassifyRegisteredUser</span><span class="o">.</span><span class="n">VERIFIED</span><span class="p">:</span>
+                    <span class="c1"># Authenticate user credentials</span>
+                    <span class="n">auth_user</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">actual_username</span><span class="p">,</span><span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">auth_user</span><span class="p">:</span>
+                        <span class="c1"># --- Authentic user; provide session ---</span>
+                        <span class="n">auth</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+
+                        <span class="c1"># Check for &#39;Remember Me&#39;</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;remember_me&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">):</span>
+                            <span class="c1"># &#39;Remember Me&#39; was not selected, so expire session after browser is closed.</span>
+                            <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">set_expiry</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># 0: expire when the user&#39;s Web browser is closed</span>
+
+                        <span class="nb">next</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;next&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">next</span> <span class="ow">and</span> <span class="nb">next</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">[</span><span class="s1">&#39;next&#39;</span><span class="p">])</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">))</span>
+
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># --- Invalid password ---</span>
+                        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;login_fail&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">username</span>
+
+            <span class="k">except</span> <span class="n">RegisteredUser</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+                <span class="c1"># --- Staff user; Login not allowed here, use django admin ---</span>
+                <span class="c1"># Unreachable since country tel code is prefixed to input username</span>
+                <span class="n">data</span><span class="p">[</span><span class="s1">&#39;login_fail&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">data</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">username</span>
+        <span class="k">except</span> <span class="n">User</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="c1"># --- New user ---</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;login_fail&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">username</span>
 
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;accounts/login.html&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
 

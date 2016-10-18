@@ -91,7 +91,7 @@ class ApiResponse(object):
     # --- Methods ---
     def set(self, key, value):
         """
-        Method to add or update more key-value to response json.
+        Method to add or update a key-value pair to response json data.
         """
         if key in ['code', 'status']:
             raise Exception("Key should be one of 'code', 'status'")

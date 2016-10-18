@@ -16,7 +16,7 @@ from accounts.models import *
 from accounts.utilities import *
 from owlery import owls
 
-# ----- Login ----
+# ---------- Login ----------
 def login(request):
     """
     View to login a valid registered user only.
@@ -137,6 +137,7 @@ def logout(request):
     """
     auth.logout(request)
     return HttpResponseRedirect(reverse('home'))
+# ---------- /Login ----------
 
 # ---------- Registration ----------
 def registration(request):
@@ -392,3 +393,19 @@ def registration_resend_otp(request):
         return HttpResponseForbidden('Use post.')
 
 # ---------- /Registration ----------
+
+# ---------- Password recovery ----------
+def reset_password_plea(request):
+    """
+    A web API view to plea for password reset/recovery. This view verifies the user and
+    send password recovery SMS and email containing OTP that will be used to reset password.
+
+    :returns: An json response of type :class:`utilties.api_utils.ApiResponse`.
+
+    """
+    if request.method.lower() == 'post':
+        pass
+
+    else:
+        raise Exception("Not Implement")
+#  ---------- /Password recovery ----------

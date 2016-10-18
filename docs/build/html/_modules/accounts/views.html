@@ -152,7 +152,7 @@
 <span class="kn">from</span> <span class="nn">accounts.utilities</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">owlery</span> <span class="k">import</span> <span class="n">owls</span>
 
-<span class="c1"># ----- Login ----</span>
+<span class="c1"># ---------- Login ----------</span>
 <div class="viewcode-block" id="login"><a class="viewcode-back" href="../../modules/accounts/views.html#accounts.views.login">[docs]</a><span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    View to login a valid registered user only.</span>
@@ -273,6 +273,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">auth</span><span class="o">.</span><span class="n">logout</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">))</span></div>
+<span class="c1"># ---------- /Login ----------</span>
 
 <span class="c1"># ---------- Registration ----------</span>
 <div class="viewcode-block" id="registration"><a class="viewcode-back" href="../../modules/accounts/views.html#accounts.views.registration">[docs]</a><span class="k">def</span> <span class="nf">registration</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
@@ -528,6 +529,22 @@
         <span class="k">return</span> <span class="n">HttpResponseForbidden</span><span class="p">(</span><span class="s1">&#39;Use post.&#39;</span><span class="p">)</span></div>
 
 <span class="c1"># ---------- /Registration ----------</span>
+
+<span class="c1"># ---------- Password recovery ----------</span>
+<div class="viewcode-block" id="reset_password_plea"><a class="viewcode-back" href="../../modules/accounts/views.html#accounts.views.reset_password_plea">[docs]</a><span class="k">def</span> <span class="nf">reset_password_plea</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A web API view to plea for password reset/recovery. This view verifies the user and</span>
+<span class="sd">    send password recovery SMS and email containing OTP that will be used to reset password.</span>
+
+<span class="sd">    :returns: An json response of type :class:`utilties.api_utils.ApiResponse`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;post&#39;</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Not Implement&quot;</span><span class="p">)</span></div>
+<span class="c1">#  ---------- /Password recovery ----------</span>
 </pre></div>
 
            </div>

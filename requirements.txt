@@ -4,6 +4,7 @@ django-mysql
 django-tastypie
 docutils
 
+ujson
 django-tinymce
 django-easy-select2
 django-extensions
@@ -11,6 +12,7 @@ django-fsm
 django-fsm-log
 pyjwt
 django-recaptcha
+jsonobject
 
 # Documentation
 # sphinx

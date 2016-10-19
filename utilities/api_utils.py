@@ -21,6 +21,7 @@ class ApiResponse(object):
     # --- enums ---
     ST_SUCCESS = 'success'
     ST_IGNORED = 'ignored'        # No update or change
+    ST_FAILED = 'failed'          # Operation failed
     ST_NOT_ALLOWED = 'not_allowed'    # GET or POST not allowed
     ST_FORBIDDEN = 'forbidden'        # Access is not allowed or prohibited
     ST_UNAUTHORIZED = 'unauthorized ' # Authentication fails
@@ -30,6 +31,7 @@ class ApiResponse(object):
     CH_STATUS = (
         (ST_SUCCESS, 'Success'),
         (ST_IGNORED, 'Ignored'),
+        (ST_FAILED , 'Failed'),
         (ST_NOT_ALLOWED, 'Not Allowed'),
         (ST_FORBIDDEN, 'Forbidden'),
         (ST_UNAUTHORIZED, 'Unauthorized'),
@@ -40,6 +42,7 @@ class ApiResponse(object):
     STATUS_CODES = {
         ST_SUCCESS: 200,
         ST_IGNORED: 204,
+        ST_FAILED: 299,
         ST_NOT_ALLOWED: 405,
         ST_FORBIDDEN: 403,
         ST_UNAUTHORIZED: 401,

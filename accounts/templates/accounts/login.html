@@ -35,7 +35,7 @@
             <tr>
                 <td>Mobile No: </td>
                 <td>
-                    {{ country_tel_code }} - <input type="text" name="username" value="{{ username|default_if_none:"" }}" autocomplete="off" required>
+                    {{ country_tel_code }} - <input id="fld_username" type="text" name="username" value="{{ username|default_if_none:"" }}" autocomplete="off" required>
                 </td>
             </tr>
             <tr>
@@ -62,12 +62,84 @@
                 <td>&nbsp;</td>
                 <td>
                     <button type="submit" value="login">Login</button>
-                    <a href="#">Forgot password?</a>
+                    <a href="javascript: recover_password();">Forgot password?</a>
                 </td>
             </tr>
         </table>
 
+
+
         <hr/>
         <a href="{% url 'accounts_registration' %}">Not a member? Sign Up now.</a>
     </form>
+
+    <script>
+        function recover_password(){
+            var username = $("#fld_username").val();
+
+            $.ajax({
+                type: "POST",
+                url: '{% url 'accounts_reset_password_plea' %}',
+                data: {
+                    "username": username,
+                    "csrfmiddlewaretoken": "{{ csrf_token }}"
+                },
+                success: function (result) {
+                    switch(result.status){
+                        case 'success': {
+                            $("#fld_forgot_username").val(username);
+                            $("#lbl_username").text(username);
+
+                            $("#div_forgot_pass").show();
+                        }break;
+                        default: {
+                            alert(result.message);
+                        }
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert("Error occurred. Please retry.")
+                }
+            });
+
+
+        }
+    </script>
+    <div id="div_forgot_pass" style="display: none;">
+        <hr/>
+{#            <form>#}
+            <table>
+                <tr>
+                    <td>Mobile No:</td>
+                    <td>
+                        <input id="fld_forgot_username" type="hidden" name="username" required>
+                        {{ country_tel_code }} - <span id="lbl_username"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Verification Code:</td>
+                    <td>
+                        <input type="password" name="verification_code" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td>New Password:</td>
+                    <td>
+                        <input type="password" name="new_password" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Confirm Password:</td>
+                    <td>
+                        <input type="password" name="confirm_new_password" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button type="submit">Recover</button>
+                    </td>
+                </tr>
+            </table>
+{#            </form>#}
+    </div>
 {% endblock %}

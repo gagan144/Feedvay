@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseForbidden
 from django.core.urlresolvers import reverse
 from django.db import transaction
+from django.utils import timezone
 from django.conf import settings
 import jwt
 from django.contrib import auth
@@ -13,8 +14,10 @@ import json
 from django.contrib.auth.models import User
 from accounts.forms import *
 from accounts.models import *
-from accounts.utilities import *
+from accounts.utils import *
+from accounts.exceptions import *
 from owlery import owls
+from utilities.api_utils import ApiResponse
 
 # ---------- Login ----------
 def login(request):
@@ -68,7 +71,7 @@ def login(request):
                         user_token = user_token,
                         username = actual_username
                     )
-                    # Sens email owl
+                    # TODO: Sens email owl
 
                     # Generate token & redirect to verification
                     token = jwt.encode(
@@ -390,7 +393,7 @@ def registration_resend_otp(request):
         except RegisteredUser.DoesNotExist:
             return HttpResponseForbidden('Request denied.')
     else:
-        return HttpResponseForbidden('Use post.')
+        return HttpResponseForbidden('Forbidden! Use post.')
 
 # ---------- /Registration ----------
 
@@ -402,10 +405,100 @@ def reset_password_plea(request):
 
     :returns: An json response of type :class:`utilties.api_utils.ApiResponse`.
 
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
     """
     if request.method.lower() == 'post':
-        pass
+        country_tel_code = '+91'    #TODO: Set default country_tel_code
+        mobile_no = request.POST['username']
+
+        username = "{}-{}".format(country_tel_code, mobile_no)
+
+        # Classify user
+        class_name = ClassifyRegisteredUser.classify(username)
+
+        if class_name in [ClassifyRegisteredUser.UNVERIFIED, ClassifyRegisteredUser.VERIFIED]:
+            # Allowed; Send OTP
+            # Get RegisteredUser
+            registered_user = RegisteredUser.objects.get(user__username=username)
+
+            # Create OTP token
+            user_token, is_utoken_new = UserToken.objects.update_or_create(
+                registered_user = registered_user,
+                purpose = UserToken.PUR_OTP_VERF,
+                defaults = {
+                    "created_on" : timezone.now()
+                }
+            )
+
+            # Send owls
+            owls.SmsOwl.send_reg_verification(
+                mobile_no = username,
+                user_token = user_token,
+                username = username
+            )
+            # TODO: Sens email owl
+
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Verification code send.').gen_http_response()
+
+        elif class_name == ClassifyRegisteredUser.SUSPENDED:
+            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Your account has been suspended.').gen_http_response()
+        else:
+            # New, Staff user
+            return ApiResponse(status=ApiResponse.ST_UNAUTHORIZED, message='Invalid account.').gen_http_response()
 
     else:
-        raise Exception("Not Implement")
+        # Incase of GET request
+        return ApiResponse(status=ApiResponse.ST_NOT_ALLOWED, message='GET not allowed. Please use POST.').gen_http_response()
+
+def reset_password_plea_verify(request):
+    """
+    An API view to check 'forgot password' recovery code. This is used to tell user
+    if the code he entered matched or not as he completes entering the code.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    mobile_no = request.GET['username']
+    verification_code = request.GET['verification_code']
+
+    actual_username = RegisteredUser.construct_username(mobile_no)
+
+    try:
+        passed = UserToken.verify_user_token(
+            username = actual_username,
+            purpose = UserToken.PUR_OTP_VERF,
+            value = verification_code
+        )
+
+        if passed:
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='ok').gen_http_response()
+        else:
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Verification failed.').gen_http_response()
+
+    except InvalidRegisteredUser:
+        return ApiResponse(status=ApiResponse.ST_UNAUTHORIZED, message='Invalid account.').gen_http_response()
+
+def reset_password(request):
+    """
+    A view to reset user password by first verifying 'verification code', reset password and
+    logging in the user.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        form_recover = PasswordResetForm(request.POST)
+
+        # Validate form
+        if form_recover.is_valid():
+            pass
+        else:
+            raise Exception('Password reset form validation failed.')
+    else:
+        return HttpResponseForbidden('Forbidden! Use post.')
+
 #  ---------- /Password recovery ----------

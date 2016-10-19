@@ -35,3 +35,23 @@ class RegistrationForm(forms.Form):
             del form_data['password']
             del form_data['confirm_password']
         return form_data
+
+class PasswordResetForm(forms.Form):
+    """
+    Form to reset/recover a user's password. The user has been send a verification code,
+    using which he can set new new password now.
+
+    **Authors**: Gagandeep Singh
+    """
+    mobile_no           = forms.IntegerField(required=True, min_value=1000000000, max_value=9999999999, help_text='Mobile number as username.')
+    verification_code   = forms.CharField(required=True, widget=forms.PasswordInput())
+    new_password        = forms.CharField(widget=forms.PasswordInput())
+    confirm_new_password    = forms.CharField(widget=forms.PasswordInput())
+
+    def clean(self):
+        form_data = self.cleaned_data
+        if form_data['new_password'] != form_data['confirm_new_password']:
+            self._errors["confirm_new_password"] = ["Password does not match"]
+            del form_data['password']
+            del form_data['confirm_password']
+        return form_data

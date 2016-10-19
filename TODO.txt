@@ -6,6 +6,8 @@
         - User Roles
         - Default Group for public user
 
+        accounts_registration_resend_otp: API check
+
     - New Feature Promotion
     - API JSON Response class
 

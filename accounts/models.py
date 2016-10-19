@@ -16,6 +16,8 @@ from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 
+from accounts.exceptions import *
+
 class RegisteredUser(models.Model):
     """
     Extension of django :class:`django.contrib.auth.models.User` model that maintains all public user
@@ -122,6 +124,20 @@ class RegisteredUser(models.Model):
         self.clean()
         super(self.__class__, self).save(*args, **kwargs)
 
+    @staticmethod
+    def construct_username(mobile_no):
+        """
+        Static method to create actual database username by concatenating
+        country telephone code and 10-digit mobile number
+
+        :param mobile_no: 10-digit mobile number
+        :return: Actual username; '<country_tel_code>+<mobile_no>'
+
+        **Authors**: Gagandeep Singh
+        """
+        country_tel_code = '+91' #TODO: Correct country tel code
+        return "{}-{}".format(country_tel_code, mobile_no)
+
 class UserToken(models.Model):
     """
     Model to store tokens issued to a registered user for various purposes such as registration.
@@ -187,6 +203,42 @@ class UserToken(models.Model):
         charset = string.digits
         return ''.join(random.sample(charset,6))
 
+    @staticmethod
+    def verify_user_token(username, purpose, value):
+        """
+        Static method to verify token given a username and value.
+
+        :param username: Actual username
+        :param purpose: Purpose of the token. One of the ``UserToken.CH_PURPOSE``
+        :param value: Value of the token
+        :return: True (for pass) and False (if failed)
+
+        Raises :class:`accounts.exceptions.InvalidRegisteredUser` Exception incase registered user not found.
+
+        **Authors**: Gagandeep Singh
+        """
+        try:
+            registered_user = RegisteredUser.objects.get(user__username=username)
+
+            now = timezone.now()
+            least_date = now - timezone.timedelta(seconds=settings.VERIFICATION_EXPIRY)
+
+            try:
+                # Get & verify user token
+                user_token = UserToken.objects.filter(
+                    registered_user = registered_user,
+                    purpose = purpose,
+
+                    value = value,
+                    expire_on__gte = least_date,
+                )[0]
+
+                return True
+            except IndexError:
+                return False
+
+        except RegisteredUser.DoesNotExist:
+            raise InvalidRegisteredUser()
 
 # ---------- User Sessions ----------
 class UserSession(models.Model):

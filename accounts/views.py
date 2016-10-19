@@ -38,7 +38,7 @@ def login(request):
 
     if request.POST:
         username = request.POST['username']     # Warning: Not actual username
-        actual_username = "{}-{}".format(country_tel_code, username)    # Use this for authentication
+        actual_username = RegisteredUser.construct_username(country_tel_code, username)  # Use this for authentication
         password = request.POST['password']
 
         try:
@@ -172,7 +172,7 @@ def registration(request):
         form_reg.is_valid() # BandAid: `form_reg.cleaned_data` throws error if this is not called
 
         form_data = form_reg.cleaned_data
-        username = "{}-{}".format(country_tel_code, form_data['mobile_no'])
+        username = RegisteredUser.construct_username(country_tel_code, form_data['mobile_no'])
 
         # Validate form
         if form_reg.is_valid():
@@ -415,7 +415,7 @@ def reset_password_plea(request):
         country_tel_code = '+91'    #TODO: Set default country_tel_code
         mobile_no = request.POST['username']
 
-        username = "{}-{}".format(country_tel_code, mobile_no)
+        username = RegisteredUser.construct_username(country_tel_code, mobile_no)
 
         # Classify user
         class_name = ClassifyRegisteredUser.classify(username)
@@ -463,10 +463,12 @@ def reset_password_plea_verify(request):
 
     **Authors**: Gagandeep Singh
     """
+    country_tel_code = '+91'    #TODO: Set default country_tel_code
+
     mobile_no = request.GET['username']
     verification_code = request.GET['verification_code']
 
-    actual_username = RegisteredUser.construct_username(mobile_no)
+    actual_username = RegisteredUser.construct_username(country_tel_code, mobile_no)
 
     try:
         passed = UserToken.verify_user_token(
@@ -504,7 +506,7 @@ def recover_account(request):
 
         form_data = form_recover.cleaned_data
         mobile_no = str(form_data['mobile_no'])
-        actual_username = "{}-{}".format(country_tel_code, mobile_no)
+        actual_username = RegisteredUser.construct_username(country_tel_code, mobile_no)
 
         # Validate form
         if form_recover.is_valid():

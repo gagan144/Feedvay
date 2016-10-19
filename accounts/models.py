@@ -125,17 +125,17 @@ class RegisteredUser(models.Model):
         super(self.__class__, self).save(*args, **kwargs)
 
     @staticmethod
-    def construct_username(mobile_no):
+    def construct_username(country_tel_code, mobile_no):
         """
         Static method to create actual database username by concatenating
         country telephone code and 10-digit mobile number
 
+        :param country_tel_code: Country telephone code
         :param mobile_no: 10-digit mobile number
         :return: Actual username; '<country_tel_code>+<mobile_no>'
 
         **Authors**: Gagandeep Singh
         """
-        country_tel_code = '+91' #TODO: Correct country tel code
         return "{}-{}".format(country_tel_code, mobile_no)
 
 class UserToken(models.Model):

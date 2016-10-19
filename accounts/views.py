@@ -32,6 +32,7 @@ def login(request):
     data={
         'next': request.GET.get('next',None),
         'username': request.GET.get('username', None),
+        'recovery_failed': bool(request.GET.get('recovery_failed',0)),
         'country_tel_code': country_tel_code
     }
 
@@ -388,11 +389,12 @@ def registration_resend_otp(request):
 
             owls.SmsOwl.send_reg_verification(reg_user.user.username, user_token, reg_user.user.username)
 
-            return HttpResponse(json.dumps({"status":"success"}), content_type='application/json')
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='ok').gen_http_response()
 
         except RegisteredUser.DoesNotExist:
-            return HttpResponseForbidden('Request denied.')
+            return ApiResponse(status=ApiResponse.ST_UNAUTHORIZED, message='Invalid username').gen_http_response()
     else:
+        # Forbidden GET
         return HttpResponseForbidden('Forbidden! Use post.')
 
 # ---------- /Registration ----------
@@ -481,24 +483,64 @@ def reset_password_plea_verify(request):
     except InvalidRegisteredUser:
         return ApiResponse(status=ApiResponse.ST_UNAUTHORIZED, message='Invalid account.').gen_http_response()
 
-def reset_password(request):
+def recover_account(request):
     """
-    A view to reset user password by first verifying 'verification code', reset password and
-    logging in the user.
+    A view to recover user account by:
+        - First verifying 'verification code',
+        - Reset password
+        - Logging in the user.
 
     **Type**: POST
 
     **Authors**: Gagandeep Singh
     """
     if request.method.lower() == 'post':
-        form_recover = PasswordResetForm(request.POST)
+        country_tel_code = '+91'    #TODO: Set default country_tel_code
+
+        data_recv = request.POST.copy()
+        data_recv['country_tel_code'] = country_tel_code
+        form_recover = PasswordResetForm(data_recv)
+        form_recover.is_valid() # BandAid: `form_reg.cleaned_data` throws error if this is not called
+
+        form_data = form_recover.cleaned_data
+        mobile_no = str(form_data['mobile_no'])
+        actual_username = "{}-{}".format(country_tel_code, mobile_no)
 
         # Validate form
         if form_recover.is_valid():
-            pass
+            try:
+                # Verify token
+                passed = UserToken.verify_user_token(
+                    username = actual_username,
+                    purpose = UserToken.PUR_OTP_VERF,
+                    value = form_data['verification_code']
+                )
+
+                if passed:
+                    # Verification passed
+                    # Reset password
+                    user = User.objects.get(username=actual_username)
+                    user.set_password(form_data['new_password'])
+                    user.save()
+
+                    # Login user and create session
+                    auth.login(request, user)
+
+                    # Redirect to home
+                    return HttpResponseRedirect(reverse('home'))
+                else:
+                    # Token verification failed
+                    return HttpResponseRedirect(reverse('accounts_login')+"?username="+mobile_no+"&recovery_failed=1")
+
+            except InvalidRegisteredUser:
+                return HttpResponseRedirect(reverse('accounts_login')+"?username="+mobile_no+"&recovery_failed=1")
+
         else:
-            raise Exception('Password reset form validation failed.')
+            # Invalid form
+            return HttpResponseRedirect(reverse('accounts_login')+"?username="+mobile_no+"&recovery_failed=1")
+
     else:
+        # Forbidden GET
         return HttpResponseForbidden('Forbidden! Use post.')
 
 #  ---------- /Password recovery ----------

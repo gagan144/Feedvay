@@ -4,6 +4,10 @@
     <h2>Login</h2>
     <hr/>
 
+    {% if recovery_failed %}
+    <h3 style="color:red">Password recovery failed! Please try again.</h3>
+    {% endif %}
+
     <script>
         $(function(){
             $("#form_login").validate({
@@ -107,12 +111,12 @@
     </script>
     <div id="div_forgot_pass" style="display: none;">
         <hr/>
-{#            <form>#}
+        <form action="{% url 'accounts_recover_account' %}" method="post">{% csrf_token %}
             <table>
                 <tr>
                     <td>Mobile No:</td>
                     <td>
-                        <input id="fld_forgot_username" type="hidden" name="username" required>
+                        <input id="fld_forgot_username" type="hidden" name="mobile_no" required>
                         {{ country_tel_code }} - <span id="lbl_username"></span>
                     </td>
                 </tr>
@@ -140,6 +144,6 @@
                     </td>
                 </tr>
             </table>
-{#            </form>#}
+        </form>
     </div>
 {% endblock %}

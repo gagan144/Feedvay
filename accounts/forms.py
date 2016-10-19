@@ -43,10 +43,11 @@ class PasswordResetForm(forms.Form):
 
     **Authors**: Gagandeep Singh
     """
+    country_tel_code    = forms.CharField(required=True, max_length=4, min_length=3, widget=forms.HiddenInput(), help_text='Country telephone code.')
     mobile_no           = forms.IntegerField(required=True, min_value=1000000000, max_value=9999999999, help_text='Mobile number as username.')
     verification_code   = forms.CharField(required=True, widget=forms.PasswordInput())
     new_password        = forms.CharField(widget=forms.PasswordInput())
-    confirm_new_password    = forms.CharField(widget=forms.PasswordInput())
+    confirm_new_password = forms.CharField(widget=forms.PasswordInput())
 
     def clean(self):
         form_data = self.cleaned_data

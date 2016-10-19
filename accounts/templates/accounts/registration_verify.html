@@ -36,7 +36,11 @@
                     "csrfmiddlewaretoken": "{{ csrf_token }}"
                 },
                 success: function (result) {
-                    location.reload();
+                    if(result.status=='success') {
+                        location.reload();
+                    }else{
+                        alert(result.message);
+                    }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     //location.reload();

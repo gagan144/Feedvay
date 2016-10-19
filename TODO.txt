@@ -1,11 +1,11 @@
 - Infrastructure
     - Globalization & timezones *
     - User Management
-        - Forget password
         - Deactivate/Reactivate account
         - User Roles
         - Default Group for public user
 
+    - Send email owls
     - New Feature Promotion
     - API JSON Response class
 

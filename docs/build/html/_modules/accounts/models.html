@@ -152,6 +152,8 @@
 <span class="kn">from</span> <span class="nn">django.contrib.sessions.models</span> <span class="k">import</span> <span class="n">Session</span>
 <span class="kn">from</span> <span class="nn">django.contrib.auth.signals</span> <span class="k">import</span> <span class="n">user_logged_in</span><span class="p">,</span> <span class="n">user_logged_out</span>
 
+<span class="kn">from</span> <span class="nn">accounts.exceptions</span> <span class="k">import</span> <span class="o">*</span>
+
 <div class="viewcode-block" id="RegisteredUser"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.RegisteredUser">[docs]</a><span class="k">class</span> <span class="nc">RegisteredUser</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extension of django :class:`django.contrib.auth.models.User` model that maintains all public user</span>
@@ -256,7 +258,21 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="RegisteredUser.construct_username"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.RegisteredUser.construct_username">[docs]</a>    <span class="k">def</span> <span class="nf">construct_username</span><span class="p">(</span><span class="n">country_tel_code</span><span class="p">,</span> <span class="n">mobile_no</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Static method to create actual database username by concatenating</span>
+<span class="sd">        country telephone code and 10-digit mobile number</span>
+
+<span class="sd">        :param country_tel_code: Country telephone code</span>
+<span class="sd">        :param mobile_no: 10-digit mobile number</span>
+<span class="sd">        :return: Actual username; &#39;&lt;country_tel_code&gt;+&lt;mobile_no&gt;&#39;</span>
+
+<span class="sd">        **Authors**: Gagandeep Singh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">country_tel_code</span><span class="p">,</span> <span class="n">mobile_no</span><span class="p">)</span></div></div>
 
 <div class="viewcode-block" id="UserToken"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.UserToken">[docs]</a><span class="k">class</span> <span class="nc">UserToken</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -321,8 +337,44 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">gen_verification_otp</span><span class="p">():</span>
         <span class="n">charset</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span>
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">charset</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">charset</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
 
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="UserToken.verify_user_token"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.UserToken.verify_user_token">[docs]</a>    <span class="k">def</span> <span class="nf">verify_user_token</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">purpose</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Static method to verify token given a username and value.</span>
+
+<span class="sd">        :param username: Actual username</span>
+<span class="sd">        :param purpose: Purpose of the token. One of the ``UserToken.CH_PURPOSE``</span>
+<span class="sd">        :param value: Value of the token</span>
+<span class="sd">        :return: True (for pass) and False (if failed)</span>
+
+<span class="sd">        Raises :class:`accounts.exceptions.InvalidRegisteredUser` Exception incase registered user not found.</span>
+
+<span class="sd">        **Authors**: Gagandeep Singh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">registered_user</span> <span class="o">=</span> <span class="n">RegisteredUser</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user__username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
+
+            <span class="n">now</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="n">least_date</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="n">timezone</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">VERIFICATION_EXPIRY</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Get &amp; verify user token</span>
+                <span class="n">user_token</span> <span class="o">=</span> <span class="n">UserToken</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                    <span class="n">registered_user</span> <span class="o">=</span> <span class="n">registered_user</span><span class="p">,</span>
+                    <span class="n">purpose</span> <span class="o">=</span> <span class="n">purpose</span><span class="p">,</span>
+
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">,</span>
+                    <span class="n">expire_on__gte</span> <span class="o">=</span> <span class="n">least_date</span><span class="p">,</span>
+                <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">except</span> <span class="n">RegisteredUser</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidRegisteredUser</span><span class="p">()</span></div></div>
 
 <span class="c1"># ---------- User Sessions ----------</span>
 <div class="viewcode-block" id="UserSession"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.UserSession">[docs]</a><span class="k">class</span> <span class="nc">UserSession</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>

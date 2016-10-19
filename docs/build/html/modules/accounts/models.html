@@ -93,7 +93,8 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="forms.html">Forms</a></li>
 <li class="toctree-l3"><a class="reference internal" href="views.html">Views</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utilities.html">Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.html">Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
 </ul>
 </li>
 </ul>
@@ -202,6 +203,29 @@ However, you can update this model without any intervention of &#8216;User&#8217
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
+<dl class="staticmethod">
+<dt id="accounts.models.RegisteredUser.construct_username">
+<em class="property">static </em><code class="descname">construct_username</code><span class="sig-paren">(</span><em>country_tel_code</em>, <em>mobile_no</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#RegisteredUser.construct_username"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.RegisteredUser.construct_username" title="Permalink to this definition">¶</a></dt>
+<dd><p>Static method to create actual database username by concatenating
+country telephone code and 10-digit mobile number</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>country_tel_code</strong> &#8211; Country telephone code</li>
+<li><strong>mobile_no</strong> &#8211; 10-digit mobile number</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Actual username; &#8216;&lt;country_tel_code&gt;+&lt;mobile_no&gt;&#8217;</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="accounts.models.RegisteredUser.save">
 <code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#RegisteredUser.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.RegisteredUser.save" title="Permalink to this definition">¶</a></dt>
@@ -266,6 +290,30 @@ a &#8216;logged in&#8217; signal which is captured and an entry is made with use
 <dt id="accounts.models.UserToken.save">
 <code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserToken.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserToken.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="accounts.models.UserToken.verify_user_token">
+<em class="property">static </em><code class="descname">verify_user_token</code><span class="sig-paren">(</span><em>username</em>, <em>purpose</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserToken.verify_user_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserToken.verify_user_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Static method to verify token given a username and value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>username</strong> &#8211; Actual username</li>
+<li><strong>purpose</strong> &#8211; Purpose of the token. One of the <code class="docutils literal"><span class="pre">UserToken.CH_PURPOSE</span></code></li>
+<li><strong>value</strong> &#8211; Value of the token</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True (for pass) and False (if failed)</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Raises <a class="reference internal" href="exceptions.html#accounts.exceptions.InvalidRegisteredUser" title="accounts.exceptions.InvalidRegisteredUser"><code class="xref py py-class docutils literal"><span class="pre">accounts.exceptions.InvalidRegisteredUser</span></code></a> Exception incase registered user not found.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 

@@ -26,5 +26,6 @@ Contents
        models
        forms
        views
-       utilities
+       utils
+       exceptions
 

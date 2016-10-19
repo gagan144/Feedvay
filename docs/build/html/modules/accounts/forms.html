@@ -93,7 +93,8 @@
 <li class="toctree-l3"><a class="reference internal" href="models.html">Models</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Forms</a></li>
 <li class="toctree-l3"><a class="reference internal" href="views.html">Views</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utilities.html">Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.html">Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
 </ul>
 </li>
 </ul>
@@ -151,6 +152,14 @@
 <h1>Forms<a class="headerlink" href="#forms" title="Permalink to this headline">¶</a></h1>
 <p>List of django forms for accounts app.</p>
 <span class="target" id="module-accounts.forms"></span><dl class="class">
+<dt id="accounts.forms.PasswordResetForm">
+<em class="property">class </em><code class="descclassname">accounts.forms.</code><code class="descname">PasswordResetForm</code><span class="sig-paren">(</span><em>data=None</em>, <em>files=None</em>, <em>auto_id=u'id_%s'</em>, <em>prefix=None</em>, <em>initial=None</em>, <em>error_class=&lt;class 'django.forms.utils.ErrorList'&gt;</em>, <em>label_suffix=None</em>, <em>empty_permitted=False</em>, <em>field_order=None</em>, <em>use_required_attribute=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/forms.html#PasswordResetForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.forms.PasswordResetForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Form to reset/recover a user&#8217;s password. The user has been send a verification code,
+using which he can set new new password now.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
 <dt id="accounts.forms.RegistrationForm">
 <em class="property">class </em><code class="descclassname">accounts.forms.</code><code class="descname">RegistrationForm</code><span class="sig-paren">(</span><em>data=None</em>, <em>files=None</em>, <em>auto_id=u'id_%s'</em>, <em>prefix=None</em>, <em>initial=None</em>, <em>error_class=&lt;class 'django.forms.utils.ErrorList'&gt;</em>, <em>label_suffix=None</em>, <em>empty_permitted=False</em>, <em>field_order=None</em>, <em>use_required_attribute=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/forms.html#RegistrationForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.forms.RegistrationForm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Form for user registration. This form include basic user details enough to kickstart

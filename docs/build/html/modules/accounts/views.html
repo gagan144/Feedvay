@@ -35,7 +35,7 @@
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="feedvuy 1.0 documentation" href="../../index.html"/>
         <link rel="up" title="Accounts" href="index.html"/>
-        <link rel="next" title="Utilities" href="utilities.html"/>
+        <link rel="next" title="Utilities" href="utils.html"/>
         <link rel="prev" title="Forms" href="forms.html"/> 
 
   
@@ -93,7 +93,8 @@
 <li class="toctree-l3"><a class="reference internal" href="models.html">Models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="forms.html">Forms</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Views</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utilities.html">Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.html">Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
 </ul>
 </li>
 </ul>
@@ -167,6 +168,22 @@
 </dd></dl>
 
 <dl class="function">
+<dt id="accounts.views.recover_account">
+<code class="descclassname">accounts.views.</code><code class="descname">recover_account</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/views.html#recover_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.views.recover_account" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>A view to recover user account by:</dt>
+<dd><ul class="first last simple">
+<li>First verifying &#8216;verification code&#8217;,</li>
+<li>Reset password</li>
+<li>Logging in the user.</li>
+</ul>
+</dd>
+</dl>
+<p><strong>Type</strong>: POST</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="accounts.views.registration">
 <code class="descclassname">accounts.views.</code><code class="descname">registration</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/views.html#registration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.views.registration" title="Permalink to this definition">¶</a></dt>
 <dd><p>View to handle registration. If called with GET opens registrations form otherwise on POST
@@ -222,6 +239,17 @@ send password recovery SMS and email containing OTP that will be used to reset p
 </tr>
 </tbody>
 </table>
+<p><strong>Type</strong>: POST</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="accounts.views.reset_password_plea_verify">
+<code class="descclassname">accounts.views.</code><code class="descname">reset_password_plea_verify</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/views.html#reset_password_plea_verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.views.reset_password_plea_verify" title="Permalink to this definition">¶</a></dt>
+<dd><p>An API view to check &#8216;forgot password&#8217; recovery code. This is used to tell user
+if the code he entered matched or not as he completes entering the code.</p>
+<p><strong>Type</strong>: GET</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
 </div>
@@ -233,7 +261,7 @@ send password recovery SMS and email containing OTP that will be used to reset p
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="utilities.html" class="btn btn-neutral float-right" title="Utilities" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="utils.html" class="btn btn-neutral float-right" title="Utilities" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="forms.html" class="btn btn-neutral" title="Forms" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>

@@ -171,6 +171,27 @@
             <span class="k">del</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
             <span class="k">del</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;confirm_password&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">form_data</span></div>
+
+<div class="viewcode-block" id="PasswordResetForm"><a class="viewcode-back" href="../../modules/accounts/forms.html#accounts.forms.PasswordResetForm">[docs]</a><span class="k">class</span> <span class="nc">PasswordResetForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Form to reset/recover a user&#39;s password. The user has been send a verification code,</span>
+<span class="sd">    using which he can set new new password now.</span>
+
+<span class="sd">    **Authors**: Gagandeep Singh</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">country_tel_code</span>    <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">min_length</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">HiddenInput</span><span class="p">(),</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Country telephone code.&#39;</span><span class="p">)</span>
+    <span class="n">mobile_no</span>           <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">1000000000</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">9999999999</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Mobile number as username.&#39;</span><span class="p">)</span>
+    <span class="n">verification_code</span>   <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">PasswordInput</span><span class="p">())</span>
+    <span class="n">new_password</span>        <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">PasswordInput</span><span class="p">())</span>
+    <span class="n">confirm_new_password</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">PasswordInput</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">form_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span>
+        <span class="k">if</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;new_password&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;confirm_new_password&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">[</span><span class="s2">&quot;confirm_new_password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Password does not match&quot;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;confirm_password&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">form_data</span></div>
 </pre></div>
 
            </div>

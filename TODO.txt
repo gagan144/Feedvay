@@ -5,10 +5,10 @@
         - User Roles
         - Default Group for public user
 
-    - Send email owls
     - New Feature Promotion
-    - API JSON Response class
 
+
+- Refract code to check registration is different than forgot password
 
 - Geography
     - Country tel code

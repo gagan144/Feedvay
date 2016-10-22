@@ -174,6 +174,9 @@ class UserToken(models.Model):
     class Meta:
         unique_together = ('registered_user', 'purpose')
 
+    def humanize_expire_on(self, format):
+        return self.expire_on.time().strftime(format)     #TODO: Timezone: convert to local
+
     def clean(self):
         """
         Method to clean & validate data fields.

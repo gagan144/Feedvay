@@ -2,7 +2,10 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from django.shortcuts import render_to_response
+from django.contrib.auth.models import User
 from owlery.models import *
+
+
 
 class SmsOwl:
     """
@@ -16,7 +19,7 @@ class SmsOwl:
            and sends the message.
 
     .. note:
-        SMS are not send immediately as one synchronized call. There will be some delay which increases
+        SMS may not be send immediately as a single synchronized call. There will be some delay which increases
         as priority decreases.
 
     **Authors**: Gagandeep Singh
@@ -25,10 +28,10 @@ class SmsOwl:
     @staticmethod
     def send_reg_verification(mobile_no, user_token, username=None):
         """
-        Sends a SMS containing OTP for registration verification.
+        Sends a SMS containing registration verification code.
 
         :param mobile_no: Mobile number. +91-9999999999 is converted to +919999999999
-        :param user_token: Instance of :class:`accounts.models.UserToken` containing the otp.
+        :param user_token: Instance of :class:`accounts.models.UserToken` containing the code.
         :param username: (Optional) Username of user to which SMS is to be send.
         :return: Returns :class:`owlery.model.SmsMessage` instance.
 
@@ -36,8 +39,8 @@ class SmsOwl:
         """
 
         message_body = render_to_response('owlery/owls/sms/reg_verification.txt',{
-            "otp": user_token.value,
-            "expire_time": user_token.expire_on.time().strftime("%H:%M:%S")     #TODO: Timezone: convert to local
+            "code": user_token.value,
+            "expire_time": user_token.humanize_expire_on("%I:%M %p")
         }).content
 
         sms = SmsMessage.objects.create(
@@ -49,3 +52,65 @@ class SmsOwl:
         )
 
         return sms
+
+
+class EmailOwl:
+    """
+    Owl to handle all emails. This class defines various email template that can used to send email.
+    All methods composes email according to the parameters and store them in :class:`owlery.models.EmailMessage`
+    from where they are picked up by a cron process for dispatching.
+
+    .. note:
+        Emails may not be send immediately. There will be some delay which increases as priority decreases.
+
+    **Authors**: Gagandeep Singh
+    """
+
+    @staticmethod
+    def send_reg_verification(email_address, user_token, username=None):
+        """
+        Send email containing registration verification code.
+
+        :param email_address: Email address of the receiver
+        :param user_token: Instance of :class:`accounts.models.UserToken` containing the code.
+        :param username: (Optional) Username of user to which SMS is to be send.
+        :return: Returns :class:`owlery.model.EmailMessage` instance.
+
+        .. note:
+            This method sends email immediately. In case of failure, message remains in the queue.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        receiver_name = None
+        if username:
+            user = User.objects.get(username=username)
+            receiver_name = "{} {}".format(user.first_name, user.last_name)
+
+        # Create message body
+        message_body = render_to_response('owlery/owls/emails/reg_verification.html', {
+            "receiver_name": receiver_name,
+            "code": user_token.value,
+            "expire_min": (settings.VERIFICATION_EXPIRY/60),
+            "expire_time": user_token.humanize_expire_on("%I:%M %p")
+        }).content
+
+        # Create database entry
+        email_msg = EmailMessage.objects.create(
+            username = username,
+            email_id = email_address,
+
+            subject = "Feedvuy Account - {} is your registration verification code".format(user_token.value),
+            message = message_body,
+
+            type = EmailMessage.TYPE_REG_VERIF,
+            priority = EmailMessage.PR_URGENT
+        )
+
+        # Send email since it is an urgent message
+        try:
+            email_msg.force_send()
+        except:
+            pass
+
+        return email_msg

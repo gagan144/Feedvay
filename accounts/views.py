@@ -72,7 +72,12 @@ def login(request):
                         user_token = user_token,
                         username = actual_username
                     )
-                    # TODO: Sens email owl
+                    if user.email and user.email != '':
+                        owls.EmailOwl.send_reg_verification(
+                            email_address = user.email,
+                            user_token = user_token,
+                            username = actual_username
+                        )
 
                     # Generate token & redirect to verification
                     token = jwt.encode(
@@ -440,7 +445,12 @@ def reset_password_plea(request):
                 user_token = user_token,
                 username = username
             )
-            # TODO: Sens email owl
+            if registered_user.user.email and registered_user.user.email != '':
+                owls.EmailOwl.send_reg_verification(
+                    email_address = registered_user.user.email,
+                    user_token = user_token,
+                    username = username
+                )
 
             return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Verification code send.').gen_http_response()
 

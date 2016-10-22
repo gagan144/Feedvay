@@ -208,6 +208,29 @@ class EmailMessage(models.Model):
         self.sender = settings.EMAIL_HOST_USER
         self.save()
 
+    def force_send(self):
+        """
+        Forcefully send this email now.
+
+        .. note:
+            Throws exception in case of failure.
+
+        **Authors**: Gagandeep Singh
+        """
+        from django.core.mail import send_mail
+
+        send_mail(
+            subject = self.subject,
+            message = self.message,
+            html_message = self.message,
+            from_email = settings.EMAIL_HOST_USER,
+            recipient_list = [self.email_id]
+        )
+
+        self.mark_send()
+
+
+
     def clean(self):
         """
         Method to clean & validate data fields.

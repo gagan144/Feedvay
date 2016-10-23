@@ -157,9 +157,9 @@
 <dd><p>Extension of django <code class="xref py py-class docutils literal"><span class="pre">django.contrib.auth.models.User</span></code> model that maintains all public user
 information. For every public user, a record is created with reference to &#8216;User&#8217; model along with
 other attributes such as mode of registration, user personal settings etc.</p>
-<dl class="docutils">
-<dt><strong>Points</strong>:</dt>
-<dd><ul class="first last">
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul>
 <li><p class="first">This model does not include any staff users.</p>
 </li>
 <li><p class="first">Username of these users is the mobile phone no with country code as prefix. Example: +919999999999</p>
@@ -169,27 +169,26 @@ other business related functionality are done using this model.</p>
 </li>
 <li><p class="first">Detailed personal information are not kept in this model. It only contains basic information only such as name, email id.</p>
 </li>
-<li><dl class="first docutils">
-<dt>Registration methods:</dt>
-<dd><ul class="first simple">
+<li><p class="first">Registration methods:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>Website</strong> (Only one time): User can register directly on website using mobile no.</li>
 <li><strong>Mobile app</strong> (Multiple times): User can register using mobile app.</li>
 <li><strong>Enterprise app</strong> (Only one time): Passive registration of the user that is automatically created as a <strong>lead</strong> while using enterprise app.
 The account remains inactive until user register himself manually using any of the methods. Only one time record is created
 and ignore in further cases.</li>
 </ul>
-<p class="last">For registration flow, refer the document.</p>
-</dd>
-</dl>
+<p>For registration flow, refer the document.</p>
+</div></blockquote>
 </li>
 <li><p class="first">Registration can be multiple times. Only last registration information is kept for now.</p>
 </li>
 </ul>
-</dd>
-<dt><strong>State chart diagram for state machine</strong>:</dt>
-<dd><img alt="../../_images/registereduser_statechart.jpg" class="first last" src="../../_images/registereduser_statechart.jpg" />
-</dd>
-</dl>
+</div></blockquote>
+<p><strong>State chart diagram for state machine</strong>:</p>
+<blockquote>
+<div><img alt="../../_images/registereduser_statechart.jpg" src="../../_images/registereduser_statechart.jpg" />
+</div></blockquote>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">This model must not trigger any update to django &#8216;User&#8217; model since it can trigger model&#8217;s save.
@@ -263,17 +262,16 @@ a &#8216;logged in&#8217; signal which is captured and an entry is made with use
 <dt id="accounts.models.UserToken">
 <em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserToken</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserToken"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserToken" title="Permalink to this definition">¶</a></dt>
 <dd><p>Model to store tokens issued to a registered user for various purposes such as registration.</p>
-<dl class="docutils">
-<dt><strong>Points</strong>:</dt>
-<dd><ul class="first last simple">
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul class="simple">
 <li>Uniqueness of a token is based on <code class="xref py py-class docutils literal"><span class="pre">accounts.model.RegisteredUser</span></code> and purpose.</li>
 <li>Tokens are only issued to registered user.</li>
 <li>Token can be overridden for same user &amp; purpose. This is possible when the same process is again executed.</li>
 <li>No audit trail is maintained for a token. Present is the only truth.</li>
 <li>Token must be deleted after use or will be automatically deleted after they cross their expiry date.</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Tokens are not user sessions.</p>

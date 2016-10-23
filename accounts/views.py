@@ -295,6 +295,7 @@ def registration_verify(request):
     A view to verify user registration by entering verification code that was send to user mobile no.
 
     This view can be called in case:
+
         - **Normal registration flow**: After user has signed up with his details, he is redirected to this view to verify himself.
         - **Direct call withing expiry**: In case user was unable to finish verification, he can directly use url before this link expires
           according to :class:`accounts.models.RegisteredUser`.``last_reg_date``.
@@ -494,6 +495,7 @@ def reset_password_plea_verify(request):
 def recover_account(request):
     """
     A view to recover user account by:
+
         - First verifying 'verification code',
         - Reset password
         - Logging in the user.

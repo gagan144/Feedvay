@@ -190,17 +190,16 @@ been created or updated.</p>
 <em class="property">class </em><code class="descclassname">watchdog.models.</code><code class="descname">ReportedProblem</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/watchdog/models.html#ReportedProblem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#watchdog.models.ReportedProblem" title="Permalink to this definition">¶</a></dt>
 <dd><p>Model to store errors reported by the users. These do not include errors reported by the system
 however, may be linked to one.</p>
-<dl class="docutils">
-<dt>Points:</dt>
-<dd><ul class="first last simple">
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul class="simple">
 <li>It must not include system problem but only those reported by user.</li>
 <li>A problems can be linked to <a class="reference internal" href="#watchdog.models.ErrorLog" title="watchdog.models.ErrorLog"><code class="xref py py-class docutils literal"><span class="pre">watchdog.models.ErrorLog</span></code></a>.</li>
 <li>A Problem can be reported by logged in user or public user. Incase of public user, email id is referred.</li>
 <li>In case of rejecting a problem, remark must be provided.</li>
 <li>Records inherit from parent first and then from error_log.</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 <dl class="method">
 <dt id="watchdog.models.ReportedProblem.clean">
@@ -233,13 +232,12 @@ been created or updated.</p>
 <dd><p>Model to store suggestions made by user for various areas in the system.
 Suggestion is not an error, but rather an area of improvement that user
 feels must be present.</p>
-<dl class="docutils">
-<dt>Points:</dt>
-<dd><ul class="first last simple">
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul class="simple">
 <li>Only logged-in user can make suggestions</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 <dl class="method">
 <dt id="watchdog.models.Suggestion.clean">

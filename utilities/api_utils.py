@@ -10,9 +10,10 @@ class ApiResponse(object):
     A class to create a http json response mostly used to cater API requests.
 
     The content of the response is as follows:
+
         >>> { "code": <int http code>, "status": "<status>", "message":"<message">, ... }
 
-    ... note::
+    .. note::
         Response created by this class is always http 200 OK.
 
     **Authors**: Gagandeep Singh

@@ -13,6 +13,7 @@ class SmsOwl:
     manner.
 
     Following is the complete SMS workflow:
+
         1. Call any of the defined handler methods with required parameters.
         2. The method uses parameters to compose a message and creates database entry.
         3. An independent process running periodically picks up this message as per its priority

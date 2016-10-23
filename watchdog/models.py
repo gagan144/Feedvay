@@ -138,7 +138,8 @@ class Suggestion(models.Model):
     Suggestion is not an error, but rather an area of improvement that user
     feels must be present.
 
-    Points:
+    **Points**:
+
         - Only logged-in user can make suggestions
 
     **Authors**: Gagandeep Singh
@@ -256,7 +257,8 @@ class ReportedProblem(models.Model):
     Model to store errors reported by the users. These do not include errors reported by the system
     however, may be linked to one.
 
-    Points:
+    **Points**:
+
         - It must not include system problem but only those reported by user.
         - A problems can be linked to :class:`watchdog.models.ErrorLog`.
         - A Problem can be reported by logged in user or public user. Incase of public user, email id is referred.

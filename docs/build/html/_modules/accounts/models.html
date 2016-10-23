@@ -161,12 +161,14 @@
 <span class="sd">    other attributes such as mode of registration, user personal settings etc.</span>
 
 <span class="sd">    **Points**:</span>
+
 <span class="sd">        - This model does not include any staff users.</span>
 <span class="sd">        - Username of these users is the mobile phone no with country code as prefix. Example: +919999999999</span>
 <span class="sd">        - All login related process such as session allocation etc are done using traditional django &#39;User&#39; model whereas</span>
 <span class="sd">          other business related functionality are done using this model.</span>
 <span class="sd">        - Detailed personal information are not kept in this model. It only contains basic information only such as name, email id.</span>
 <span class="sd">        - Registration methods:</span>
+
 <span class="sd">            - **Website** (Only one time): User can register directly on website using mobile no.</span>
 <span class="sd">            - **Mobile app** (Multiple times): User can register using mobile app.</span>
 <span class="sd">            - **Enterprise app** (Only one time): Passive registration of the user that is automatically created as a **lead** while using enterprise app.</span>
@@ -176,14 +178,14 @@
 <span class="sd">            For registration flow, refer the document.</span>
 <span class="sd">        - Registration can be multiple times. Only last registration information is kept for now.</span>
 
+
 <span class="sd">    **State chart diagram for state machine**:</span>
+
 <span class="sd">        .. image:: ../../_static/accounts/registereduser_statechart.jpg</span>
 
 <span class="sd">    .. warning::</span>
 <span class="sd">        This model must not trigger any update to django &#39;User&#39; model since it can trigger model&#39;s save.</span>
 <span class="sd">        However, you can update this model without any intervention of &#39;User&#39; model.</span>
-
-
 
 <span class="sd">    **Authors**: Gagandeep Singh</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -279,6 +281,7 @@
 <span class="sd">    Model to store tokens issued to a registered user for various purposes such as registration.</span>
 
 <span class="sd">    **Points**:</span>
+
 <span class="sd">        - Uniqueness of a token is based on :class:`accounts.model.RegisteredUser` and purpose.</span>
 <span class="sd">        - Tokens are only issued to registered user.</span>
 <span class="sd">        - Token can be overridden for same user &amp; purpose. This is possible when the same process is again executed.</span>
@@ -309,6 +312,9 @@
 
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">unique_together</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;registered_user&#39;</span><span class="p">,</span> <span class="s1">&#39;purpose&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">humanize_expire_on</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">expire_on</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="nb">format</span><span class="p">)</span>     <span class="c1">#TODO: Timezone: convert to local</span>
 
 <div class="viewcode-block" id="UserToken.clean"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.UserToken.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

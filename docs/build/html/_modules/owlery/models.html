@@ -186,10 +186,12 @@
     <span class="p">)</span>
 
     <span class="n">TYPE_REG_VERIF</span> <span class="o">=</span> <span class="s1">&#39;reg_verification&#39;</span>
-    <span class="n">TYPE_REG_RESULT</span> <span class="o">=</span> <span class="s1">&#39;reg_result&#39;</span>  <span class="c1"># Result can by anything; success, failure, info etc</span>
+    <span class="n">TYPE_PASS_RESET</span> <span class="o">=</span> <span class="s1">&#39;password_reset&#39;</span>
+    <span class="c1"># TYPE_REG_RESULT = &#39;reg_result&#39;  # Result can by anything; success, failure, info etc</span>
     <span class="n">CH_TYPE</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">(</span><span class="n">TYPE_REG_VERIF</span><span class="p">,</span> <span class="s1">&#39;Registration Verification&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="n">TYPE_REG_RESULT</span><span class="p">,</span> <span class="s1">&#39;Registration Result&#39;</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">TYPE_PASS_RESET</span><span class="p">,</span> <span class="s1">&#39;Password Reset&#39;</span><span class="p">),</span>
+        <span class="c1"># (TYPE_REG_RESULT, &#39;Registration Result&#39;)</span>
     <span class="p">)</span>
 
     <span class="n">PR_LOW</span> <span class="o">=</span> <span class="s1">&#39;low&#39;</span>
@@ -291,12 +293,14 @@
     <span class="p">)</span>
 
     <span class="n">TYPE_REG_VERIF</span> <span class="o">=</span> <span class="s1">&#39;reg_verification&#39;</span>
-    <span class="n">TYPE_REG_RESULT</span> <span class="o">=</span> <span class="s1">&#39;reg_result&#39;</span>  <span class="c1"># Result can by anything; success, failure, info etc</span>
-    <span class="n">TYPE_PROMOTION</span> <span class="o">=</span> <span class="s1">&#39;promotion&#39;</span>
+    <span class="n">TYPE_PASS_RESET</span> <span class="o">=</span> <span class="s1">&#39;password_reset&#39;</span>
+    <span class="c1"># TYPE_REG_RESULT = &#39;reg_result&#39;  # Result can by anything; success, failure, info etc</span>
+    <span class="c1"># TYPE_PROMOTION = &#39;promotion&#39;</span>
     <span class="n">CH_TYPE</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">(</span><span class="n">TYPE_REG_VERIF</span><span class="p">,</span> <span class="s1">&#39;Registration Verification&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="n">TYPE_REG_RESULT</span><span class="p">,</span> <span class="s1">&#39;Registration Result&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="n">TYPE_PROMOTION</span><span class="p">,</span> <span class="s1">&#39;Promotion&#39;</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">TYPE_PASS_RESET</span><span class="p">,</span> <span class="s1">&#39;Password Reset&#39;</span><span class="p">),</span>
+        <span class="c1"># (TYPE_REG_RESULT, &#39;Registration Result&#39;),</span>
+        <span class="c1"># (TYPE_PROMOTION, &#39;Promotion&#39;)</span>
     <span class="p">)</span>
 
     <span class="n">PR_LOW</span> <span class="o">=</span> <span class="s1">&#39;low&#39;</span>
@@ -343,6 +347,29 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">send_on</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sender</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">EMAIL_HOST_USER</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EmailMessage.force_send"><a class="viewcode-back" href="../../modules/owlery/models.html#owlery.models.EmailMessage.force_send">[docs]</a>    <span class="k">def</span> <span class="nf">force_send</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Forcefully send this email now.</span>
+
+<span class="sd">        .. note:</span>
+<span class="sd">            Throws exception in case of failure.</span>
+
+<span class="sd">        **Authors**: Gagandeep Singh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">django.core.mail</span> <span class="k">import</span> <span class="n">send_mail</span>
+
+        <span class="n">send_mail</span><span class="p">(</span>
+            <span class="n">subject</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
+            <span class="n">html_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
+            <span class="n">from_email</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">EMAIL_HOST_USER</span><span class="p">,</span>
+            <span class="n">recipient_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">email_id</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mark_send</span><span class="p">()</span></div>
+
+
 
 <div class="viewcode-block" id="EmailMessage.clean"><a class="viewcode-back" href="../../modules/owlery/models.html#owlery.models.EmailMessage.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

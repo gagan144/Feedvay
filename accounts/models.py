@@ -25,12 +25,14 @@ class RegisteredUser(models.Model):
     other attributes such as mode of registration, user personal settings etc.
 
     **Points**:
+
         - This model does not include any staff users.
         - Username of these users is the mobile phone no with country code as prefix. Example: +919999999999
         - All login related process such as session allocation etc are done using traditional django 'User' model whereas
           other business related functionality are done using this model.
         - Detailed personal information are not kept in this model. It only contains basic information only such as name, email id.
         - Registration methods:
+
             - **Website** (Only one time): User can register directly on website using mobile no.
             - **Mobile app** (Multiple times): User can register using mobile app.
             - **Enterprise app** (Only one time): Passive registration of the user that is automatically created as a **lead** while using enterprise app.
@@ -40,14 +42,14 @@ class RegisteredUser(models.Model):
             For registration flow, refer the document.
         - Registration can be multiple times. Only last registration information is kept for now.
 
+
     **State chart diagram for state machine**:
+
         .. image:: ../../_static/accounts/registereduser_statechart.jpg
 
     .. warning::
         This model must not trigger any update to django 'User' model since it can trigger model's save.
         However, you can update this model without any intervention of 'User' model.
-
-
 
     **Authors**: Gagandeep Singh
     """
@@ -143,6 +145,7 @@ class UserToken(models.Model):
     Model to store tokens issued to a registered user for various purposes such as registration.
 
     **Points**:
+
         - Uniqueness of a token is based on :class:`accounts.model.RegisteredUser` and purpose.
         - Tokens are only issued to registered user.
         - Token can be overridden for same user & purpose. This is possible when the same process is again executed.

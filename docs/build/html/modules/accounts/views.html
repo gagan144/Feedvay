@@ -170,15 +170,14 @@
 <dl class="function">
 <dt id="accounts.views.recover_account">
 <code class="descclassname">accounts.views.</code><code class="descname">recover_account</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/views.html#recover_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.views.recover_account" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>A view to recover user account by:</dt>
-<dd><ul class="first last simple">
+<dd><p>A view to recover user account by:</p>
+<blockquote>
+<div><ul class="simple">
 <li>First verifying &#8216;verification code&#8217;,</li>
 <li>Reset password</li>
 <li>Logging in the user.</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 <p><strong>Type</strong>: POST</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
@@ -201,10 +200,15 @@ register a user with given details.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="accounts.views.registration_resend_otp">
-<code class="descclassname">accounts.views.</code><code class="descname">registration_resend_otp</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/views.html#registration_resend_otp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.views.registration_resend_otp" title="Permalink to this definition">¶</a></dt>
-<dd><p>View to send OTP during verification process. No limitation on number of request is set for now.
-Call to this view is only valid for registered user who&#8217;s status is <cite>verification_pending</cite>.</p>
+<dt id="accounts.views.registration_resend_code">
+<code class="descclassname">accounts.views.</code><code class="descname">registration_resend_code</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/views.html#registration_resend_code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.views.registration_resend_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>View to re-send verification code during registration process.</p>
+<blockquote>
+<div><ul class="simple">
+<li>No limitation on number of request is set for now.</li>
+<li>Call to this view is only valid for registered user who&#8217;s status is <cite>verification_pending</cite>.</li>
+</ul>
+</div></blockquote>
 <p><strong>Type</strong>: POST</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
@@ -212,16 +216,15 @@ Call to this view is only valid for registered user who&#8217;s status is <cite>
 <dl class="function">
 <dt id="accounts.views.registration_verify">
 <code class="descclassname">accounts.views.</code><code class="descname">registration_verify</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/views.html#registration_verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.views.registration_verify" title="Permalink to this definition">¶</a></dt>
-<dd><p>A View to verify user registration by entering OTP send to mobile no.</p>
-<dl class="docutils">
-<dt>This view can be called in case:</dt>
-<dd><ul class="first last simple">
+<dd><p>A view to verify user registration by entering verification code that was send to user mobile no.</p>
+<p>This view can be called in case:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>Normal registration flow</strong>: After user has signed up with his details, he is redirected to this view to verify himself.</li>
 <li><strong>Direct call withing expiry</strong>: In case user was unable to finish verification, he can directly use url before this link expires
 according to <a class="reference internal" href="models.html#accounts.models.RegisteredUser" title="accounts.models.RegisteredUser"><code class="xref py py-class docutils literal"><span class="pre">accounts.models.RegisteredUser</span></code></a>.``last_reg_date``.</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 <p><strong>Type</strong>: GET/POST</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
@@ -230,7 +233,7 @@ according to <a class="reference internal" href="models.html#accounts.models.Reg
 <dt id="accounts.views.reset_password_plea">
 <code class="descclassname">accounts.views.</code><code class="descname">reset_password_plea</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/views.html#reset_password_plea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.views.reset_password_plea" title="Permalink to this definition">¶</a></dt>
 <dd><p>A web API view to plea for password reset/recovery. This view verifies the user and
-send password recovery SMS and email containing OTP that will be used to reset password.</p>
+send password recovery SMS and email containing verification code that will be used to reset password.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

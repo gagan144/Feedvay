@@ -104,8 +104,15 @@ def login(request):
 
                         # Check for 'Remember Me'
                         if not request.POST.get('remember_me',None):
-                            # 'Remember Me' was not selected, so expire session after browser is closed.
-                            request.session.set_expiry(0) # 0: expire when the user's Web browser is closed
+                            # 'Remember Me' was not selected
+                            # Expire session after 'SESSION_COOKIE_AGE' seconds
+                            # OR after browser is closed.
+                            request.session.set_expiry(0) # Expire when web browser is closed
+                        else:
+                            # 'Remember Me' was selected
+                            # Expires after 'SESSION_COOKIE_AGE_PUBLIC' seconds only
+                            # Does not expires on browser close
+                            request.session.set_expiry(settings.SESSION_COOKIE_AGE_PUBLIC)
 
                         next = request.GET.get('next',None)
                         if next and next != '':
@@ -349,6 +356,7 @@ def registration_verify(request):
                     backend = auth.get_backends()[0]
                     user.backend = '%s.%s' % (backend.__module__, backend.__class__.__name__)
                     auth.login(request,user)
+                    request.session.set_expiry(0) # Expire when web browser is closed
 
                 # Redirect to root page
                 return HttpResponseRedirect(reverse('home')+"?welcome=true")
@@ -535,6 +543,7 @@ def recover_account(request):
 
                     # Login user and create session
                     auth.login(request, user)
+                    request.session.set_expiry(0) # Expire when web browser is closed
 
                     # Redirect to home
                     return HttpResponseRedirect(reverse('home'))

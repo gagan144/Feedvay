@@ -241,8 +241,15 @@
 
                         <span class="c1"># Check for &#39;Remember Me&#39;</span>
                         <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;remember_me&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">):</span>
-                            <span class="c1"># &#39;Remember Me&#39; was not selected, so expire session after browser is closed.</span>
-                            <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">set_expiry</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># 0: expire when the user&#39;s Web browser is closed</span>
+                            <span class="c1"># &#39;Remember Me&#39; was not selected</span>
+                            <span class="c1"># Expire session after &#39;SESSION_COOKIE_AGE&#39; seconds</span>
+                            <span class="c1"># OR after browser is closed.</span>
+                            <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">set_expiry</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># Expire when web browser is closed</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1"># &#39;Remember Me&#39; was selected</span>
+                            <span class="c1"># Expires after &#39;SESSION_COOKIE_AGE_PUBLIC&#39; seconds only</span>
+                            <span class="c1"># Does not expires on browser close</span>
+                            <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">set_expiry</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SESSION_COOKIE_AGE_PUBLIC</span><span class="p">)</span>
 
                         <span class="nb">next</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;next&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
                         <span class="k">if</span> <span class="nb">next</span> <span class="ow">and</span> <span class="nb">next</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
@@ -486,6 +493,7 @@
                     <span class="n">backend</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">get_backends</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
                     <span class="n">user</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="n">backend</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
                     <span class="n">auth</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">request</span><span class="p">,</span><span class="n">user</span><span class="p">)</span>
+                    <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">set_expiry</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># Expire when web browser is closed</span>
 
                 <span class="c1"># Redirect to root page</span>
                 <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;?welcome=true&quot;</span><span class="p">)</span>
@@ -672,6 +680,7 @@
 
                     <span class="c1"># Login user and create session</span>
                     <span class="n">auth</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+                    <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">set_expiry</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># Expire when web browser is closed</span>
 
                     <span class="c1"># Redirect to home</span>
                     <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">))</span>

@@ -150,6 +150,15 @@ USE_L10N = True
 
 USE_TZ = True
 
+# ----- Session -----
+# For all cases
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# For staff users (Django admin)
+SESSION_COOKIE_AGE = 8*60*60     # In seconds
+
+# For web portal users
+SESSION_COOKIE_AGE_PUBLIC = 24*60*60  # In seconds
 
 # ----- Static files (CSS, JavaScript, Images) -----
 # https://docs.djangoproject.com/en/1.10/howto/static-files/

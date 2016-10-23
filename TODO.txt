@@ -13,5 +13,4 @@
     - Country tel code
 
 - Crons
-    - Delete expired token cron
     - Delete orphan sessions & UserSessions

@@ -57,7 +57,7 @@ def login(request):
                 # Class 'NEW' & 'STAFF' are unreachable here; already check and handled
                 if user_class == ClassifyRegisteredUser.UNVERIFIED:
                     # --- Unverified user; redirect to verification ---
-                    # Create OTP token
+                    # Create verification code token
                     user_token, is_utoken_new = UserToken.objects.update_or_create(
                         registered_user = registered_user,
                         purpose = UserToken.PUR_OTP_VERF,
@@ -72,12 +72,6 @@ def login(request):
                         user_token = user_token,
                         username = actual_username
                     )
-                    if user.email and user.email != '':
-                        owls.EmailOwl.send_reg_verification(
-                            email_address = user.email,
-                            user_token = user_token,
-                            username = actual_username
-                        )
 
                     # Generate token & redirect to verification
                     token = jwt.encode(
@@ -202,7 +196,7 @@ def registration(request):
                     registered_user.last_reg_date = timezone.now()
                     registered_user.save()
 
-                    # Create OTP token
+                    # Create verification code token
                     user_token, is_utoken_new = UserToken.objects.update_or_create(
                         registered_user = registered_user,
                         purpose = UserToken.PUR_OTP_VERF,
@@ -254,7 +248,7 @@ def registration(request):
                         new_registered_user.trans_registered()
                         new_registered_user.save()
 
-                    # Create OTP token
+                    # Create verification code token
                     user_token, is_utoken_new = UserToken.objects.update_or_create(
                         registered_user = new_registered_user,
                         purpose = UserToken.PUR_OTP_VERF,
@@ -298,7 +292,7 @@ def registration_closed(request):
 
 def registration_verify(request):
     """
-    A View to verify user registration by entering OTP send to mobile no.
+    A view to verify user registration by entering verification code that was send to user mobile no.
 
     This view can be called in case:
         - **Normal registration flow**: After user has signed up with his details, he is redirected to this view to verify himself.
@@ -332,10 +326,10 @@ def registration_verify(request):
         }
 
         if request.method.lower() == 'post':
-            entered_otp = request.POST['otp']
+            entered_code = request.POST['code']
 
-            # Verify otp value
-            if entered_otp == user_token.value:
+            # Verify entered code value
+            if entered_code == user_token.value:
                 with transaction.atomic():
                     # Mark user active
                     user = new_registered_user.user
@@ -360,17 +354,19 @@ def registration_verify(request):
 
             else:
                 data['status'] = 'failed'
-                data['message'] = 'OTP verification failed.'
+                data['message'] = 'Code verification failed.'
 
         return render(request, 'accounts/registration_verify.html', data)
 
     except UserToken.DoesNotExist:
         raise Http404("Invalid or expired link! Sign in or sign up again to re-initiate activation.")
 
-def registration_resend_otp(request):
+def registration_resend_code(request):
     """
-    View to send OTP during verification process. No limitation on number of request is set for now.
-    Call to this view is only valid for registered user who's status is `verification_pending`.
+    View to re-send verification code during registration process.
+
+        - No limitation on number of request is set for now.
+        - Call to this view is only valid for registered user who's status is `verification_pending`.
 
     **Type**: POST
 
@@ -383,7 +379,7 @@ def registration_resend_otp(request):
         try:
             reg_user = RegisteredUser.objects.get(id=reg_user_id, status=RegisteredUser.ST_VERIFICATION_PENDING)
 
-            # Create OTP token
+            # Create verification code token
             user_token, is_utoken_new = UserToken.objects.update_or_create(
                 registered_user = reg_user,
                 purpose = UserToken.PUR_OTP_VERF,
@@ -408,7 +404,7 @@ def registration_resend_otp(request):
 def reset_password_plea(request):
     """
     A web API view to plea for password reset/recovery. This view verifies the user and
-    send password recovery SMS and email containing OTP that will be used to reset password.
+    send password recovery SMS and email containing verification code that will be used to reset password.
 
     :returns: An json response of type :class:`utilties.api_utils.ApiResponse`.
 
@@ -426,11 +422,11 @@ def reset_password_plea(request):
         class_name = ClassifyRegisteredUser.classify(username)
 
         if class_name in [ClassifyRegisteredUser.UNVERIFIED, ClassifyRegisteredUser.VERIFIED]:
-            # Allowed; Send OTP
+            # Allowed; Send verification code
             # Get RegisteredUser
             registered_user = RegisteredUser.objects.get(user__username=username)
 
-            # Create OTP token
+            # Create verification code token
             user_token, is_utoken_new = UserToken.objects.update_or_create(
                 registered_user = registered_user,
                 purpose = UserToken.PUR_OTP_VERF,
@@ -440,13 +436,13 @@ def reset_password_plea(request):
             )
 
             # Send owls
-            owls.SmsOwl.send_reg_verification(
+            owls.SmsOwl.send_password_reset(
                 mobile_no = username,
                 user_token = user_token,
                 username = username
             )
             if registered_user.user.email and registered_user.user.email != '':
-                owls.EmailOwl.send_reg_verification(
+                owls.EmailOwl.send_password_reset(
                     email_address = registered_user.user.email,
                     user_token = user_token,
                     username = username

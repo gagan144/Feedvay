@@ -6,13 +6,13 @@
 
     <div align="center">
         {{ new_registered_user.user.first_name }} you are one step away.
-        An OTP has been send to you mobile number {{ new_registered_user.user.username }}.
+        A verification code has been send to you mobile number {{ new_registered_user.user.username }}.
         <br/>
-        Kindly enter OTP to verify yourself.
+        Kindly enter the code to verify yourself.
 
         <form method="post" >{% csrf_token %}
             <input type="hidden" name="token" value="{{ token }}">
-            <input type="text" name="otp" placeholder="Enter OTP here" autocomplete="off" required>
+            <input type="text" name="code" placeholder="Enter code here" autocomplete="off" required>
 
             {% if status == 'failed' %}
                 <p>{{ message }}</p>
@@ -20,17 +20,17 @@
 
             <br/>
             <button type="submit">Verify</button>
-            <button type="button" onclick="resend_otp();">Resend OTP</button>
+            <button type="button" onclick="resend_code();">Resend Code</button>
         </form>
 
-        <small>You OTP will expire in {{ VERIFICATION_EXPIRY_MIN }} minutes.</small>
+        <small>You code will expire in {{ VERIFICATION_EXPIRY_MIN }} minutes.</small>
     </div>
 
     <script>
-        function resend_otp(){
+        function resend_code(){
             $.ajax({
                 type: "POST",
-                url: '{% url 'accounts_registration_resend_otp' %}',
+                url: '{% url 'accounts_registration_resend_code' %}',
                 data: {
                     "id": {{ new_registered_user.id }},
                     "csrfmiddlewaretoken": "{{ csrf_token }}"

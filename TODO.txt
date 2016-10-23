@@ -8,7 +8,7 @@
     - New Feature Promotion
 
 
-- Refract code to check registration is different than forgot password
+- Skin
 
 - Geography
     - Country tel code

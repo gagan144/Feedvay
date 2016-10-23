@@ -14,7 +14,7 @@ urlpatterns = [
     url(r'^signup/$', views.registration, name='accounts_registration'),
     url(r'^registration/verify/$', views.registration_verify, name='accounts_registration_verify'),
     url(r'^registration/closed/$', views.registration_closed, name='accounts_registration_closed'),
-    url(r'^registration/resend-otp/$', views.registration_resend_otp, name='accounts_registration_resend_otp'),
+    url(r'^registration/resend-code/$', views.registration_resend_code, name='accounts_registration_resend_code'),
 
     # Password recovery
     url(r'^recovery/plea/$', views.reset_password_plea, name='accounts_reset_password_plea'),

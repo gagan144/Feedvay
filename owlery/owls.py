@@ -28,7 +28,7 @@ class SmsOwl:
     @staticmethod
     def send_reg_verification(mobile_no, user_token, username=None):
         """
-        Sends a SMS containing registration verification code.
+        Sends a 'registration verification' SMS containing verification code.
 
         :param mobile_no: Mobile number. +91-9999999999 is converted to +919999999999
         :param user_token: Instance of :class:`accounts.models.UserToken` containing the code.
@@ -53,6 +53,34 @@ class SmsOwl:
 
         return sms
 
+    @staticmethod
+    def send_password_reset(mobile_no, user_token, username=None):
+        """
+        Sends a 'password reset/recovery' SMS containing verification code.
+
+        :param mobile_no: Mobile number. +91-9999999999 is converted to +919999999999
+        :param user_token: Instance of :class:`accounts.models.UserToken` containing the code.
+        :param username: (Optional) Username of user to which SMS is to be send.
+        :return: Returns :class:`owlery.model.SmsMessage` instance.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        message_body = render_to_response('owlery/owls/sms/password_reset.txt',{
+            "code": user_token.value,
+            "expire_time": user_token.humanize_expire_on("%I:%M %p")
+        }).content
+
+        sms = SmsMessage.objects.create(
+            username = username,
+            mobile_no = mobile_no.replace('-',''),
+            message = message_body,
+            type = SmsMessage.TYPE_PASS_RESET,
+            priority = SmsMessage.PR_URGENT
+        )
+
+        return sms
+
 
 class EmailOwl:
     """
@@ -67,9 +95,9 @@ class EmailOwl:
     """
 
     @staticmethod
-    def send_reg_verification(email_address, user_token, username=None):
+    def send_password_reset(email_address, user_token, username=None):
         """
-        Send email containing registration verification code.
+        Sends a 'password reset/recovery' email containing verification code.
 
         :param email_address: Email address of the receiver
         :param user_token: Instance of :class:`accounts.models.UserToken` containing the code.
@@ -88,7 +116,7 @@ class EmailOwl:
             receiver_name = "{} {}".format(user.first_name, user.last_name)
 
         # Create message body
-        message_body = render_to_response('owlery/owls/emails/reg_verification.html', {
+        message_body = render_to_response('owlery/owls/emails/password_reset.html', {
             "receiver_name": receiver_name,
             "code": user_token.value,
             "expire_min": (settings.VERIFICATION_EXPIRY/60),
@@ -100,10 +128,10 @@ class EmailOwl:
             username = username,
             email_id = email_address,
 
-            subject = "Feedvuy Account - {} is your registration verification code".format(user_token.value),
+            subject = "Feedvuy Account - {} is your recovery verification code".format(user_token.value),
             message = message_body,
 
-            type = EmailMessage.TYPE_REG_VERIF,
+            type = EmailMessage.TYPE_PASS_RESET,
             priority = EmailMessage.PR_URGENT
         )
 

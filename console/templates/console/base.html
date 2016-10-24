@@ -1,0 +1,177 @@
+{# Copyright (C) 2016 Feedvuy (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="NONE,NOARCHIVE" />
+
+    <!-- Basic -->
+    <link href="{% get_static_prefix %}ui/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/css/animate.css" rel="stylesheet">
+
+    <!-- Theme -->
+    <link href="{% get_static_prefix %}ui/css/style.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/css/custom.css" rel="stylesheet">
+
+    {% block head %}
+        <title>Feedvuy</title>
+    {% endblock %}
+</head>
+
+<body class="top-navigation">
+
+    <div id="wrapper">
+        <div id="page-wrapper" class="gray-bg">
+
+            <!-- Top Navbar -->
+            <div class="row border-bottom white-bg">
+                <nav class="navbar navbar-static-top" role="navigation">
+                    <div class="navbar-header">
+                        <button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
+                            <i class="fa fa-reorder"></i>
+                        </button>
+                        <a href="{% url 'console_home' %}" class="navbar-brand" title="Feedvuy management console" style="padding: 8px !important;background: none !important;color: inherit !important;border-right: solid 1px #e7eaec;">
+                            <img src="{% get_static_prefix %}images/feedvuy_logo.png" style="height: 34px !important;" alt="Feedvuy">
+                        </a>
+                    </div>
+                    <div class="navbar-collapse collapse" id="navbar">
+                        <ul class="nav navbar-nav">
+
+                            <li class="dropdown">
+                                <a aria-expanded="false" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown"> Menu item <span class="caret"></span></a>
+                                <ul role="menu" class="dropdown-menu">
+                                    <li><a href="">Menu item</a></li>
+                                    <li><a href="">Menu item</a></li>
+                                    <li><a href="">Menu item</a></li>
+                                    <li><a href="">Menu item</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a aria-expanded="false" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown"> Menu item <span class="caret"></span></a>
+                                <ul role="menu" class="dropdown-menu">
+                                    <li><a href="">Menu item</a></li>
+                                    <li><a href="">Menu item</a></li>
+                                    <li><a href="">Menu item</a></li>
+                                    <li><a href="">Menu item</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a aria-expanded="false" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown"> Menu item <span class="caret"></span></a>
+                                <ul role="menu" class="dropdown-menu">
+                                    <li><a href="">Menu item</a></li>
+                                    <li><a href="">Menu item</a></li>
+                                    <li><a href="">Menu item</a></li>
+                                    <li><a href="">Menu item</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a aria-expanded="false" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown"> Menu item <span class="caret"></span></a>
+                                <ul role="menu" class="dropdown-menu">
+                                    <li><a href="">Menu item</a></li>
+                                    <li><a href="">Menu item</a></li>
+                                    <li><a href="">Menu item</a></li>
+                                    <li><a href="">Menu item</a></li>
+                                </ul>
+                            </li>
+
+                        </ul>
+
+                        <!-- right -->
+                        <ul class="nav navbar-nav navbar-right">
+                            <li>
+                                <a aria-expanded="false" role="button" href="{% url 'home' %}" title="Feedvuy site">
+                                    <i class="fa fa-globe"></i>
+                                    Site
+                                </a>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+{#                                    <i class="fa fa-user"></i>#}
+                                    {{ request.user.first_name }}
+                                    <i class="caret"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li role="separator" class="divider divider_custom"></li>
+                                    <li><a href="{% url 'accounts_logout' %}"><i class="fa fa-sign-out"></i>&nbsp;&nbsp;Logout</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <!-- /right -->
+                    </div>
+                </nav>
+            </div>
+            <!-- /Top Navbar -->
+
+            <!-- Header -->
+            {% block page_header %}
+                <div class="row wrapper border-bottom white-bg page-heading">
+                    <div class="col-xs-8">
+                        <h2>This is main title</h2>
+                        <ol class="breadcrumb">
+                            <li>
+                                <a href="{% url 'console_home' %}">Home</a>
+                            </li>
+                            <li class="active">
+                                PageName
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="title-action">
+                            <a href="" class="btn btn-primary">This is action area</a>
+                        </div>
+                    </div>
+                </div>
+            {% endblock %}
+            <!-- /Header -->
+
+            <!-- Content -->
+            <div class="wrapper wrapper-content">
+                <div class="container">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
+            <!-- /Content -->
+
+            <!-- Footer -->
+            <div class="footer">
+                <div class="pull-right">
+                    10GB of <strong>250GB</strong> Free.
+                </div>
+                <div>
+                    <strong>Copyright</strong> Example Company &copy; 2014-2017
+                </div>
+            </div>
+            <!-- /Footer -->
+
+        </div>
+    </div>
+
+
+    <!-- Main scripts -->
+    <script src="{% get_static_prefix %}ui/js/jquery-2.1.1.js"></script>
+    <script src="{% get_static_prefix %}ui/js/bootstrap.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="{% get_static_prefix %}ui/js/inspinia.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/pace/pace.min.js"></script>
+
+    {% block scripts %}
+    <script>
+        $(document).ready(function() {
+
+        });
+    </script>
+    {% endblock %}
+
+</body>
+</html>

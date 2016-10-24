@@ -15,6 +15,10 @@ from utilities.decorators import staff_user_only
 def home(request):
     """
     View for main site page.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
     """
     data = {
         "welcome": request.GET.get('welcome',False)
@@ -50,6 +54,10 @@ def docs(request, filename=None):
     that consumes CPU & memory and blocks web server threads.
 
     Reference: http://zacharyvoase.com/2009/09/08/sendfile/
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
     """
 
     abs_filename = get_absolute_filename(filename)

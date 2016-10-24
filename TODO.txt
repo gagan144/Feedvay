@@ -14,3 +14,5 @@
 
 - Crons
     - Delete orphan sessions & UserSessions
+
+- Logo

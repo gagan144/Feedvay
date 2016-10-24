@@ -26,6 +26,9 @@ urlpatterns = [
     # Accounts
     url(r'^accounts/', include('accounts.urls')),
 
+    # Accounts
+    url(r'^console/', include('console.urls')),
+
     # Admin and staff
     url(r'^admin/', admin.site.urls),
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),    # Django admindocs

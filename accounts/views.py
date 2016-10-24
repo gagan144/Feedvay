@@ -118,7 +118,7 @@ def login(request):
                         if next and next != '':
                             return HttpResponseRedirect(request.GET['next'])
                         else:
-                            return HttpResponseRedirect(reverse('home'))
+                            return HttpResponseRedirect(reverse('console_home'))
 
                     else:
                         # --- Invalid password ---
@@ -146,7 +146,7 @@ def logout(request):
     **Authors**: Gagandeep Singh
     """
     auth.logout(request)
-    return HttpResponseRedirect(reverse('home'))
+    return HttpResponseRedirect(reverse('accounts_login'))
 # ---------- /Login ----------
 
 # ---------- Registration ----------
@@ -160,7 +160,7 @@ def registration(request):
     **Authors**: Gagandeep Singh
     """
     if request.user.is_authenticated():
-        return HttpResponseRedirect(reverse('home'))
+        return HttpResponseRedirect(reverse('console_home'))
     if not settings.REGISTRATION_OPEN:
         return HttpResponseRedirect(reverse('accounts_registration_closed'))
 
@@ -359,7 +359,7 @@ def registration_verify(request):
                     request.session.set_expiry(0) # Expire when web browser is closed
 
                 # Redirect to root page
-                return HttpResponseRedirect(reverse('home')+"?welcome=true")
+                return HttpResponseRedirect(reverse('console_home')+"?welcome=true")
 
             else:
                 data['status'] = 'failed'
@@ -546,7 +546,7 @@ def recover_account(request):
                     request.session.set_expiry(0) # Expire when web browser is closed
 
                     # Redirect to home
-                    return HttpResponseRedirect(reverse('home'))
+                    return HttpResponseRedirect(reverse('console_home'))
                 else:
                     # Token verification failed
                     return HttpResponseRedirect(reverse('accounts_login')+"?username="+mobile_no+"&recovery_failed=1")

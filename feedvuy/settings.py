@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'accounts',
     'watchdog',
     'owlery',
-
+    'console',
 ]
 
 MIDDLEWARE = [

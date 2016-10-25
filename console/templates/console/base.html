@@ -16,7 +16,8 @@
     <link href="{% get_static_prefix %}ui/css/animate.css" rel="stylesheet">
 
     <!-- Theme -->
-    <link href="{% get_static_prefix %}ui/css/style.css" rel="stylesheet">
+{#    <link href="{% get_static_prefix %}ui/css/style.css" rel="stylesheet">#}
+    <link href="{% get_static_prefix %}ui/css/style-default.css" rel="stylesheet">
     <link href="{% get_static_prefix %}ui/css/custom.css" rel="stylesheet">
 
     {% block head %}
@@ -83,20 +84,33 @@
                         </ul>
 
                         <!-- right -->
-                        <ul class="nav navbar-nav navbar-right">
+                        <ul class="nav navbar-nav navbar-right top-navigation-right-custom">
                             <li>
                                 <a aria-expanded="false" role="button" href="{% url 'home' %}" title="Feedvuy site">
-                                    <i class="fa fa-globe"></i>
-                                    Site
+                                    <i class="fa fa-globe" style="margin: 0px !important;"></i>
+                                    <span class="mobile_show" style="padding-left: 6px;">Feedvuy site</span>
                                 </a>
                             </li>
                             <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Help and report">
+                                    <i class="fa fa-lightbulb-o" style="margin: 0px !important;"></i>
+                                    <span class="mobile_show" style="padding-left: 6px;">Help and report</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#"><i class="fa fa-question-circle"></i>&nbsp;&nbsp;Help</a></li>
+                                    <li role="separator" class="divider divider_custom"></li>
+                                    <li><a href="#"><i class="fa fa-bug"></i>&nbsp;&nbsp;Report problem</a></li>
+                                    <li><a href="#"><i class="fa fa-comments-o"></i>&nbsp;&nbsp;Suggest change</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-{#                                    <i class="fa fa-user"></i>#}
                                     {{ request.user.first_name }}
                                     <i class="caret"></i>
                                 </a>
                                 <ul class="dropdown-menu">
+                                    <li><a href="#"><i class="fa fa-user"></i>&nbsp;&nbsp;Profile</a></li>
+                                    <li><a href="#"><i class="fa fa-cog"></i>&nbsp;&nbsp;Settings</a></li>
                                     <li role="separator" class="divider divider_custom"></li>
                                     <li><a href="{% url 'accounts_logout' %}"><i class="fa fa-sign-out"></i>&nbsp;&nbsp;Logout</a></li>
                                 </ul>

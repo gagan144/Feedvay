@@ -1,3 +1,14 @@
 .divider_custom{
-    margin-bottom: 0px !important;
+    margin: 2px 0px !important;
+}
+
+@media (max-width: 767px) {
+    .mobile_show{
+        display: inline;
+    }
+}
+@media (min-width: 767px) {
+    .mobile_show{
+        display: none;
+    }
 }

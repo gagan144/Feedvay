@@ -78,8 +78,12 @@ class SmsMessage(models.Model):
     priority    = models.CharField(max_length=16, choices=CH_PRIORITY, default=PR_NORMAL, help_text='Priority of this SMS.')
 
     status      = models.CharField(max_length=16, choices=CH_STATUS, default=ST_NEW, editable=False, db_index=True, help_text='Message status.')
-    sender      = models.CharField(max_length=15, editable=False, db_index=True, validators=[validate_sms_no], help_text="Sender's mobile number of E.164 format. This is configured & fixed mobile no of the business.")
+
+    sms_gateway = models.CharField(max_length=255, default=None, null=True, blank=True, editable=False, db_index=True, help_text='Name of the SMS gateway used to send this SMS.')
+    sender      = models.CharField(max_length=20, null=True, blank=True, editable=False, db_index=True, help_text="SMS gatewys service sender ID or mobile number of E.164 format.")
     send_on     = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this SMS was successfully send.')
+    send_result = models.TextField(null=True, blank=True, editable=False, help_text='Result as returned by SMS gateway.')
+    transaction_id = models.CharField(max_length=255, null=True, blank=True, editable=False, help_text='TransactionID of for this SMS as returned by SMS gateway.')
 
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this SMS was created. This is NOT send date.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was updated.')
@@ -116,10 +120,16 @@ class SmsMessage(models.Model):
 
         # Check status
         if self.status == SmsMessage.ST_SEND:
+            if self.sms_gateway is None:
+                raise ValidationError('Please provide SMS gateway used to send this SMS.')
+            if self.sender is None:
+                raise ValidationError("Please provide sender's ID/mobile number.")
             if self.send_on is None:
                 raise ValidationError('Please provide send date for this SMS.')
-            if self.sender is None:
-                raise ValidationError("Please provide sender's mobile number.")
+            if self.send_result is None:
+                raise ValidationError('Please provide send result as returned by the SMS gateway.')
+            if self.transaction_id is None:
+                raise ValidationError('Please provide transactionID as returned by the SMS gateway.')
 
         if self.pk:
             # Update modified date

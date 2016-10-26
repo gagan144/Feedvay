@@ -4,6 +4,7 @@
         - Deactivate/Reactivate account
         - User Roles
         - Default Group for public user
+        - Sudo user login
 
     - New Feature Promotion
 
@@ -16,3 +17,4 @@
     - Delete orphan sessions & UserSessions
 
 - Logo
+- SMS Gateway service classes

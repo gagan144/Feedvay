@@ -8419,3 +8419,15 @@ body.md-skin {
   border-left: solid 1px #e7eaec;
 }
 /* ----- Top navbar ----- */
+
+/* ----- Validations ----- */
+label.error {
+  color: #cc5965;
+  display: inline-block;
+  margin-left: 5px;
+  font-weight: normal !important;
+}
+div.error{
+  color: #cc5965;
+}
+/* ----- /Validations ----- */

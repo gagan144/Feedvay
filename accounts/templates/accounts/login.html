@@ -211,10 +211,18 @@
                     this.btn_recover_resend.show();
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
-                    $.growl.error({
-                        title: '<i class="fa fa-exclamation-triangle"></i> Error!',
-                        message: "Something went wrong. Our engineers will be informed."
-                    });
+                    if(xhr.readyState == 0){
+                        $.growl.error({
+                            title: '<i class="fa fa-signal"></i> Network error!',
+                            message: "Please check your internet connection."
+                        });
+                    }else{
+                        $.growl.error({
+                            title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                            message: "Something went wrong. Our engineers will be informed."
+                        });
+                    }
+
 
                     this.loading.hide();
                     this.btn_recover.show();

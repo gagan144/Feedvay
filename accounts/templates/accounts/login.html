@@ -63,7 +63,7 @@
 
                     <div class="input-group m-b {% if login_fail %}has-error{% endif %}">
                         <span class="input-group-addon">{{ country_tel_code }}</span>
-                        <input type="text" id="fld_username" class="form-control" name="username" placeholder="Mobile number" value="{{ username|default_if_none:"" }}" required>
+                        <input type="text" id="fld_username" class="form-control" name="username" placeholder="Mobile number" value="{{ username|default_if_none:"" }}"  maxlength="10" required>
                     </div>
 
                     <div class="form-group {% if login_fail %}has-error{% endif %}">

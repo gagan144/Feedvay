@@ -1,94 +1,208 @@
-{% extends 'base.html' %}
+{# Copyright (C) 2016 Feedvuy (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% load static %}
+<!DOCTYPE html>
+<html>
 
-{% block content %}
-    <h1>Registration</h1>
-    <hr/>
+<head>
 
-    <form id="form_registration" action="{% url 'accounts_registration' %}" method="post" >{% csrf_token %}
-        <table>
-            <tbody>
-                <tr>
-                    <td>Mobile No:</td>
-                    <td>
-                        {{ country_tel_code }}
-                        <input type="number" name="mobile_no" value="{{ form_reg.mobile_no.value|default_if_none:"" }}" min="{{ form_reg.fields.mobile_no.min_value }}" max="{{ form_reg.fields.mobile_no.max_value }}" required>
-                        {% if form_reg.mobile_no.errors %}
-                            <div class="error">
-                                {% for err in form_reg.mobile_no.errors %}
-                                    * {{ err }} <br/>
-                                {% endfor %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Feedvuy | Sign Up</title>
+
+    <link href="{% get_static_prefix %}ui/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/css/animate.css" rel="stylesheet">
+
+    <link href="{% get_static_prefix %}ui/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}lib/growl/jquery.growl.css" rel="stylesheet">
+
+    <link href="{% get_static_prefix %}ui/css/style-default.css" rel="stylesheet">
+
+    <style>
+        .col-custom{
+            padding: 0px 5px !important;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg">
+
+    <div class="loginColumns animated fadeInDown">
+        <div class="row">
+            <!-- Left content -->
+            <div class="col-md-5">
+                <h2 class="font-bold">Welcome to Feevuy.com</h2>
+
+                <p>
+                    Perfectly designed and precisely prepared admin theme with over 50 pages with extra new web app views.
+                </p>
+
+                <p>
+                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+                </p>
+
+                <p>
+                    When an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                </p>
+
+                <p>
+                    <small>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</small>
+                </p>
+
+            </div>
+
+            <!-- Signup form -->
+            <div class="col-md-7">
+                <div class="ibox-content text-center">
+                    <h3>Sign up now!</h3>
+
+                    <form id="form_signup" class="m-t" role="form" method="post">{% csrf_token %}
+                        <div>
+                            <div class="input-group m-b {% if form_reg.mobile_no.errors or username_exists%}has-error{% endif %}">
+                                <span class="input-group-addon">{{ country_tel_code }}</span>
+                                <input type="text" class="form-control" name="mobile_no" placeholder="Mobile number" value="{{ form_reg.mobile_no.value|default_if_none:"" }}"  maxlength="10" required>
                             </div>
-                        {% endif %}
-                        {% if username_exists %}
-                            <div class="error">* Already registered!</div>
-                        {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        Name:
-                    </td>
-                    <td>
-                        <input type="text" name="first_name" value="{{ form_reg.first_name.value|default_if_none:"" }}" placeholder="First name" required>
-                        <input type="text" name="middle_name" value="{{ form_reg.middle_name.value|default_if_none:"" }}" placeholder="Middle name">
-                        <input type="text" name="last_name" value="{{ form_reg.last_name.value|default_if_none:"" }}" placeholder="Last name" required>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Password:</td>
-                    <td>
-                        <input type="password" name="password" required>
-                        {% if form_reg.password.errors %}
-                            <div class="error">
-                                {% for err in form_reg.password.errors %}
-                                    * {{ err }} <br/>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td>Confirm password:</td>
-                    <td>
-                        <input type="password" name="confirm_password" required>
-                        {% if form_reg.confirm_password.errors %}
-                            <div class="error">
-                                {% for err in form_reg.confirm_password.errors %}
-                                    * {{ err }} <br/>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>
-                        <input type="checkbox" name="terms_n_conditions" required>
-                        I agree to terms and conditions.
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>
-                        {{ form_reg.captcha }}
-
-                        {% if form_reg.captcha.errors %}
-                            {% if form_reg.captcha.errors %}
+                            {% if form_reg.mobile_no.errors %}
                                 <div class="error">
-                                    {% for err in form_reg.captcha.errors %}
+                                    {% for err in form_reg.mobile_no.errors %}
                                         * {{ err }} <br/>
                                     {% endfor %}
                                 </div>
                             {% endif %}
-                        {% endif %}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                            {% if username_exists %}
+                                <div class="error">* Already registered!</div>
+                            {% endif %}
+                        </div>
 
-        <button type="submit">Register</button>
-    </form>
-{% endblock %}
+                        <div class="row" style="margin: 0px -5px !important;">
+                            <div class="col-xs-4 col-custom">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="first_name" value="{{ form_reg.first_name.value|default_if_none:"" }}" placeholder="First name*" required>
+                                </div>
+                            </div>
+                            <div class="col-xs-4 col-custom">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="middle_name" value="{{ form_reg.first_name.value|default_if_none:"" }}" placeholder="Middle name">
+                                </div>
+                            </div>
+                            <div class="col-xs-4 col-custom">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="last_name" value="{{ form_reg.first_name.value|default_if_none:"" }}" placeholder="Last name*" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group {% if form_reg.password.errors %}has-error{% endif %}">
+                            <input type="password" id="fld_password" name="password" class="form-control" placeholder="Password" required>
+                        </div>
+
+                        <div class="form-group {% if form_reg.confirm_password.errors %}has-error{% endif %}">
+                            <input type="password" name="confirm_password" class="form-control" placeholder="Confirm password" required>
+                        </div>
+
+                        <div class="form-group" align="left">
+                            <div class="checkbox checkbox-primary">
+                                <input id="chk_terms_n_conditions" type="checkbox" name="terms_n_conditions" required>
+                                <label for="chk_terms_n_conditions">
+                                    I agree to the terms and conditions.
+                                </label>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 15px;" align="center">
+                            <script>
+                                function callback_recaptcha(val){ alert(val); }
+                            </script>
+                            {{ form_reg.captcha }}
+                            {% if form_reg.captcha.errors %}
+                                {% if form_reg.captcha.errors %}
+                                    <div class="error">
+                                        Please prove that you are a human.
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+
+
+                        <button type="submit" class="btn btn-primary block full-width m-b">Register</button>
+
+
+                        <div style="margin-top: 20px;">
+                            <p class="text-muted text-center">
+                                <small>Already have an account?</small>
+                            </p>
+                            <a class="btn btn-sm btn-white btn-block" href="{% url 'accounts_login' %}">Login</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- Signup form -->
+        </div>
+
+    </div>
+
+    <!-- Mainly scripts -->
+    <script src="{% get_static_prefix %}ui/js/jquery-2.1.1.js"></script>
+    <script src="{% get_static_prefix %}ui/js/bootstrap.min.js"></script>
+
+    <script src="{% get_static_prefix %}ui/js/plugins/validate/jquery.validate.min.js"></script>
+    <script src="{% get_static_prefix %}lib/growl/jquery.growl.js"></script>
+
+    <script>
+        $(function(){
+            $("#form_signup").validate({
+                rules: {
+                    mobile_no: {
+                        required: true,
+                        digits: true,
+                        minlength: 10,
+                        maxlength: 10
+                    },
+                    first_name: {
+	                    required: true,
+	                },
+                    last_name: {
+	                    required: true,
+	                },
+                    password: {
+	                    required: true,
+	                    minlength: 3,
+	                },
+                    confirm_password: {
+                        required: true,
+	                    minlength: 3,
+                        equalTo: "#fld_password"
+                    },
+                    terms_n_conditions: {
+                        required: true
+                    }
+                },
+                messages: {
+                    username: "Please enter your 10-digit mobile number.",
+                    first_name: {
+                        required: "Required.",
+                    },
+                    last_name: {
+                        required: "Required.",
+                    },
+                    password: {
+                        required: "Please enter your password.",
+                        minlength: "Password should be minimum 3 characters.",
+                    },
+                    confirm_password: {
+                        required: "Please enter your password.",
+                        minlength: "Password should be minimum 3 characters.",
+                        equalTo: "Password does not match.",
+                    },
+                    terms_n_conditions: "asdfgsd"
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

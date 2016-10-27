@@ -26,7 +26,7 @@ class RegistrationForm(forms.Form):
 
     terms_n_conditions = forms.BooleanField(required=True, label='I agree to terms and conditions.')
 
-    captcha = ReCaptchaField(required=True)
+    captcha = ReCaptchaField(required=True, attrs={"callback": "callback_recaptcha"})
 
     def clean(self):
         form_data = self.cleaned_data

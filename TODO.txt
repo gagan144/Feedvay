@@ -8,6 +8,11 @@
 
     - New Feature Promotion
 
+- UI
+    - Signup
+        - Disable submit button
+        - Recaptcha validation
+
 - SEO
 - Skin
 

@@ -25,16 +25,49 @@
         .col-custom{
             padding: 0px 5px !important;
         }
+
+        @media (max-width: 767px) {
+            .content_body{
+                padding-top: 20px;
+            }
+
+            .left_content {
+                display: none;
+            }
+        }
+
+        @media (min-width: 767px) {
+            .content_body{
+                padding-top: 60px;
+            }
+
+            .mobile_show{
+                display: none;
+            }
+
+        }
     </style>
 
 </head>
 
 <body class="gray-bg">
 
-    <div class="loginColumns animated fadeInDown">
+    <div class="loginColumns animated fadeInDown content_body">
         <div class="row">
             <!-- Left content -->
-            <div class="col-md-5">
+            <div class="col-md-5 left_content">
+                <div align="center" style="margin-bottom: 20px;">
+                    <img src="{% get_static_prefix %}images/feedvuy_logo.png" style="width: 200px;">
+                    <p style="font-weight: 600;">
+                        Feedbacks
+                        &nbsp;●&nbsp;
+                        Surveys
+                        &nbsp;●&nbsp;
+                        Market intelligence
+                    </p>
+                </div>
+
+
                 <h2 class="font-bold">Welcome to Feevuy.com</h2>
 
                 <p>
@@ -58,11 +91,22 @@
             <!-- Signup form -->
             <div class="col-md-7">
                 <div class="ibox-content text-center">
-                    <h3>Sign up now!</h3>
+                    <div class="mobile_show" align="center" style="margin-bottom: 20px;">
+                        <img src="{% get_static_prefix %}images/feedvuy_logo.png" style="width: 200px;">
+                        <p style="font-weight: 600;">
+                            Feedbacks
+                            &nbsp;●&nbsp;
+                            Surveys
+                            &nbsp;●&nbsp;
+                            Market intelligence
+                        </p>
+                    </div>
+
+                    <h3 class="text-navy">Sign up now!</h3>
 
                     <form id="form_signup" class="m-t" role="form" method="post">{% csrf_token %}
-                        <div>
-                            <div class="input-group m-b {% if form_reg.mobile_no.errors or username_exists%}has-error{% endif %}">
+                        <div style="margin-bottom: 15px;">
+                            <div class="input-group m-b {% if form_reg.mobile_no.errors or username_exists%}has-error{% endif %}" style="margin-bottom: 0px;">
                                 <span class="input-group-addon">{{ country_tel_code }}</span>
                                 <input type="text" class="form-control" name="mobile_no" placeholder="Mobile number" value="{{ form_reg.mobile_no.value|default_if_none:"" }}"  maxlength="10" required>
                             </div>
@@ -105,7 +149,7 @@
                         </div>
 
                         <div class="form-group" align="left">
-                            <div class="checkbox checkbox-primary">
+                            <div class="checkbox checkbox-primary" style="margin: 0px;">
                                 <input id="chk_terms_n_conditions" type="checkbox" name="terms_n_conditions" required>
                                 <label for="chk_terms_n_conditions">
                                     I agree to the terms and conditions.
@@ -155,12 +199,24 @@
     <script>
         $(function(){
             $("#form_signup").validate({
+                errorPlacement: function (error, element) {
+                    var elem_name = element.attr("name");
+
+                    if (elem_name == "mobile_no" || elem_name == 'terms_n_conditions') {
+                        error.insertAfter(element.parent());
+                    } else {
+                        error.insertAfter(element)
+                    }
+                },
                 rules: {
                     mobile_no: {
                         required: true,
                         digits: true,
                         minlength: 10,
-                        maxlength: 10
+                        maxlength: 10,
+{#                        errorPlacement: function (error, element) {#}
+{#                            return error.parentNode; //error.insertAfter(element);#}
+{#                        }#}
                     },
                     first_name: {
 	                    required: true,
@@ -198,7 +254,7 @@
                         minlength: "Password should be minimum 3 characters.",
                         equalTo: "Password does not match.",
                     },
-                    terms_n_conditions: "asdfgsd"
+                    terms_n_conditions: "Kindly agree to terms and condition."
                 }
             });
         });

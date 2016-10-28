@@ -9,7 +9,7 @@
     - New Feature Promotion
 
 - UI
-    - Regis verify, suspended
+    - Regis suspended
 
 - SEO
 - Skin

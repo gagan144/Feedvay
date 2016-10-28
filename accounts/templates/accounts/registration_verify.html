@@ -1,32 +1,90 @@
-{% extends 'base.html' %}
+{# Copyright (C) 2017 Feedvuy (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'base_simple.html' %}
+{% load static %}
+
+{% block head %}
+    <title>Feedvuy| Verification</title>
+{% endblock %}
 
 {% block content %}
-    <h1>Verify</h1>
-    <hr/>
+    <div class="row animated fadeInDown">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="ibox-content" align="center">
 
-    <div align="center">
-        {{ new_registered_user.user.first_name }} you are one step away.
-        A verification code has been send to you mobile number {{ new_registered_user.user.username }}.
-        <br/>
-        Kindly enter the code to verify yourself.
+                <h2 class="font-bold">
+                    Verification
+                </h2>
 
-        <form method="post" >{% csrf_token %}
-            <input type="hidden" name="token" value="{{ token }}">
-            <input type="text" name="code" placeholder="Enter code here" autocomplete="off" required>
+                <p style="font-size: 14px;">
+                    {{ new_registered_user.user.first_name }} you are just one step away to access your account.
+                    A verification code has been send to you mobile number <span class="semi_bold">{{ new_registered_user.user.username }}</span>.
+                    <br/>
+                    Kindly enter the code to verify yourself.
+                </p>
 
-            {% if status == 'failed' %}
-                <p>{{ message }}</p>
-            {% endif %}
+                <div class="row">
+                    <div class="col-lg-6 col-lg-offset-3">
+                        <form id="form_verification" class="m-t" role="form" method="post">{% csrf_token %}
+                            <input type="hidden" name="token" value="{{ token }}">
 
-            <br/>
-            <button type="submit">Verify</button>
-            <button type="button" onclick="resend_code();">Resend Code</button>
-        </form>
+                            {% if status == 'failed' %}
+                                <div class="text-danger" align="center" style="margin-bottom: 10px;">
+                                    {{ message }}
+                                </div>
+                            {% endif %}
 
-        <small>You code will expire in {{ VERIFICATION_EXPIRY_MIN }} minutes.</small>
+                            <div class="form-group">
+                                <input type="text" name="code" class="form-control" placeholder="Enter code here" autocomplete="off" style="text-align: center;" required>
+
+                                <div style="margin-bottom: 10px;">
+                                    <div id="loading_resend" class="text-navy" style="padding: 5px;display: none;">
+                                        <img src="{% get_static_prefix %}images/loading/spinner_1.gif" style="height: 16px;">&nbsp;
+                                        Sending verification code ...
+                                    </div>
+                                    <a id="btn_resend" href="javascript: resend_code();"><small>Resend code?</small></a>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary block full-width m-b">Verify</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div>
+                    <small>Your code will expire in {{ VERIFICATION_EXPIRY_MIN }} minutes.</small>
+                </div>
+            </div>
+        </div>
     </div>
+{% endblock %}
 
+
+{% block scripts %}
     <script>
+        $(document).ready(function() {
+            $("#form_verification").validate({
+{#                errorPlacement: function (error, element) {#}
+{#                    var elem_name = element.attr("name");#}
+{##}
+{#                    if (elem_name == "username") {#}
+{#                        error.insertAfter(element.parent());#}
+{#                    } else {#}
+{#                        error.insertAfter(element)#}
+{#                    }#}
+{#                },#}
+                rules: {
+                    code: {
+                        required: true
+                    }
+                },
+                messages: {
+                    code: "Please enter the code.",
+                }
+            });
+        });
+
         function resend_code(){
             $.ajax({
                 type: "POST",
@@ -34,6 +92,12 @@
                 data: {
                     "id": {{ new_registered_user.id }},
                     "csrfmiddlewaretoken": "{{ csrf_token }}"
+                },
+                loading: $("#loading_resend"),
+                btn_resend: $("#btn_resend"),
+                beforeSend: function() {
+                    this.loading.show();
+                    this.btn_resend.hide();
                 },
                 success: function (result) {
                     if(result.status=='success') {
@@ -43,11 +107,23 @@
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
-                    //location.reload();
+                    if(xhr.readyState == 0){
+                        $.growl.error({
+                            title: '<i class="fa fa-signal"></i> Network error!',
+                            message: "Please check your internet connection."
+                        });
+                    }else{
+                        $.growl.error({
+                            title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                            message: "Something went wrong. Our engineers will be informed."
+                        });
+                    }
+
+                    this.loading.hide();
+                    this.btn_resend.show();
                 }
             });
         }
+
     </script>
-
-
 {% endblock %}

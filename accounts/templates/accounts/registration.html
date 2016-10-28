@@ -124,17 +124,12 @@
                         </div>
 
                         <div class="row" style="margin: 0px -5px !important;">
-                            <div class="col-xs-4 col-custom">
+                            <div class="col-xs-6 col-custom">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="first_name" value="{{ form_reg.first_name.value|default_if_none:"" }}" placeholder="First name*" required>
                                 </div>
                             </div>
-                            <div class="col-xs-4 col-custom">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" name="middle_name" value="{{ form_reg.first_name.value|default_if_none:"" }}" placeholder="Middle name">
-                                </div>
-                            </div>
-                            <div class="col-xs-4 col-custom">
+                            <div class="col-xs-6 col-custom">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="last_name" value="{{ form_reg.first_name.value|default_if_none:"" }}" placeholder="Last name*" required>
                                 </div>
@@ -160,9 +155,21 @@
 
                         <div style="margin-bottom: 15px;" align="center">
                             <script>
-                                function callback_recaptcha(val){ alert(val); }
+                                function callback_recaptcha(response){
+                                    alert(response);
+                                    if(response.length > 0){
+                                        $('#btn_register').show();
+                                    }else{
+                                        $('#btn_register').hide();
+                                    }
+                                }
                             </script>
-                            {{ form_reg.captcha }}
+
+{#                            {{ form_reg.captcha }}#}
+
+                            <script src="https://www.google.com/recaptcha/api.js?hl=en"></script>
+                            <div class="g-recaptcha" data-sitekey="{{ RECAPTCHA_PUBLIC_KEY }}" data-callback="callback_recaptcha"></div>
+
                             {% if form_reg.captcha.errors %}
                                 {% if form_reg.captcha.errors %}
                                     <div class="error">
@@ -172,10 +179,7 @@
                             {% endif %}
                         </div>
 
-
-                        <button type="submit" class="btn btn-primary block full-width m-b ladda-button" data-style="zoom-in">Register</button>
-{#                        <button type="button" class="btn btn-primary block full-width m-b ladda-button" data-style="zoom-in">DELETE</button>#}
-
+                        <button id="btn_register" type="submit" class="btn btn-primary block full-width m-b ladda-button" data-style="zoom-in" style="display: none !important;">Register</button>
 
                         <div style="margin-top: 20px;">
                             <p class="text-muted text-center">
@@ -241,9 +245,6 @@
                         equalTo: "#fld_password"
                     },
                     terms_n_conditions: {
-                        required: true
-                    },
-                    "g-recaptcha-response": {
                         required: true
                     }
                 },

@@ -18,7 +18,6 @@ class RegistrationForm(forms.Form):
     mobile_no   = forms.IntegerField(required=True, min_value=1000000000, max_value=9999999999, help_text='Mobile number as username.')
 
     first_name  = forms.CharField(required=True)
-    middle_name = forms.CharField(required=False)
     last_name   = forms.CharField(required=True)
 
     password    = forms.CharField(widget=forms.PasswordInput())
@@ -26,7 +25,7 @@ class RegistrationForm(forms.Form):
 
     terms_n_conditions = forms.BooleanField(required=True, label='I agree to terms and conditions.')
 
-    captcha = ReCaptchaField(required=True, attrs={"callback": "callback_recaptcha"})
+    captcha = ReCaptchaField(required=True, attrs={"callback": "callback_recaptcha"})   #WARNING: Callback not working; use custom html
 
     def clean(self):
         form_data = self.cleaned_data

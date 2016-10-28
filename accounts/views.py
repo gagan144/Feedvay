@@ -166,7 +166,8 @@ def registration(request):
 
     country_tel_code = '+91'    #TODO: Set default country_tel_code
     data = {
-        'country_tel_code': country_tel_code
+        'country_tel_code': country_tel_code,
+        'RECAPTCHA_PUBLIC_KEY': settings.RECAPTCHA_PUBLIC_KEY
     }
     form_reg = RegistrationForm()
 

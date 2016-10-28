@@ -9,8 +9,7 @@
     - New Feature Promotion
 
 - UI
-    - Signup
-        - Recaptcha validation
+    - Regis closed, verify, suspended
 
 - SEO
 - Skin

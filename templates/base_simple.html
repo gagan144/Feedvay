@@ -1,0 +1,75 @@
+{# Copyright (C) 2017 Feedvuy (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Basic -->
+    <link href="{% get_static_prefix %}ui/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/css/animate.css" rel="stylesheet">
+
+    <!-- Theme -->
+    <link href="{% get_static_prefix %}ui/css/style-default.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/css/custom.css" rel="stylesheet">
+
+    {% block head %}
+        <title>Feedvuy</title>
+    {% endblock %}
+</head>
+
+<body class="top-navigation">
+
+    <div id="wrapper">
+        <div id="page-wrapper" class="gray-bg">
+
+            <!-- Top Navbar -->
+            <div class="row border-bottom white-bg">
+                <nav class="navbar navbar-static-top" role="navigation">
+                    <div class="navbar-brandX" align="center" style="height: 50px;font-size: 18px;line-height: 20px;padding: 8px;">
+                        <a href="{% url 'console_home' %}" title="feedvuy.com">
+                            <img src="{% get_static_prefix %}images/feedvuy_logo.png" style="height: 34px !important;" alt="Feedvuy">
+                        </a>
+                    </div>
+                </nav>
+            </div>
+            <!-- /Top Navbar -->
+
+            <!-- Content -->
+            <div class="wrapper wrapper-content">
+                <div class="container">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
+            <!-- /Content -->
+
+        </div>
+    </div>
+
+
+    <!-- Main scripts -->
+    <script src="{% get_static_prefix %}ui/js/jquery-2.1.1.js"></script>
+    <script src="{% get_static_prefix %}ui/js/bootstrap.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="{% get_static_prefix %}ui/js/inspinia.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/pace/pace.min.js"></script>
+
+    {% block scripts %}
+        <script>
+            $(document).ready(function() {
+
+            });
+        </script>
+    {% endblock %}
+
+</body>
+</html>

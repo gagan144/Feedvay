@@ -1,10 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <h1>Sorry! Registration closed.</h1>
-</body>
-</html>
+{# Copyright (C) 2017 Feedvuy (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'base_simple.html' %}
+
+{% block head %}
+        <title>Feedvuy| Registration closed</title>
+    {% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3" align="center">
+            <h1 class="text-danger" style="margin: 0px 0px 20px 0px;">
+                Registration closed!
+            </h1>
+            <p style="font-size: 15px;">
+                Sorry, all registration have been closed for now. <br/>
+                We are sorry for any inconveniences this may cause. <br/>
+                We will be back soon so, please try again later.
+
+                <br/><br/>
+                Thank you for your interest!
+            </p>
+
+            <p>
+                <a href="{% url 'home' %}" class="btn btn-primary m-t">
+                    Go to feedvuy.com
+                </a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

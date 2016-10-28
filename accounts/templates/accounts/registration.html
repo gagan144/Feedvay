@@ -18,6 +18,7 @@
 
     <link href="{% get_static_prefix %}ui/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css" rel="stylesheet">
     <link href="{% get_static_prefix %}lib/growl/jquery.growl.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/css/plugins/ladda/ladda-themeless.min.css" rel="stylesheet">
 
     <link href="{% get_static_prefix %}ui/css/style-default.css" rel="stylesheet">
 
@@ -172,7 +173,8 @@
                         </div>
 
 
-                        <button type="submit" class="btn btn-primary block full-width m-b">Register</button>
+                        <button type="submit" class="btn btn-primary block full-width m-b ladda-button" data-style="zoom-in">Register</button>
+{#                        <button type="button" class="btn btn-primary block full-width m-b ladda-button" data-style="zoom-in">DELETE</button>#}
 
 
                         <div style="margin-top: 20px;">
@@ -195,6 +197,11 @@
 
     <script src="{% get_static_prefix %}ui/js/plugins/validate/jquery.validate.min.js"></script>
     <script src="{% get_static_prefix %}lib/growl/jquery.growl.js"></script>
+
+    <!-- Ladda -->
+    <script src="{% get_static_prefix %}ui/js/plugins/ladda/spin.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/ladda/ladda.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/ladda/ladda.jquery.min.js"></script>
 
     <script>
         $(function(){
@@ -235,6 +242,9 @@
                     },
                     terms_n_conditions: {
                         required: true
+                    },
+                    "g-recaptcha-response": {
+                        required: true
                     }
                 },
                 messages: {
@@ -257,6 +267,10 @@
                     terms_n_conditions: "Kindly agree to terms and condition."
                 }
             });
+
+            // Bind ladda buttons
+            $( '.ladda-button' ).ladda( 'bind');
+
         });
     </script>
 

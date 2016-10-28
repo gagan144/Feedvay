@@ -10,7 +10,6 @@
 
 - UI
     - Signup
-        - Disable submit button
         - Recaptcha validation
 
 - SEO

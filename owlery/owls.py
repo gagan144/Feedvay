@@ -1,4 +1,4 @@
-# Copyright (C) 2016 Feedvuy (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved
+# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from django.shortcuts import render_to_response
@@ -129,7 +129,7 @@ class EmailOwl:
             username = username,
             email_id = email_address,
 
-            subject = "Feedvuy Account - {} is your recovery verification code".format(user_token.value),
+            subject = "Feedvay Account - {} is your recovery verification code".format(user_token.value),
             message = message_body,
 
             type = EmailMessage.TYPE_PASS_RESET,

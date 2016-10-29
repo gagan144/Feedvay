@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# feedvuy documentation build configuration file, created by
+# feedvay documentation build configuration file, created by
 # sphinx-quickstart on Mon Oct 10 21:00:36 2016.
 #
 # This file is execfile()d with the current directory set to its
@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 # sys.path.insert(0, os.path.abspath('.'))
 
 import django
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "feedvuy.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "feedvay.settings")
 django.setup()
 
 # -- General configuration ------------------------------------------------
@@ -62,8 +62,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'feedvuy'
-copyright = u'2016, Gagandeep Singh'
+project = u'feedvay'
+copyright = u'2017, Gagandeep Singh'
 author = u'Gagandeep Singh'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -150,7 +150,7 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
 #
-# html_title = u'feedvuy v1.0'
+# html_title = u'feedvay v1.0'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #
@@ -250,7 +250,7 @@ html_static_path = ['_static']
 # html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'feedvuydoc'
+htmlhelp_basename = 'feedvaydoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -276,7 +276,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'feedvuy.tex', u'feedvuy Documentation',
+    (master_doc, 'feedvay.tex', u'feedvay Documentation',
      u'Gagandeep Singh', 'manual'),
 ]
 
@@ -318,7 +318,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'feedvuy', u'feedvuy Documentation',
+    (master_doc, 'feedvay', u'feedvay Documentation',
      [author], 1)
 ]
 
@@ -333,8 +333,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'feedvuy', u'feedvuy Documentation',
-     author, 'feedvuy', 'One line description of project.',
+    (master_doc, 'feedvay', u'feedvay Documentation',
+     author, 'feedvay', 'One line description of project.',
      'Miscellaneous'),
 ]
 

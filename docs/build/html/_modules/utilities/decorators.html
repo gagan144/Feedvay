@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>utilities.decorators &mdash; feedvuy 1.0 documentation</title>
+  <title>utilities.decorators &mdash; feedvay 1.0 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="feedvuy 1.0 documentation" href="../../index.html"/>
+    <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -52,7 +52,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> feedvuy
+            <a href="../../index.html" class="icon icon-home"> feedvay
           
 
           
@@ -103,7 +103,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">feedvuy</a>
+        <a href="../../index.html">feedvay</a>
       </nav>
 
 
@@ -135,7 +135,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for utilities.decorators</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Copyright (C) 2016 Feedvuy (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved</span>
+<span></span><span class="c1"># Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved</span>
 <span class="c1"># Content in this document can not be copied and/or distributed without the express</span>
 <span class="c1"># permission of Gagandeep Singh.</span>
 <span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="k">import</span> <span class="n">resolve_url</span><span class="p">,</span><span class="n">Http404</span>
@@ -143,7 +143,7 @@
 <span class="kn">from</span> <span class="nn">django.contrib.auth.decorators</span> <span class="k">import</span> <span class="n">REDIRECT_FIELD_NAME</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
 
-<div class="viewcode-block" id="staff_user_only"><a class="viewcode-back" href="../../modules/utilities/decorators.html#feedvuy.views.staff_user_only">[docs]</a><span class="k">def</span> <span class="nf">staff_user_only</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">login_url</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">LOGIN_URL_STAFF</span><span class="p">,</span> <span class="n">redirect_field_name</span><span class="o">=</span><span class="n">REDIRECT_FIELD_NAME</span><span class="p">):</span>
+<div class="viewcode-block" id="staff_user_only"><a class="viewcode-back" href="../../modules/utilities/decorators.html#feedvay.views.staff_user_only">[docs]</a><span class="k">def</span> <span class="nf">staff_user_only</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">login_url</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">LOGIN_URL_STAFF</span><span class="p">,</span> <span class="n">redirect_field_name</span><span class="o">=</span><span class="n">REDIRECT_FIELD_NAME</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Django view decorator to only allow logged in &#39;staff&#39; or &#39;superuser&#39; users only.</span>
 <span class="sd">    If user is not logged in, it redirects to login page, otherwise returns 404.</span>
@@ -176,7 +176,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Gagandeep Singh.
+        &copy; Copyright 2017, Gagandeep Singh.
 
     </p>
   </div>

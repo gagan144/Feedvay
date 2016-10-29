@@ -1,4 +1,4 @@
-Welcome to feedvuy's documentation!
+Welcome to feedvay's documentation!
 ===================================
 
 Collaborated platform for feedbacks, surveys and market intelligence.

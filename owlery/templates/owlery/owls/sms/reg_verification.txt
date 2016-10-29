@@ -1,1 +1,1 @@
-{{code}} is your Feedvuy verification code. Valid till {{expire_time}}.
+{{code}} is your Feedvay verification code. Valid till {{expire_time}}.

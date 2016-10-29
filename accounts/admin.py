@@ -50,7 +50,7 @@ class RegisteredUserProxyAdmin(admin.ModelAdmin):
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
 
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_active')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_active', 'date_joined')
     list_filter = ('is_active', 'registereduser__status', 'registereduser__reg_method')
     search_fields = ('username', 'first_name', 'last_name', 'email')
     ordering = ('-date_joined',)

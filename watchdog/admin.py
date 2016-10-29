@@ -14,7 +14,7 @@ class ErrorLogAdmin(admin.ModelAdmin):
 
     **Authors**: Gagandeep Singh
     """
-    list_display = ('id', 'shortened_url', 'server_name', 'class_name', 'message', 'times_seen', 'is_resolved')
+    list_display = ('id', 'shortened_url', 'server_name', 'message', 'times_seen', 'is_resolved', 'last_seen_on')
     list_filter = ('is_resolved', 'server_name', 'class_name', 'last_seen_on')
     raw_id_fields = ('last_seen_by', 'resolved_by')
     search_fields = ('server_name', 'class_name', 'url')

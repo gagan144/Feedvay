@@ -55,76 +55,84 @@ def login(request):
                 user_class = ClassifyRegisteredUser.classify(actual_username)
 
                 # Class 'NEW' & 'STAFF' are unreachable here; already check and handled
-                if user_class == ClassifyRegisteredUser.UNVERIFIED:
-                    # --- Unverified user; redirect to verification ---
-                    # Create verification code token
-                    user_token, is_utoken_new = UserToken.objects.update_or_create(
-                        registered_user = registered_user,
-                        purpose = UserToken.PUR_OTP_VERF,
-                        defaults = {
-                            "created_on" : timezone.now()
-                        }
-                    )
+                # So, Check user password
+                if user.check_password(password):
+                    # --- Password is valid ---
 
-                    # Send owls
-                    owls.SmsOwl.send_reg_verification(
-                        mobile_no = actual_username,
-                        user_token = user_token,
-                        username = actual_username
-                    )
-
-                    # Generate token & redirect to verification
-                    token = jwt.encode(
-                        {
-                            'reg_user_id': registered_user.id,
-                            'is_new': False
-                        },
-                        settings.JWT_SECRET_KEY,
-                        algorithm = settings.JWT_ALOG
-                    )
-                    return HttpResponseRedirect(
-                        "{url}?q={token}".format(
-                            url = reverse('accounts_registration_verify'),
-                            token = token
+                    # Perform action based on the user class
+                    if user_class == ClassifyRegisteredUser.UNVERIFIED:
+                        # --- Unverified user; redirect to verification ---
+                        # Create verification code token
+                        user_token, is_utoken_new = UserToken.objects.update_or_create(
+                            registered_user = registered_user,
+                            purpose = UserToken.PUR_REG_VERF,
+                            defaults = {
+                                "created_on" : timezone.now()
+                            }
                         )
-                    )
 
-                elif user_class == ClassifyRegisteredUser.SUSPENDED:
-                    # --- User's account suspended; show message ---
-                    data['username'] = actual_username
-                    return render(request, 'accounts/account_suspended.html', data)
+                        # Send owls
+                        owls.SmsOwl.send_reg_verification(
+                            mobile_no = actual_username,
+                            user_token = user_token,
+                            username = actual_username
+                        )
 
-                elif user_class == ClassifyRegisteredUser.VERIFIED:
-                    # Authenticate user credentials
-                    auth_user = auth.authenticate(username=actual_username,password=password)
+                        # Generate token & redirect to verification
+                        token = jwt.encode(
+                            {
+                                'reg_user_id': registered_user.id,
+                                'is_new': False
+                            },
+                            settings.JWT_SECRET_KEY,
+                            algorithm = settings.JWT_ALOG
+                        )
+                        return HttpResponseRedirect(
+                            "{url}?q={token}".format(
+                                url = reverse('accounts_registration_verify'),
+                                token = token
+                            )
+                        )
 
-                    if auth_user:
-                        # --- Authentic user; provide session ---
-                        auth.login(request, user)
+                    elif user_class == ClassifyRegisteredUser.SUSPENDED:
+                        # --- User's account suspended; show message ---
+                        data['username'] = actual_username
+                        return render(request, 'accounts/account_suspended.html', data)
 
-                        # Check for 'Remember Me'
-                        if not request.POST.get('remember_me',None):
-                            # 'Remember Me' was not selected
-                            # Expire session after 'SESSION_COOKIE_AGE' seconds
-                            # OR after browser is closed.
-                            request.session.set_expiry(0) # Expire when web browser is closed
+                    elif user_class == ClassifyRegisteredUser.VERIFIED:
+                        # Authenticate user credentials
+                        auth_user = auth.authenticate(username=actual_username,password=password)
+
+                        if auth_user:
+                            # --- Authentic user; provide session ---
+                            auth.login(request, user)
+
+                            # Check for 'Remember Me'
+                            if not request.POST.get('remember_me',None):
+                                # 'Remember Me' was not selected
+                                # Expire session after 'SESSION_COOKIE_AGE' seconds
+                                # OR after browser is closed.
+                                request.session.set_expiry(0) # Expire when web browser is closed
+                            else:
+                                # 'Remember Me' was selected
+                                # Expires after 'SESSION_COOKIE_AGE_PUBLIC' seconds only
+                                # Does not expires on browser close
+                                request.session.set_expiry(settings.SESSION_COOKIE_AGE_PUBLIC)
+
+                            next = request.GET.get('next',None)
+                            if next and next != '':
+                                return HttpResponseRedirect(request.GET['next'])
+                            else:
+                                return HttpResponseRedirect(reverse('console_home'))
+
                         else:
-                            # 'Remember Me' was selected
-                            # Expires after 'SESSION_COOKIE_AGE_PUBLIC' seconds only
-                            # Does not expires on browser close
-                            request.session.set_expiry(settings.SESSION_COOKIE_AGE_PUBLIC)
-
-                        next = request.GET.get('next',None)
-                        if next and next != '':
-                            return HttpResponseRedirect(request.GET['next'])
-                        else:
-                            return HttpResponseRedirect(reverse('console_home'))
-
-                    else:
-                        # --- Invalid password ---
-                        data['login_fail'] = True
-                        data['username'] = username
-
+                            # --- Invalid password: auth.authenticate() ---
+                            data['login_fail'] = True
+                            data['username'] = username
+                else:
+                    # --- Invalid password: user.check_password() ---
+                    data['login_fail'] = True
+                    data['username'] = username
             except RegisteredUser.DoesNotExist:
                 # --- Staff user; Login not allowed here, use django admin ---
                 # Unreachable since country tel code is prefixed to input username
@@ -207,7 +215,7 @@ def registration(request):
                     # Create verification code token
                     user_token, is_utoken_new = UserToken.objects.update_or_create(
                         registered_user = registered_user,
-                        purpose = UserToken.PUR_OTP_VERF,
+                        purpose = UserToken.PUR_REG_VERF,
                         defaults = {
                             "created_on" : timezone.now()
                         }
@@ -259,7 +267,7 @@ def registration(request):
                     # Create verification code token
                     user_token, is_utoken_new = UserToken.objects.update_or_create(
                         registered_user = new_registered_user,
-                        purpose = UserToken.PUR_OTP_VERF,
+                        purpose = UserToken.PUR_REG_VERF,
                         defaults = {
                             "created_on" : timezone.now()
                         }
@@ -321,7 +329,7 @@ def registration_verify(request):
 
     now = timezone.now()
     try:
-        user_token = UserToken.objects.get(registered_user=new_registered_user, purpose=UserToken.PUR_OTP_VERF, expire_on__gt=now)
+        user_token = UserToken.objects.get(registered_user=new_registered_user, purpose=UserToken.PUR_REG_VERF, expire_on__gt=now)
 
         # Check expiry
         time_lapsed_sec = (timezone.now() - user_token.created_on).total_seconds()
@@ -392,7 +400,7 @@ def registration_resend_code(request):
             # Create verification code token
             user_token, is_utoken_new = UserToken.objects.update_or_create(
                 registered_user = reg_user,
-                purpose = UserToken.PUR_OTP_VERF,
+                purpose = UserToken.PUR_REG_VERF,
                 defaults = {
                     "created_on" : timezone.now()
                 }
@@ -415,6 +423,9 @@ def reset_password_plea(request):
     """
     A web API view to plea for password reset/recovery. This view verifies the user and
     send password recovery SMS and email containing verification code that will be used to reset password.
+
+    .. note::
+        Only 'Verified' and 'Unverified' users can plea for password recovery
 
     :returns: An json response of type :class:`utilties.api_utils.ApiResponse`.
 
@@ -439,7 +450,7 @@ def reset_password_plea(request):
             # Create verification code token
             user_token, is_utoken_new = UserToken.objects.update_or_create(
                 registered_user = registered_user,
-                purpose = UserToken.PUR_OTP_VERF,
+                purpose = UserToken.PUR_PASS_RESET,
                 defaults = {
                     "created_on" : timezone.now()
                 }
@@ -489,7 +500,7 @@ def reset_password_plea_verify(request):
     try:
         passed = UserToken.verify_user_token(
             username = actual_username,
-            purpose = UserToken.PUR_OTP_VERF,
+            purpose = UserToken.PUR_PASS_RESET,
             value = verification_code
         )
 
@@ -505,9 +516,9 @@ def recover_account(request):
     """
     A view to recover user account by:
 
-        - First verifying 'verification code',
-        - Reset password
-        - Logging in the user.
+        1. First verifying 'verification code',
+        2. Reset password
+        3. Logging in the user if user is verified else redirecting for verification. Delete token as well.
 
     **Type**: POST
 
@@ -528,26 +539,83 @@ def recover_account(request):
         # Validate form
         if form_recover.is_valid():
             try:
-                # Verify token
+                # (1) Verify token
                 passed = UserToken.verify_user_token(
                     username = actual_username,
-                    purpose = UserToken.PUR_OTP_VERF,
+                    purpose = UserToken.PUR_PASS_RESET,
                     value = form_data['verification_code']
                 )
 
                 if passed:
                     # Verification passed
-                    # Reset password
+                    user_pass_reset_token = UserToken.objects.get(
+                        registered_user = RegisteredUser.objects.get(user__username=actual_username),
+                        purpose = UserToken.PUR_PASS_RESET
+                    )
+
+                    # (2) Reset password
                     user = User.objects.get(username=actual_username)
                     user.set_password(form_data['new_password'])
                     user.save()
 
-                    # Login user and create session
-                    auth.login(request, user)
-                    request.session.set_expiry(0) # Expire when web browser is closed
+                    # (3) Check user class
+                    user_class = ClassifyRegisteredUser.classify(actual_username)
 
-                    # Redirect to home
-                    return HttpResponseRedirect(reverse('console_home'))
+                    if user_class == ClassifyRegisteredUser.VERIFIED:
+                        # --- (3.1) Verified user: Log him in ---
+                        # Delete Token
+                        user_pass_reset_token.delete()
+
+                        # Login user and create session
+                        auth.login(request, user)
+                        request.session.set_expiry(0) # Expire when web browser is closed
+
+                        # Redirect to home
+                        return HttpResponseRedirect(reverse('console_home'))
+
+                    elif user_class == ClassifyRegisteredUser.UNVERIFIED:
+                        # --- (3.2) Unverified user; redirect to verification ---
+                        # Delete Token
+                        user_pass_reset_token.delete()
+
+                        registered_user = user.registereduser
+
+                        # Create verification code token
+                        user_reg_token, is_utoken_new = UserToken.objects.update_or_create(
+                            registered_user = registered_user,
+                            purpose = UserToken.PUR_REG_VERF,
+                            defaults = {
+                                "created_on" : timezone.now()
+                            }
+                        )
+
+                        # Send owls
+                        owls.SmsOwl.send_reg_verification(
+                            mobile_no = actual_username,
+                            user_token = user_reg_token,
+                            username = actual_username
+                        )
+
+                        # Generate token & redirect to verification
+                        token = jwt.encode(
+                            {
+                                'reg_user_id': registered_user.id,
+                                'is_new': False
+                            },
+                            settings.JWT_SECRET_KEY,
+                            algorithm = settings.JWT_ALOG
+                        )
+                        return HttpResponseRedirect(
+                            "{url}?q={token}".format(
+                                url = reverse('accounts_registration_verify'),
+                                token = token
+                            )
+                        )
+                    else:
+                        raise NotImplementedError("Invalid condition for user class '{}'".format(user_class))
+
+
+
                 else:
                     # Token verification failed
                     return HttpResponseRedirect(reverse('accounts_login')+"?username="+mobile_no+"&recovery_failed=1")

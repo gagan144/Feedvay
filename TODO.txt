@@ -6,6 +6,8 @@
         - Default Group for public user
         - Sudo user login
 
+    - Browser check to allow only angularjs supported browsers
+    - Mobile/Desktop client check
     - New Feature Promotion
 
 - UI

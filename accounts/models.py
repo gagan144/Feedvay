@@ -158,9 +158,11 @@ class UserToken(models.Model):
     **Authors**: Gagandeep Singh
     """
 
-    PUR_OTP_VERF = 'otp_verification'
+    PUR_REG_VERF = 'reg_verification'
+    PUR_PASS_RESET = 'password_reset'
     CH_PURPOSE = (
-        (PUR_OTP_VERF, 'OTP Verification'),
+        (PUR_REG_VERF, 'Registration Verification'),
+        (PUR_PASS_RESET, 'Password Reset'),
     )
 
     registered_user = models.ForeignKey(RegisteredUser, db_index=True, editable=False, help_text='Reference to the registered user to whom this token belongs.')
@@ -188,7 +190,7 @@ class UserToken(models.Model):
         """
 
         # Set expiry date
-        if self.purpose == UserToken.PUR_OTP_VERF:
+        if self.purpose in [UserToken.PUR_REG_VERF, UserToken.PUR_PASS_RESET]:
             self.value = UserToken.gen_verification_otp()
             self.expire_on = timezone.now() + timezone.timedelta(seconds=settings.VERIFICATION_EXPIRY)
 

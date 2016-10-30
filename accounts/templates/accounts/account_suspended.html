@@ -1,11 +1,34 @@
-{% extends 'base.html' %}
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'base_simple.html' %}
+
+{% block head %}
+    <title>Feedvay| Account suspended</title>
+{% endblock %}
 
 {% block content %}
-    <h1>Account suspended</h1>
-    <hr/>
-    Your account with mobile no {{ username }} has been suspended for some reason.
-    Please contact team.
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3" align="center">
+            <h1 class="text-danger" style="margin: 0px 0px 20px 0px;">
+                <i class="fa fa-ban" style="font-size: 70px;"></i><br/>
+                Account suspended!
+            </h1>
+            <p style="font-size: 15px;">
+                We regret to inform you that your account with mobile number <span class="semi_bold">{{ username }}</span>
+                has been suspended for some reason.<br/>
+                Please contact our team for any further information.
+            </p>
 
-    <br/><br/>
-    <a href="{% url 'accounts_login' %}">Login again</a>
+            <p>
+                <a href="{% url 'home' %}" class="btn btn-primary m-t">
+                    Go to feedvay.com
+                </a>
+            </p>
+
+            <p class="m-t" style="margin-top: 20px;">
+                <small>© 2017 Feedvay. All rights reserved.</small>
+            </p>
+        </div>
+    </div>
 {% endblock %}

@@ -91,7 +91,7 @@ def login(request):
 
                 elif user_class == ClassifyRegisteredUser.SUSPENDED:
                     # --- User's account suspended; show message ---
-                    data['username'] = username
+                    data['username'] = actual_username
                     return render(request, 'accounts/account_suspended.html', data)
 
                 elif user_class == ClassifyRegisteredUser.VERIFIED:

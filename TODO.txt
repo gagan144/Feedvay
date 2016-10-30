@@ -9,7 +9,6 @@
     - New Feature Promotion
 
 - UI
-    - Regis suspended
 
 - SEO
 - Skin

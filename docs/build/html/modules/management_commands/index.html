@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Accounts &mdash; feedvay 1.0 documentation</title>
+  <title>Management Commands &mdash; feedvay 1.0 documentation</title>
   
 
   
@@ -34,8 +34,8 @@
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
-        <link rel="next" title="User Registration" href="mod_registration.html"/>
-        <link rel="prev" title="Views" href="../main/views.html"/> 
+        <link rel="next" title="Accounts Management Commands" href="accounts.html"/>
+        <link rel="prev" title="Decorators" href="../utilities/decorators.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -86,28 +86,14 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../main/index.html">Main App</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Accounts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#modules">Modules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="mod_registration.html">User Registration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mod_user_login.html">User Login</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mod_sessions.html">Session Management</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mod_password_recovery.html">Password Recovery</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#contents">Contents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="models.html">Models</a></li>
-<li class="toctree-l3"><a class="reference internal" href="forms.html">Forms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="views.html">Views</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils.html">Utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../accounts/index.html">Accounts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../watchdog/index.html">Watchdog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../owlery/index.html">Owlery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../utilities/index.html">Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../management_commands/index.html">Management Commands</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Management Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="accounts.html">Accounts</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -138,11 +124,11 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../../index.html">Docs</a> &raquo;</li>
       
-    <li>Accounts</li>
+    <li>Management Commands</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../_sources/modules/accounts/index.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/modules/management_commands/index.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -152,36 +138,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="accounts">
-<h1>Accounts<a class="headerlink" href="#accounts" title="Permalink to this headline">¶</a></h1>
-<p>App responsible for all user account related functionality such as user registration flow, sessions &amp; token
-management, password reset/recovery etc.</p>
-<div class="section" id="modules">
-<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><div class="toctree-wrapper compound">
+  <div class="section" id="management-commands">
+<h1>Management Commands<a class="headerlink" href="#management-commands" title="Permalink to this headline">¶</a></h1>
+<p>This section documents all django management commands for the project across all apps.
+Management commands are set of actions that can be performed inside project environment
+without logging into the system or having session. These commands are mostly used for
+cron process.</p>
+<div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="mod_registration.html">User Registration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mod_user_login.html">User Login</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mod_sessions.html">Session Management</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mod_password_recovery.html">Password Recovery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="accounts.html">Accounts</a></li>
 </ul>
-</div>
-</div></blockquote>
-</div>
-<div class="section" id="contents">
-<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="forms.html">Forms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="views.html">Views</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
-</ul>
-</div>
-</div></blockquote>
 </div>
 </div>
 
@@ -192,10 +158,10 @@ management, password reset/recovery etc.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="mod_registration.html" class="btn btn-neutral float-right" title="User Registration" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="accounts.html" class="btn btn-neutral float-right" title="Accounts Management Commands" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../main/views.html" class="btn btn-neutral" title="Views" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../utilities/decorators.html" class="btn btn-neutral" title="Decorators" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

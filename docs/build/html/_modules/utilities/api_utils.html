@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>utilities.api_utils &mdash; feedvay 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> feedvay
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/main/index.html">Main App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/accounts/index.html">Accounts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/watchdog/index.html">Watchdog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/owlery/index.html">Owlery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/utilities/index.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/management_commands/index.html">Management Commands</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">feedvay</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>utilities.api_utils</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for utilities.api_utils</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved</span>
+<span class="c1"># Content in this document can not be copied and/or distributed without the express</span>
+<span class="c1"># permission of Gagandeep Singh.</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="k">import</span> <span class="n">ValidationError</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="k">import</span> <span class="n">JsonResponse</span>
+<span class="kn">import</span> <span class="nn">ujson</span>
+
+<div class="viewcode-block" id="ApiResponse"><a class="viewcode-back" href="../../modules/utilities/api_utils.html#utilities.api_utils.ApiResponse">[docs]</a><span class="k">class</span> <span class="nc">ApiResponse</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to create a http json response mostly used to cater API requests.</span>
+
+<span class="sd">    The content of the response is as follows:</span>
+
+<span class="sd">        &gt;&gt;&gt; { &quot;code&quot;: &lt;int http code&gt;, &quot;status&quot;: &quot;&lt;status&gt;&quot;, &quot;message&quot;:&quot;&lt;message&quot;&gt;, ... }</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        Response created by this class is always http 200 OK.</span>
+
+<span class="sd">    **Authors**: Gagandeep Singh</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># --- enums ---</span>
+    <span class="n">ST_SUCCESS</span> <span class="o">=</span> <span class="s1">&#39;success&#39;</span>
+    <span class="n">ST_IGNORED</span> <span class="o">=</span> <span class="s1">&#39;ignored&#39;</span>        <span class="c1"># No update or change</span>
+    <span class="n">ST_FAILED</span> <span class="o">=</span> <span class="s1">&#39;failed&#39;</span>          <span class="c1"># Operation failed</span>
+    <span class="n">ST_NOT_ALLOWED</span> <span class="o">=</span> <span class="s1">&#39;not_allowed&#39;</span>    <span class="c1"># GET or POST not allowed</span>
+    <span class="n">ST_FORBIDDEN</span> <span class="o">=</span> <span class="s1">&#39;forbidden&#39;</span>        <span class="c1"># Access is not allowed or prohibited</span>
+    <span class="n">ST_UNAUTHORIZED</span> <span class="o">=</span> <span class="s1">&#39;unauthorized &#39;</span> <span class="c1"># Authentication fails</span>
+    <span class="n">ST_BAD_REQUEST</span> <span class="o">=</span> <span class="s1">&#39;bad_request&#39;</span>    <span class="c1"># Bad request formation/Invalid or missing parameteres</span>
+    <span class="n">ST_SERVER_ERROR</span> <span class="o">=</span> <span class="s1">&#39;server_error&#39;</span>  <span class="c1"># Any internal server error</span>
+
+    <span class="n">CH_STATUS</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">ST_SUCCESS</span><span class="p">,</span> <span class="s1">&#39;Success&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">ST_IGNORED</span><span class="p">,</span> <span class="s1">&#39;Ignored&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">ST_FAILED</span> <span class="p">,</span> <span class="s1">&#39;Failed&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">ST_NOT_ALLOWED</span><span class="p">,</span> <span class="s1">&#39;Not Allowed&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">ST_FORBIDDEN</span><span class="p">,</span> <span class="s1">&#39;Forbidden&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">ST_UNAUTHORIZED</span><span class="p">,</span> <span class="s1">&#39;Unauthorized&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">ST_BAD_REQUEST</span><span class="p">,</span> <span class="s1">&#39;Bad request&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">ST_SERVER_ERROR</span><span class="p">,</span> <span class="s1">&#39;Server error&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">STATUS_CODES</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">ST_SUCCESS</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="n">ST_IGNORED</span><span class="p">:</span> <span class="mi">204</span><span class="p">,</span>
+        <span class="n">ST_FAILED</span><span class="p">:</span> <span class="mi">299</span><span class="p">,</span>
+        <span class="n">ST_NOT_ALLOWED</span><span class="p">:</span> <span class="mi">405</span><span class="p">,</span>
+        <span class="n">ST_FORBIDDEN</span><span class="p">:</span> <span class="mi">403</span><span class="p">,</span>
+        <span class="n">ST_UNAUTHORIZED</span><span class="p">:</span> <span class="mi">401</span><span class="p">,</span>
+        <span class="n">ST_BAD_REQUEST</span><span class="p">:</span> <span class="mi">400</span><span class="p">,</span>
+        <span class="n">ST_SERVER_ERROR</span><span class="p">:</span> <span class="mi">500</span>
+    <span class="p">}</span>
+
+    <span class="c1"># --- Fields ---</span>
+    <span class="n">__data</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+
+            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="p">,</span>
+            <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">message</span>
+        <span class="p">}</span>
+
+        <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Validate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__validate</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ApiResponse</span><span class="o">.</span><span class="n">STATUS_CODES</span><span class="p">[</span><span class="n">status</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__data</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="k">def</span> <span class="nf">__validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span>
+        <span class="n">is_valid</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">ApiResponse</span><span class="o">.</span><span class="n">CH_STATUS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="n">status</span><span class="p">:</span>
+                <span class="n">is_valid</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Invalid status &#39;</span><span class="si">{}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">status</span><span class="p">))</span>
+
+    <span class="c1"># --- Methods ---</span>
+<div class="viewcode-block" id="ApiResponse.set"><a class="viewcode-back" href="../../modules/utilities/api_utils.html#utilities.api_utils.ApiResponse.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to add or update a key-value pair to response json data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Key should be one of &#39;code&#39;, &#39;status&#39;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="ApiResponse.change_status"><a class="viewcode-back" href="../../modules/utilities/api_utils.html#utilities.api_utils.ApiResponse.change_status">[docs]</a>    <span class="k">def</span> <span class="nf">change_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to change status.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">status</span>
+
+        <span class="c1"># Validate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__validate</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ApiResponse</span><span class="o">.</span><span class="n">STATUS_CODES</span><span class="p">[</span><span class="n">status</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ApiResponse.gen_http_response"><a class="viewcode-back" href="../../modules/utilities/api_utils.html#utilities.api_utils.ApiResponse.gen_http_response">[docs]</a>    <span class="k">def</span> <span class="nf">gen_http_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to generate http response instance. Return this from the view.</span>
+
+<span class="sd">        :return: Returns :class:`django.http.JsonResponse` instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Gagandeep Singh.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

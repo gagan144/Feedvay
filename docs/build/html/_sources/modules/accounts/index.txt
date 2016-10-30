@@ -14,6 +14,7 @@ Modules
        mod_registration.rst
        mod_user_login.rst
        mod_sessions.rst
+       mod_password_recovery.rst
 
 
 Contents

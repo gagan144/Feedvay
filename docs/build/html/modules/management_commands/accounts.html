@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Accounts &mdash; feedvay 1.0 documentation</title>
+  <title>Accounts Management Commands &mdash; feedvay 1.0 documentation</title>
   
 
   
@@ -34,8 +34,8 @@
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
-        <link rel="next" title="User Registration" href="mod_registration.html"/>
-        <link rel="prev" title="Views" href="../main/views.html"/> 
+        <link rel="up" title="Management Commands" href="index.html"/>
+        <link rel="prev" title="Management Commands" href="index.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -86,28 +86,17 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../main/index.html">Main App</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Accounts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#modules">Modules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="mod_registration.html">User Registration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mod_user_login.html">User Login</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mod_sessions.html">Session Management</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mod_password_recovery.html">Password Recovery</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#contents">Contents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="models.html">Models</a></li>
-<li class="toctree-l3"><a class="reference internal" href="forms.html">Forms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="views.html">Views</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils.html">Utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../accounts/index.html">Accounts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../watchdog/index.html">Watchdog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../owlery/index.html">Owlery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../utilities/index.html">Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../management_commands/index.html">Management Commands</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Management Commands</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Accounts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clear-user-tokens">Clear user tokens</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             
@@ -138,11 +127,13 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../../index.html">Docs</a> &raquo;</li>
       
-    <li>Accounts</li>
+          <li><a href="index.html">Management Commands</a> &raquo;</li>
+      
+    <li>Accounts Management Commands</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../_sources/modules/accounts/index.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/modules/management_commands/accounts.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -152,36 +143,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="accounts">
-<h1>Accounts<a class="headerlink" href="#accounts" title="Permalink to this headline">¶</a></h1>
-<p>App responsible for all user account related functionality such as user registration flow, sessions &amp; token
-management, password reset/recovery etc.</p>
-<div class="section" id="modules">
-<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="mod_registration.html">User Registration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mod_user_login.html">User Login</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mod_sessions.html">Session Management</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mod_password_recovery.html">Password Recovery</a></li>
-</ul>
+  <div class="section" id="accounts-management-commands">
+<h1>Accounts Management Commands<a class="headerlink" href="#accounts-management-commands" title="Permalink to this headline">¶</a></h1>
+<p>List of all django management commands for &#8216;accounts&#8217; app.</p>
+<div class="section" id="clear-user-tokens">
+<h2>Clear user tokens<a class="headerlink" href="#clear-user-tokens" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="accounts.management.commands.accounts_clear_user_tokens.Command">
+<em class="property">class </em><code class="descclassname">accounts.management.commands.accounts_clear_user_tokens.</code><code class="descname">Command</code><span class="sig-paren">(</span><em>stdout=None</em>, <em>stderr=None</em>, <em>no_color=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/management/commands/accounts_clear_user_tokens.html#Command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.management.commands.accounts_clear_user_tokens.Command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django management command to delete all expired user tokens from model
+<a class="reference internal" href="../accounts/models.html#accounts.models.UserToken" title="accounts.models.UserToken"><code class="xref py py-class docutils literal"><span class="pre">accounts.models.UserToken</span></code></a>.</p>
+</dd></dl>
+
+<p>Command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">accounts_clear_user_tokens</span>
+</pre></div>
 </div>
-</div></blockquote>
-</div>
-<div class="section" id="contents">
-<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="forms.html">Forms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="views.html">Views</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
-</ul>
-</div>
-</div></blockquote>
 </div>
 </div>
 
@@ -192,10 +169,8 @@ management, password reset/recovery etc.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="mod_registration.html" class="btn btn-neutral float-right" title="User Registration" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-      
-        <a href="../main/views.html" class="btn btn-neutral" title="Views" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral" title="Management Commands" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

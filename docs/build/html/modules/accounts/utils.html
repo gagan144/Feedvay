@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Accounts &mdash; feedvay 1.0 documentation</title>
+  <title>Utilities &mdash; feedvay 1.0 documentation</title>
   
 
   
@@ -34,8 +34,9 @@
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
-        <link rel="next" title="User Registration" href="mod_registration.html"/>
-        <link rel="prev" title="Views" href="../main/views.html"/> 
+        <link rel="up" title="Accounts" href="index.html"/>
+        <link rel="next" title="Exceptions" href="exceptions.html"/>
+        <link rel="prev" title="Views" href="views.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -86,19 +87,13 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../main/index.html">Main App</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Accounts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#modules">Modules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="mod_registration.html">User Registration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mod_user_login.html">User Login</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mod_sessions.html">Session Management</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mod_password_recovery.html">Password Recovery</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#contents">Contents</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Accounts</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#modules">Modules</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="models.html">Models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="forms.html">Forms</a></li>
 <li class="toctree-l3"><a class="reference internal" href="views.html">Views</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils.html">Utilities</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Utilities</a></li>
 <li class="toctree-l3"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
 </ul>
 </li>
@@ -138,11 +133,13 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../../index.html">Docs</a> &raquo;</li>
       
-    <li>Accounts</li>
+          <li><a href="index.html">Accounts</a> &raquo;</li>
+      
+    <li>Utilities</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../_sources/modules/accounts/index.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/modules/accounts/utils.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -152,37 +149,66 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="accounts">
-<h1>Accounts<a class="headerlink" href="#accounts" title="Permalink to this headline">¶</a></h1>
-<p>App responsible for all user account related functionality such as user registration flow, sessions &amp; token
-management, password reset/recovery etc.</p>
-<div class="section" id="modules">
-<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="mod_registration.html">User Registration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mod_user_login.html">User Login</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mod_sessions.html">Session Management</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mod_password_recovery.html">Password Recovery</a></li>
-</ul>
-</div>
-</div></blockquote>
-</div>
-<div class="section" id="contents">
-<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="forms.html">Forms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="views.html">Views</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
-</ul>
-</div>
-</div></blockquote>
-</div>
+  <div class="section" id="utilities">
+<h1>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h1>
+<p>Utilities tools for accounts app.</p>
+<span class="target" id="module-accounts.utils"></span><dl class="class">
+<dt id="accounts.utils.ClassifyRegisteredUser">
+<em class="property">class </em><code class="descclassname">accounts.utils.</code><code class="descname">ClassifyRegisteredUser</code><a class="reference internal" href="../../_modules/accounts/utils.html#ClassifyRegisteredUser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.utils.ClassifyRegisteredUser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility class to classify user given its username. This is useful in situations
+such as registration where entered username must be checked for availability, validity,
+incomplete registration state etc.</p>
+<p>Following table describes the classification of the user on basis of certain parameters:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="28%" />
+<col width="15%" />
+<col width="41%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">User model</th>
+<th class="head">RegisteredUser model</th>
+<th class="head">Class</th>
+<th class="head">Remarks</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Not present</td>
+<td>&nbsp;</td>
+<td>NEW</td>
+<td>New user, allow registration.</td>
+</tr>
+<tr class="row-odd"><td>Present(any)</td>
+<td>&nbsp;</td>
+<td>STAFF</td>
+<td>Staff user, deny registration.</td>
+</tr>
+<tr class="row-even"><td>Inactive</td>
+<td>Status: lead</td>
+<td>UNVERIFIED</td>
+<td>Override user with new details.</td>
+</tr>
+<tr class="row-odd"><td>Inactive/Ac</td>
+<td>Status: verif. pending</td>
+<td>UNVERIFIED</td>
+<td>Override user with new details.</td>
+</tr>
+<tr class="row-even"><td>Inactive</td>
+<td>Status: verified</td>
+<td>SUSPENDED</td>
+<td>User account suspended. Deny.</td>
+</tr>
+<tr class="row-odd"><td>Active</td>
+<td>Status: verified</td>
+<td>VERIFIED</td>
+<td>Already registered user.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
 </div>
 
 
@@ -192,10 +218,10 @@ management, password reset/recovery etc.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="mod_registration.html" class="btn btn-neutral float-right" title="User Registration" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="exceptions.html" class="btn btn-neutral float-right" title="Exceptions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../main/views.html" class="btn btn-neutral" title="Views" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="views.html" class="btn btn-neutral" title="Views" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

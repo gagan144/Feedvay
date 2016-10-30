@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Owls &mdash; feedvay 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Owlery" href="index.html"/>
+        <link rel="next" title="Utilities" href="../utilities/index.html"/>
+        <link rel="prev" title="Models" href="models.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> feedvay
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../main/index.html">Main App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../accounts/index.html">Accounts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../watchdog/index.html">Watchdog</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Owlery</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Owls</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities/index.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../management_commands/index.html">Management Commands</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">feedvay</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Owlery</a> &raquo;</li>
+      
+    <li>Owls</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/modules/owlery/owls.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="owls">
+<h1>Owls<a class="headerlink" href="#owls" title="Permalink to this headline">¶</a></h1>
+<p>An owl is an entity responsible for handling messages of its kind (SMS, email etc).
+Each owl defines a set of message handlers with a templates that can be used to along with
+associated parameters to send a message.</p>
+<p>Messages are mostly handled asynchronously. That means as you call one of the handler, message is composed
+and stored in database for some independent process to pick up and dispatch it.</p>
+<dl class="docutils">
+<dt><strong>Guidelines</strong>:</dt>
+<dd><ul class="first last simple">
+<li>For every communication kind (SMS, email) an owl class is created.</li>
+<li>Inside this class, methods are defined that actually compose a message given a set of
+parameters, create database entries and return its instance. An example can be a handler to
+send message for registration verification or success.
+Any error or failure occurred must be thrown as an exception.</li>
+<li>These handler methods may or may not send message immediately and mostly rely on some
+independent process to send them.</li>
+</ul>
+</dd>
+</dl>
+<span class="target" id="module-owlery.owls"></span><dl class="class">
+<dt id="owlery.owls.EmailOwl">
+<em class="property">class </em><code class="descclassname">owlery.owls.</code><code class="descname">EmailOwl</code><a class="reference internal" href="../../_modules/owlery/owls.html#EmailOwl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.owls.EmailOwl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Owl to handle all emails. This class defines various email template that can used to send email.
+All methods composes email according to the parameters and store them in <a class="reference internal" href="models.html#owlery.models.EmailMessage" title="owlery.models.EmailMessage"><code class="xref py py-class docutils literal"><span class="pre">owlery.models.EmailMessage</span></code></a>
+from where they are picked up by a cron process for dispatching.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="staticmethod">
+<dt id="owlery.owls.EmailOwl.send_password_reset">
+<em class="property">static </em><code class="descname">send_password_reset</code><span class="sig-paren">(</span><em>email_address</em>, <em>user_token</em>, <em>username=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/owls.html#EmailOwl.send_password_reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.owls.EmailOwl.send_password_reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a &#8216;password reset/recovery&#8217; email containing verification code.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>email_address</strong> &#8211; Email address of the receiver</li>
+<li><strong>user_token</strong> &#8211; Instance of <a class="reference internal" href="../accounts/models.html#accounts.models.UserToken" title="accounts.models.UserToken"><code class="xref py py-class docutils literal"><span class="pre">accounts.models.UserToken</span></code></a> containing the code.</li>
+<li><strong>username</strong> &#8211; (Optional) Username of user to which SMS is to be send.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Returns <code class="xref py py-class docutils literal"><span class="pre">owlery.model.EmailMessage</span></code> instance.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="owlery.owls.SmsOwl">
+<em class="property">class </em><code class="descclassname">owlery.owls.</code><code class="descname">SmsOwl</code><a class="reference internal" href="../../_modules/owlery/owls.html#SmsOwl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.owls.SmsOwl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Owl to handle all sms. This class defines various SMS templates that can be send in an <strong>asynchronous</strong>
+manner.</p>
+<p>Following is the complete SMS workflow:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Call any of the defined handler methods with required parameters.</li>
+<li>The method uses parameters to compose a message and creates database entry.</li>
+<li>An independent process running periodically picks up this message as per its priority
+and sends the message.</li>
+</ol>
+</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="staticmethod">
+<dt id="owlery.owls.SmsOwl.send_password_reset">
+<em class="property">static </em><code class="descname">send_password_reset</code><span class="sig-paren">(</span><em>mobile_no</em>, <em>user_token</em>, <em>username=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/owls.html#SmsOwl.send_password_reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.owls.SmsOwl.send_password_reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a &#8216;password reset/recovery&#8217; SMS containing verification code.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mobile_no</strong> &#8211; Mobile number. +91-9999999999 is converted to +919999999999</li>
+<li><strong>user_token</strong> &#8211; Instance of <a class="reference internal" href="../accounts/models.html#accounts.models.UserToken" title="accounts.models.UserToken"><code class="xref py py-class docutils literal"><span class="pre">accounts.models.UserToken</span></code></a> containing the code.</li>
+<li><strong>username</strong> &#8211; (Optional) Username of user to which SMS is to be send.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Returns <code class="xref py py-class docutils literal"><span class="pre">owlery.model.SmsMessage</span></code> instance.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="owlery.owls.SmsOwl.send_reg_verification">
+<em class="property">static </em><code class="descname">send_reg_verification</code><span class="sig-paren">(</span><em>mobile_no</em>, <em>user_token</em>, <em>username=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/owls.html#SmsOwl.send_reg_verification"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.owls.SmsOwl.send_reg_verification" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a &#8216;registration verification&#8217; SMS containing verification code.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mobile_no</strong> &#8211; Mobile number. +91-9999999999 is converted to +919999999999</li>
+<li><strong>user_token</strong> &#8211; Instance of <a class="reference internal" href="../accounts/models.html#accounts.models.UserToken" title="accounts.models.UserToken"><code class="xref py py-class docutils literal"><span class="pre">accounts.models.UserToken</span></code></a> containing the code.</li>
+<li><strong>username</strong> &#8211; (Optional) Username of user to which SMS is to be send.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Returns <code class="xref py py-class docutils literal"><span class="pre">owlery.model.SmsMessage</span></code> instance.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../utilities/index.html" class="btn btn-neutral float-right" title="Utilities" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="models.html" class="btn btn-neutral" title="Models" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Gagandeep Singh.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

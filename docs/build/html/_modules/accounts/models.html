@@ -295,9 +295,11 @@
 <span class="sd">    **Authors**: Gagandeep Singh</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">PUR_OTP_VERF</span> <span class="o">=</span> <span class="s1">&#39;otp_verification&#39;</span>
+    <span class="n">PUR_REG_VERF</span> <span class="o">=</span> <span class="s1">&#39;reg_verification&#39;</span>
+    <span class="n">PUR_PASS_RESET</span> <span class="o">=</span> <span class="s1">&#39;password_reset&#39;</span>
     <span class="n">CH_PURPOSE</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">(</span><span class="n">PUR_OTP_VERF</span><span class="p">,</span> <span class="s1">&#39;OTP Verification&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">PUR_REG_VERF</span><span class="p">,</span> <span class="s1">&#39;Registration Verification&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">PUR_PASS_RESET</span><span class="p">,</span> <span class="s1">&#39;Password Reset&#39;</span><span class="p">),</span>
     <span class="p">)</span>
 
     <span class="n">registered_user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">RegisteredUser</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Reference to the registered user to whom this token belongs.&#39;</span><span class="p">)</span>
@@ -325,7 +327,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Set expiry date</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">purpose</span> <span class="o">==</span> <span class="n">UserToken</span><span class="o">.</span><span class="n">PUR_OTP_VERF</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">purpose</span> <span class="ow">in</span> <span class="p">[</span><span class="n">UserToken</span><span class="o">.</span><span class="n">PUR_REG_VERF</span><span class="p">,</span> <span class="n">UserToken</span><span class="o">.</span><span class="n">PUR_PASS_RESET</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">UserToken</span><span class="o">.</span><span class="n">gen_verification_otp</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">expire_on</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">timezone</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">VERIFICATION_EXPIRY</span><span class="p">)</span>
 

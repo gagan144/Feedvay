@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Accounts &mdash; feedvay 1.0 documentation</title>
+  <title>User Login &mdash; feedvay 1.0 documentation</title>
   
 
   
@@ -34,8 +34,9 @@
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
-        <link rel="next" title="User Registration" href="mod_registration.html"/>
-        <link rel="prev" title="Views" href="../main/views.html"/> 
+        <link rel="up" title="Accounts" href="index.html"/>
+        <link rel="next" title="Session Management" href="mod_sessions.html"/>
+        <link rel="prev" title="User Registration" href="mod_registration.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -86,22 +87,17 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../main/index.html">Main App</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Accounts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#modules">Modules</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Accounts</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#modules">Modules</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="mod_registration.html">User Registration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mod_user_login.html">User Login</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">User Login</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#user-login-through-web">1. User login through web</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="mod_sessions.html">Session Management</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mod_password_recovery.html">Password Recovery</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#contents">Contents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="models.html">Models</a></li>
-<li class="toctree-l3"><a class="reference internal" href="forms.html">Forms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="views.html">Views</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils.html">Utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#contents">Contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../watchdog/index.html">Watchdog</a></li>
@@ -138,11 +134,13 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../../index.html">Docs</a> &raquo;</li>
       
-    <li>Accounts</li>
+          <li><a href="index.html">Accounts</a> &raquo;</li>
+      
+    <li>User Login</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../_sources/modules/accounts/index.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/modules/accounts/mod_user_login.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -152,36 +150,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="accounts">
-<h1>Accounts<a class="headerlink" href="#accounts" title="Permalink to this headline">¶</a></h1>
-<p>App responsible for all user account related functionality such as user registration flow, sessions &amp; token
-management, password reset/recovery etc.</p>
-<div class="section" id="modules">
-<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="mod_registration.html">User Registration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mod_user_login.html">User Login</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mod_sessions.html">Session Management</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mod_password_recovery.html">Password Recovery</a></li>
-</ul>
+  <div class="section" id="user-login">
+<h1>User Login<a class="headerlink" href="#user-login" title="Permalink to this headline">¶</a></h1>
+<p>This documents describes various ways for a user to login into the system. This document is only meant
+for public registered users and not the staff user. Staff user login from django admin login screen only.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Staff user login from django admin login screen only.</p>
 </div>
-</div></blockquote>
-</div>
-<div class="section" id="contents">
-<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="forms.html">Forms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="views.html">Views</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
-</ul>
-</div>
-</div></blockquote>
+<div class="section" id="user-login-through-web">
+<h2>1. User login through web<a class="headerlink" href="#user-login-through-web" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>Following flowchart diagram describes the complete flow for user login:</dt>
+<dd><a class="first last reference internal image-reference" href="../../_images/user_login_web_flow.jpg"><img alt="../../_images/user_login_web_flow.jpg" class="align-center" src="../../_images/user_login_web_flow.jpg" style="width: 675.2px; height: 1175.2px;" /></a>
+</dd>
+</dl>
 </div>
 </div>
 
@@ -192,10 +175,10 @@ management, password reset/recovery etc.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="mod_registration.html" class="btn btn-neutral float-right" title="User Registration" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="mod_sessions.html" class="btn btn-neutral float-right" title="Session Management" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../main/views.html" class="btn btn-neutral" title="Views" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="mod_registration.html" class="btn btn-neutral" title="User Registration" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

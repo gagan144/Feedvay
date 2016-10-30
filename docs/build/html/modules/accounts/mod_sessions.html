@@ -1,0 +1,314 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Session Management &mdash; feedvay 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Accounts" href="index.html"/>
+        <link rel="next" title="Models" href="models.html"/>
+        <link rel="prev" title="User Login" href="mod_user_login.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> feedvay
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../main/index.html">Main App</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Accounts</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#modules">Modules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mod_registration.html">User Registration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mod_user_login.html">User Login</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Session Management</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#session-expiry">Session Expiry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#extension-to-the-framework">Extension to the framework</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#contents">Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../watchdog/index.html">Watchdog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../owlery/index.html">Owlery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities/index.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../management_commands/index.html">Management Commands</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">feedvay</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Accounts</a> &raquo;</li>
+      
+    <li>Session Management</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/modules/accounts/mod_sessions.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="session-management">
+<h1>Session Management<a class="headerlink" href="#session-management" title="Permalink to this headline">¶</a></h1>
+<p>This section discusses the session management for this project. The session module mostly uses
+django session framework and extends it keeping in mind that session storage can be local database
+(default database for the project) or a separate database for sessions only (e.g. Redis).</p>
+<div class="section" id="session-expiry">
+<h2>Session Expiry<a class="headerlink" href="#session-expiry" title="Permalink to this headline">¶</a></h2>
+<p>The session expiry time depends upon the type of user which has logged in:</p>
+<blockquote>
+<div><ul>
+<li><p class="first"><strong>Staff user</strong>: When a staff user logs in via django admin or other administrator login, the session expire when:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Login age increases beyond <code class="docutils literal"><span class="pre">settings.SESSION_COOKIE_AGE</span></code> seconds (8 Hours).</li>
+<li>After the <strong>browser is closed</strong>.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>Public user</strong>: When a public user login from <strong>web portal</strong> only, there are two major cases:</p>
+<blockquote>
+<div><ul>
+<li><p class="first"><strong>Remember me is selected</strong>: Session expires when:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Login age exceeds <code class="docutils literal"><span class="pre">settings.SESSION_COOKIE_AGE_PUBLIC</span></code> seconds (24 Hours).</li>
+</ul>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Session does <strong>NOT</strong> expire after browser is closed when user selects &#8216;Remember me&#8217; option.</p>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>Remember me is NOT selected</strong>: Session expires when:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Login age increases beyond <code class="docutils literal"><span class="pre">settings.SESSION_COOKIE_AGE</span></code> seconds (8 Hours).</li>
+<li>After <strong>browser is closed</strong>.</li>
+</ul>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Here session age should be <code class="docutils literal"><span class="pre">settings.SESSION_COOKIE_AGE_PUBLIC</span></code>, however django automatically
+sets expiry age to <code class="docutils literal"><span class="pre">settings.SESSION_COOKIE_AGE</span></code> when session expiry age is set to <code class="docutils literal"><span class="pre">0</span></code>
+explicitly inside the django view.</p>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="extension-to-the-framework">
+<h2>Extension to the framework<a class="headerlink" href="#extension-to-the-framework" title="Permalink to this headline">¶</a></h2>
+<p>A major but justifiable gap in django session framework is that sessions do not store reference to user
+for which session is created. This s because session storage can be different than user storage.
+Hence, there is no way to determine list of sessions for a user. After login, a session is created in
+SessionStore (As configured in settings; default is default database) and <code class="docutils literal"><span class="pre">session_key</span></code> is set in the
+cookie which is send to the client. The same cookie is received back on
+any requests and session instance is resolved by <code class="docutils literal"><span class="pre">session_key</span></code>.
+For more information, refer: <a class="reference external" href="https://docs.djangoproject.com/en/1.10/topics/http/sessions/">https://docs.djangoproject.com/en/1.10/topics/http/sessions/</a></p>
+<p>So, inorder to map users with sessions, a separate model is made in the default database
+<a class="reference internal" href="models.html#accounts.models.UserSession" title="accounts.models.UserSession"><code class="xref py py-class docutils literal"><span class="pre">accounts.models.UserSession</span></code></a> that contains user foreign key and session key. For every session
+the pair is maintained, which can be queried to retrieve all sessions of a user.</p>
+<dl class="docutils">
+<dt>Following database schema explains all:</dt>
+<dd><img alt="../../_images/session_schema.jpg" class="first last" src="../../_images/session_schema.jpg" />
+</dd>
+</dl>
+<p><strong>Guidelines</strong>:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">Never use <code class="xref py py-class docutils literal"><span class="pre">django.contrib.sessions.models.Session</span></code>. This model refers to database table
+created in default database as per settings. If SessionStroe is same as default database, this might
+work but incase SessionStore is shifted to other database, you will not be able to access session
+instances.</p>
+<p>Instead use <code class="docutils literal"><span class="pre">settings.SESSION_ENGINE</span></code> to obtain SessionStore and then use provided methods to
+access session instance. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">import_module</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">engine</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SESSION_ENGINE</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_SessionStore</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">SessionStore</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">session</span> <span class="o">=</span> <span class="n">_SessionStore</span><span class="p">(</span><span class="s1">&#39;&lt;session_key&gt;&#39;</span><span class="p">)</span>    <span class="c1"># This will give actual session instance</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="models.html" class="btn btn-neutral float-right" title="Models" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="mod_user_login.html" class="btn btn-neutral" title="User Login" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Gagandeep Singh.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

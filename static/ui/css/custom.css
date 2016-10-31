@@ -1,3 +1,10 @@
+.navbar_brand_custom{
+    padding: 8px !important;
+    background: none !important;
+    color: inherit !important;
+    border-right: solid 1px #e7eaec;
+}
+
 .divider_custom{
     margin: 2px 0px !important;
 }
@@ -6,17 +13,26 @@
     font-weight: 600 !important;
 }
 
-@media (max-width: 767px) {
-    .mobile_show{
-        display: inline;
-    }
+.browser_icon{
+    height: 30px;
 }
+
+/* ---------- Desktop ---------- */
 @media (min-width: 767px) {
     .mobile_show{
         display: none;
     }
 }
 
-.browser_icon{
-    height: 30px;
+/* ---------- Mobile ---------- */
+@media (max-width: 767px) {
+    .navbar_brand_custom{
+        border-right: none !important;
+    }
+
+    .mobile_show{
+        display: inline;
+    }
 }
+
+

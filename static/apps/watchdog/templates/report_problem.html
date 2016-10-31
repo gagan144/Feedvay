@@ -1,0 +1,46 @@
+<form role="form" name="form_report_problem" class="form-horizontal" novalidate>
+    <div class="inmodal">
+        <div class="modal-header" style="padding: 20px 15px;">
+            <button type="button" class="close" ng-click="close()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title">
+                <i class="fa fa-bug"></i>&nbsp;
+                Report problem
+            </h4>
+        </div>
+        <div class="modal-body">
+            {$ data $}
+
+            <div class="form-group" align="center">
+                <div class="radio radio-primary radio-inline">
+                    <input type="radio" id="chk_err_curr_url" value="yes" name="current_page" ng-model="data.current_page" >
+                    <label for="chk_err_curr_url"> Current page </label>
+                </div>
+                <div class="radio radio-primary radio-inline">
+                    <input type="radio" id="chk_err_other" value="no" name="current_page" ng-model="data.current_page">
+                    <label for="chk_err_other"> General </label>
+                </div>
+            </div>
+
+            <div class="form-group" ng-if="data.current_page != 'yes'">
+                <label>Title:</label>
+                <div>
+                    <input type="text" name="title" ng-model="data.title" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Description:</label>
+                <div>
+                    <textarea summernote name="description" ng-model="data.description" config="summernote_config" required></textarea>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-white" ng-click="close()">Close</button>
+            <button type="button" class="btn btn-primary" ng-disabled="form_report_problem.$invalid" ng-click="save(form_report_problem)">Report</button>
+        </div>
+    </div>
+</form>
+
+

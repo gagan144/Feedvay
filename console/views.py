@@ -13,5 +13,7 @@ def home(request):
 
     **Authors**: Gagandeep Singh
     """
-    data = {}
+    data = {
+        "app_name": "app_home"
+    }
     return render(request, 'console/home.html', data)

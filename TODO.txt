@@ -1,12 +1,10 @@
 - Infrastructure
     - Globalization & timezones *
     - User Management
-        - Deactivate/Reactivate account
         - User Roles
         - Default Group for public user
         - Sudo user login
 
-    - Browser check to allow only angularjs supported browsers
     - Mobile/Desktop client check
     - New Feature Promotion
 

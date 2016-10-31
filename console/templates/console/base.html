@@ -23,6 +23,7 @@
     {% block head %}
         <title>Feedvay</title>
     {% endblock %}
+
 </head>
 
 <body class="top-navigation">
@@ -30,6 +31,41 @@
     <div id="wrapper">
         <div id="page-wrapper" class="gray-bg">
 
+            <!--[if lte IE 9]>
+            <div align="center" style="padding-top: 40px;">
+                <img src="{% get_static_prefix %}images/feedvay_logo.png" style="height: 50px !important;" alt="Feedvay">
+                <h1 class="text-danger" style="margin: 10px 0px 10px 0px;">
+                    Unsupported browser!
+                </h1>
+                <div>
+                    This site does not support your browser. Kindly update your browser or
+                    install one of the following browsers:<b/>
+
+                    <div style="margin-top:15px;">
+                        <a href="https://www.google.com/chrome/">
+                            <img class="browser_icon" src="{% get_static_prefix %}images/browser-icons/chrome-icon.png" title="Google Chrome" alt="Google Chrome">
+                        </a>&nbsp;
+                        <a href="https://www.mozilla.org/en-US/firefox/new/">
+                            <img class="browser_icon" src="{% get_static_prefix %}images/browser-icons/firefox-icon.png" title="Mozilla Firefox" alt="Mozilla Firefox">
+                        </a>&nbsp;
+                        <a href="http://www.opera.com/">
+                            <img class="browser_icon" src="{% get_static_prefix %}images/browser-icons/opera-icon.png" title="Opera" alt="Opera">
+                        </a>&nbsp;
+                        <a href="http://www.apple.com/safari/">
+                            <img class="browser_icon" src="{% get_static_prefix %}images/browser-icons/safari-icon.png" title="Safari" alt="Safari">
+                        </a>
+                    </div>
+
+                    <p style="margin-top:20px;">
+                        <a href="{% url 'accounts_logout' %}" class="btn btn-primary m-t">
+                            Logout
+                        </a>
+                    </p>
+                </div>
+            </div>
+            <![endif]-->
+
+            <!--[if gt IE 9]><!-->
             <!-- Top Navbar -->
             <div class="row border-bottom white-bg">
                 <nav class="navbar navbar-static-top" role="navigation">
@@ -153,14 +189,15 @@
                 </div>
             </div>
             <!-- /Content -->
+            <![endif]-->
 
             <!-- Footer -->
             <div class="footer">
-                <div class="pull-right">
-                    10GB of <strong>250GB</strong> Free.
-                </div>
+{#                <div class="pull-right">#}
+{#                    10GB of <strong>250GB</strong> Free.#}
+{#                </div>#}
                 <div>
-                    <strong>Copyright</strong> Example Company &copy; 2014-2017
+                    © 2017 Feedvay. All rights reserved.
                 </div>
             </div>
             <!-- /Footer -->

@@ -14,7 +14,7 @@
 
 {% block content %}
     <div ng-app="app_home" ng-cloak>
-        <div ng-controller="MainCtrl" class="animated fadeInRight">
+        <div ng-controller="MainCtrl">
             Content here {$ msg $}
         </div>
     </div>
@@ -30,7 +30,7 @@
     <script>
         'use strict';
 
-        var APP = angular.module('app_home',['ngCookies'])
+        var APP = angular.module('app_home',['ngCookies', 'ui.bootstrap'])
             .run(function($http, $cookies) {
                 $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 

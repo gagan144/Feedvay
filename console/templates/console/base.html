@@ -135,7 +135,11 @@
                                 <ul class="dropdown-menu">
                                     <li><a href="#"><i class="fa fa-question-circle"></i>&nbsp;&nbsp;Help</a></li>
                                     <li role="separator" class="divider divider_custom"></li>
-                                    <li><a href="#"><i class="fa fa-bug"></i>&nbsp;&nbsp;Report problem</a></li>
+                                    <li>
+                                        <a href="#" data-toggle="modal" data-target="#modal_error_report">
+                                            <i class="fa fa-bug"></i>&nbsp;&nbsp;Report problem
+                                        </a>
+                                    </li>
                                     <li><a href="#"><i class="fa fa-comments-o"></i>&nbsp;&nbsp;Suggest change</a></li>
                                 </ul>
                             </li>
@@ -184,6 +188,30 @@
             <!-- Content -->
             <div class="wrapper wrapper-content">
                 <div class="container">
+                    <!-- ===== Basic Modals ===== -->
+                    <div class="modal inmodal" id="modal_error_report" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+                        <div class="modal-dialog">
+                            <div class="modal-content animated bounceInDown">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                    <i class="fa fa-bug modal-icon"></i>
+                                    <h4 class="modal-title">Report Problem</h4>
+{#                                    <small class="font-bold">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</small>#}
+                                </div>
+                                <div class="modal-body">
+                                    <p><strong>Lorem Ipsum is simply dummy</strong> text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown
+                                        printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting,
+                                        remaining essentially unchanged.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ===== /Basic Modals ===== -->
+
                     {% block content %}
                     {% endblock %}
                 </div>
@@ -208,6 +236,7 @@
 
     <!-- Main scripts -->
     <script src="{% get_static_prefix %}ui/js/jquery-2.1.1.js"></script>
+{#    <script src="{% get_static_prefix %}ui/js/plugins/jquery-ui/jquery-ui.js"></script>#}
     <script src="{% get_static_prefix %}ui/js/bootstrap.min.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/metisMenu/jquery.metisMenu.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>

@@ -2,8 +2,53 @@
 {# Content in this document can not be copied and/or distributed without the express #}
 {# permission of Gagandeep Singh. #}
 {% extends 'console/base.html' %}
+{% load static %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-12">
+            <h2>Management Console</h2>
+        </div>
+    </div>
+{% endblock %}
 
 {% block content %}
-    Content here
+    <div ng-app="app_home" ng-cloak>
+        <div ng-controller="MainCtrl" class="animated fadeInRight">
+            Content here {$ msg $}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- Main Angular scripts-->
+    <script src="{% get_static_prefix %}ui/js/angular/angular.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/angular/angular-cookies.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/bootstrap/ui-bootstrap-tpls-1.1.2.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/oclazyload/dist/ocLazyLoad.min.js"></script>
+
+    <script>
+        'use strict';
+
+        var APP = angular.module('app_home',['ngCookies'])
+            .run(function($http, $cookies) {
+                $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+                $http.defaults.xsrfCookieName = 'csrftoken';
+                $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+            })
+            .config(function($interpolateProvider, $httpProvider) {
+                $interpolateProvider.startSymbol('{$');
+                $interpolateProvider.endSymbol('$}');
+
+                $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+                $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+            });
+
+        APP.controller('MainCtrl', function($scope){
+            $scope.msg = 'helloooo';
+        });
+    </script>
+
 {% endblock %}
 

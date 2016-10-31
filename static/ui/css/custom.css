@@ -17,6 +17,10 @@
     height: 30px;
 }
 
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none;
+}
+
 /* ---------- Desktop ---------- */
 @media (min-width: 767px) {
     .mobile_show{

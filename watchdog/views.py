@@ -5,12 +5,14 @@ from django.shortcuts import render
 from django.http.response import HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 
+from utilities.decorators import registered_user_only
+from utilities.api_utils import ApiResponse
 from watchdog.models import *
 from watchdog.forms import *
-from utilities.api_utils import ApiResponse
+
 
 # ---------- Report Problem ----------
-@login_required
+@registered_user_only
 def report_problem_new(request):
     """
     View to handle new problem reported a user. User may or may not be logged in.
@@ -48,7 +50,7 @@ def report_problem_new(request):
 # ---------- /Report Problem ----------
 
 # ---------- Suggestions ----------
-@login_required
+@registered_user_only
 def suggestion_new(request):
     """
     View to handle new suggestion made by the user. User may or may not be logged in.

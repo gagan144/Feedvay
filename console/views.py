@@ -2,9 +2,9 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
+from utilities.decorators import registered_user_only
 
-@login_required
+@registered_user_only
 def home(request):
     """
     View for user management console page.

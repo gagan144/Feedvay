@@ -8,8 +8,6 @@
     - Mobile/Desktop client check (django-mobile)
     - New Feature Promotion
 
-- Portal user decorator
-
 - UI
     - Summernote css
     - Blue Skin

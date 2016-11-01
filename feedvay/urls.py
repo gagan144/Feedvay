@@ -23,11 +23,9 @@ from . import views
 urlpatterns = [
     url(r'^$', views.home, name='home'),
 
-    # Accounts
     url(r'^accounts/', include('accounts.urls')),
-
-    # Accounts
     url(r'^console/', include('console.urls')),
+    url(r'^watchdog/', include('watchdog.urls')),
 
     # Admin and staff
     url(r'^admin/', admin.site.urls),

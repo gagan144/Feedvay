@@ -27,29 +27,26 @@ angular.module('feedvay.watchdog', ['ui.bootstrap', 'summernote'] )
     }
 })
 
-//// ---------- Services ----------
-//.service('ServiceTranslations', function($http){
-//    this.search = function(text){
-//        return $http.get('/languages/api/translation_search/?format=json', {
-//            params: {
-//                q: text
-//            }
-//        }).then(function (response) {
-//            return response.data.objects;
-//            //return response.data.results.map(function(item){
-//            //    return item.formatted_address;
-//            //  });
-//        });
-//    }
-//})
-//// ---------- /Services ----------
+// ---------- Services ----------
+.service('ReportedProblemService', function($http){
+    this.post = function(data){
+        return $http.post(
+            "/watchdog/report-problem/new/",
+            $.param(data)
+        ).then(function (response) {
+            return response;
+        });
+    }
+})
+// ---------- /Services ----------
 
 // ---------- Controllers ----------
-.controller('ReportErrorCtrl', function($scope, $uibModalInstance, curr_url){
+.controller('ReportErrorCtrl', function($scope, $uibModalInstance, ReportedProblemService, curr_url){
     // Controller for report problem form
     $scope.data = {
         url: curr_url,
         current_page: 'yes',
+        platform: 'portal'
     };
 
     $scope.summernote_config = {
@@ -65,16 +62,46 @@ angular.module('feedvay.watchdog', ['ui.bootstrap', 'summernote'] )
             ['insert', ['link']],
         ]
     };
+    $scope.flags = {
+        submitting: false,
+        error : false,
+        submitted: false
+    }
 
     $scope.save = function (form_obj) {
         if(form_obj.$invalid){
             return false;
         }
 
-        alert("save()");
+        $scope.flags.error = false;
+        $scope.flags.submitting = true;
 
-        //$uibModalInstance.close(final_trans);
-        $uibModalInstance.close();
+        // Post the form to server
+        ReportedProblemService.post(angular.copy($scope.data)).then(
+            function successCallback(response) {
+                //console.log(response);
+
+                $scope.flags.submitting = false;
+                $scope.flags.submitted = true;
+                //$uibModalInstance.close();
+            },
+            function errorCallback(response) {
+                console.log(response);
+
+                if(response.status != -1){
+                    $scope.flags.submitting = false;
+                    $scope.flags.error = true;
+                }else{
+                    $scope.flags.submitting = false;
+                    $.growl.error({
+                        title: '<i class="fa fa-signal"></i> Network error!',
+                        message: "Please check your internet connection."
+                    });
+                }
+            }
+        );
+
+
     };
 
     $scope.close = function () {

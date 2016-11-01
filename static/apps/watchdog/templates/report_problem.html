@@ -1,4 +1,4 @@
-<form role="form" name="form_report_problem" class="form-horizontal" novalidate>
+<form role="form" name="form_report_problem" novalidate>
     <div class="inmodal">
         <div class="modal-header" style="padding: 20px 15px;">
             <button type="button" class="close" ng-click="close()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -7,38 +7,66 @@
                 Report problem
             </h4>
         </div>
-        <div class="modal-body">
-            {$ data $}
-
-            <div class="form-group" align="center">
-                <div class="radio radio-primary radio-inline">
-                    <input type="radio" id="chk_err_curr_url" value="yes" name="current_page" ng-model="data.current_page" >
-                    <label for="chk_err_curr_url"> Current page </label>
+        <div class="modal-body" >
+            <div class="form-horizontal" ng-if="!flags.submitted">
+                <div class="form-group">
+                    <label>In what context do you want to report a problem?</label>
+                    <div>
+                        <div class="radio radio-primary radio-inline">
+                            <input type="radio" id="chk_err_curr_url" value="yes" name="current_page" ng-model="data.current_page" >
+                            <label for="chk_err_curr_url"> Current page </label>
+                        </div>
+                        <div class="radio radio-primary radio-inline">
+                            <input type="radio" id="chk_err_other" value="no" name="current_page" ng-model="data.current_page">
+                            <label for="chk_err_other"> General </label>
+                        </div>
+                    </div>
                 </div>
-                <div class="radio radio-primary radio-inline">
-                    <input type="radio" id="chk_err_other" value="no" name="current_page" ng-model="data.current_page">
-                    <label for="chk_err_other"> General </label>
+
+                <div class="hr-line-dashed" ng-if="data.current_page != 'yes'"></div>
+                <div class="form-group" ng-if="data.current_page != 'yes'">
+                    <label>Title:<span class="required">*</span></label>
+                    <div>
+                        <input type="text" name="title" ng-model="data.title" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="hr-line-dashed"></div>
+                <div class="form-group">
+                    <label>Description:<span class="required">*</span></label>
+                    <div>
+                        <textarea summernote name="description" ng-model="data.description" config="summernote_config" required></textarea>
+                    </div>
                 </div>
             </div>
 
-            <div class="form-group" ng-if="data.current_page != 'yes'">
-                <label>Title:</label>
-                <div>
-                    <input type="text" name="title" ng-model="data.title" class="form-control" required>
+            <div ng-if="flags.submitted" align="center" class="animate fadeInUp">
+                <div class="text-success" style="margin-bottom: 10px;">
+                    <i class="fa fa-check-circle" style="font-size: 90px;"></i>
                 </div>
-            </div>
+                <p>
+                    Thank you for your valuable feedback.<br/>
+                    Our engineers will look into the matter shortly.
+                </p>
+                <p style="margin: 20px 0px 0px 0px;">
+                    <button type="button" class="btn btn-white" ng-click="close()">Close</button>
+                </p>
 
-            <div class="form-group">
-                <label>Description:</label>
-                <div>
-                    <textarea summernote name="description" ng-model="data.description" config="summernote_config" required></textarea>
-                </div>
             </div>
-
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-white" ng-click="close()">Close</button>
-            <button type="button" class="btn btn-primary" ng-disabled="form_report_problem.$invalid" ng-click="save(form_report_problem)">Report</button>
+        <div class="modal-footer" ng-if="!flags.submitted">
+            <span ng-if="flags.error" class="text-danger pull-left">
+                Something went wrong. Our engineers will be informed.
+            </span>
+
+            <div ng-if="flags.submitting">
+                <img src="/static/images/loading/spinner_1.gif" style="height: 16px;">&nbsp;
+                Submitting problem report ...
+            </div>
+            <div ng-if="!flags.submitting">
+                <button type="button" class="btn btn-white" ng-click="close()">Close</button>
+                <button type="button" class="btn btn-primary" ng-disabled="form_report_problem.$invalid" ng-click="save(form_report_problem)">Report</button>
+            </div>
         </div>
     </div>
 </form>

@@ -21,6 +21,12 @@
     display: none;
 }
 
+.required{
+    color: red;
+    font-weight: normal;
+    margin-left: 2px;
+}
+
 /* ---------- Desktop ---------- */
 @media (min-width: 767px) {
     .mobile_show{

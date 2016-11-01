@@ -8392,6 +8392,42 @@ body.md-skin {
 
 /* ---------- Customization ---------- */
 
+/*.breadcrumb > .active {*/
+    /*color: #0e9aef !important;*/
+/*}*/
+
+.help-block{
+  color: #979797 !important;
+}
+
+.form-control{
+  border-radius: 3px;
+}
+
+input.input-sm{
+  font-size: 13px;
+}
+select.input-sm{
+  font-size: 13px;
+  padding: 3px 12px;
+}
+
+label > small{
+  font-weight: normal !important;
+}
+
+.disabled_text{
+  opacity: 0.65;
+}
+
+.select2-container{
+  padding: 0px !important;
+}
+
+.btn-primary.btn-outline[disabled] {
+    color: #FFFFFF;
+}
+
 /* ----- Top navbar ----- */
 .top-navigation .nav > li > a {
   padding: 15px 15px !important;

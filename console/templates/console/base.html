@@ -144,7 +144,12 @@
                                             <i class="fa fa-bug"></i>&nbsp;&nbsp;Report problem
                                         </a>
                                     </li>
-                                    <li><a href="#"><i class="fa fa-comments-o"></i>&nbsp;&nbsp;Suggest change</a></li>
+                                    <li>
+                                        <a href="javascript: void(0);" ng-click="Mod_watchdog.make_suggestion('{{ request.get_full_path }}')">
+                                            <i class="fa fa-lightbulb-o"></i>&nbsp;&nbsp;
+                                            Make suggestion
+                                        </a>
+                                    </li>
                                 </ul>
                             </li>
                             <li class="dropdown">

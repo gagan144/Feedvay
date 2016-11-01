@@ -8,4 +8,7 @@ from watchdog import views
 urlpatterns = [
     # ReportedProblems
     url(r'^report-problem/new/$', views.report_problem_new, name="watchdog_report_problem_new"),
+
+    # Suggestions
+    url(r'^suggestion/new/$', views.suggestion_new, name="watchdog_suggestion_new"),
 ]

@@ -11,9 +11,10 @@
 - Portal user decorator
 
 - UI
+    - Summernote css
     - Blue Skin
-    - Report
-    - Suggestions
+    - Report Display view
+    - Suggestions Display view
     - Settings
     - Profile
 

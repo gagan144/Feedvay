@@ -1,40 +1,40 @@
-<form role="form" name="form_report_problem" novalidate>
+<form role="form" name="form_suggestion" novalidate>
     <div class="inmodal">
         <div class="modal-header" style="padding: 20px 15px;">
             <button type="button" class="close" ng-click="close()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <h4 class="modal-title">
-                <i class="fa fa-bug"></i>&nbsp;
-                Report problem
+                <i class="fa fa-lightbulb-o"></i>&nbsp;
+                Make suggestion
             </h4>
         </div>
         <div class="modal-body" >
             <div class="form-horizontal" ng-if="!flags.submitted" style="padding: 0px 15px;">
                 <div class="form-group">
-                    <label>In what context do you want to report the problem?</label>
+                    <label>In what context do you want to make the suggestion?</label>
                     <div style="padding-left: 20px;">
                         <div class="radio radio-primary radio-inline">
-                            <input type="radio" id="chk_err_curr_url" value="yes" name="current_page" ng-model="data.current_page" >
+                            <input type="radio" id="chk_err_curr_url" value="yes" name="current_page" ng-model="data.current_page" required>
                             <label for="chk_err_curr_url"> Current page </label>
                         </div>
                         <div class="radio radio-primary radio-inline">
-                            <input type="radio" id="chk_err_other" value="no" name="current_page" ng-model="data.current_page">
+                            <input type="radio" id="chk_err_other" value="no" name="current_page" ng-model="data.current_page" required>
                             <label for="chk_err_other"> General </label>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group" ng-if="data.current_page != 'yes'">
+                <div class="form-group">
                     <label>Title<span class="required">*</span>:</label>
                     <div>
-                        <input type="text" name="title" ng-model="data.title" class="form-control" placeholder="Short title for the problem. Use keywords." required>
+                        <input type="text" name="title" ng-model="data.title" class="form-control" placeholder="Short title your suggestion. Use keywords." required>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Description<span class="required">*</span>:</label>
                     <p class="help-block" style="margin: 0px 0px 5px 0px;">
-                        Detailed description about the problem. Explain your use case and provide input data if possible. This will
-                        help our engineers to understand the problem and identify the cause.
+                        Detailed description about your suggestion that will help our team to understand the need. Also
+                        tell us how will this change benefit your experience with our website.
                     </p>
                     <div>
                         <textarea summernote name="description" ng-model="data.description" config="summernote_config" required></textarea>
@@ -48,7 +48,7 @@
                 </div>
                 <p>
                     Thank you for your valuable feedback.<br/>
-                    Our engineers will look into the matter shortly.
+                    This will surely help us improve user experience.
                 </p>
                 <p style="margin: 20px 0px 0px 0px;">
                     <button type="button" class="btn btn-white" ng-click="close()">Close</button>
@@ -63,11 +63,11 @@
 
             <div ng-if="flags.submitting">
                 <img src="/static/images/loading/spinner_1.gif" style="height: 16px;">&nbsp;
-                Submitting problem report ...
+                Submitting ...
             </div>
             <div ng-if="!flags.submitting">
                 <button type="button" class="btn btn-white" ng-click="close()">Close</button>
-                <button type="button" class="btn btn-primary" ng-disabled="form_report_problem.$invalid" ng-click="save(form_report_problem)">Report</button>
+                <button type="button" class="btn btn-primary" ng-disabled="form_suggestion.$invalid" ng-click="submit(form_suggestion)">Submit</button>
             </div>
         </div>
     </div>

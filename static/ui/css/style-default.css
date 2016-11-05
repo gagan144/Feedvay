@@ -3,7 +3,7 @@
 /*
  *   Feedvay UI Theme
  *   UI version: INSP - 2.6.2
- *   Created on: 05-11-2016 12:27:16 0
+ *   Created on: 05-11-2016 15:38:34 0
 */
 h1,
 h2,
@@ -8390,7 +8390,7 @@ body.md-skin {
   }
 }
 
-/* ---------- Customization ---------- */
+/* =================== Customization =================== */
 
 /*.breadcrumb > .active {*/
     /*color: #0e9aef !important;*/
@@ -8433,18 +8433,18 @@ label > small{
   padding: 15px 15px !important;
 }
 
-.top-navigation .nav > li a:hover, .top-navigation .nav > li a:focus {
-  background: #2a94db;
-  color: #fff;
-  border: none;
-  border-radius: 0px;
-}
-.top-navigation .navbar-nav .dropdown-menu > .active > a {
-  background: #2a94db;
-  color: white;
-  font-weight: bold;
-  border-radius: 0px;
-}
+/*.top-navigation .nav > li a:hover, .top-navigation .nav > li a:focus {*/
+  /*background: #2a94db;*/
+  /*color: #fff;*/
+  /*border: none;*/
+  /*border-radius: 0px;*/
+/*}*/
+/*.top-navigation .navbar-nav .dropdown-menu > .active > a {*/
+  /*background: #2a94db;*/
+  /*color: white;*/
+  /*font-weight: bold;*/
+  /*border-radius: 0px;*/
+/*}*/
 
 .top-navigation .navbar-nav .open .dropdown-menu > li > a,
 .top-navigation .navbar-nav .open .dropdown-menu .dropdown-header {

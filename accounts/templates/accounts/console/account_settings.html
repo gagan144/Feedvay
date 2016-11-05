@@ -1,4 +1,9 @@
 {% extends 'console/base.html' %}
+{% load static %}
+
+{% block head %}
+    <title page-title></title>
+{% endblock %}
 
 {% block page_header %}
     <div class="row wrapper border-bottom white-bg page-heading">
@@ -9,4 +14,93 @@
             </h2>
         </div>
     </div>
+{% endblock %}
+
+{% block content %}
+    <div ng-controller="MainCtrl" class="animated fadeInRight" ng-cloak>
+
+        <div class="tabs-container">
+            <div class="tabs-left">
+                <ul class="nav nav-tabs">
+                    <li ng-class="{'active': $state.current.name=='profile'}">
+                        <a ui-sref="profile"><i class="fa fa-user"></i> Profile</a>
+                    </li>
+                    <li ng-class="{'active': $state.current.name=='security'}">
+                        <a ui-sref="security"><i class="fa fa-shield"></i> Security</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active">
+                        <div class="panel-body">
+                            <!-- Partial view div -->
+                            <div ui-view></div>
+                            <!-- Partial view div -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% get_static_prefix %}ui/js/ui-router/angular-ui-router.min.js"></script>
+    <script>
+        'use strict';
+
+        var APP = angular.module('{{ app_name }}',[
+            'feedvay.common',
+            'feedvay.watchdog',
+
+            'ngCookies',
+            'ui.router',                    // Routing
+            'oc.lazyLoad',                  // ocLazyLoad
+            'ui.bootstrap'
+        ])
+        .config(function($interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+
+            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+
+            // --- Routing ---
+            $urlRouterProvider.otherwise("/profile");   // Default state to load
+
+            $ocLazyLoadProvider.config({
+                // Set to true if you want to see what and when is dynamically loaded
+                debug: false
+            });
+
+            $stateProvider
+                .state('profile', {
+                    url: "/profile",
+                    templateUrl: "/static/partials/accounts/profile.html",
+                    data: { pageTitle: 'User Profile' }
+                })
+                .state('security', {
+                    url: "/security",
+                    templateUrl: "/static/partials/accounts/security.html",
+                    data: { pageTitle: 'Security' }
+                })
+        })
+        .run(function($rootScope, $http, $cookies, $state) {
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+            $http.defaults.xsrfCookieName = 'csrftoken';
+            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+            $rootScope.$state = $state;
+        });
+
+
+        APP.controller('MainCtrl', function($scope){
+
+        });
+
+
+    </script>
 {% endblock %}

@@ -8391,7 +8391,7 @@ body.md-skin {
   }
 }
 
-/* ---------- Customization ---------- */
+/* =================== Customization =================== */
 
 /*.breadcrumb > .active {*/
     /*color: #0e9aef !important;*/
@@ -8434,18 +8434,18 @@ label > small{
   padding: 15px 15px !important;
 }
 
-.top-navigation .nav > li a:hover, .top-navigation .nav > li a:focus {
-  background: {{ PRIMARY }};
-  color: #fff;
-  border: none;
-  border-radius: 0px;
-}
-.top-navigation .navbar-nav .dropdown-menu > .active > a {
-  background: {{ PRIMARY }};
-  color: white;
-  font-weight: bold;
-  border-radius: 0px;
-}
+/*.top-navigation .nav > li a:hover, .top-navigation .nav > li a:focus {*/
+  /*background: {{ PRIMARY }};*/
+  /*color: #fff;*/
+  /*border: none;*/
+  /*border-radius: 0px;*/
+/*}*/
+/*.top-navigation .navbar-nav .dropdown-menu > .active > a {*/
+  /*background: {{ PRIMARY }};*/
+  /*color: white;*/
+  /*font-weight: bold;*/
+  /*border-radius: 0px;*/
+/*}*/
 
 .top-navigation .navbar-nav .open .dropdown-menu > li > a,
 .top-navigation .navbar-nav .open .dropdown-menu .dropdown-header {

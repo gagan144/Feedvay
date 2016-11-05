@@ -639,7 +639,9 @@ def recover_account(request):
 # ==================== Console ====================
 @registered_user_only
 def console_account_settings(request):
-    data = {}
+    data = {
+        "app_name": "app_account"
+    }
     return render(request, 'accounts/console/account_settings.html', data)
 
 # ==================== Console ====================

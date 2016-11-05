@@ -11,6 +11,8 @@ class Command(BaseCommand):
     """
     Django management command to delete all expired user tokens from model
     :class:`accounts.models.UserToken`.
+
+    **Authors**: Gagandeep Singh
     """
     help = "Command to delete all expired 'UserToken'."
     requires_system_checks = True

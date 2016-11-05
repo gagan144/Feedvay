@@ -15,17 +15,13 @@
 {% block content %}
     <div ng-cloak>
         <div ng-controller="MainCtrl">
-            Content here {$ msg $}
+            {$ msg $}
 
-            <div class="sweet-alert showSweetAlert visible">
-                <div class="sa-icon sa-success animate" style="display: block;">
-                    <span class="sa-line sa-tip animateSuccessTip"></span>
-                    <span class="sa-line sa-long animateSuccessLong"></span>
+            <button class="btn btn-primary">Click me</button>
 
-                    <div class="sa-placeholder"></div>
-                    <div class="sa-fix"></div>
-                </div>
-            </div>
+            Content <a class="text-primary">here</a> helloooo
+            <span class="badge badge-success">here</span> helloooo
+            <span class="text-info">here</span>
 
 
         </div>

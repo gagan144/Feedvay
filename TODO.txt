@@ -10,14 +10,12 @@
 
 - UI
     - Summernote css
-    - Blue Skin
     - Report Display view
     - Suggestions Display view
     - Settings
     - Profile
 
 - SEO
-- Skin
 
 - Geography
     - Country tel code

@@ -11,4 +11,5 @@ Contents
 
        api_utils
        decorators
+       theme
 

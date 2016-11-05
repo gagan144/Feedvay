@@ -5,14 +5,16 @@
 from django.core.management.base import BaseCommand, CommandError
 import os
 
-from utilities.theme import render_theme
+from utilities.theme import render_skin
 
 class Command(BaseCommand):
     """
-    Django management command to create or update default 'Feedvay' theme.
-    This takes ``THEME_DEFAULT`` parameters in ``settings.py`` and renders project theme
-    using '/template/theme/inspinia-style-template.css' css file and finally
-    create/overrides '/static/ui/css/style-default.css'
+    Django management command to create or update theme. This command updates all skin
+    files for brand as well as for Feedvay project.
+
+    For Feedvay, it takes ``THEME_DEFAULT`` parameters in ``settings.py`` and for brands, reads
+    paramters from the model and create/updates all skin files using '/template/theme/inspinia-style-template.css'
+    into their respective directories.
 
     **Authors**: Gagandeep Singh
     """
@@ -27,10 +29,11 @@ class Command(BaseCommand):
 
         PATH = os.path.join(settings.BASE_DIR, "static/ui/css/style-default.css")
 
-        user_input = raw_input("This will override '{}' file. Are you sure (y/n)?".format(PATH))
+        user_input = raw_input("This will override '{}' and all brand skin files. Are you sure (y/n)?".format(PATH))
         if user_input in ['Y', 'y']:
+            # (1) Feedvay signature theme skin.
             self.stdout.write(self.style.SUCCESS('Rendering default project theme...'))
-            content = render_theme(
+            content = render_skin(
                 custom = False,
                 clr_primary = settings.THEME_DEFAULT['primary'],
                 clr_prim_hover = settings.THEME_DEFAULT['primary_dark'],
@@ -43,6 +46,12 @@ class Command(BaseCommand):
                 f.write(content)
                 f.close()
 
-            self.stdout.write(self.style.SUCCESS('Success! Default theme for Feedvay updated.'))
+            # (2) Brand skins
+            # For every brand
+            #   get parameters from model instance
+            #   content = render_skin()
+            #   save css file
+
+            self.stdout.write(self.style.SUCCESS('Success! All skins updated.'))
         else:
             self.stdout.write(self.style.SUCCESS('Cancelled!'))

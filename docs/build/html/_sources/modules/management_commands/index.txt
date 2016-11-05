@@ -10,5 +10,6 @@ cron process.
     :maxdepth: 2
     :titlesonly:
 
+    Main <feedvay.rst>
     Accounts <accounts.rst>
 

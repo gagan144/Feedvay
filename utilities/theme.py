@@ -4,7 +4,7 @@
 from django.shortcuts import render_to_response
 from django.utils import timezone
 
-def render_theme(custom, clr_primary, clr_prim_hover, clr_prim_disabled):
+def render_skin(custom, clr_primary, clr_prim_hover, clr_prim_disabled):
     """
     Method to render theme file with given parameters. This methods renders
     '/templates/theme/inspinia-style-template.css' theme templates using the

@@ -12,12 +12,14 @@ from django.contrib import auth
 import json
 
 from django.contrib.auth.models import User
+
 from accounts.forms import *
 from accounts.models import *
 from accounts.utils import *
 from accounts.exceptions import *
 from owlery import owls
 from utilities.api_utils import ApiResponse
+from utilities.decorators import registered_user_only
 
 # ---------- Login ----------
 def login(request):
@@ -632,3 +634,12 @@ def recover_account(request):
         return HttpResponseForbidden('Forbidden! Use post.')
 
 #  ---------- /Password recovery ----------
+
+
+# ==================== Console ====================
+@registered_user_only
+def console_account_settings(request):
+    data = {}
+    return render(request, 'accounts/console/account_settings.html', data)
+
+# ==================== Console ====================

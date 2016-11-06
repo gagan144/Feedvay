@@ -248,6 +248,142 @@ country telephone code and 10-digit mobile number</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="accounts.models.UserProfile">
+<em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserProfile</code><span class="sig-paren">(</span><em>*args</em>, <em>**values</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mongodb model to store registered user information. This model includes wide variety
+of user related attributes.</p>
+<p><strong>Attribute organisation</strong>:
+User attributes and their values are organised in two ways; dictionary and list. This is done
+to provide query optimization for wide use cases.</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p class="first"><strong>Dictionary</strong>: Attributes are maintained as key-value pair in a dictionary field <strong>&#8216;attributes&#8217;</strong>.
+Use this field for quick value lookup mostly when attribute name is known. Also in case of
+report display, use this field to get attribute values.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Contains only currently active attributes for the user.</li>
+<li>Read-only field. Do not write/delete inside this field. It is overridden by save().</li>
+<li>This field is <strong>not indexed</strong>, since dictionary indexing does not perform well.</li>
+<li>So, <strong>NEVER</strong> use this field for complex query, aggregations or map-reduce.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>List of objects</strong>: Attributes are also maintained in form of list of objects in the field <strong>&#8216;list_attributes&#8217;</strong>,
+with each object in the list representing one attribute having information such as name, value as well as
+other meta information such as active, last updated on etc.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Contains all active &amp; inactive fields.</li>
+<li>Save uses this field to populate <strong>&#8216;attributes&#8217;</strong> field.</li>
+<li>This field is <strong>indexed</strong> on name, value &amp; active field of the objects across all documents in UserProfile.</li>
+<li>Always use this field for complex queries and aggregation.</li>
+<li>While using <strong>MongoDb aggregation framework</strong>, unwind <strong>list_attributes</strong> before aggregating.</li>
+<li><strong>Map-Reduce</strong> might not take good advantage of this field since unwind is not available for MongoDb M-R.</li>
+</ul>
+</div></blockquote>
+</li>
+</ol>
+</div></blockquote>
+<p><strong>Adding/updating new attribute</strong>:</p>
+<blockquote>
+<div><p>Always add or update attribute using <strong>&#8216;list_attributes&#8217;</strong> field only. <strong>DO NOT</strong> use &#8216;attributes&#8217; field.
+This is because save function will truncate &#8216;attributes&#8217; field, loop over &#8216;list_attributes&#8217; and add only active
+attributes to &#8216;attributes&#8217; field.</p>
+<p>Use of <code class="docutils literal"><span class="pre">add_update_attribute()</span></code> is recommended.</p>
+</div></blockquote>
+<p><strong>Deleting attribute</strong>:</p>
+<blockquote>
+<div><p>Always use &#8216;list_attributes&#8217; field but <strong>NEVER</strong> delete any entry. TO delete an attribute, mark that attribute
+as <code class="docutils literal"><span class="pre">active=False</span></code>. Save function will automatically remove it from &#8216;attributes&#8217; field.
+To revive an attribute, override its value and mark <code class="docutils literal"><span class="pre">active=True</span></code>.</p>
+<p>Use of <code class="docutils literal"><span class="pre">delete_attribute()</span></code> is recommended.</p>
+</div></blockquote>
+<p><strong>Mandatory attributes</strong>:</p>
+<blockquote>
+<div>All attributes in <strong>UserAttributes</strong> embedded document tagged as <code class="docutils literal"><span class="pre">required=True</span></code> are mandatory and must be
+present in &#8216;list_attributes&#8217;. Model will not save until all required fields have values.</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="class">
+<dt id="accounts.models.UserProfile.DetailedAttribute">
+<em class="property">class </em><code class="descname">DetailedAttribute</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile.DetailedAttribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile.DetailedAttribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mongodb embedded document to store an attribute in detail. This not only includes attribute name and value,
+but also other meta information such as active, last_updated_on etc.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Do not delete this record. Simply mark active as false.</p>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="accounts.models.UserProfile.UserAttributes">
+<em class="property">class </em><code class="descclassname">UserProfile.</code><code class="descname">UserAttributes</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile.UserAttributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile.UserAttributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mongodb embedded document for <a class="reference internal" href="#accounts.models.UserProfile" title="accounts.models.UserProfile"><code class="xref py py-class docutils literal"><span class="pre">accounts.models.UserProfile</span></code></a> model.
+It is this document that stores user attributes in key-value pairs.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Use this model for quick lookup for attribute value. These keys will not be indexed
+so <strong>DO NOT</strong> use them in queries.</p>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.UserProfile.add_update_attribute">
+<code class="descclassname">UserProfile.</code><code class="descname">add_update_attribute</code><span class="sig-paren">(</span><em>name</em>, <em>value</em>, <em>auto_save=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile.add_update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile.add_update_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to add or update (incase it exists) an attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> &#8211; Name of the attribute.</li>
+<li><strong>value</strong> &#8211; Value for that attribute.</li>
+<li><strong>auto_save</strong> &#8211; True to write to db after addition else False</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if attribute was created, False if attribute was updated or revived</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.UserProfile.delete_attribute">
+<code class="descclassname">UserProfile.</code><code class="descname">delete_attribute</code><span class="sig-paren">(</span><em>name</em>, <em>auto_save=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile.delete_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile.delete_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to delete an attribute, that is mark attribute active as false.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> &#8211; Name of the attribute</li>
+<li><strong>auto_save</strong> &#8211; True to write to db after deletion else False</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if attribute was found active and marked, False if attribute was inactive or was not found; save is not triggered in this case.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.UserProfile.save">
+<code class="descclassname">UserProfile.</code><code class="descname">save</code><span class="sig-paren">(</span><em>complete_save=True</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="accounts.models.UserSession">
 <em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserSession</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserSession"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserSession" title="Permalink to this definition">¶</a></dt>
 <dd><p>Model to link user to its session. Currently, django does not provide direct linking of

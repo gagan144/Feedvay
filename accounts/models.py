@@ -350,16 +350,20 @@ class UserProfile(Document):
         This is because save function will truncate 'attributes' field, loop over 'list_attributes' and add only active
         attributes to 'attributes' field.
 
-    ** Deleting attributes**:
+        Use of ``add_update_attribute()`` is recommended.
+
+    **Deleting attribute**:
 
         Always use 'list_attributes' field but **NEVER** delete any entry. TO delete an attribute, mark that attribute
         as ``active=False``. Save function will automatically remove it from 'attributes' field.
         To revive an attribute, override its value and mark ``active=True``.
 
+        Use of ``delete_attribute()`` is recommended.
+
     **Mandatory attributes**:
 
         All attributes in **UserAttributes** embedded document tagged as ``required=True`` are mandatory and must be
-        present in 'list_attributes'.
+        present in 'list_attributes'. Model will not save until all required fields have values.
 
 
     **Authors**: Gagandeep Singh
@@ -385,10 +389,6 @@ class UserProfile(Document):
         def __unicode__(self):
             return "{} : {}".format(self.name, self.value)
 
-        def save(self, *args, **kwargs):
-            print "######"
-            self.last_updated_on = timezone.now()
-            return super(self.__class__, self).save(*args, **kwargs)
 
     class UserAttributes(EmbeddedDocument):
         """
@@ -451,6 +451,7 @@ class UserProfile(Document):
     modified_on         = DateTimeField(default=None, help_text="Date on which this record was modified.")
 
     meta = {
+        "index_cls": False,
         "indexes":[
             "registered_user_id",
             "-modified_on",

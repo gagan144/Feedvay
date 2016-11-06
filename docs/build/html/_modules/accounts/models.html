@@ -147,6 +147,10 @@
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">string</span>
 
+<span class="kn">from</span> <span class="nn">mongoengine.document</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">mongoengine.fields</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">mongoengine.base.fields</span> <span class="k">import</span> <span class="n">BaseField</span>
+
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">import_module</span>
 <span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="k">import</span> <span class="n">User</span>
@@ -446,6 +450,251 @@
 <span class="n">user_logged_in</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user_logged_in_handler</span><span class="p">)</span>
 <span class="n">user_logged_out</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user_logged_out_handler</span><span class="p">)</span>
 
+<span class="c1"># ---------- MongoDb models ----------</span>
+
+<div class="viewcode-block" id="UserProfile"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.UserProfile">[docs]</a><span class="k">class</span> <span class="nc">UserProfile</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mongodb model to store registered user information. This model includes wide variety</span>
+<span class="sd">    of user related attributes.</span>
+
+<span class="sd">    **Attribute organisation**:</span>
+<span class="sd">    User attributes and their values are organised in two ways; dictionary and list. This is done</span>
+<span class="sd">    to provide query optimization for wide use cases.</span>
+
+<span class="sd">        1. **Dictionary**: Attributes are maintained as key-value pair in a dictionary field **&#39;attributes&#39;**.</span>
+<span class="sd">           Use this field for quick value lookup mostly when attribute name is known. Also in case of</span>
+<span class="sd">           report display, use this field to get attribute values.</span>
+
+<span class="sd">                - Contains only currently active attributes for the user.</span>
+<span class="sd">                - Read-only field. Do not write/delete inside this field. It is overridden by save().</span>
+<span class="sd">                - This field is **not indexed**, since dictionary indexing does not perform well.</span>
+<span class="sd">                - So, **NEVER** use this field for complex query, aggregations or map-reduce.</span>
+
+<span class="sd">        2. **List of objects**: Attributes are also maintained in form of list of objects in the field **&#39;list_attributes&#39;**,</span>
+<span class="sd">           with each object in the list representing one attribute having information such as name, value as well as</span>
+<span class="sd">           other meta information such as active, last updated on etc.</span>
+
+<span class="sd">                - Contains all active &amp; inactive fields.</span>
+<span class="sd">                - Save uses this field to populate **&#39;attributes&#39;** field.</span>
+<span class="sd">                - This field is **indexed** on name, value &amp; active field of the objects across all documents in UserProfile.</span>
+<span class="sd">                - Always use this field for complex queries and aggregation.</span>
+<span class="sd">                - While using **MongoDb aggregation framework**, unwind **list_attributes** before aggregating.</span>
+<span class="sd">                - **Map-Reduce** might not take good advantage of this field since unwind is not available for MongoDb M-R.</span>
+
+<span class="sd">    **Adding/updating new attribute**:</span>
+
+<span class="sd">        Always add or update attribute using **&#39;list_attributes&#39;** field only. **DO NOT** use &#39;attributes&#39; field.</span>
+<span class="sd">        This is because save function will truncate &#39;attributes&#39; field, loop over &#39;list_attributes&#39; and add only active</span>
+<span class="sd">        attributes to &#39;attributes&#39; field.</span>
+
+<span class="sd">        Use of ``add_update_attribute()`` is recommended.</span>
+
+<span class="sd">    **Deleting attribute**:</span>
+
+<span class="sd">        Always use &#39;list_attributes&#39; field but **NEVER** delete any entry. TO delete an attribute, mark that attribute</span>
+<span class="sd">        as ``active=False``. Save function will automatically remove it from &#39;attributes&#39; field.</span>
+<span class="sd">        To revive an attribute, override its value and mark ``active=True``.</span>
+
+<span class="sd">        Use of ``delete_attribute()`` is recommended.</span>
+
+<span class="sd">    **Mandatory attributes**:</span>
+
+<span class="sd">        All attributes in **UserAttributes** embedded document tagged as ``required=True`` are mandatory and must be</span>
+<span class="sd">        present in &#39;list_attributes&#39;. Model will not save until all required fields have values.</span>
+
+
+<span class="sd">    **Authors**: Gagandeep Singh</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># --- Embedded Documents ---</span>
+<div class="viewcode-block" id="UserProfile.DetailedAttribute"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.UserProfile.DetailedAttribute">[docs]</a>    <span class="k">class</span> <span class="nc">DetailedAttribute</span><span class="p">(</span><span class="n">EmbeddedDocument</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Mongodb embedded document to store an attribute in detail. This not only includes attribute name and value,</span>
+<span class="sd">        but also other meta information such as active, last_updated_on etc.</span>
+
+<span class="sd">        .. warning::</span>
+<span class="sd">            Do not delete this record. Simply mark active as false.</span>
+
+<span class="sd">        **Authors**: Gagandeep Singh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span>        <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Name of the attribute.&quot;</span><span class="p">)</span>
+        <span class="n">value</span>       <span class="o">=</span> <span class="n">BaseField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Value of the attribute. This can be of any data type.&quot;</span><span class="p">)</span>
+
+        <span class="n">active</span>      <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Whether this attribute is active or not. Set False in case od delete.&quot;</span><span class="p">)</span>
+        <span class="n">last_updated_on</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Date on which this record was last updated.&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UserProfile.UserAttributes"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.UserProfile.UserAttributes">[docs]</a>    <span class="k">class</span> <span class="nc">UserAttributes</span><span class="p">(</span><span class="n">EmbeddedDocument</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Mongodb embedded document for :class:`accounts.models.UserProfile` model.</span>
+<span class="sd">        It is this document that stores user attributes in key-value pairs.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            Use this model for quick lookup for attribute value. These keys will not be indexed</span>
+<span class="sd">            so **DO NOT** use them in queries.</span>
+
+<span class="sd">        **Authors**: Gagandeep Singh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># --- Enums ---</span>
+        <span class="n">GEN_MALE</span> <span class="o">=</span> <span class="s1">&#39;male&#39;</span>
+        <span class="n">GEN_FEMALE</span> <span class="o">=</span> <span class="s1">&#39;female&#39;</span>
+        <span class="n">GEN_OTHER</span> <span class="o">=</span> <span class="s1">&#39;other&#39;</span>
+        <span class="n">CH_GENDER</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">GEN_MALE</span><span class="p">,</span> <span class="s1">&#39;Male&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">GEN_FEMALE</span><span class="p">,</span> <span class="s1">&#39;Female&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">GEN_OTHER</span><span class="p">,</span> <span class="s1">&#39;Other&#39;</span><span class="p">)</span>
+
+        <span class="p">)</span>
+
+        <span class="n">BLOOD_O_P</span> <span class="o">=</span> <span class="s1">&#39;O+&#39;</span>
+        <span class="n">BLOOD_O_N</span> <span class="o">=</span> <span class="s1">&#39;O-&#39;</span>
+        <span class="n">BLOOD_A_P</span> <span class="o">=</span> <span class="s1">&#39;A+&#39;</span>
+        <span class="n">BLOOD_A_N</span> <span class="o">=</span> <span class="s1">&#39;A-&#39;</span>
+        <span class="n">BLOOD_B_P</span> <span class="o">=</span> <span class="s1">&#39;B+&#39;</span>
+        <span class="n">BLOOD_B_N</span> <span class="o">=</span> <span class="s1">&#39;B-&#39;</span>
+        <span class="n">BLOOD_AB_P</span> <span class="o">=</span> <span class="s1">&#39;AB+&#39;</span>
+        <span class="n">BLOOD_AB_N</span> <span class="o">=</span> <span class="s1">&#39;AB-&#39;</span>
+        <span class="n">CH_BLOOD_GROUP</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">BLOOD_O_P</span><span class="p">,</span> <span class="n">BLOOD_O_P</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">BLOOD_O_N</span><span class="p">,</span> <span class="n">BLOOD_O_N</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">BLOOD_A_P</span><span class="p">,</span> <span class="n">BLOOD_A_P</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">BLOOD_A_N</span><span class="p">,</span> <span class="n">BLOOD_A_N</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">BLOOD_B_P</span><span class="p">,</span> <span class="n">BLOOD_B_P</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">BLOOD_B_N</span><span class="p">,</span> <span class="n">BLOOD_B_N</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">BLOOD_AB_P</span><span class="p">,</span> <span class="n">BLOOD_AB_P</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">BLOOD_AB_N</span><span class="p">,</span> <span class="n">BLOOD_AB_N</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># --- Fields ---</span>
+        <span class="n">first_name</span>      <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;First name of the user. Must be same as in User model.&quot;</span><span class="p">)</span>
+        <span class="n">last_name</span>       <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Last Name of the user. Must be same as in User model.&quot;</span><span class="p">)</span>
+
+        <span class="n">gender</span>          <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">CH_GENDER</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;User gender.&quot;</span><span class="p">)</span>
+        <span class="n">date_of_birth</span>   <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Date of birth (with time as 00:00:00.00+0000)&quot;</span><span class="p">)</span>
+        <span class="n">blood_group</span>     <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">choices</span><span class="o">=</span><span class="n">CH_BLOOD_GROUP</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Blood group of the user.&quot;</span><span class="p">)</span></div>
+    <span class="c1"># --- /Embedded Documents ---</span>
+
+    <span class="c1"># ------ UserProfile Fields ------</span>
+    <span class="n">registered_user_id</span>  <span class="o">=</span> <span class="n">IntField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Instance ID of :class:`accounts.models.RegisteredUser`.&quot;</span><span class="p">)</span>
+
+    <span class="n">attributes</span>          <span class="o">=</span> <span class="n">EmbeddedDocumentField</span><span class="p">(</span><span class="n">UserAttributes</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Dictionary of user attributes and values. These are not indexed.&quot;</span><span class="p">)</span>
+    <span class="n">list_attributes</span>     <span class="o">=</span> <span class="n">EmbeddedDocumentListField</span><span class="p">(</span><span class="n">DetailedAttribute</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;List of atrributes along with their meta details. These are indexed.&quot;</span><span class="p">)</span>
+
+    <span class="n">created_on</span>          <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Date on which this record was created.&#39;</span><span class="p">)</span>
+    <span class="n">modified_on</span>         <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Date on which this record was modified.&quot;</span><span class="p">)</span>
+
+    <span class="n">meta</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;index_cls&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;indexes&quot;</span><span class="p">:[</span>
+            <span class="s2">&quot;registered_user_id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;-modified_on&quot;</span><span class="p">,</span>
+
+            <span class="s2">&quot;list_attributes.name&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;list_attributes.value&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;list_attributes.active&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">registered_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">RegisteredUser</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_user_id</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> - </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_user_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">last_name</span><span class="p">)</span>
+
+
+    <span class="c1"># --- Attributes management ---</span>
+<div class="viewcode-block" id="UserProfile.add_update_attribute"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.UserProfile.add_update_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">add_update_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">auto_save</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to add or update (incase it exists) an attribute.</span>
+
+<span class="sd">        :param name: Name of the attribute.</span>
+<span class="sd">        :param value: Value for that attribute.</span>
+<span class="sd">        :param auto_save: True to write to db after addition else False</span>
+<span class="sd">        :return: True if attribute was created, False if attribute was updated or revived</span>
+
+<span class="sd">        **Authors**: Gagandeep Singh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Find attribute existences</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_attributes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                <span class="c1"># Found</span>
+                <span class="n">attr</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="n">attr</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">attr</span><span class="o">.</span><span class="n">last_updated_on</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+                <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">list_attributes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">UserProfile</span><span class="o">.</span><span class="n">DetailedAttribute</span><span class="p">(</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">,</span>
+                    <span class="n">active</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Save</span>
+        <span class="k">if</span> <span class="n">auto_save</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="c1"># return: was created</span>
+        <span class="k">return</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">found</span> <span class="k">else</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="UserProfile.delete_attribute"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.UserProfile.delete_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">delete_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">auto_save</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to delete an attribute, that is mark attribute active as false.</span>
+
+<span class="sd">        :param name: Name of the attribute</span>
+<span class="sd">        :param auto_save: True to write to db after deletion else False</span>
+<span class="sd">        :return: True if attribute was found active and marked, False if attribute was inactive or was not found; save is not triggered in this case.</span>
+
+<span class="sd">        **Authors**: Gagandeep Singh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_attributes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span> <span class="ow">and</span> <span class="n">attr</span><span class="o">.</span><span class="n">active</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">attr</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+
+        <span class="c1"># Save if found</span>
+        <span class="k">if</span> <span class="n">found</span> <span class="ow">and</span> <span class="n">auto_save</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="UserProfile.save"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.UserProfile.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">complete_save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pre-save method for this model.</span>
+
+<span class="sd">        **Authors**: Gagandeep Singh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">modified_on</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="c1"># Set &#39;attributes&#39; based on &#39;list_attributes&#39;</span>
+        <span class="c1"># For all attributes in &#39;list_attributes&#39; that are active, copy them in the dict &#39;attributes&#39;</span>
+        <span class="n">dict_attr</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_attributes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+                <span class="n">dict_attr</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">attr</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">attr</span><span class="o">.</span><span class="n">value</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="n">UserProfile</span><span class="o">.</span><span class="n">UserAttributes</span><span class="p">(</span><span class="o">**</span><span class="n">dict_attr</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 
 <span class="c1"># ---------- Global Methods ----------</span>
 <div class="viewcode-block" id="set_user_password"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.set_user_password">[docs]</a><span class="k">def</span> <span class="nf">set_user_password</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">new_password</span><span class="p">,</span> <span class="n">send_owls</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>

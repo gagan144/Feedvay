@@ -9,8 +9,7 @@
     - New Feature Promotion
 
 - UserProfile
-    - When to create: at new registered user
-    - Allow delete ?
+    - Gender & dob to be mandatory & get during registration
 
 - UI
     - Summernote css

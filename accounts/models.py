@@ -3,17 +3,19 @@
 # permission of Gagandeep Singh.
 from __future__ import unicode_literals
 
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
+from django.core.exceptions import ValidationError
+from django.db.models.signals import post_save
 import random
 import string
 
 from mongoengine.document import *
 from mongoengine.fields import *
 from mongoengine.base.fields import BaseField
+from mongoengine.queryset import DoesNotExist as mongo_DoesNotExist
 
 from django.conf import settings
 from importlib import import_module
@@ -131,6 +133,33 @@ class RegisteredUser(models.Model):
         self.clean()
         super(self.__class__, self).save(*args, **kwargs)
 
+    @classmethod
+    def post_save(cls, sender, instance, **kwargs):
+        """
+        Post save trigger for this model. This will be called after the record has
+        been created or updated.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        # Create or update 'UserProfile'
+        try:
+            user_profile = UserProfile.objects.get(registered_user_id=instance.id)
+        except mongo_DoesNotExist:
+            # Create new entry
+            user = instance.user
+            user_profile = UserProfile(
+                registered_user_id = instance.id
+            )
+
+        user_profile.add_update_attribute('first_name', user.first_name, auto_save=False)
+        user_profile.add_update_attribute('last_name', user.last_name, auto_save=False)
+        user_profile.save()
+
+    def delete(self, using=None, keep_parents=False):
+        # Override delete method to prevent record deletion.
+        raise ValidationError('You cannot delete RegisteredUser.')
+
     @staticmethod
     def construct_username(country_tel_code, mobile_no):
         """
@@ -144,6 +173,8 @@ class RegisteredUser(models.Model):
         **Authors**: Gagandeep Singh
         """
         return "{}-{}".format(country_tel_code, mobile_no)
+post_save.connect(RegisteredUser.post_save, sender=RegisteredUser)
+
 
 class UserToken(models.Model):
     """
@@ -443,8 +474,8 @@ class UserProfile(Document):
         first_name      = StringField(required=True, help_text="First name of the user. This will be updated by 'first_name' in User model.")
         last_name       = StringField(required=True, help_text="Last Name of the user. This will be updated by 'last_name' in User model.")
 
-        gender          = StringField(required=True, choices=CH_GENDER, help_text="User gender.")
-        date_of_birth   = DateTimeField(required=True, help_text="Date of birth (with time as 00:00:00.00+0000)")
+        gender          = StringField(required=False, choices=CH_GENDER, help_text="User gender.")
+        date_of_birth   = DateTimeField(required=False, help_text="Date of birth (with time as 00:00:00.00+0000)")
         blood_group     = StringField(choices=CH_BLOOD_GROUP, help_text="Blood group of the user.")
     # --- /Embedded Documents ---
 
@@ -639,6 +670,9 @@ class UserProfile(Document):
         except RegisteredUser.DoesNotExist:
             raise Exception('RegisterdUser with id={} does not exists.'.format(self.registered_user_id))
 
+    def delete(self, **write_concern):
+        # Override delete method to prevent record deletion.
+        raise ValidationError('Denied! You cannot delete UserProfile.')
 
 # ---------- Global Methods ----------
 def set_user_password(user, new_password, send_owls=True):

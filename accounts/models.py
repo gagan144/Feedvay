@@ -10,6 +10,10 @@ from django_fsm_log.decorators import fsm_log_by
 import random
 import string
 
+from mongoengine.document import *
+from mongoengine.fields import *
+from mongoengine.base.fields import BaseField
+
 from django.conf import settings
 from importlib import import_module
 from django.contrib.auth.models import User
@@ -309,6 +313,250 @@ def user_logged_out_handler(sender, request, user, **kwargs):
 user_logged_in.connect(user_logged_in_handler)
 user_logged_out.connect(user_logged_out_handler)
 
+# ---------- MongoDb models ----------
+
+class UserProfile(Document):
+    """
+    Mongodb model to store registered user information. This model includes wide variety
+    of user related attributes.
+
+    **Attribute organisation**:
+    User attributes and their values are organised in two ways; dictionary and list. This is done
+    to provide query optimization for wide use cases.
+
+        1. **Dictionary**: Attributes are maintained as key-value pair in a dictionary field **'attributes'**.
+           Use this field for quick value lookup mostly when attribute name is known. Also in case of
+           report display, use this field to get attribute values.
+
+                - Contains only currently active attributes for the user.
+                - Read-only field. Do not write/delete inside this field. It is overridden by save().
+                - This field is **not indexed**, since dictionary indexing does not perform well.
+                - So, **NEVER** use this field for complex query, aggregations or map-reduce.
+
+        2. **List of objects**: Attributes are also maintained in form of list of objects in the field **'list_attributes'**,
+           with each object in the list representing one attribute having information such as name, value as well as
+           other meta information such as active, last updated on etc.
+
+                - Contains all active & inactive fields.
+                - Save uses this field to populate **'attributes'** field.
+                - This field is **indexed** on name, value & active field of the objects across all documents in UserProfile.
+                - Always use this field for complex queries and aggregation.
+                - While using **MongoDb aggregation framework**, unwind **list_attributes** before aggregating.
+                - **Map-Reduce** might not take good advantage of this field since unwind is not available for MongoDb M-R.
+
+    **Adding/updating new attribute**:
+
+        Always add or update attribute using **'list_attributes'** field only. **DO NOT** use 'attributes' field.
+        This is because save function will truncate 'attributes' field, loop over 'list_attributes' and add only active
+        attributes to 'attributes' field.
+
+    ** Deleting attributes**:
+
+        Always use 'list_attributes' field but **NEVER** delete any entry. TO delete an attribute, mark that attribute
+        as ``active=False``. Save function will automatically remove it from 'attributes' field.
+        To revive an attribute, override its value and mark ``active=True``.
+
+    **Mandatory attributes**:
+
+        All attributes in **UserAttributes** embedded document tagged as ``required=True`` are mandatory and must be
+        present in 'list_attributes'.
+
+
+    **Authors**: Gagandeep Singh
+    """
+
+    # --- Embedded Documents ---
+    class DetailedAttribute(EmbeddedDocument):
+        """
+        Mongodb embedded document to store an attribute in detail. This not only includes attribute name and value,
+        but also other meta information such as active, last_updated_on etc.
+
+        .. warning::
+            Do not delete this record. Simply mark active as false.
+
+        **Authors**: Gagandeep Singh
+        """
+        name        = StringField(required=True, help_text="Name of the attribute.")
+        value       = BaseField(required=True, help_text="Value of the attribute. This can be of any data type.")
+
+        active      = BooleanField(required=True, default=True, help_text="Whether this attribute is active or not. Set False in case od delete.")
+        last_updated_on = DateTimeField(required=True, default=timezone.now, help_text="Date on which this record was last updated.")
+
+        def __unicode__(self):
+            return "{} : {}".format(self.name, self.value)
+
+        def save(self, *args, **kwargs):
+            print "######"
+            self.last_updated_on = timezone.now()
+            return super(self.__class__, self).save(*args, **kwargs)
+
+    class UserAttributes(EmbeddedDocument):
+        """
+        Mongodb embedded document for :class:`accounts.models.UserProfile` model.
+        It is this document that stores user attributes in key-value pairs.
+
+        .. note::
+            Use this model for quick lookup for attribute value. These keys will not be indexed
+            so **DO NOT** use them in queries.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        # --- Enums ---
+        GEN_MALE = 'male'
+        GEN_FEMALE = 'female'
+        GEN_OTHER = 'other'
+        CH_GENDER = (
+            (GEN_MALE, 'Male'),
+            (GEN_FEMALE, 'Female'),
+            (GEN_OTHER, 'Other')
+
+        )
+
+        BLOOD_O_P = 'O+'
+        BLOOD_O_N = 'O-'
+        BLOOD_A_P = 'A+'
+        BLOOD_A_N = 'A-'
+        BLOOD_B_P = 'B+'
+        BLOOD_B_N = 'B-'
+        BLOOD_AB_P = 'AB+'
+        BLOOD_AB_N = 'AB-'
+        CH_BLOOD_GROUP = (
+            (BLOOD_O_P, BLOOD_O_P),
+            (BLOOD_O_N, BLOOD_O_N),
+            (BLOOD_A_P, BLOOD_A_P),
+            (BLOOD_A_N, BLOOD_A_N),
+            (BLOOD_B_P, BLOOD_B_P),
+            (BLOOD_B_N, BLOOD_B_N),
+            (BLOOD_AB_P, BLOOD_AB_P),
+            (BLOOD_AB_N, BLOOD_AB_N)
+        )
+
+        # --- Fields ---
+        first_name      = StringField(required=True, help_text="First name of the user. Must be same as in User model.")
+        last_name       = StringField(required=True, help_text="Last Name of the user. Must be same as in User model.")
+
+        gender          = StringField(required=True, choices=CH_GENDER, help_text="User gender.")
+        date_of_birth   = DateTimeField(required=True, help_text="Date of birth (with time as 00:00:00.00+0000)")
+        blood_group     = StringField(choices=CH_BLOOD_GROUP, help_text="Blood group of the user.")
+    # --- /Embedded Documents ---
+
+    # ------ UserProfile Fields ------
+    registered_user_id  = IntField(required=True, unique=True, help_text="Instance ID of :class:`accounts.models.RegisteredUser`.")
+
+    attributes          = EmbeddedDocumentField(UserAttributes, help_text="Dictionary of user attributes and values. These are not indexed.")
+    list_attributes     = EmbeddedDocumentListField(DetailedAttribute, help_text="List of atrributes along with their meta details. These are indexed.")
+
+    created_on          = DateTimeField(required=True, default=timezone.now, help_text='Date on which this record was created.')
+    modified_on         = DateTimeField(default=None, help_text="Date on which this record was modified.")
+
+    meta = {
+        "indexes":[
+            "registered_user_id",
+            "-modified_on",
+
+            "list_attributes.name",
+            "list_attributes.value",
+            "list_attributes.active",
+        ]
+    }
+
+    @property
+    def registered_user(self):
+        return RegisteredUser.objects.get(id=self.registered_user_id)
+
+
+    def __unicode__(self):
+        return "{} - {} {}".format(self.registered_user_id, self.attributes.first_name, self.attributes.last_name)
+
+
+    # --- Attributes management ---
+    def add_update_attribute(self, name, value, auto_save=True):
+        """
+        Method to add or update (incase it exists) an attribute.
+
+        :param name: Name of the attribute.
+        :param value: Value for that attribute.
+        :param auto_save: True to write to db after addition else False
+        :return: True if attribute was created, False if attribute was updated or revived
+
+        **Authors**: Gagandeep Singh
+        """
+
+        # Find attribute existences
+        found = False
+        for attr in self.list_attributes:
+            if attr.name == name:
+                # Found
+                attr.value = value
+                attr.active = True
+                attr.last_updated_on = timezone.now()
+
+                found = True
+                break
+
+        if not found:
+            self.list_attributes.append(
+                UserProfile.DetailedAttribute(
+                    name = name,
+                    value = value,
+                    active = True
+                )
+            )
+
+        # Save
+        if auto_save:
+            self.save()
+
+        # return: was created
+        return False if found else True
+
+
+    def delete_attribute(self, name, auto_save=True):
+        """
+        Method to delete an attribute, that is mark attribute active as false.
+
+        :param name: Name of the attribute
+        :param auto_save: True to write to db after deletion else False
+        :return: True if attribute was found active and marked, False if attribute was inactive or was not found; save is not triggered in this case.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        found = False
+        for attr in self.list_attributes:
+            if attr.name == name and attr.active == True:
+                attr.active = False
+                found = True
+                break
+
+        # Save if found
+        if found and auto_save:
+            self.save()
+            return True
+        else:
+            return False
+
+
+    def save(self, complete_save=True, *args, **kwargs):
+        """
+        Pre-save method for this model.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        if self.pk:
+            self.modified_on = timezone.now()
+
+        # Set 'attributes' based on 'list_attributes'
+        # For all attributes in 'list_attributes' that are active, copy them in the dict 'attributes'
+        dict_attr = {}
+        for attr in self.list_attributes:
+            if attr.active:
+                dict_attr.update({attr.name: attr.value})
+        self.attributes = UserProfile.UserAttributes(**dict_attr)
+
+        return super(self.__class__, self).save(*args, **kwargs)
 
 # ---------- Global Methods ----------
 def set_user_password(user, new_password, send_owls=True):

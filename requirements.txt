@@ -3,6 +3,10 @@ django>=1.10.2
 django-mysql
 django-tastypie
 docutils
+mongoengine==0.10.6
+# django-tastypie-mongoengine: pip install git+https://github.com/gagan144/django-tastypie-mongoengine  # enable text search: in /etc/mongodb.cnf, add: setParameter = textSearchEnabled=true
+pymongo>=3.3.0
+# NOT USING: django-mongoengine>=0.2.1 : pip install git+https://github.com/MongoEngine/django-mongoengine
 
 ujson
 django-tinymce

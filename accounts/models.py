@@ -3,6 +3,7 @@
 # permission of Gagandeep Singh.
 from __future__ import unicode_literals
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from django_fsm import FSMField, transition
@@ -384,6 +385,7 @@ class UserProfile(Document):
         value       = BaseField(required=True, help_text="Value of the attribute. This can be of any data type.")
 
         active      = BooleanField(required=True, default=True, help_text="Whether this attribute is active or not. Set False in case od delete.")
+        locked      = BooleanField(required=True, default=False, help_text="If True attribute cannot be updated or deleted.")
         last_updated_on = DateTimeField(required=True, default=timezone.now, help_text="Date on which this record was last updated.")
 
         def __unicode__(self):
@@ -398,6 +400,11 @@ class UserProfile(Document):
         .. note::
             Use this model for quick lookup for attribute value. These keys will not be indexed
             so **DO NOT** use them in queries.
+
+        .. warning::
+            Following attributes will be replaced by that in :class:`django.contrib.auth.models.User` model:
+                - first_name
+                - last_name
 
         **Authors**: Gagandeep Singh
         """
@@ -433,8 +440,8 @@ class UserProfile(Document):
         )
 
         # --- Fields ---
-        first_name      = StringField(required=True, help_text="First name of the user. Must be same as in User model.")
-        last_name       = StringField(required=True, help_text="Last Name of the user. Must be same as in User model.")
+        first_name      = StringField(required=True, help_text="First name of the user. This will be updated by 'first_name' in User model.")
+        last_name       = StringField(required=True, help_text="Last Name of the user. This will be updated by 'last_name' in User model.")
 
         gender          = StringField(required=True, choices=CH_GENDER, help_text="User gender.")
         date_of_birth   = DateTimeField(required=True, help_text="Date of birth (with time as 00:00:00.00+0000)")
@@ -474,69 +481,134 @@ class UserProfile(Document):
     # --- Attributes management ---
     def add_update_attribute(self, name, value, auto_save=True):
         """
-        Method to add or update (incase it exists) an attribute.
+        Method to add new attribute if it does not exists or update an attribute if it is not locked.
+        An attribute will automatically be revived if found inactive.
 
         :param name: Name of the attribute.
         :param value: Value for that attribute.
         :param auto_save: True to write to db after addition else False
-        :return: True if attribute was created, False if attribute was updated or revived
+        :return: Bool tuple (is_new, updated) 'is_new': True if attribute was created. 'updated': True if action was success else False
+
+        **Note**: Throws 'ValidationError' if attribute is locked
 
         **Authors**: Gagandeep Singh
         """
 
+        # Check for valid attribute name
+        allowed_names = UserProfile.UserAttributes._fields.keys()
+        if name not in allowed_names:
+            raise ValidationError("Inavlid attribute name '{}'. Allowed names: {}".format(name, allowed_names))
+
         # Find attribute existences
-        found = False
+        is_new = True
+        updated = False
         for attr in self.list_attributes:
             if attr.name == name:
-                # Found
+                is_new = False
+                if attr.locked:
+                    raise ValidationError("Denied! Attribute '{}' is locked.".format(name))
+
                 attr.value = value
                 attr.active = True
                 attr.last_updated_on = timezone.now()
 
-                found = True
+                updated = True
                 break
 
-        if not found:
+        if is_new:
             self.list_attributes.append(
                 UserProfile.DetailedAttribute(
                     name = name,
                     value = value,
-                    active = True
+                    active = True,
                 )
             )
+            updated = True
 
         # Save
-        if auto_save:
+        if updated and auto_save:
             self.save()
 
-        # return: was created
-        return False if found else True
+        return (is_new, updated)
 
 
     def delete_attribute(self, name, auto_save=True):
         """
         Method to delete an attribute, that is mark attribute active as false.
+        An already deleted (inactive) attribute will again be marked inactive.
 
         :param name: Name of the attribute
         :param auto_save: True to write to db after deletion else False
-        :return: True if attribute was found active and marked, False if attribute was inactive or was not found; save is not triggered in this case.
+        :return: Bool tuple (found, updated)
+
+        **Note**: Throws 'ValidationError' if attribute is locked
 
         **Authors**: Gagandeep Singh
         """
 
         found = False
+        updated = False
         for attr in self.list_attributes:
-            if attr.name == name and attr.active == True:
-                attr.active = False
+            if attr.name == name:
                 found = True
+                if attr.locked:
+                    raise ValidationError("Denied! Attribute '{}' is locked.".format(name))
+
+                attr.active = False
+
+                updated = True
                 break
 
-        # Save if found
-        if found and auto_save:
+        # Save
+        if found and updated and auto_save:
             self.save()
-            return True
-        else:
-            return False
+
+        return (found, updated)
+
+    def lock_attribute(self, name, auto_save=True):
+        """
+        Method to lock an attribute. Locking an attribute will prevent any updation or deletion of an attribute.
+
+        :param name: Name of the attribute.
+        :param auto_save: Save model after locking
+        :return: True if attribute found and successfully locked else False
+        """
+
+        updated = False
+        for attr in self.list_attributes:
+            if attr.name == name:
+                attr.locked = True
+
+                updated = True
+                break
+
+        if updated and auto_save:
+            self.save()
+
+        return updated
+
+
+    def unlock_attribute(self, name, auto_save=True):
+        """
+        Method to unlock an attribute and release it from locked state.
+
+        :param name: Name of the attribute
+        :param auto_save: Save model after unlocking
+        :return: True if attribute found and successfully released else False
+        """
+
+        updated = False
+        for attr in self.list_attributes:
+            if attr.name == name:
+                attr.locked = False
+
+                updated = True
+                break
+
+        if updated and auto_save:
+            self.save()
+
+        return updated
 
 
     def save(self, complete_save=True, *args, **kwargs):

@@ -546,18 +546,27 @@ class UserProfile(Document):
         **Authors**: Gagandeep Singh
         """
 
-        if self.pk:
-            self.modified_on = timezone.now()
+        # Check for RegisteredUser
+        # This will throw DoesNotExist exception
+        try:
+            reg_user = self.registered_user
 
-        # Set 'attributes' based on 'list_attributes'
-        # For all attributes in 'list_attributes' that are active, copy them in the dict 'attributes'
-        dict_attr = {}
-        for attr in self.list_attributes:
-            if attr.active:
-                dict_attr.update({attr.name: attr.value})
-        self.attributes = UserProfile.UserAttributes(**dict_attr)
+            # Modify modified_on date-time
+            if self.pk:
+                self.modified_on = timezone.now()
 
-        return super(self.__class__, self).save(*args, **kwargs)
+            # Set 'attributes' based on 'list_attributes'
+            # For all attributes in 'list_attributes' that are active, copy them in the dict 'attributes'
+            dict_attr = {}
+            for attr in self.list_attributes:
+                if attr.active:
+                    dict_attr.update({attr.name: attr.value})
+            self.attributes = UserProfile.UserAttributes(**dict_attr)
+
+            return super(self.__class__, self).save(*args, **kwargs)
+        except RegisteredUser.DoesNotExist:
+            raise Exception('RegisterdUser with id={} does not exists.'.format(self.registered_user_id))
+
 
 # ---------- Global Methods ----------
 def set_user_password(user, new_password, send_owls=True):

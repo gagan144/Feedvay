@@ -683,18 +683,27 @@
 <span class="sd">        **Authors**: Gagandeep Singh</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">modified_on</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="c1"># Check for RegisteredUser</span>
+        <span class="c1"># This will throw DoesNotExist exception</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">reg_user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_user</span>
 
-        <span class="c1"># Set &#39;attributes&#39; based on &#39;list_attributes&#39;</span>
-        <span class="c1"># For all attributes in &#39;list_attributes&#39; that are active, copy them in the dict &#39;attributes&#39;</span>
-        <span class="n">dict_attr</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_attributes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
-                <span class="n">dict_attr</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">attr</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">attr</span><span class="o">.</span><span class="n">value</span><span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="n">UserProfile</span><span class="o">.</span><span class="n">UserAttributes</span><span class="p">(</span><span class="o">**</span><span class="n">dict_attr</span><span class="p">)</span>
+            <span class="c1"># Modify modified_on date-time</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">modified_on</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+            <span class="c1"># Set &#39;attributes&#39; based on &#39;list_attributes&#39;</span>
+            <span class="c1"># For all attributes in &#39;list_attributes&#39; that are active, copy them in the dict &#39;attributes&#39;</span>
+            <span class="n">dict_attr</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_attributes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+                    <span class="n">dict_attr</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">attr</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">attr</span><span class="o">.</span><span class="n">value</span><span class="p">})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="n">UserProfile</span><span class="o">.</span><span class="n">UserAttributes</span><span class="p">(</span><span class="o">**</span><span class="n">dict_attr</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">RegisteredUser</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;RegisterdUser with id=</span><span class="si">{}</span><span class="s1"> does not exists.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_user_id</span><span class="p">))</span></div></div>
+
 
 <span class="c1"># ---------- Global Methods ----------</span>
 <div class="viewcode-block" id="set_user_password"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.set_user_password">[docs]</a><span class="k">def</span> <span class="nf">set_user_password</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">new_password</span><span class="p">,</span> <span class="n">send_owls</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>

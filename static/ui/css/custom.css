@@ -27,6 +27,23 @@
     margin-left: 2px;
 }
 
+.panel_body_realign{
+    width: 100% !important;
+    margin: 0px !important;
+    border: none !important;
+}
+
+.panel_heading_2{
+    font-size: 15px !important;
+}
+
+.hr_line_dashed_m15{
+    margin: 15px 0px !important;
+}
+.hr_line_dashed_m10{
+    margin: 10px 0px !important;
+}
+
 /* ---------- Desktop ---------- */
 @media (min-width: 767px) {
     .mobile_show{

@@ -84,7 +84,8 @@
                 .state('security', {
                     url: "/security",
                     templateUrl: "/static/partials/accounts/security.html",
-                    data: { pageTitle: 'Security' }
+                    data: { pageTitle: 'Security' },
+                    controller: SecurityCtrl,
                 })
 
         })
@@ -121,6 +122,20 @@
         APP.controller('MainCtrl', function($scope){
 
         });
+
+        // ========== State Controllers ==========
+
+        // --- Security ---
+        function SecurityCtrl($scope) {
+            $scope.delete = 'testing';
+        }
+
+        APP.controller('ChangePasswordCtrl', function($scope) {
+            $scope.msg = 'XXXXtesting';
+        });
+        // --- /Security ---
+
+
 
 
     </script>

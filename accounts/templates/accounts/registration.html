@@ -103,7 +103,7 @@
                         </p>
                     </div>
 
-                    <h3 class="text-navy">Sign up now!</h3>
+                    <h2 class="text-navy">Sign up now!</h2>
 
                     <form id="form_signup" class="m-t" role="form" method="post">{% csrf_token %}
                         <div style="margin-bottom: 15px;">
@@ -132,6 +132,51 @@
                             <div class="col-xs-6 col-custom">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="last_name" value="{{ form_reg.first_name.value|default_if_none:"" }}" placeholder="Last name*" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin: 0px -5px !important;">
+                            <div class="col-xs-8 col-custom">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <select class="form-control" name="dob_day">
+                                            <option value="">Day</option>
+                                            {% for d in days %}
+                                                <option value="{{ d }}">{{ d }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <span class="input-group-btn" style="width:0px;"></span>
+
+                                        <select class="form-control" name="dob_month">
+                                            <option value="">Month</option>
+                                            {% for m in month %}
+                                                <option value="{{ m }}">{{ m }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <span class="input-group-btn" style="width:0px;"></span>
+
+                                        <select class="form-control" name="dob_year">
+                                            <option value="">Year</option>
+                                            {% for y in year %}
+                                                <option value="{{ y }}">{{ y }}</option>
+                                            {% endfor %}
+                                        </select>
+
+{#                                        <input type="text" class="form-control" value="test2" style="margin-left:-1px" />#}
+{#                                        <span class="input-group-btn" style="width:0px;"></span>#}
+{#                                        <input type="text" class="form-control" value="test2" style="margin-left:-2px" />#}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-4 col-custom">
+                                <div class="form-group">
+                                    <select class="form-control" name="gender" required>
+                                        <option value="">Gender*</option>
+                                        <option value="male" {% if form_reg.gender.value == 'male' %}selected{% endif %} >Male</option>
+                                        <option value="female" {% if form_reg.gender.value == 'female' %}selected{% endif %}>Female</option>
+                                        <option value="other" {% if form_reg.gender.value == 'other' %}selected{% endif %}>Other</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>

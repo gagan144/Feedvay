@@ -142,19 +142,20 @@ class RegisteredUser(models.Model):
         **Authors**: Gagandeep Singh
         """
 
-        # Create or update 'UserProfile'
+        # Update 'UserProfile' only if this exists
+        # Cannot create here because during registration, when 'RegisteredUser' is created this routine will not
+        # have date of birth, gender etc since they are not present in 'User' model.
+        # Update here make surety that User.<attributes> are same as UserProfile.<attributes>
         try:
-            user_profile = UserProfile.objects.get(registered_user_id=instance.id)
-        except mongo_DoesNotExist:
-            # Create new entry
             user = instance.user
-            user_profile = UserProfile(
-                registered_user_id = instance.id
-            )
 
-        user_profile.add_update_attribute('first_name', user.first_name, auto_save=False)
-        user_profile.add_update_attribute('last_name', user.last_name, auto_save=False)
-        user_profile.save()
+            user_profile = UserProfile.objects.get(registered_user_id=instance.id)
+            user_profile.add_update_attribute('first_name', user.first_name, auto_save=False)
+            user_profile.add_update_attribute('last_name', user.last_name, auto_save=False)
+            user_profile.save()
+
+        except mongo_DoesNotExist:
+            pass
 
     def delete(self, using=None, keep_parents=False):
         # Override delete method to prevent record deletion.
@@ -397,6 +398,10 @@ class UserProfile(Document):
         All attributes in **UserAttributes** embedded document tagged as ``required=True`` are mandatory and must be
         present in 'list_attributes'. Model will not save until all required fields have values.
 
+    **When this model is created/updated**:
+
+        This model is created only during registration process and updated each time :class:`accounts.models.RegisteredUser` is saved.
+
 
     **Authors**: Gagandeep Singh
     """
@@ -474,8 +479,8 @@ class UserProfile(Document):
         first_name      = StringField(required=True, help_text="First name of the user. This will be updated by 'first_name' in User model.")
         last_name       = StringField(required=True, help_text="Last Name of the user. This will be updated by 'last_name' in User model.")
 
-        gender          = StringField(required=False, choices=CH_GENDER, help_text="User gender.")
-        date_of_birth   = DateTimeField(required=False, help_text="Date of birth (with time as 00:00:00.00+0000)")
+        gender          = StringField(required=True, choices=CH_GENDER, help_text="User gender.")
+        date_of_birth   = DateTimeField(required=True, help_text="Date of birth (with time as 00:00:00.00+0000)")
         blood_group     = StringField(choices=CH_BLOOD_GROUP, help_text="Blood group of the user.")
     # --- /Embedded Documents ---
 

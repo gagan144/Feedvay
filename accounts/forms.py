@@ -48,6 +48,15 @@ class RegistrationForm(forms.Form):
             del form_data['confirm_password']
         return form_data
 
+    def get_date_of_birth(self):
+        """
+        Returns a datetime (timezone unaware) object with time as 00:00:00.00
+        :return: Date of birth datetime object
+        """
+        from datetime import datetime
+        form_data = self.cleaned_data
+        return datetime(form_data['dob_year'], form_data['dob_month'], form_data['dob_day']) # Unaware datetime object
+
 class PasswordResetForm(forms.Form):
     """
     Form to reset/recover a user's password. The user has been send a verification code,

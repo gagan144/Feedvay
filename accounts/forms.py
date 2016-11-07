@@ -3,6 +3,7 @@
 # permission of Gagandeep Singh.
 from django import forms
 from captcha.fields import ReCaptchaField
+from datetime import date
 
 from accounts.models import *
 
@@ -20,6 +21,12 @@ class RegistrationForm(forms.Form):
     first_name  = forms.CharField(required=True)
     last_name   = forms.CharField(required=True)
 
+    dob_day     = forms.IntegerField(required=True)
+    dob_month   = forms.IntegerField(required=True)
+    dob_year    = forms.IntegerField(required=True)
+
+    gender      = forms.CharField(required=True)
+
     password    = forms.CharField(widget=forms.PasswordInput())
     confirm_password = forms.CharField(widget=forms.PasswordInput())
 
@@ -29,6 +36,12 @@ class RegistrationForm(forms.Form):
 
     def clean(self):
         form_data = self.cleaned_data
+
+        try:
+            dob = date(form_data['dob_year'], form_data['dob_month'], form_data['dob_day'])
+        except ValueError:
+            self._errors["birthday"] = ["Invalid birth date."]
+
         if form_data['password'] != form_data['confirm_password']:
             self._errors["confirm_password"] = ["Password does not match"]
             del form_data['password']

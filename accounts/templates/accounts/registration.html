@@ -21,6 +21,7 @@
     <link href="{% get_static_prefix %}ui/css/plugins/ladda/ladda-themeless.min.css" rel="stylesheet">
 
     <link href="{% get_static_prefix %}ui/css/style-default.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/css/custom.css" rel="stylesheet">
 
     <style>
         .col-custom{
@@ -109,7 +110,7 @@
                         <div style="margin-bottom: 15px;">
                             <div class="input-group m-b {% if form_reg.mobile_no.errors or username_exists%}has-error{% endif %}" style="margin-bottom: 0px;">
                                 <span class="input-group-addon">{{ country_tel_code }}</span>
-                                <input type="text" class="form-control" name="mobile_no" placeholder="Mobile number" value="{{ form_reg.mobile_no.value|default_if_none:"" }}"  maxlength="10" required>
+                                <input type="text" class="form-control" name="mobile_no" placeholder="10-digit mobile number" value="{{ form_reg.mobile_no.value|default_if_none:"" }}"  maxlength="10" required>
                             </div>
                             {% if form_reg.mobile_no.errors %}
                                 <div class="error">
@@ -137,42 +138,46 @@
                         </div>
 
                         <div class="row" style="margin: 0px -5px !important;">
-                            <div class="col-xs-8 col-custom">
+                            <div class="col-xs-8 col-custom" align="left">
+                                <label>Birthday<span class="required">*</span>:</label>
                                 <div class="form-group">
                                     <div class="input-group">
-                                        <select class="form-control" name="dob_day">
+                                        <select class="form-control" name="dob_day" required>
                                             <option value="">Day</option>
                                             {% for d in days %}
-                                                <option value="{{ d }}">{{ d }}</option>
+                                                <option value="{{ d }}" {% if form_reg.dob_day.value == d|stringformat:"i" %}selected{% endif %}>{{ d }}</option>
                                             {% endfor %}
                                         </select>
                                         <span class="input-group-btn" style="width:0px;"></span>
 
-                                        <select class="form-control" name="dob_month">
+                                        <select class="form-control" name="dob_month" required>
                                             <option value="">Month</option>
                                             {% for m in month %}
-                                                <option value="{{ m }}">{{ m }}</option>
+                                                <option value="{{ m }}" {% if form_reg.dob_month.value == m|stringformat:"i" %}selected{% endif %}>{{ m }}</option>
                                             {% endfor %}
                                         </select>
                                         <span class="input-group-btn" style="width:0px;"></span>
 
-                                        <select class="form-control" name="dob_year">
+                                        <select class="form-control" name="dob_year" required>
                                             <option value="">Year</option>
                                             {% for y in year %}
-                                                <option value="{{ y }}">{{ y }}</option>
+                                                <option value="{{ y }}" {% if form_reg.dob_year.value == y|stringformat:"i" %}selected{% endif %}>{{ y }}</option>
                                             {% endfor %}
                                         </select>
-
-{#                                        <input type="text" class="form-control" value="test2" style="margin-left:-1px" />#}
-{#                                        <span class="input-group-btn" style="width:0px;"></span>#}
-{#                                        <input type="text" class="form-control" value="test2" style="margin-left:-2px" />#}
                                     </div>
+                                    {% if form_reg.errors.birthday %}
+                                        <div class="error">
+                                            Invalid birth date.
+                                        </div>
+                                    {% endif %}
                                 </div>
+
                             </div>
-                            <div class="col-xs-4 col-custom">
+                            <div class="col-xs-4 col-custom" align="left">
+                                <label>Gender<span class="required">*</span>:</label>
                                 <div class="form-group">
                                     <select class="form-control" name="gender" required>
-                                        <option value="">Gender*</option>
+                                        <option value="">Select</option>
                                         <option value="male" {% if form_reg.gender.value == 'male' %}selected{% endif %} >Male</option>
                                         <option value="female" {% if form_reg.gender.value == 'female' %}selected{% endif %}>Female</option>
                                         <option value="other" {% if form_reg.gender.value == 'other' %}selected{% endif %}>Other</option>
@@ -216,11 +221,9 @@
                             <div class="g-recaptcha" data-sitekey="{{ RECAPTCHA_PUBLIC_KEY }}" data-callback="callback_recaptcha"></div>
 
                             {% if form_reg.captcha.errors %}
-                                {% if form_reg.captcha.errors %}
-                                    <div class="error">
-                                        Please prove that you are a human.
-                                    </div>
-                                {% endif %}
+                                <div class="error">
+                                    Please prove that you are a human.
+                                </div>
                             {% endif %}
                         </div>
 
@@ -260,7 +263,11 @@
 
                     if (elem_name == "mobile_no" || elem_name == 'terms_n_conditions') {
                         error.insertAfter(element.parent());
-                    } else {
+                    }
+                    else if(elem_name.startsWith('dob_')){
+                        // Do not insert error label
+                    }
+                    else {
                         error.insertAfter(element)
                     }
                 },
@@ -280,6 +287,25 @@
                     last_name: {
 	                    required: true,
 	                },
+                    dob_day : {
+                        required: true,
+                        digits: true,
+                        min: 1,
+	                    max: 31
+                    },
+                    dob_month : {
+                        required: true,
+                        digits: true,
+                        min: 1,
+	                    max: 12
+                    },
+                    dob_year : {
+                        required: true,
+                        digits: true,
+                    },
+                    gender : {
+                        required: true,
+                    },
                     password: {
 	                    required: true,
 	                    minlength: 3,
@@ -294,11 +320,23 @@
                     }
                 },
                 messages: {
-                    username: "Please enter your 10-digit mobile number.",
+                    mobile_no: "Please enter your 10-digit mobile number.",
                     first_name: {
                         required: "Required.",
                     },
                     last_name: {
+                        required: "Required.",
+                    },
+                    dob_day: {
+                        required: "Required.",
+                    },
+                    dob_month: {
+                        required: "Required.",
+                    },
+                    dob_year: {
+                        required: "Required.",
+                    },
+                    gender: {
                         required: "Required.",
                     },
                     password: {

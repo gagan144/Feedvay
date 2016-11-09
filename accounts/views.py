@@ -691,7 +691,7 @@ def console_password_change(request):
 
             # Change password
             new_password = form_data['new_password']
-            registered_user.set_password()
+            registered_user.set_password(new_password)
 
             return ApiResponse(status=ApiResponse.ST_SUCCESS, message='ok').gen_http_response()
         else:

@@ -120,7 +120,16 @@
     -webkit-user-select: none;
     -ms-user-select: none
 }
-/* ----- form loader ----- */
+/* ----- /form loader ----- */
+
+/* ----- panel alert ----- */
+.panel_alerts > .alert {
+    border-radius: 0px;
+    margin-bottom: 0px;
+    font-size: 12px;
+    padding: 8px 20px;
+}
+/* ----- /panel alert ----- */
 
 /* ---------- Desktop ---------- */
 @media (min-width: 767px) {

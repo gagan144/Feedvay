@@ -687,13 +687,21 @@ def console_password_change(request):
 
             # Here request.user must be 'RegisteredUser' since view has been protected by the
             # the decorator 'registered_user_only'
-            registered_user = request.user.registered_user
+            user = request.user
+            registered_user = request.user.registereduser
 
-            # Change password
-            new_password = form_data['new_password']
-            registered_user.set_password(new_password)
+            # Confirm old password
+            if user.check_password(form_data['old_password']):
+                # Change password
+                new_password = form_data['new_password']
+                registered_user.set_password(new_password)
 
-            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='ok').gen_http_response()
+                # Prevent portal logout
+                auth.update_session_auth_hash(request, user)
+
+                return ApiResponse(status=ApiResponse.ST_SUCCESS, message='ok').gen_http_response()
+            else:
+                return ApiResponse(status=ApiResponse.ST_UNAUTHORIZED, message='Invalid password, please try again.').gen_http_response()
         else:
             return ApiResponse(status=ApiResponse.ST_FAILED, message='Incomplete submission.').gen_http_response()
     else:

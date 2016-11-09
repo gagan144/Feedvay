@@ -1,6 +1,26 @@
 'use strict';
 
 // ---------- Directives ----------
+function compareTo() {
+    return {
+        require: "ngModel",
+        scope: {
+            otherModelValue: "=compareTo"
+        },
+        link: function(scope, element, attributes, ngModel) {
+
+            ngModel.$validators.compareTo = function(modelValue) {
+                return modelValue == scope.otherModelValue;
+            };
+
+            scope.$watch("otherModelValue", function() {
+                ngModel.$validate();
+            });
+        }
+    };
+};
+
+/* ----- UI Theme ----- */
 /**
  * pageTitle - Directive for set Page title - mata title
  */
@@ -26,4 +46,5 @@ function pageTitle($rootScope, $timeout) {
 // ---------- /Directives ----------
 
 angular.module('feedvay.common',[])
+.directive("compareTo", compareTo)
 .directive('pageTitle', pageTitle);

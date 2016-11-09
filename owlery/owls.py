@@ -196,6 +196,7 @@ class EmailOwl:
 
             # Create message body
             message_body = render_to_response('owlery/owls/emails/password_change_success.html', {
+                "username": user.username,
                 "receiver_name": receiver_name,
                 "dated": timezone.now()
             }).content
@@ -205,7 +206,7 @@ class EmailOwl:
                 username = user.username,
                 email_id = email_address,
 
-                subject = "Feedvay Account - Password successfully changed",
+                subject = "Feedvay - Account password successfully changed",
                 message = message_body,
 
                 type = EmailMessage.TYPE_PASS_CHNG_SUCC,

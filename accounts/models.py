@@ -127,6 +127,10 @@ class RegisteredUser(models.Model):
                 >>> auth.update_session_auth_hash(request, user)
 
 
+        .. warning::
+            This method does not confirm with old password. Please confirm old password
+            before changing as per your use case for security reasons.
+
         **Authors**: Gagandeep Singh
         """
         user = self.user

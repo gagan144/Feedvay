@@ -6,7 +6,7 @@
     <hr style="margin-top: 15px;"/>
 
     <!-- Change password -->
-    <div class="panel panel-default">
+    <div class="panel panel-default" ng-controller="ChangePasswordCtrl">
         <div class="panel-heading panel_heading_2">
             <i class="fa fa-key"></i>&nbsp;
             Change Password
@@ -17,7 +17,7 @@
               Your password has been <strong>successfully</strong> changed.
             </div>
         </div>
-        <div class="panel-body panel_body_realign" ng-controller="ChangePasswordCtrl">
+        <div class="panel-body panel_body_realign" >
             <form name="form_change_pass" class="form-horizontal" ng-class="{'form-loading': flags.submitting }" novalidate>
                 <div class="form-group" >
                     <label class="col-sm-3 control-label">

@@ -5,3 +5,7 @@
     - Verification
     - Registration closed
     - Account suspended
+
+- Console
+    - Settings
+        - Security

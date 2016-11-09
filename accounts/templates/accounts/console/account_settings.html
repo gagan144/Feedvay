@@ -161,6 +161,7 @@
 
                         if(response.data.status == 'success'){
                             $scope.flags.success = true;
+                            $scope.data_chng_pass = {};
                         }else{
                             $scope.flags.submit_err_msg = response.data.message;
                         }

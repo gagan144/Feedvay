@@ -12,7 +12,6 @@
     - Summernote css
     - Report Display view
     - Suggestions Display view
-    - Settings
     - Profile
 
 - SEO

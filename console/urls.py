@@ -8,6 +8,7 @@ from accounts import views as views_accounts
 
 url_account = [
     url(r'^settings/', views_accounts.console_account_settings, name='console_accounts_settings'),
+    url(r'^password/change/', views_accounts.console_password_change, name='console_password_change'),
 ]
 
 urlpatterns = [

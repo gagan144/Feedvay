@@ -654,9 +654,54 @@ def recover_account(request):
 # ==================== Console ====================
 @registered_user_only
 def console_account_settings(request):
+    """
+    A console view to open user settings. This view then calls individual partials for various sections
+    under user account settings.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
     data = {
         "app_name": "app_account"
     }
     return render(request, 'accounts/console/account_settings.html', data)
+
+@registered_user_only
+def console_password_change(request):
+    """
+    An API view to change user password. The user fills a form and submit old & new password.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+
+    if request.method.lower() == 'post':
+        form_chng = PasswordChangeForm(request.POST)
+
+        if form_chng.is_valid():
+            form_data = form_chng.cleaned_data
+
+            # Here request.user must be 'RegisteredUser' since view has been protected by the
+            # the decorator 'registered_user_only'
+            user = request.user
+
+            # Change password
+            new_password = form_data['new_password']
+            user.set_password(new_password)
+            user.save()
+
+            # Send all owls
+
+            # TODO: Logout user from all mobile devices
+
+
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='ok').gen_http_response()
+        else:
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Incomplete submission.').gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
 # ==================== Console ====================

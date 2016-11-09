@@ -44,6 +44,84 @@
     margin: 10px 0px !important;
 }
 
+/* ----- form loader ----- */
+.form-loading, .ps-container:hover.ps-in-scrolling.ps-in-scrolling, .ps-in-scrolling {
+    pointer-events: none
+}
+
+.form-loading {
+    position: relative;
+    cursor: default;
+    -moz-user-select: none;
+    user-select: none
+}
+
+.form-loading:after, .form-loading:before {
+    position: absolute;
+    display: block;
+    content: ''
+}
+
+.form-loading:before {
+    z-index: 1000;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(255, 255, 255, .8)
+}
+
+.form-loading:after {
+    z-index: 1001;
+    top: 50%;
+    left: 50%;
+    width: 32px;
+    height: 32px;
+    margin: -16px 0 0 -16px;
+    background-image: url(/static/images/loading/spinner_1.gif);
+    background-size: 32px;
+    content:"";
+}
+
+/*.form-loading:after {*/
+    /*z-index: 1001;*/
+    /*top: 50%;*/
+    /*left: 50%;*/
+    /*width: 32px;*/
+    /*height: 32px;*/
+    /*margin: -16px 0 0 -16px;*/
+    /*-webkit-animation: form-spin .6s linear;*/
+    /*animation: form-spin .6s linear;*/
+    /*-webkit-animation-iteration-count: infinite;*/
+    /*animation-iteration-count: infinite;*/
+    /*border-width: 2px;*/
+    /*border-style: solid;*/
+    /*border-color: #767676 rgba(0, 0, 0, .1) rgba(0, 0, 0, .1);*/
+    /*border-radius: 999px*/
+/*}*/
+
+.form-loading.form-loading-inverted:before {
+    background: rgba(0, 0, 0, .45)
+}
+
+.form-loading.form-loading-inverted:after {
+    border-color: #fff rgba(255, 255, 255, .2) rgba(255, 255, 255, .2)
+}
+
+.modal-dialog .form-loading:before {
+    z-index: 2080
+}
+
+.modal-dialog .form-loading:after {
+    z-index: 2081
+}
+
+.form-loading, .switcher-indicator {
+    -webkit-user-select: none;
+    -ms-user-select: none
+}
+/* ----- form loader ----- */
+
 /* ---------- Desktop ---------- */
 @media (min-width: 767px) {
     .mobile_show{

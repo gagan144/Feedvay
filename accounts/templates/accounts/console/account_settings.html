@@ -130,8 +130,32 @@
             $scope.delete = 'testing';
         }
 
-        APP.controller('ChangePasswordCtrl', function($scope) {
-            $scope.msg = 'XXXXtesting';
+        APP.controller('ChangePasswordCtrl', function($scope, $http) {
+            $scope.flags = {
+                submitting: false,
+                error : false,
+                submitted: false
+            };
+
+            $scope.submit_new_pass = function(form_obj){
+                if(form_obj.$invalid){
+                    return false;
+                }
+
+                $scope.flags.error = false;
+                $scope.flags.submitting = true;
+
+                // Post to server
+                $http.post(
+                    "/watchdog/report-problem/new/",
+                    $.param(data)
+                ).then(function (response) {
+                    return response;
+                });
+
+
+            };
+
         });
         // --- /Security ---
 

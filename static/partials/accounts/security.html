@@ -7,8 +7,7 @@
             Change Password
         </div>
         <div class="panel-body panel_body_realign" ng-controller="ChangePasswordCtrl">
-            {$ msg $}
-            <form id="form_change_pass" class="form-horizontal" novalidate>
+            <form id="form_change_pass" class="form-horizontal" ng-class="{'form-loading': flags.submitting }" novalidate>
                 <div class="form-group">
                     <label class="col-sm-3 control-label">
                         Old password<span class="required"></span>:
@@ -34,7 +33,7 @@
                         Confirm password<span class="required"></span>:
                     </label>
                     <div class="col-sm-5">
-                        <input type="password" name="confirm_password" class="form-control" minlength="3" required>
+                        <input type="password" name="confirm_new_password" class="form-control" minlength="3" required>
                     </div>
                 </div>
 

@@ -80,6 +80,37 @@ class SmsOwl:
             priority = SmsMessage.PR_URGENT
         )
 
+        # TODO: Send SMS immediately using gateway
+
+        return sms
+
+
+    @staticmethod
+    def send_password_change_success(mobile_no, username=None):
+        """
+        Sends a password change success SMS to the user.
+
+        :param mobile_no: Mobile number. +91-9999999999 is converted to +919999999999
+        :param username: (Optional) Username of user to which SMS is to be send.
+        :return: Returns :class:`owlery.model.SmsMessage` instance.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        message_body = render_to_response('owlery/owls/sms/password_change_success.txt',{
+            "change_date": timezone.now().strftime("%I:%M %p"),
+        }).content
+
+        sms = SmsMessage.objects.create(
+            username = username,
+            mobile_no = mobile_no.replace('-',''),
+            message = message_body,
+            type = SmsMessage.TYPE_PASS_CHNG_SUCC,
+            priority = SmsMessage.PR_HIGH
+        )
+
+        # TODO: Send SMS immediately using gateway
+
         return sms
 
 
@@ -143,3 +174,52 @@ class EmailOwl:
             pass
 
         return email_msg
+
+    @staticmethod
+    def send_password_change_success(user):
+        """
+        Sends password change success email to the user.
+
+        :param user: User instance to whom email is to be send
+        :return: Returns :class:`owlery.model.EmailMessage` instance if email address was present else None
+
+        .. note::
+            This method returns 'None' when email is not found in user instance.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        email_address = user.email
+
+        if email_address is not None or email_address != '':
+            receiver_name = "{} {}".format(user.first_name, user.last_name)
+
+            # Create message body
+            message_body = render_to_response('owlery/owls/emails/password_change_success.html', {
+                "receiver_name": receiver_name,
+                "dated": timezone.now()
+            }).content
+
+            # Create database entry
+            email_msg = EmailMessage.objects.create(
+                username = user.username,
+                email_id = email_address,
+
+                subject = "Feedvay Account - Password successfully changed",
+                message = message_body,
+
+                type = EmailMessage.TYPE_PASS_CHNG_SUCC,
+                priority = EmailMessage.PR_HIGH
+            )
+
+            # Send email since it is an urgent message
+            try:
+                email_msg.force_send()
+            except:
+                pass
+
+            return email_msg
+
+        else:
+            # Email not found in user, ignore and return None
+            return None

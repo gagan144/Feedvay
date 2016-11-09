@@ -51,10 +51,12 @@ class SmsMessage(models.Model):
 
     TYPE_REG_VERIF = 'reg_verification'
     TYPE_PASS_RESET = 'password_reset'
+    TYPE_PASS_CHNG_SUCC = 'password_change_success'
     # TYPE_REG_RESULT = 'reg_result'  # Result can by anything; success, failure, info etc
     CH_TYPE = (
         (TYPE_REG_VERIF, 'Registration Verification'),
         (TYPE_PASS_RESET, 'Password Reset'),
+        (TYPE_PASS_CHNG_SUCC, 'Password change success'),
         # (TYPE_REG_RESULT, 'Registration Result')
     )
 
@@ -168,11 +170,13 @@ class EmailMessage(models.Model):
 
     TYPE_REG_VERIF = 'reg_verification'
     TYPE_PASS_RESET = 'password_reset'
+    TYPE_PASS_CHNG_SUCC = 'password_change_success'
     # TYPE_REG_RESULT = 'reg_result'  # Result can by anything; success, failure, info etc
     # TYPE_PROMOTION = 'promotion'
     CH_TYPE = (
         (TYPE_REG_VERIF, 'Registration Verification'),
         (TYPE_PASS_RESET, 'Password Reset'),
+        (TYPE_PASS_CHNG_SUCC, 'Password change success'),
         # (TYPE_REG_RESULT, 'Registration Result'),
         # (TYPE_PROMOTION, 'Promotion')
     )

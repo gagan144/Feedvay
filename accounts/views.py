@@ -257,13 +257,15 @@ def registration(request):
                         is_active = False
 
                     )
-                    set_user_password(new_user, form_data['password'], False) # This will save user
 
                     # Create'RegisterUser'
                     new_registered_user = RegisteredUser.objects.create(
                         user = new_user,
                         reg_method = RegisteredUser.REG_WEB_PORTAL
                     )
+
+                    # Set password
+                    new_registered_user.set_password(form_data['password'], False) # This will save user
 
                     # Create 'UserProfile'
                     user_profile = UserProfile(
@@ -685,17 +687,11 @@ def console_password_change(request):
 
             # Here request.user must be 'RegisteredUser' since view has been protected by the
             # the decorator 'registered_user_only'
-            user = request.user
+            registered_user = request.user.registered_user
 
             # Change password
             new_password = form_data['new_password']
-            user.set_password(new_password)
-            user.save()
-
-            # Send all owls
-
-            # TODO: Logout user from all mobile devices
-
+            registered_user.set_password()
 
             return ApiResponse(status=ApiResponse.ST_SUCCESS, message='ok').gen_http_response()
         else:

@@ -24,6 +24,7 @@ from django.contrib.sessions.models import Session
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 
 from accounts.exceptions import *
+from owlery import owls
 
 class RegisteredUser(models.Model):
     """
@@ -109,6 +110,41 @@ class RegisteredUser(models.Model):
         pass
 
     # ----- /Transitions -----
+
+    # --- Password ---
+    def set_password(self, new_password, send_owls=True):
+        """
+        Method to set a registered user password and save it.
+        This also sends any owls (Email or SMS) if required. Any owls related errors are silently ignored.
+
+        :param new_password: New password
+        :param send_owls: Set True to send mail/SMS to the user. Default:True
+        :return: None
+
+        .. note::
+            To prevent logout, execute following after this function.
+
+                >>> auth.update_session_auth_hash(request, user)
+
+
+        **Authors**: Gagandeep Singh
+        """
+        user = self.user
+        user.set_password(new_password)
+        user.save()
+
+        if send_owls:
+            # Send all owls
+            # (a) SMS owl
+            owls.SmsOwl.send_password_change_success(
+                mobile_no = user.username,
+                username = user.username
+            )
+
+            # (b) Email owl
+            owls.EmailOwl.send_password_change_success(user)
+
+        # TODO: Logout user from all mobile devices
 
     def clean(self):
         """
@@ -680,35 +716,6 @@ class UserProfile(Document):
         raise ValidationError('Denied! You cannot delete UserProfile.')
 
 # ---------- Global Methods ----------
-def set_user_password(user, new_password, send_owls=True):
-    """
-    Method to set a user password and save it.
-    This also sends any owls (Email or SMS) if required. Any errors are silently ignored.
-
-    :param user: 'User' model object
-    :param new_password: New password
-    :param send_owls: Set True to send mail/SMS to the user. Default:True
-    :return: None
-
-    .. note::
-        To prevent logout, execute following after this function.
-
-            >>> auth.update_session_auth_hash(request, user)
-
-
-    **Authors**: Gagandeep Singh
-    """
-    user.set_password(new_password)
-    user.save()
-
-    # if send_mail and settings.MAIL_PASS_RESET_SUCCESS:
-    #     try:
-    #         result = mailing.send_password_reset_success_email(user)
-    #     except SMTPAuthenticationError:
-    #         pass
-    #     except:
-    #         pass
-
 def force_logout_user(user_id):
     """
     Method to forcefully logout a user from all web login only.

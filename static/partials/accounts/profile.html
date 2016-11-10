@@ -1,1 +1,130 @@
-User Profile page
+<div>
+    <h2 style="margin-top: 0px;">
+        <i class="fa fa-user"></i>&nbsp;
+        Profile
+    </h2>
+    <hr style="margin-top: 15px;"/>
+
+    <!-- Basic Information -->
+    <div class="panel panel-default" ng-controller="BasicInfoCtrl">
+        <div class="panel-heading panel_heading_2">
+            <i class="fa fa-info"></i>&nbsp;
+            Basic information
+        </div>
+        <div class="panel_alerts">
+            <div ng-if="flags.success" class="alert alert-success">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <i class="fa fa-check-circle"></i>&nbsp;
+                Your changes have been <strong>successfully</strong> made.
+            </div>
+        </div>
+        <div class="panel-body panel_body_realign" >
+            <div class="m-b-md">
+                This section includes your basic information mostly relating to your identity.
+            </div>
+
+            {$ data_basic_info $}
+
+            <form name="form_basic_info" class="form-horizontal" ng-class="{'form-loading': flags.submitting }" novalidate>
+                <div class="form-group" >
+                    <label class="col-sm-3 control-label">
+                        Name<span class="required">*</span>:
+                    </label>
+                    <div class="col-sm-8">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <input type="text" ng-model="data_basic_info.first_name" name="first_name" class="form-control" required placeholder="First name"
+                                       ng-class="{ 'error': ((form_basic_info.$submitted || form_basic_info.first_name.$dirty) && (form_basic_info.first_name.$invalid))}"
+                                >
+                                <div ng-messages="form_basic_info.first_name.$dirty && form_basic_info.first_name.$error" role="alert" class="error_messages">
+                                    <label ng-message="required" class="error">Required.</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="text" ng-model="data_basic_info.last_name" name="last_name" class="form-control" required placeholder="Last name"
+                                       ng-class="{ 'error': ((form_basic_info.$submitted || form_basic_info.last_name.$dirty) && (form_basic_info.last_name.$invalid))}"
+                                >
+                                <div ng-messages="form_basic_info.last_name.$dirty && form_basic_info.last_name.$error" role="alert" class="error_messages">
+                                    <label ng-message="required" class="error">Required.</label>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="help-block m-b-none">
+                            Your name will be visible to everyone.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                        Gender<span class="required">*</span>:
+                    </label>
+                    <div class="col-sm-5">
+                        <div>
+                            <div class="radio radio-primary radio-inline">
+                                <input type="radio" id="chk_gender_male" value="male" name="gender" ng-model="data_basic_info.gender" required>
+                                <label for="chk_gender_male"> Male </label>
+                            </div>
+                            <div class="radio radio-primary radio-inline">
+                                <input type="radio" id="chk_gender_female" value="female" name="gender" ng-model="data_basic_info.gender" required>
+                                <label for="chk_gender_female"> Female </label>
+                            </div>
+                            <div class="radio radio-primary radio-inline">
+                                <input type="radio" id="chk_gender_other" value="other" name="gender" ng-model="data_basic_info.gender" required>
+                                <label for="chk_gender_other"> Other </label>
+                            </div>
+                        </div>
+                        <p class="help-block m-b-none">
+                            This will be visible to everyone.
+                        </p>
+
+                        <div ng-messages="form_basic_info.gender.$dirty && form_basic_info.gender.$error" role="alert" class="error_messages">
+                            <label ng-message="required" class="error">Please select your gender.</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                        Date of birth<span class="required">*</span>:
+                    </label>
+                    <div class="col-sm-5">
+                        <input class="form-control" ng-model="data_basic_info.date_of_birth" name="date_of_birth" required
+                               date-time view="date" auto-close="true" min-view="date" max-view="date" max-date="max_dob" format="YYYY-MM-DD"
+
+                               ng-pattern="/^(\d{4})-(\d{2})-(\d{2})$/"
+                               ng-class="{ 'error': ((form_basic_info.$submitted || form_basic_info.date_of_birth.$dirty) && (form_basic_info.date_of_birth.$invalid))}"
+                        >
+                        <p class="help-block m-b-none">
+                            This is only shared with our clients.
+                        </p>
+
+                        {$ form_basic_info.date_of_birth.$error $}
+
+                        <div ng-messages="form_basic_info.date_of_birth.$dirty && form_basic_info.date_of_birth.$error" role="alert" class="error_messages">
+                            <label ng-message="required" class="error">Please tell us when you where born.</label>
+                            <label ng-message="pattern" class="error">Birth date must be of format YYYY-MM-DD.</label>
+                            <label ng-message="parse" class="error">Birth date must be of format YYYY-MM-DD.</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                <div class="form-group" style="margin-bottom: 0px !important;">
+                    <div class="col-sm-5 col-sm-offset-3">
+                        <div ng-if="flags.error" class="alert alert-danger alert-dismissable" style="padding: 10px 30px 10px 10px;margin-bottom: 20px;">
+                            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                            Something went wrong. Our engineers will be informed.
+                        </div>
+
+                        <button class="btn btn-primary" type="button" ng-disabled="form_basic_info.$invalid" ng-click="submit(form_basic_info)">Save</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <!-- /Basic Information -->
+</div>

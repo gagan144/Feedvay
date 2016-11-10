@@ -15,6 +15,7 @@ Apps and modules
    modules/owlery/index
    modules/utilities/index
    modules/management_commands/index
+   modules/console/index
 
 
 Indices and tables

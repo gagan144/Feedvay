@@ -140,6 +140,7 @@
 <span class="c1"># permission of Gagandeep Singh.</span>
 <span class="kn">from</span> <span class="nn">django</span> <span class="k">import</span> <span class="n">forms</span>
 <span class="kn">from</span> <span class="nn">captcha.fields</span> <span class="k">import</span> <span class="n">ReCaptchaField</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">date</span>
 
 <span class="kn">from</span> <span class="nn">accounts.models</span> <span class="k">import</span> <span class="o">*</span>
 
@@ -157,6 +158,12 @@
     <span class="n">first_name</span>  <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">last_name</span>   <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
+    <span class="n">dob_day</span>     <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">dob_month</span>   <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">dob_year</span>    <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">gender</span>      <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
     <span class="n">password</span>    <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">PasswordInput</span><span class="p">())</span>
     <span class="n">confirm_password</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">PasswordInput</span><span class="p">())</span>
 
@@ -166,15 +173,30 @@
 
     <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">form_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dob</span> <span class="o">=</span> <span class="n">date</span><span class="p">(</span><span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;dob_year&#39;</span><span class="p">],</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;dob_month&#39;</span><span class="p">],</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;dob_day&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">[</span><span class="s2">&quot;birthday&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Invalid birth date.&quot;</span><span class="p">]</span>
+
         <span class="k">if</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;confirm_password&#39;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">[</span><span class="s2">&quot;confirm_password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Password does not match&quot;</span><span class="p">]</span>
             <span class="k">del</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
             <span class="k">del</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;confirm_password&#39;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">form_data</span></div>
+        <span class="k">return</span> <span class="n">form_data</span>
+
+<div class="viewcode-block" id="RegistrationForm.get_date_of_birth"><a class="viewcode-back" href="../../modules/accounts/forms.html#accounts.forms.RegistrationForm.get_date_of_birth">[docs]</a>    <span class="k">def</span> <span class="nf">get_date_of_birth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a datetime (timezone unaware) object with time as 00:00:00.00</span>
+<span class="sd">        :return: Date of birth datetime object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+        <span class="n">form_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span>
+        <span class="k">return</span> <span class="n">datetime</span><span class="p">(</span><span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;dob_year&#39;</span><span class="p">],</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;dob_month&#39;</span><span class="p">],</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;dob_day&#39;</span><span class="p">])</span> <span class="c1"># Unaware datetime object</span></div></div>
 
 <div class="viewcode-block" id="PasswordResetForm"><a class="viewcode-back" href="../../modules/accounts/forms.html#accounts.forms.PasswordResetForm">[docs]</a><span class="k">class</span> <span class="nc">PasswordResetForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Form to reset/recover a user&#39;s password. The user has been send a verification code,</span>
+<span class="sd">    Form to reset/recover a user&#39;s password without login. The user has been send a verification code,</span>
 <span class="sd">    using which he can set new new password now.</span>
 
 <span class="sd">    **Authors**: Gagandeep Singh</span>
@@ -183,6 +205,25 @@
     <span class="n">mobile_no</span>           <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">1000000000</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">9999999999</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;Mobile number as username.&#39;</span><span class="p">)</span>
     <span class="n">verification_code</span>   <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">PasswordInput</span><span class="p">())</span>
     <span class="n">new_password</span>        <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">PasswordInput</span><span class="p">())</span>
+    <span class="n">confirm_new_password</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">PasswordInput</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">form_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span>
+        <span class="k">if</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;new_password&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;confirm_new_password&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_errors</span><span class="p">[</span><span class="s2">&quot;confirm_new_password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Password does not match&quot;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;confirm_password&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">form_data</span></div>
+
+<div class="viewcode-block" id="PasswordChangeForm"><a class="viewcode-back" href="../../modules/accounts/forms.html#accounts.forms.PasswordChangeForm">[docs]</a><span class="k">class</span> <span class="nc">PasswordChangeForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Form to change user password from account settings (after he has logged in).</span>
+
+<span class="sd">    **Authors**: Gagandeep Singh</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">old_password</span>    <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">PasswordInput</span><span class="p">())</span>
+    <span class="n">new_password</span>    <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">PasswordInput</span><span class="p">())</span>
     <span class="n">confirm_new_password</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">PasswordInput</span><span class="p">())</span>
 
     <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

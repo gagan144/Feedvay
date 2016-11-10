@@ -153,9 +153,16 @@
 <h1>Forms<a class="headerlink" href="#forms" title="Permalink to this headline">¶</a></h1>
 <p>List of django forms for accounts app.</p>
 <span class="target" id="module-accounts.forms"></span><dl class="class">
+<dt id="accounts.forms.PasswordChangeForm">
+<em class="property">class </em><code class="descclassname">accounts.forms.</code><code class="descname">PasswordChangeForm</code><span class="sig-paren">(</span><em>data=None</em>, <em>files=None</em>, <em>auto_id=u'id_%s'</em>, <em>prefix=None</em>, <em>initial=None</em>, <em>error_class=&lt;class 'django.forms.utils.ErrorList'&gt;</em>, <em>label_suffix=None</em>, <em>empty_permitted=False</em>, <em>field_order=None</em>, <em>use_required_attribute=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/forms.html#PasswordChangeForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.forms.PasswordChangeForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Form to change user password from account settings (after he has logged in).</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
 <dt id="accounts.forms.PasswordResetForm">
 <em class="property">class </em><code class="descclassname">accounts.forms.</code><code class="descname">PasswordResetForm</code><span class="sig-paren">(</span><em>data=None</em>, <em>files=None</em>, <em>auto_id=u'id_%s'</em>, <em>prefix=None</em>, <em>initial=None</em>, <em>error_class=&lt;class 'django.forms.utils.ErrorList'&gt;</em>, <em>label_suffix=None</em>, <em>empty_permitted=False</em>, <em>field_order=None</em>, <em>use_required_attribute=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/forms.html#PasswordResetForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.forms.PasswordResetForm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Form to reset/recover a user&#8217;s password. The user has been send a verification code,
+<dd><p>Form to reset/recover a user&#8217;s password without login. The user has been send a verification code,
 using which he can set new new password now.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
@@ -167,6 +174,13 @@ using which he can set new new password now.</p>
 a user account. Nothing more than name, age, dob, gender is asked along with phone number
 as username.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="accounts.forms.RegistrationForm.get_date_of_birth">
+<code class="descname">get_date_of_birth</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/forms.html#RegistrationForm.get_date_of_birth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.forms.RegistrationForm.get_date_of_birth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a datetime (timezone unaware) object with time as 00:00:00.00
+:return: Date of birth datetime object</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>

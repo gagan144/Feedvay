@@ -226,10 +226,53 @@ country telephone code and 10-digit mobile number</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
+<dl class="classmethod">
+<dt id="accounts.models.RegisteredUser.post_save">
+<em class="property">classmethod </em><code class="descname">post_save</code><span class="sig-paren">(</span><em>sender</em>, <em>instance</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#RegisteredUser.post_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.RegisteredUser.post_save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Post save trigger for this model. This will be called after the record has
+been created or updated.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="accounts.models.RegisteredUser.save">
 <code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#RegisteredUser.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.RegisteredUser.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.RegisteredUser.set_password">
+<code class="descname">set_password</code><span class="sig-paren">(</span><em>new_password</em>, <em>send_owls=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#RegisteredUser.set_password"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.RegisteredUser.set_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to set a registered user password and save it.
+This also sends any owls (Email or SMS) if required. Any owls related errors are silently ignored.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>new_password</strong> &#8211; New password</li>
+<li><strong>send_owls</strong> &#8211; Set True to send mail/SMS to the user. Default:True</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>To prevent logout, execute following after this function.</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">auth</span><span class="o">.</span><span class="n">update_session_auth_hash</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This method does not confirm with old password. Please confirm old password
+before changing as per your use case for security reasons.</p>
+</div>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
@@ -303,6 +346,9 @@ To revive an attribute, override its value and mark <code class="docutils litera
 <blockquote>
 <div>All attributes in <strong>UserAttributes</strong> embedded document tagged as <code class="docutils literal"><span class="pre">required=True</span></code> are mandatory and must be
 present in &#8216;list_attributes&#8217;. Model will not save until all required fields have values.</div></blockquote>
+<p><strong>When this model is created/updated</strong>:</p>
+<blockquote>
+<div>This model is created only during registration process and updated each time <a class="reference internal" href="#accounts.models.RegisteredUser" title="accounts.models.RegisteredUser"><code class="xref py py-class docutils literal"><span class="pre">accounts.models.RegisteredUser</span></code></a> is saved.</div></blockquote>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 <dl class="class">
 <dt id="accounts.models.UserProfile.DetailedAttribute">
@@ -326,13 +372,25 @@ It is this document that stores user attributes in key-value pairs.</p>
 <p class="last">Use this model for quick lookup for attribute value. These keys will not be indexed
 so <strong>DO NOT</strong> use them in queries.</p>
 </div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<dl class="last docutils">
+<dt>Following attributes will be replaced by that in <code class="xref py py-class docutils literal"><span class="pre">django.contrib.auth.models.User</span></code> model:</dt>
+<dd><ul class="first last simple">
+<li>first_name</li>
+<li>last_name</li>
+</ul>
+</dd>
+</dl>
+</div>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="accounts.models.UserProfile.add_update_attribute">
 <code class="descclassname">UserProfile.</code><code class="descname">add_update_attribute</code><span class="sig-paren">(</span><em>name</em>, <em>value</em>, <em>auto_save=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile.add_update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile.add_update_attribute" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to add or update (incase it exists) an attribute.</p>
+<dd><p>Method to add new attribute if it does not exists or update an attribute if it is not locked.
+An attribute will automatically be revived if found inactive.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -344,18 +402,20 @@ so <strong>DO NOT</strong> use them in queries.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if attribute was created, False if attribute was updated or revived</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Bool tuple (is_new, updated) &#8216;is_new&#8217;: True if attribute was created. &#8216;updated&#8217;: True if action was success else False</p>
 </td>
 </tr>
 </tbody>
 </table>
+<p><strong>Note</strong>: Throws &#8216;ValidationError&#8217; if attribute is locked</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="accounts.models.UserProfile.delete_attribute">
 <code class="descclassname">UserProfile.</code><code class="descname">delete_attribute</code><span class="sig-paren">(</span><em>name</em>, <em>auto_save=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile.delete_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile.delete_attribute" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to delete an attribute, that is mark attribute active as false.</p>
+<dd><p>Method to delete an attribute, that is mark attribute active as false.
+An already deleted (inactive) attribute will again be marked inactive.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -366,12 +426,34 @@ so <strong>DO NOT</strong> use them in queries.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if attribute was found active and marked, False if attribute was inactive or was not found; save is not triggered in this case.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Bool tuple (found, updated)</p>
 </td>
 </tr>
 </tbody>
 </table>
+<p><strong>Note</strong>: Throws &#8216;ValidationError&#8217; if attribute is locked</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.UserProfile.lock_attribute">
+<code class="descclassname">UserProfile.</code><code class="descname">lock_attribute</code><span class="sig-paren">(</span><em>name</em>, <em>auto_save=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile.lock_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile.lock_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to lock an attribute. Locking an attribute will prevent any updation or deletion of an attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> &#8211; Name of the attribute.</li>
+<li><strong>auto_save</strong> &#8211; Save model after locking</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if attribute found and successfully locked else False</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -379,6 +461,27 @@ so <strong>DO NOT</strong> use them in queries.</p>
 <code class="descclassname">UserProfile.</code><code class="descname">save</code><span class="sig-paren">(</span><em>complete_save=True</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pre-save method for this model.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.UserProfile.unlock_attribute">
+<code class="descclassname">UserProfile.</code><code class="descname">unlock_attribute</code><span class="sig-paren">(</span><em>name</em>, <em>auto_save=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile.unlock_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile.unlock_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to unlock an attribute and release it from locked state.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> &#8211; Name of the attribute</li>
+<li><strong>auto_save</strong> &#8211; Save model after unlocking</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if attribute found and successfully released else False</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -470,37 +573,6 @@ and delete them from SessionStore one-by-one.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Authors</strong>: Gagandeep Singh</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="accounts.models.set_user_password">
-<code class="descclassname">accounts.models.</code><code class="descname">set_user_password</code><span class="sig-paren">(</span><em>user</em>, <em>new_password</em>, <em>send_owls=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#set_user_password"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.set_user_password" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to set a user password and save it.
-This also sends any owls (Email or SMS) if required. Any errors are silently ignored.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>user</strong> &#8211; &#8216;User&#8217; model object</li>
-<li><strong>new_password</strong> &#8211; New password</li>
-<li><strong>send_owls</strong> &#8211; Set True to send mail/SMS to the user. Default:True</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
-</td>
-</tr>
-</tbody>
-</table>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p>To prevent logout, execute following after this function.</p>
-<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">auth</span><span class="o">.</span><span class="n">update_session_auth_hash</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 

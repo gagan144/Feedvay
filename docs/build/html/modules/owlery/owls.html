@@ -173,6 +173,27 @@ All methods composes email according to the parameters and store them in <a clas
 from where they are picked up by a cron process for dispatching.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 <dl class="staticmethod">
+<dt id="owlery.owls.EmailOwl.send_password_change_success">
+<em class="property">static </em><code class="descname">send_password_change_success</code><span class="sig-paren">(</span><em>user</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/owls.html#EmailOwl.send_password_change_success"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.owls.EmailOwl.send_password_change_success" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends password change success email to the user.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>user</strong> &#8211; User instance to whom email is to be send</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Returns <code class="xref py py-class docutils literal"><span class="pre">owlery.model.EmailMessage</span></code> instance if email address was present else None</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method returns &#8216;None&#8217; when email is not found in user instance.</p>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
 <dt id="owlery.owls.EmailOwl.send_password_reset">
 <em class="property">static </em><code class="descname">send_password_reset</code><span class="sig-paren">(</span><em>email_address</em>, <em>user_token</em>, <em>username=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/owls.html#EmailOwl.send_password_reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.owls.EmailOwl.send_password_reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends a &#8216;password reset/recovery&#8217; email containing verification code.</p>
@@ -212,6 +233,28 @@ and sends the message.</li>
 </ol>
 </div></blockquote>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="staticmethod">
+<dt id="owlery.owls.SmsOwl.send_password_change_success">
+<em class="property">static </em><code class="descname">send_password_change_success</code><span class="sig-paren">(</span><em>mobile_no</em>, <em>username=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/owls.html#SmsOwl.send_password_change_success"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.owls.SmsOwl.send_password_change_success" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a password change success SMS to the user.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mobile_no</strong> &#8211; Mobile number. +91-9999999999 is converted to +919999999999</li>
+<li><strong>username</strong> &#8211; (Optional) Username of user to which SMS is to be send.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Returns <code class="xref py py-class docutils literal"><span class="pre">owlery.model.SmsMessage</span></code> instance.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
 <dl class="staticmethod">
 <dt id="owlery.owls.SmsOwl.send_password_reset">
 <em class="property">static </em><code class="descname">send_password_reset</code><span class="sig-paren">(</span><em>mobile_no</em>, <em>user_token</em>, <em>username=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/owls.html#SmsOwl.send_password_reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.owls.SmsOwl.send_password_reset" title="Permalink to this definition">¶</a></dt>

@@ -144,12 +144,15 @@
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="k">import</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">django_fsm</span> <span class="k">import</span> <span class="n">FSMField</span><span class="p">,</span> <span class="n">transition</span>
 <span class="kn">from</span> <span class="nn">django_fsm_log.decorators</span> <span class="k">import</span> <span class="n">fsm_log_by</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="k">import</span> <span class="n">ValidationError</span>
+<span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="k">import</span> <span class="n">post_save</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">string</span>
 
 <span class="kn">from</span> <span class="nn">mongoengine.document</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">mongoengine.fields</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">mongoengine.base.fields</span> <span class="k">import</span> <span class="n">BaseField</span>
+<span class="kn">from</span> <span class="nn">mongoengine.queryset</span> <span class="k">import</span> <span class="n">DoesNotExist</span> <span class="k">as</span> <span class="n">mongo_DoesNotExist</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">import_module</span>
@@ -158,6 +161,7 @@
 <span class="kn">from</span> <span class="nn">django.contrib.auth.signals</span> <span class="k">import</span> <span class="n">user_logged_in</span><span class="p">,</span> <span class="n">user_logged_out</span>
 
 <span class="kn">from</span> <span class="nn">accounts.exceptions</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">owlery</span> <span class="k">import</span> <span class="n">owls</span>
 
 <div class="viewcode-block" id="RegisteredUser"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.RegisteredUser">[docs]</a><span class="k">class</span> <span class="nc">RegisteredUser</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -244,6 +248,45 @@
 
     <span class="c1"># ----- /Transitions -----</span>
 
+    <span class="c1"># --- Password ---</span>
+<div class="viewcode-block" id="RegisteredUser.set_password"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.RegisteredUser.set_password">[docs]</a>    <span class="k">def</span> <span class="nf">set_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_password</span><span class="p">,</span> <span class="n">send_owls</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to set a registered user password and save it.</span>
+<span class="sd">        This also sends any owls (Email or SMS) if required. Any owls related errors are silently ignored.</span>
+
+<span class="sd">        :param new_password: New password</span>
+<span class="sd">        :param send_owls: Set True to send mail/SMS to the user. Default:True</span>
+<span class="sd">        :return: None</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            To prevent logout, execute following after this function.</span>
+
+<span class="sd">                &gt;&gt;&gt; auth.update_session_auth_hash(request, user)</span>
+
+
+<span class="sd">        .. warning::</span>
+<span class="sd">            This method does not confirm with old password. Please confirm old password</span>
+<span class="sd">            before changing as per your use case for security reasons.</span>
+
+<span class="sd">        **Authors**: Gagandeep Singh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">set_password</span><span class="p">(</span><span class="n">new_password</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">send_owls</span><span class="p">:</span>
+            <span class="c1"># Send all owls</span>
+            <span class="c1"># (a) SMS owl</span>
+            <span class="n">owls</span><span class="o">.</span><span class="n">SmsOwl</span><span class="o">.</span><span class="n">send_password_change_success</span><span class="p">(</span>
+                <span class="n">mobile_no</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+                <span class="n">username</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span>
+            <span class="p">)</span>
+
+            <span class="c1"># (b) Email owl</span>
+            <span class="n">owls</span><span class="o">.</span><span class="n">EmailOwl</span><span class="o">.</span><span class="n">send_password_change_success</span><span class="p">(</span><span class="n">user</span><span class="p">)</span></div>
+
+        <span class="c1"># TODO: Logout user from all mobile devices</span>
+
 <div class="viewcode-block" id="RegisteredUser.clean"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.RegisteredUser.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method to clean &amp; validate data fields.</span>
@@ -267,6 +310,34 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="RegisteredUser.post_save"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.RegisteredUser.post_save">[docs]</a>    <span class="k">def</span> <span class="nf">post_save</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Post save trigger for this model. This will be called after the record has</span>
+<span class="sd">        been created or updated.</span>
+
+<span class="sd">        **Authors**: Gagandeep Singh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Update &#39;UserProfile&#39; only if this exists</span>
+        <span class="c1"># Cannot create here because during registration, when &#39;RegisteredUser&#39; is created this routine will not</span>
+        <span class="c1"># have date of birth, gender etc since they are not present in &#39;User&#39; model.</span>
+        <span class="c1"># Update here make surety that User.&lt;attributes&gt; are same as UserProfile.&lt;attributes&gt;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">user</span>
+
+            <span class="n">user_profile</span> <span class="o">=</span> <span class="n">UserProfile</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">registered_user_id</span><span class="o">=</span><span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">user_profile</span><span class="o">.</span><span class="n">add_update_attribute</span><span class="p">(</span><span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="n">auto_save</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">user_profile</span><span class="o">.</span><span class="n">add_update_attribute</span><span class="p">(</span><span class="s1">&#39;last_name&#39;</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">last_name</span><span class="p">,</span> <span class="n">auto_save</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">user_profile</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="k">except</span> <span class="n">mongo_DoesNotExist</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">using</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_parents</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># Override delete method to prevent record deletion.</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s1">&#39;You cannot delete RegisteredUser.&#39;</span><span class="p">)</span>
+
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="RegisteredUser.construct_username"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.RegisteredUser.construct_username">[docs]</a>    <span class="k">def</span> <span class="nf">construct_username</span><span class="p">(</span><span class="n">country_tel_code</span><span class="p">,</span> <span class="n">mobile_no</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -280,6 +351,8 @@
 <span class="sd">        **Authors**: Gagandeep Singh</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">country_tel_code</span><span class="p">,</span> <span class="n">mobile_no</span><span class="p">)</span></div></div>
+<span class="n">post_save</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">RegisteredUser</span><span class="o">.</span><span class="n">post_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">RegisteredUser</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="UserToken"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.UserToken">[docs]</a><span class="k">class</span> <span class="nc">UserToken</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -502,6 +575,10 @@
 <span class="sd">        All attributes in **UserAttributes** embedded document tagged as ``required=True`` are mandatory and must be</span>
 <span class="sd">        present in &#39;list_attributes&#39;. Model will not save until all required fields have values.</span>
 
+<span class="sd">    **When this model is created/updated**:</span>
+
+<span class="sd">        This model is created only during registration process and updated each time :class:`accounts.models.RegisteredUser` is saved.</span>
+
 
 <span class="sd">    **Authors**: Gagandeep Singh</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -521,6 +598,7 @@
         <span class="n">value</span>       <span class="o">=</span> <span class="n">BaseField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Value of the attribute. This can be of any data type.&quot;</span><span class="p">)</span>
 
         <span class="n">active</span>      <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Whether this attribute is active or not. Set False in case od delete.&quot;</span><span class="p">)</span>
+        <span class="n">locked</span>      <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;If True attribute cannot be updated or deleted.&quot;</span><span class="p">)</span>
         <span class="n">last_updated_on</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Date on which this record was last updated.&quot;</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -535,6 +613,11 @@
 <span class="sd">        .. note::</span>
 <span class="sd">            Use this model for quick lookup for attribute value. These keys will not be indexed</span>
 <span class="sd">            so **DO NOT** use them in queries.</span>
+
+<span class="sd">        .. warning::</span>
+<span class="sd">            Following attributes will be replaced by that in :class:`django.contrib.auth.models.User` model:</span>
+<span class="sd">                - first_name</span>
+<span class="sd">                - last_name</span>
 
 <span class="sd">        **Authors**: Gagandeep Singh</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -570,8 +653,8 @@
         <span class="p">)</span>
 
         <span class="c1"># --- Fields ---</span>
-        <span class="n">first_name</span>      <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;First name of the user. Must be same as in User model.&quot;</span><span class="p">)</span>
-        <span class="n">last_name</span>       <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Last Name of the user. Must be same as in User model.&quot;</span><span class="p">)</span>
+        <span class="n">first_name</span>      <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;First name of the user. This will be updated by &#39;first_name&#39; in User model.&quot;</span><span class="p">)</span>
+        <span class="n">last_name</span>       <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Last Name of the user. This will be updated by &#39;last_name&#39; in User model.&quot;</span><span class="p">)</span>
 
         <span class="n">gender</span>          <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">CH_GENDER</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;User gender.&quot;</span><span class="p">)</span>
         <span class="n">date_of_birth</span>   <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Date of birth (with time as 00:00:00.00+0000)&quot;</span><span class="p">)</span>
@@ -611,69 +694,134 @@
     <span class="c1"># --- Attributes management ---</span>
 <div class="viewcode-block" id="UserProfile.add_update_attribute"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.UserProfile.add_update_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">add_update_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">auto_save</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Method to add or update (incase it exists) an attribute.</span>
+<span class="sd">        Method to add new attribute if it does not exists or update an attribute if it is not locked.</span>
+<span class="sd">        An attribute will automatically be revived if found inactive.</span>
 
 <span class="sd">        :param name: Name of the attribute.</span>
 <span class="sd">        :param value: Value for that attribute.</span>
 <span class="sd">        :param auto_save: True to write to db after addition else False</span>
-<span class="sd">        :return: True if attribute was created, False if attribute was updated or revived</span>
+<span class="sd">        :return: Bool tuple (is_new, updated) &#39;is_new&#39;: True if attribute was created. &#39;updated&#39;: True if action was success else False</span>
+
+<span class="sd">        **Note**: Throws &#39;ValidationError&#39; if attribute is locked</span>
 
 <span class="sd">        **Authors**: Gagandeep Singh</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># Check for valid attribute name</span>
+        <span class="n">allowed_names</span> <span class="o">=</span> <span class="n">UserProfile</span><span class="o">.</span><span class="n">UserAttributes</span><span class="o">.</span><span class="n">_fields</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_names</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Inavlid attribute name &#39;</span><span class="si">{}</span><span class="s2">&#39;. Allowed names: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">allowed_names</span><span class="p">))</span>
+
         <span class="c1"># Find attribute existences</span>
-        <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">is_new</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">updated</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_attributes</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
-                <span class="c1"># Found</span>
+                <span class="n">is_new</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">locked</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Denied! Attribute &#39;</span><span class="si">{}</span><span class="s2">&#39; is locked.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+
                 <span class="n">attr</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
                 <span class="n">attr</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">attr</span><span class="o">.</span><span class="n">last_updated_on</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
 
-                <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">updated</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">break</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_new</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">list_attributes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">UserProfile</span><span class="o">.</span><span class="n">DetailedAttribute</span><span class="p">(</span>
                     <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span>
                     <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">,</span>
-                    <span class="n">active</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">active</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
+            <span class="n">updated</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="c1"># Save</span>
-        <span class="k">if</span> <span class="n">auto_save</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">updated</span> <span class="ow">and</span> <span class="n">auto_save</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
-        <span class="c1"># return: was created</span>
-        <span class="k">return</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">found</span> <span class="k">else</span> <span class="kc">True</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="n">is_new</span><span class="p">,</span> <span class="n">updated</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UserProfile.delete_attribute"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.UserProfile.delete_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">delete_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">auto_save</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method to delete an attribute, that is mark attribute active as false.</span>
+<span class="sd">        An already deleted (inactive) attribute will again be marked inactive.</span>
 
 <span class="sd">        :param name: Name of the attribute</span>
 <span class="sd">        :param auto_save: True to write to db after deletion else False</span>
-<span class="sd">        :return: True if attribute was found active and marked, False if attribute was inactive or was not found; save is not triggered in this case.</span>
+<span class="sd">        :return: Bool tuple (found, updated)</span>
+
+<span class="sd">        **Note**: Throws &#39;ValidationError&#39; if attribute is locked</span>
 
 <span class="sd">        **Authors**: Gagandeep Singh</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">updated</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_attributes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span> <span class="ow">and</span> <span class="n">attr</span><span class="o">.</span><span class="n">active</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="n">attr</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
                 <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">locked</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Denied! Attribute &#39;</span><span class="si">{}</span><span class="s2">&#39; is locked.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+
+                <span class="n">attr</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
+
+                <span class="n">updated</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">break</span>
 
-        <span class="c1"># Save if found</span>
-        <span class="k">if</span> <span class="n">found</span> <span class="ow">and</span> <span class="n">auto_save</span><span class="p">:</span>
+        <span class="c1"># Save</span>
+        <span class="k">if</span> <span class="n">found</span> <span class="ow">and</span> <span class="n">updated</span> <span class="ow">and</span> <span class="n">auto_save</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">found</span><span class="p">,</span> <span class="n">updated</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UserProfile.lock_attribute"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.UserProfile.lock_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">lock_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">auto_save</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to lock an attribute. Locking an attribute will prevent any updation or deletion of an attribute.</span>
+
+<span class="sd">        :param name: Name of the attribute.</span>
+<span class="sd">        :param auto_save: Save model after locking</span>
+<span class="sd">        :return: True if attribute found and successfully locked else False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">updated</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_attributes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                <span class="n">attr</span><span class="o">.</span><span class="n">locked</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="n">updated</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">updated</span> <span class="ow">and</span> <span class="n">auto_save</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">updated</span></div>
+
+
+<div class="viewcode-block" id="UserProfile.unlock_attribute"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.UserProfile.unlock_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">unlock_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">auto_save</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to unlock an attribute and release it from locked state.</span>
+
+<span class="sd">        :param name: Name of the attribute</span>
+<span class="sd">        :param auto_save: Save model after unlocking</span>
+<span class="sd">        :return: True if attribute found and successfully released else False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">updated</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_attributes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                <span class="n">attr</span><span class="o">.</span><span class="n">locked</span> <span class="o">=</span> <span class="kc">False</span>
+
+                <span class="n">updated</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">updated</span> <span class="ow">and</span> <span class="n">auto_save</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">updated</span></div>
 
 
 <div class="viewcode-block" id="UserProfile.save"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.UserProfile.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">complete_save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -702,39 +850,13 @@
 
             <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">RegisteredUser</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;RegisterdUser with id=</span><span class="si">{}</span><span class="s1"> does not exists.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_user_id</span><span class="p">))</span></div></div>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;RegisterdUser with id=</span><span class="si">{}</span><span class="s1"> does not exists.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_user_id</span><span class="p">))</span></div>
 
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">write_concern</span><span class="p">):</span>
+        <span class="c1"># Override delete method to prevent record deletion.</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s1">&#39;Denied! You cannot delete UserProfile.&#39;</span><span class="p">)</span></div>
 
 <span class="c1"># ---------- Global Methods ----------</span>
-<div class="viewcode-block" id="set_user_password"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.set_user_password">[docs]</a><span class="k">def</span> <span class="nf">set_user_password</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">new_password</span><span class="p">,</span> <span class="n">send_owls</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Method to set a user password and save it.</span>
-<span class="sd">    This also sends any owls (Email or SMS) if required. Any errors are silently ignored.</span>
-
-<span class="sd">    :param user: &#39;User&#39; model object</span>
-<span class="sd">    :param new_password: New password</span>
-<span class="sd">    :param send_owls: Set True to send mail/SMS to the user. Default:True</span>
-<span class="sd">    :return: None</span>
-
-<span class="sd">    .. note::</span>
-<span class="sd">        To prevent logout, execute following after this function.</span>
-
-<span class="sd">            &gt;&gt;&gt; auth.update_session_auth_hash(request, user)</span>
-
-
-<span class="sd">    **Authors**: Gagandeep Singh</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">user</span><span class="o">.</span><span class="n">set_password</span><span class="p">(</span><span class="n">new_password</span><span class="p">)</span>
-    <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
-
-    <span class="c1"># if send_mail and settings.MAIL_PASS_RESET_SUCCESS:</span>
-    <span class="c1">#     try:</span>
-    <span class="c1">#         result = mailing.send_password_reset_success_email(user)</span>
-    <span class="c1">#     except SMTPAuthenticationError:</span>
-    <span class="c1">#         pass</span>
-    <span class="c1">#     except:</span>
-    <span class="c1">#         pass</span>
-
 <div class="viewcode-block" id="force_logout_user"><a class="viewcode-back" href="../../modules/accounts/models.html#accounts.models.force_logout_user">[docs]</a><span class="k">def</span> <span class="nf">force_logout_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Method to forcefully logout a user from all web login only.</span>

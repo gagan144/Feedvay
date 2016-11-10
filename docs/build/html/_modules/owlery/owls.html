@@ -217,6 +217,37 @@
             <span class="n">priority</span> <span class="o">=</span> <span class="n">SmsMessage</span><span class="o">.</span><span class="n">PR_URGENT</span>
         <span class="p">)</span>
 
+        <span class="c1"># TODO: Send SMS immediately using gateway</span>
+
+        <span class="k">return</span> <span class="n">sms</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="SmsOwl.send_password_change_success"><a class="viewcode-back" href="../../modules/owlery/owls.html#owlery.owls.SmsOwl.send_password_change_success">[docs]</a>    <span class="k">def</span> <span class="nf">send_password_change_success</span><span class="p">(</span><span class="n">mobile_no</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends a password change success SMS to the user.</span>
+
+<span class="sd">        :param mobile_no: Mobile number. +91-9999999999 is converted to +919999999999</span>
+<span class="sd">        :param username: (Optional) Username of user to which SMS is to be send.</span>
+<span class="sd">        :return: Returns :class:`owlery.model.SmsMessage` instance.</span>
+
+<span class="sd">        **Authors**: Gagandeep Singh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">message_body</span> <span class="o">=</span> <span class="n">render_to_response</span><span class="p">(</span><span class="s1">&#39;owlery/owls/sms/password_change_success.txt&#39;</span><span class="p">,{</span>
+            <span class="s2">&quot;change_date&quot;</span><span class="p">:</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%I:%M %p&quot;</span><span class="p">),</span>
+        <span class="p">})</span><span class="o">.</span><span class="n">content</span>
+
+        <span class="n">sms</span> <span class="o">=</span> <span class="n">SmsMessage</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">username</span> <span class="o">=</span> <span class="n">username</span><span class="p">,</span>
+            <span class="n">mobile_no</span> <span class="o">=</span> <span class="n">mobile_no</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">message_body</span><span class="p">,</span>
+            <span class="nb">type</span> <span class="o">=</span> <span class="n">SmsMessage</span><span class="o">.</span><span class="n">TYPE_PASS_CHNG_SUCC</span><span class="p">,</span>
+            <span class="n">priority</span> <span class="o">=</span> <span class="n">SmsMessage</span><span class="o">.</span><span class="n">PR_HIGH</span>
+        <span class="p">)</span>
+
+        <span class="c1"># TODO: Send SMS immediately using gateway</span>
+
         <span class="k">return</span> <span class="n">sms</span></div></div>
 
 
@@ -279,7 +310,57 @@
         <span class="k">except</span><span class="p">:</span>
             <span class="k">pass</span>
 
-        <span class="k">return</span> <span class="n">email_msg</span></div></div>
+        <span class="k">return</span> <span class="n">email_msg</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="EmailOwl.send_password_change_success"><a class="viewcode-back" href="../../modules/owlery/owls.html#owlery.owls.EmailOwl.send_password_change_success">[docs]</a>    <span class="k">def</span> <span class="nf">send_password_change_success</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends password change success email to the user.</span>
+
+<span class="sd">        :param user: User instance to whom email is to be send</span>
+<span class="sd">        :return: Returns :class:`owlery.model.EmailMessage` instance if email address was present else None</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            This method returns &#39;None&#39; when email is not found in user instance.</span>
+
+<span class="sd">        **Authors**: Gagandeep Singh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">email_address</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span>
+
+        <span class="k">if</span> <span class="n">email_address</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">email_address</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">receiver_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">last_name</span><span class="p">)</span>
+
+            <span class="c1"># Create message body</span>
+            <span class="n">message_body</span> <span class="o">=</span> <span class="n">render_to_response</span><span class="p">(</span><span class="s1">&#39;owlery/owls/emails/password_change_success.html&#39;</span><span class="p">,</span> <span class="p">{</span>
+                <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+                <span class="s2">&quot;receiver_name&quot;</span><span class="p">:</span> <span class="n">receiver_name</span><span class="p">,</span>
+                <span class="s2">&quot;dated&quot;</span><span class="p">:</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="p">})</span><span class="o">.</span><span class="n">content</span>
+
+            <span class="c1"># Create database entry</span>
+            <span class="n">email_msg</span> <span class="o">=</span> <span class="n">EmailMessage</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">username</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+                <span class="n">email_id</span> <span class="o">=</span> <span class="n">email_address</span><span class="p">,</span>
+
+                <span class="n">subject</span> <span class="o">=</span> <span class="s2">&quot;Feedvay - Account password successfully changed&quot;</span><span class="p">,</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="n">message_body</span><span class="p">,</span>
+
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">EmailMessage</span><span class="o">.</span><span class="n">TYPE_PASS_CHNG_SUCC</span><span class="p">,</span>
+                <span class="n">priority</span> <span class="o">=</span> <span class="n">EmailMessage</span><span class="o">.</span><span class="n">PR_HIGH</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Send email since it is an urgent message</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">email_msg</span><span class="o">.</span><span class="n">force_send</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="k">return</span> <span class="n">email_msg</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Email not found in user, ignore and return None</span>
+            <span class="k">return</span> <span class="kc">None</span></div></div>
 </pre></div>
 
            </div>

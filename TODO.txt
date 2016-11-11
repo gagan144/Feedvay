@@ -13,6 +13,8 @@
     - Report Display view
     - Suggestions Display view
     - Profile
+        - Datepicker
+        - Show partial errors for priv info
 
 - SEO
 

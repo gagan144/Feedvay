@@ -217,6 +217,7 @@
                 submitting: false,
                 error: false,
                 success: false,
+                partial_success: false,
                 submit_err_msg: null
             };
 
@@ -232,19 +233,21 @@
                 $scope.flags.submitting = true;
                 $scope.flags.error = false;
                 $scope.flags.success = false;
+                $scope.flags.partial_success = false;
                 $scope.flags.submit_err_msg = null;
 
                 // Post to server
                 $http.post(
-                    "/console/account/xxx/yyyy/",
+                    "/console/account/settings/private-info/update/",
                     $.param($scope.data_priv_info)
                 ).then(
                     function successCallback(response) {
                         $scope.flags.submitting = false;
 
-                        if(response.data.status == 'success'){
+                        if(response.data.status == 'success') {
                             $scope.flags.success = true;
-                            $scope.data_chng_pass = {};
+                        }else if(response.data.status == 'partial_success'){
+                            $scope.flags.partial_success = true;
                         }else{
                             $scope.flags.submit_err_msg = response.data.message;
                         }

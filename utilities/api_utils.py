@@ -21,6 +21,7 @@ class ApiResponse(object):
 
     # --- enums ---
     ST_SUCCESS = 'success'
+    ST_PARTIAL_SUCCESS = 'partial_success'
     ST_IGNORED = 'ignored'        # No update or change
     ST_FAILED = 'failed'          # Operation failed
     ST_NOT_ALLOWED = 'not_allowed'    # GET or POST not allowed
@@ -31,6 +32,7 @@ class ApiResponse(object):
 
     CH_STATUS = (
         (ST_SUCCESS, 'Success'),
+        (ST_PARTIAL_SUCCESS, 'Partial success'),
         (ST_IGNORED, 'Ignored'),
         (ST_FAILED , 'Failed'),
         (ST_NOT_ALLOWED, 'Not Allowed'),
@@ -42,6 +44,7 @@ class ApiResponse(object):
 
     STATUS_CODES = {
         ST_SUCCESS: 200,
+        ST_PARTIAL_SUCCESS: 206,
         ST_IGNORED: 204,
         ST_FAILED: 299,
         ST_NOT_ALLOWED: 405,

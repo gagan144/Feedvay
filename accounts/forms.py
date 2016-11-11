@@ -25,7 +25,7 @@ class RegistrationForm(forms.Form):
     dob_month   = forms.IntegerField(required=True)
     dob_year    = forms.IntegerField(required=True)
 
-    gender      = forms.CharField(required=True)
+    gender      = forms.ChoiceField(required=True, choices=UserProfile.UserAttributes.CH_GENDER)
 
     password    = forms.CharField(widget=forms.PasswordInput())
     confirm_password = forms.CharField(widget=forms.PasswordInput())
@@ -96,3 +96,50 @@ class PasswordChangeForm(forms.Form):
             del form_data['password']
             del form_data['confirm_password']
         return form_data
+
+# ----- Console: Profile -----
+class PrivateInfoForm(forms.Form):
+    """
+    Form to change registered user private information as in page 'Account settings > Profile'.
+
+    **Authors**: Gagandeep Singh
+    """
+    blood_group     = forms.ChoiceField(required=False, choices=UserProfile.UserAttributes.CH_BLOOD_GROUP)
+
+    def save(self, pk):
+        """
+        Form method to save all details into :class:`accounts.models.UserProfile` model.
+
+        :return: Tuple (status, errors) - status: True if there were not errors else False, errors: dict of errors
+
+        **Authors**: Gagandeep Singh
+        """
+
+        if not self.is_valid():
+            raise Exception("Cannot save! Some of the form fields are not valid.")
+
+        form_data = self.cleaned_data
+
+        user_profile = UserProfile.objects.with_id(pk)
+
+        errors = {}
+        try:
+            blood_group = form_data['blood_group']
+            if blood_group:
+                user_profile.add_update_attribute('blood_group', form_data['blood_group'])
+            else:
+                user_profile.delete_attribute('blood_group')
+
+        except ValidationError as ex:
+            errors['blood_group'] = ex.message
+
+        status = False if len(errors) else True
+        return (status, errors)
+
+
+
+
+
+
+
+# ----- /Console: Profile -----

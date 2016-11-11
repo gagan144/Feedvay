@@ -204,6 +204,10 @@
                 gender: $rootScope.USER_PROFILE.gender.value,
                 date_of_birth: moment($rootScope.USER_PROFILE.date_of_birth.value, 'YYYY-MM-DDTHH:mm:ss.SSS')
             };
+{#            $scope.onchange_dob = function (modelName, newDate) {#}
+{#                //console.log(modelName + ' has had a date change. New value is ' + newDate.format());#}
+{#                $scope.data_basic_info.date_of_birth = newDate.format("YYYY-MM-DD");#}
+{#            }#}
 
             $scope.max_dob = moment();
         });

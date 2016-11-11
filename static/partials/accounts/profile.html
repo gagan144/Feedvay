@@ -95,7 +95,7 @@
                     <div class="col-sm-5">
                         <input class="form-control" ng-model="data_basic_info.date_of_birth" name="date_of_birth" required readonly
                                date-time="" view="date" auto-close="true" min-view="date" max-view="date" max-date="max_dob" format="YYYY-MM-DD"
-
+                               date-change="onchange_dob"
                                ng-disabled="USER_PROFILE.date_of_birth.locked"
                                ng-pattern="/^(\d{4})-(\d{2})-(\d{2})$/"
                                ng-class="{ 'fake_readonly': !USER_PROFILE.date_of_birth.locked,'error': ((form_basic_info.$submitted || form_basic_info.date_of_birth.$dirty) && (form_basic_info.date_of_birth.$invalid))}"

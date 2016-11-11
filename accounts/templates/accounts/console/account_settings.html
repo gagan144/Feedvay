@@ -202,7 +202,7 @@
                 first_name: $rootScope.USER_PROFILE.first_name.value,
                 last_name: $rootScope.USER_PROFILE.last_name.value,
                 gender: $rootScope.USER_PROFILE.gender.value,
-                date_of_birth: moment("1991-05-07", "YYYY-MM-DD")  //TODO: set to  date_of_birth
+                date_of_birth: moment($rootScope.USER_PROFILE.date_of_birth.value, 'YYYY-MM-DDTHH:mm:ss.SSS')
             };
 
             $scope.max_dob = moment();

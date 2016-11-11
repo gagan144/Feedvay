@@ -207,6 +207,61 @@
 
             $scope.max_dob = moment();
         });
+
+        APP.controller('PrivateInfoCtrl', function($rootScope, $scope, $http){
+            $scope.flags = {
+                submitting: false,
+                error: false,
+                success: false,
+                submit_err_msg: null
+            };
+
+            $scope.data_priv_info = {
+                blood_group: $rootScope.USER_PROFILE.blood_group?$rootScope.USER_PROFILE.blood_group.value:null,
+            };
+
+            $scope.submit = function(form_obj){
+                if(form_obj.$invalid){
+                    return false;
+                }
+
+                $scope.flags.submitting = true;
+                $scope.flags.error = false;
+                $scope.flags.success = false;
+                $scope.flags.submit_err_msg = null;
+
+                // Post to server
+                $http.post(
+                    "/console/account/xxx/yyyy/",
+                    $.param($scope.data_priv_info)
+                ).then(
+                    function successCallback(response) {
+                        $scope.flags.submitting = false;
+
+                        if(response.data.status == 'success'){
+                            $scope.flags.success = true;
+                            $scope.data_chng_pass = {};
+                        }else{
+                            $scope.flags.submit_err_msg = response.data.message;
+                        }
+                    },
+                    function errorCallback(response) {
+                        $scope.flags.submitting = false;
+                        if(response.status != -1){
+                            $scope.flags.error = true;
+                        }else{
+                            $.growl.error({
+                                title: '<i class="fa fa-signal"></i> Network error!',
+                                message: "Please check your internet connection."
+                            });
+                        }
+                    }
+                );
+
+            };
+
+
+        });
         // --- /Profile ---
 
 

@@ -118,9 +118,10 @@
 
                 <div class="hr-line-dashed hr_line_dashed_m10"></div>
                 <div class="form-group" style="margin-bottom: 0px !important;">
-                    <div class="col-sm-5 col-sm-offset-3">
+                    <div class="col-sm-7 col-sm-offset-3">
                         <div ng-if="flags.error" class="alert alert-danger alert-dismissable" style="padding: 10px 30px 10px 10px;margin-bottom: 20px;">
                             <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                            <i class="fa fa-exclamation-triangle"></i>&nbsp;
                             Something went wrong. Our engineers will be informed.
                         </div>
 
@@ -132,4 +133,71 @@
         </div>
     </div>
     <!-- /Basic Information -->
+
+    <!-- Private Information -->
+    <div class="panel panel-default" ng-controller="PrivateInfoCtrl">
+        <div class="panel-heading panel_heading_2">
+            <i class="fa fa-user-secret"></i>&nbsp;
+            Private information
+        </div>
+        <div class="panel_alerts">
+            <div ng-if="flags.success" class="alert alert-success">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <i class="fa fa-check-circle"></i>&nbsp;
+                Your changes have been <strong>successfully</strong> made.
+            </div>
+        </div>
+        <div class="panel-body panel_body_realign" >
+            <div class="m-b-md">
+                This section includes all your private information. These information are not visible to the public and only shared
+                with authorized client.
+            </div>
+
+            <form name="form_priv_info" class="form-horizontal" ng-class="{'form-loading': flags.submitting }" novalidate>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                        Blood group:
+                    </label>
+                    <div class="col-sm-5">
+                        <div>
+                            <select class="form-control" name="blood_group" ng-model="data_priv_info.blood_group" ng-disabled="USER_PROFILE.blood_group.locked">
+                                <option value="">Please select</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                            </select>
+                        </div>
+                        <p class="help-block m-b-none">
+                            This is not shared with public.
+                        </p>
+
+                        <div ng-messages="form_priv_info.gender.$dirty && form_priv_info.gender.$error" role="alert" class="error_messages">
+                            <label ng-message="required" class="error">Please select your gender.</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                <div class="form-group" style="margin-bottom: 0px !important;">
+                    <div class="col-sm-7 col-sm-offset-3">
+                        <div ng-if="flags.error" class="alert alert-danger alert-dismissable" style="padding: 10px 30px 10px 10px;margin-bottom: 20px;">
+                            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                            <i class="fa fa-exclamation-triangle"></i>&nbsp;
+                            Something went wrong. Our engineers will be informed.
+                        </div>
+
+                        <button class="btn btn-primary" type="button" ng-disabled="form_priv_info.$invalid" ng-click="submit(form_priv_info)">Save</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <!-- /Private Information -->
 </div>

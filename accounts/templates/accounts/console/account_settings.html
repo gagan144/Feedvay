@@ -1,5 +1,5 @@
 {% extends 'console/base.html' %}
-{% load static %}
+{% load static commontags %}
 
 {% block head %}
     <title page-title></title>
@@ -97,6 +97,9 @@
             $http.defaults.xsrfCookieName = 'csrftoken';
             $http.defaults.xsrfHeaderName = 'X-CSRFToken';
 
+            // Initial user data
+            $rootScope.USER_PROFILE = {{ user_profile.get_meta_dict|jsonify|safe }};
+
             // ----- Routing -----
             $rootScope.$state = $state;
 
@@ -187,7 +190,7 @@
         // --- /Security ---
 
         // --- Profile ---
-        APP.controller('BasicInfoCtrl', function($scope){
+        APP.controller('BasicInfoCtrl', function($rootScope, $scope){
             $scope.flags = {
                 submitting: false,
                 error: false,
@@ -196,7 +199,10 @@
             };
 
             $scope.data_basic_info = {
-                //date_of_birth: moment("1991-5-7")
+                first_name: $rootScope.USER_PROFILE.first_name.value,
+                last_name: $rootScope.USER_PROFILE.last_name.value,
+                gender: $rootScope.USER_PROFILE.gender.value,
+                date_of_birth: moment("1991-05-07", "YYYY-MM-DD")  //TODO: set to  date_of_birth
             };
 
             $scope.max_dob = moment();

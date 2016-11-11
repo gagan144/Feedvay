@@ -86,6 +86,10 @@ class RegisteredUser(models.Model):
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this suggestion was made.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
 
+    @property
+    def profile(self):
+        return UserProfile.objects.get(registered_user_id=self.id)
+
     def __unicode__(self):
         return self.user.username
 
@@ -648,6 +652,8 @@ class UserProfile(Document):
         :param name: Name of the attribute.
         :param auto_save: Save model after locking
         :return: True if attribute found and successfully locked else False
+
+        **Authors**: Gagandeep Singh
         """
 
         updated = False
@@ -671,6 +677,8 @@ class UserProfile(Document):
         :param name: Name of the attribute
         :param auto_save: Save model after unlocking
         :return: True if attribute found and successfully released else False
+
+        **Authors**: Gagandeep Singh
         """
 
         updated = False
@@ -685,6 +693,20 @@ class UserProfile(Document):
             self.save()
 
         return updated
+
+    def get_meta_dict(self):
+        """
+        Method that returns dictionary of nested objects with key as attribute name and
+        value as dictionary object containing information for that attribute.
+        :return: Dictionary of format {"<attribute_name">: { <information dict> },  }
+        """
+
+        meta_dict = {}
+        for attr in self.list_attributes:
+            if attr.active:
+                meta_dict[attr.name] = dict(attr.to_mongo())
+
+        return meta_dict
 
 
     def save(self, complete_save=True, *args, **kwargs):

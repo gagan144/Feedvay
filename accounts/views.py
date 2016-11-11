@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.conf import settings
 import jwt
 from django.contrib import auth
-import json
+import ujson
 
 from django.contrib.auth.models import User
 
@@ -664,8 +664,11 @@ def console_account_settings(request):
 
     **Authors**: Gagandeep Singh
     """
+
+    registered_user = request.user.registereduser
     data = {
-        "app_name": "app_account"
+        "app_name": "app_account",
+        "user_profile": registered_user.profile
     }
     return render(request, 'accounts/console/account_settings.html', data)
 

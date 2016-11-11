@@ -131,6 +131,10 @@
 }
 /* ----- /panel alert ----- */
 
+.fake_readonly{
+    background-color: #FFFFFF !important;
+}
+
 /* ---------- Desktop ---------- */
 @media (min-width: 767px) {
     .mobile_show{

@@ -34,6 +34,7 @@
                         <div class="row">
                             <div class="col-sm-6">
                                 <input type="text" ng-model="data_basic_info.first_name" name="first_name" class="form-control" required placeholder="First name"
+                                       ng-disabled="USER_PROFILE.first_name.locked"
                                        ng-class="{ 'error': ((form_basic_info.$submitted || form_basic_info.first_name.$dirty) && (form_basic_info.first_name.$invalid))}"
                                 >
                                 <div ng-messages="form_basic_info.first_name.$dirty && form_basic_info.first_name.$error" role="alert" class="error_messages">
@@ -42,6 +43,7 @@
                             </div>
                             <div class="col-sm-6">
                                 <input type="text" ng-model="data_basic_info.last_name" name="last_name" class="form-control" required placeholder="Last name"
+                                       ng-disabled="USER_PROFILE.last_name.locked"
                                        ng-class="{ 'error': ((form_basic_info.$submitted || form_basic_info.last_name.$dirty) && (form_basic_info.last_name.$invalid))}"
                                 >
                                 <div ng-messages="form_basic_info.last_name.$dirty && form_basic_info.last_name.$error" role="alert" class="error_messages">
@@ -63,15 +65,15 @@
                     <div class="col-sm-5">
                         <div>
                             <div class="radio radio-primary radio-inline">
-                                <input type="radio" id="chk_gender_male" value="male" name="gender" ng-model="data_basic_info.gender" required>
+                                <input type="radio" id="chk_gender_male" value="male" name="gender" ng-model="data_basic_info.gender" required ng-disabled="USER_PROFILE.gender.locked">
                                 <label for="chk_gender_male"> Male </label>
                             </div>
                             <div class="radio radio-primary radio-inline">
-                                <input type="radio" id="chk_gender_female" value="female" name="gender" ng-model="data_basic_info.gender" required>
+                                <input type="radio" id="chk_gender_female" value="female" name="gender" ng-model="data_basic_info.gender" required ng-disabled="USER_PROFILE.gender.locked">
                                 <label for="chk_gender_female"> Female </label>
                             </div>
                             <div class="radio radio-primary radio-inline">
-                                <input type="radio" id="chk_gender_other" value="other" name="gender" ng-model="data_basic_info.gender" required>
+                                <input type="radio" id="chk_gender_other" value="other" name="gender" ng-model="data_basic_info.gender" required ng-disabled="USER_PROFILE.gender.locked">
                                 <label for="chk_gender_other"> Other </label>
                             </div>
                         </div>
@@ -91,12 +93,14 @@
                         Date of birth<span class="required">*</span>:
                     </label>
                     <div class="col-sm-5">
-                        <input class="form-control" ng-model="data_basic_info.date_of_birth" name="date_of_birth" required
-                               date-time view="date" auto-close="true" min-view="date" max-view="date" max-date="max_dob" format="YYYY-MM-DD"
+                        <input class="form-control" ng-model="data_basic_info.date_of_birth" name="date_of_birth" required readonly
+                               date-time="" view="date" auto-close="true" min-view="date" max-view="date" max-date="max_dob" format="YYYY-MM-DD"
 
+                               ng-disabled="USER_PROFILE.date_of_birth.locked"
                                ng-pattern="/^(\d{4})-(\d{2})-(\d{2})$/"
-                               ng-class="{ 'error': ((form_basic_info.$submitted || form_basic_info.date_of_birth.$dirty) && (form_basic_info.date_of_birth.$invalid))}"
+                               ng-class="{ 'fake_readonly': !USER_PROFILE.date_of_birth.locked,'error': ((form_basic_info.$submitted || form_basic_info.date_of_birth.$dirty) && (form_basic_info.date_of_birth.$invalid))}"
                         >
+                        {$ typeof_max_dob $}
                         <p class="help-block m-b-none">
                             This is only shared with our clients.
                         </p>
@@ -108,6 +112,7 @@
                             <label ng-message="pattern" class="error">Birth date must be of format YYYY-MM-DD.</label>
                             <label ng-message="parse" class="error">Birth date must be of format YYYY-MM-DD.</label>
                         </div>
+
                     </div>
                 </div>
 

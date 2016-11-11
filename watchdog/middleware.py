@@ -8,7 +8,7 @@ from django.http import Http404
 import traceback
 import socket
 import warnings
-import json
+import ujson
 from django.utils import timezone
 
 from watchdog.models import ErrorLog

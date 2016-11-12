@@ -703,11 +703,10 @@ class UserProfile(Document):
 
         meta_dict = {}
         for attr in self.list_attributes:
-            if attr.active:
-                data = dict(attr.to_mongo())
-                if isinstance(data['value'], timezone.datetime):
-                    data['value'] = data['value'].isoformat()
-                meta_dict[attr.name] = data
+            data = dict(attr.to_mongo())
+            if isinstance(data['value'], timezone.datetime):
+                data['value'] = data['value'].isoformat()
+            meta_dict[attr.name] = data
 
         return meta_dict
 

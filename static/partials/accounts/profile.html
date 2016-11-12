@@ -148,7 +148,7 @@
             </div>
             <div ng-if="flags.partial_success" class="alert alert-warning">
                 <button type="button" class="close" data-dismiss="alert">×</button>
-                <i class="fa fa-exclamation-circle"></i>&nbsp;
+                <i class="fa fa-exclamation-triangle"></i>&nbsp;
                 Your changes were partially updated.
             </div>
         </div>
@@ -166,7 +166,7 @@
                     </label>
                     <div class="col-sm-5">
                         <div>
-                            <select class="form-control" name="blood_group" ng-model="data_priv_info.blood_group" ng-disabled="USER_PROFILE.blood_group.locked">
+                            <select class="form-control" name="blood_group" ng-model="data_priv_info.blood_group" ng-disabled="USER_PROFILE.blood_group.locked" ng-readonly="USER_PROFILE.blood_group.locked">
                                 <option value="">Please select</option>
                                 <option value="O+">O+</option>
                                 <option value="O-">O-</option>
@@ -182,6 +182,10 @@
                             This is not shared with public.
                         </p>
 
+                        <div class="text-warning" ng-if="flags.update_errors.blood_group">
+                            <i class="fa fa-ban"></i>&nbsp;
+                            This data is not allowed to be changed.
+                        </div>
                         <div ng-messages="form_priv_info.gender.$dirty && form_priv_info.gender.$error" role="alert" class="error_messages">
                             <label ng-message="required" class="error">Please select your gender.</label>
                         </div>

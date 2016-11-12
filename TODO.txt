@@ -16,6 +16,7 @@
         - Datepicker
         - Show partial errors for priv info
 
+- Data privacy conventions (public, encypted, client shared etc)
 - SEO
 
 - Geography

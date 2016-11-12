@@ -218,6 +218,7 @@
                 error: false,
                 success: false,
                 partial_success: false,
+                update_errors: null,
                 submit_err_msg: null
             };
 
@@ -230,16 +231,34 @@
                     return false;
                 }
 
+                // Prepare nnly changed fields
+                var data = {};
+                for(var attr_name in $scope.data_priv_info){
+                    if(form_obj[attr_name].$dirty){
+                        data[attr_name] = $scope.data_priv_info[attr_name];
+                    }
+                }
+
+                if(!Object.keys(data).length){
+                    $.growl.warning({
+                        title: '<i class="fa fa-exclamation-circle"></i> Nothing to update!',
+                        message: "There is nothing to change."
+                    });
+                    return;
+                }
+
+
                 $scope.flags.submitting = true;
                 $scope.flags.error = false;
                 $scope.flags.success = false;
                 $scope.flags.partial_success = false;
+                $scope.flags.update_errors = null;
                 $scope.flags.submit_err_msg = null;
 
                 // Post to server
                 $http.post(
                     "/console/account/settings/private-info/update/",
-                    $.param($scope.data_priv_info)
+                    $.param(data)
                 ).then(
                     function successCallback(response) {
                         $scope.flags.submitting = false;
@@ -248,6 +267,7 @@
                             $scope.flags.success = true;
                         }else if(response.data.status == 'partial_success'){
                             $scope.flags.partial_success = true;
+                            $scope.flags.update_errors = response.data.errors;
                         }else{
                             $scope.flags.submit_err_msg = response.data.message;
                         }

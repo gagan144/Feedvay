@@ -223,7 +223,7 @@
             };
 
             $scope.data_priv_info = {
-                blood_group: $rootScope.USER_PROFILE.blood_group?$rootScope.USER_PROFILE.blood_group.value:null,
+                blood_group: $rootScope.USER_PROFILE.blood_group.active?$rootScope.USER_PROFILE.blood_group.value:null,
             };
 
             $scope.submit = function(form_obj){

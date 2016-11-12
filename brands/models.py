@@ -5,11 +5,13 @@ from __future__ import unicode_literals
 
 
 from django.db import models
+from django_extensions.db.fields import ShortUUIDField
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.contrib.auth.models import User
+import uuid
 
 from accounts.models import RegisteredUser
 
@@ -46,10 +48,11 @@ class Brand(models.Model):
     )
 
     # --- Fields ---
+    brand_uid   = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True, help_text='Unique ID of a brand which are hard to guess and can be used in urls. ')
     name        = models.CharField(max_length=255, unique=True, db_index=True, help_text='Name of the brand.')
     description = models.TextField(max_length=512, help_text='Short description about the brand. Include keywords for better SEO and keep characters between 150-160.')
 
-    owners      = models.ManyToManyField(through=BrandOwner, help_text='Owners of this brand.')
+    owners      = models.ManyToManyField(RegisteredUser, through='BrandOwner', help_text='Owners of this brand.')
 
     # Customization
     # logo
@@ -64,7 +67,6 @@ class Brand(models.Model):
     active      = models.BooleanField(default=False, db_index=True, help_text='Switch to disable brand temporarly. Configurations/editting can be made however, brand does not appear to public.')
     deleted     = models.BooleanField(default=False, db_index=True, help_text='If true, it means this brand has been deleted. All operations are stopped from now. Brand does not appears to public. This must be used rarely.')
     disable_claim = models.BooleanField(default=False, help_text='Set true to stop any further claims on this brand. Use this for top known brands or contracted clients.')
-
 
     created_by  = models.ForeignKey(User, help_text='User that created this brand. This can be a staff or registered user.')
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
@@ -84,6 +86,36 @@ class Brand(models.Model):
 
         self.deleted = True
         self.save()
+
+    # --- Transitions ---
+    @fsm_log_by
+    @transition(field=status, source=ST_VERF_PENDING, target=ST_VERIFIED)
+    def trans_verified(self):
+        """
+        Transition edge to transit brand status to verified.
+        """
+        self.active = True
+
+    @fsm_log_by
+    @transition(field=status, source=ST_VERF_PENDING, target=ST_VERF_FAILED)
+    def trans_verification_failed(self, reason):
+        """
+        Transition edge for brand verification failed. A reason must be provided stating
+        why this brand was failed.
+        """
+        self.active = False
+        self.failed_reason = reason
+
+    @fsm_log_by
+    @transition(field=status, source=ST_VERF_FAILED, target=ST_VERF_PENDING)
+    def trans_verification_failed(self):
+        """
+        Transition edge to revise brand verification. This means brand has been editted and
+        now again queued for verification.
+        """
+        self.active = False
+
+    # --- /Transitions ---
 
     def clean(self):
         """

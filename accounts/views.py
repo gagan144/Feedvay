@@ -711,6 +711,32 @@ def console_password_change(request):
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
+@registered_user_only
+def console_account_settings_basicinfo_update(request):
+    """
+    An API view to update registered user basic information.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+
+    if request.method.lower() == 'post':
+        form = BasicInfoForm(request.POST)
+
+        if form.is_valid():
+            registered_user = request.user.registereduser
+
+            all_ok, errors = form.save(str(registered_user.profile.pk))
+            if all_ok:
+                return ApiResponse(status=ApiResponse.ST_SUCCESS, message='ok').gen_http_response()
+            else:
+                return ApiResponse(status=ApiResponse.ST_PARTIAL_SUCCESS, message='Success with few ignored errors.', errors=errors).gen_http_response()
+        else:
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Incomplete submission.').gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
 @registered_user_only
 def console_account_settings_privinfo_update(request):

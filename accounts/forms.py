@@ -98,6 +98,45 @@ class PasswordChangeForm(forms.Form):
         return form_data
 
 # ----- Console: Profile -----
+class BasicInfoForm(forms.Form):
+    """
+    Form to change registered user basic information as in page 'Account settings > Profile'.
+
+    **Authors**: Gagandeep Singh
+    """
+    first_name  = forms.CharField(required=True)
+    last_name   = forms.CharField(required=True)
+    gender      = forms.ChoiceField(required=True, choices=UserProfile.UserAttributes.CH_GENDER)
+    date_of_birth = forms.DateTimeField(required=True)
+
+
+    def save(self, pk):
+        """
+        Form method to save all details into :class:`accounts.models.UserProfile` model.
+
+        :param pk: ID of :class:`accounts.models.UserProfile` instance which is to be updated
+        :return: Tuple (status, errors) - status: True if there were not errors else False, errors: dict of errors
+
+        **Authors**: Gagandeep Singh
+        """
+
+        if not self.is_valid():
+            raise Exception("Cannot save! Some form fields are not valid.")
+
+        form_data = self.cleaned_data
+
+        user_profile = UserProfile.objects.with_id(pk)
+
+        errors = {}
+        user_profile.add_update_attribute('first_name', form_data['first_name'])
+        user_profile.add_update_attribute('last_name', form_data['last_name'])
+        user_profile.add_update_attribute('gender', form_data['gender'])
+        user_profile.add_update_attribute('date_of_birth', form_data['date_of_birth'])
+
+        status = False if len(errors) else True
+        return (status, errors)
+
+
 class PrivateInfoForm(forms.Form):
     """
     Form to change registered user private information as in page 'Account settings > Profile'.
@@ -110,13 +149,14 @@ class PrivateInfoForm(forms.Form):
         """
         Form method to save all details into :class:`accounts.models.UserProfile` model.
 
+        :param pk: ID of :class:`accounts.models.UserProfile` instance which is to be updated
         :return: Tuple (status, errors) - status: True if there were not errors else False, errors: dict of errors
 
         **Authors**: Gagandeep Singh
         """
 
         if not self.is_valid():
-            raise Exception("Cannot save! Some of the form fields are not valid.")
+            raise Exception("Cannot save! Some form fields are not valid.")
 
         form_data = self.cleaned_data
 

@@ -190,11 +190,13 @@
         // --- /Security ---
 
         // --- Profile ---
-        APP.controller('BasicInfoCtrl', function($rootScope, $scope){
+        APP.controller('BasicInfoCtrl', function($rootScope, $scope, $http){
             $scope.flags = {
                 submitting: false,
                 error: false,
                 success: false,
+                partial_success: false,
+                update_errors: null,
                 submit_err_msg: null
             };
 
@@ -202,14 +204,61 @@
                 first_name: $rootScope.USER_PROFILE.first_name.value,
                 last_name: $rootScope.USER_PROFILE.last_name.value,
                 gender: $rootScope.USER_PROFILE.gender.value,
+                // MomentJs: while displaying, it shows utc datetime; timezones are automatically handled inside; default local
                 date_of_birth: moment($rootScope.USER_PROFILE.date_of_birth.value, 'YYYY-MM-DDTHH:mm:ss.SSS')
             };
-{#            $scope.onchange_dob = function (modelName, newDate) {#}
-{#                //console.log(modelName + ' has had a date change. New value is ' + newDate.format());#}
-{#                $scope.data_basic_info.date_of_birth = newDate.format("YYYY-MM-DD");#}
-{#            }#}
 
             $scope.max_dob = moment();
+
+            $scope.submit = function(form_obj){
+                if(form_obj.$invalid){
+                    return false;
+                }
+
+                // Prepare only changed fields
+                var data = angular.copy($scope.data_basic_info);
+                data['date_of_birth'] = $scope.data_basic_info.date_of_birth.format('YYYY-MM-DD'); //moment object; gives result in local time.
+
+                $scope.flags.submitting = true;
+                $scope.flags.error = false;
+                $scope.flags.success = false;
+                $scope.flags.partial_success = false;
+                $scope.flags.update_errors = null;
+                $scope.flags.submit_err_msg = null;
+
+                // Post to server
+                $http.post(
+{#                    "{% url 'console_account_settings_basicinfo_update' %}",#}
+                        "/console/account/settings/basic-info/update/",
+                    $.param(data)
+                ).then(
+                    function successCallback(response) {
+                        $scope.flags.submitting = false;
+
+                        if(response.data.status == 'success') {
+                            $scope.flags.success = true;
+                        }else if(response.data.status == 'partial_success'){
+                            $scope.flags.partial_success = true;
+                            $scope.flags.update_errors = response.data.errors;
+                        }else{
+                            $scope.flags.submit_err_msg = response.data.message;
+                        }
+                    },
+                    function errorCallback(response) {
+                        $scope.flags.submitting = false;
+                        if(response.status != -1){
+                            $scope.flags.error = true;
+                        }else{
+                            $.growl.error({
+                                title: '<i class="fa fa-signal"></i> Network error!',
+                                message: "Please check your internet connection."
+                            });
+                        }
+                    }
+                );
+
+            };
+
         });
 
         APP.controller('PrivateInfoCtrl', function($rootScope, $scope, $http){
@@ -231,7 +280,7 @@
                     return false;
                 }
 
-                // Prepare nnly changed fields
+                // Prepare only changed fields
                 var data = {};
                 for(var attr_name in $scope.data_priv_info){
                     if(form_obj[attr_name].$dirty){

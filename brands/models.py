@@ -48,7 +48,7 @@ class Brand(models.Model):
     )
 
     # --- Fields ---
-    brand_uid   = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True, help_text='Unique ID of a brand which are hard to guess and can be used in urls. ')
+    brand_uid   = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True, editable=False, help_text='Unique ID of a brand which are hard to guess and can be used in urls. ')
     name        = models.CharField(max_length=255, unique=True, db_index=True, help_text='Name of the brand.')
     description = models.TextField(max_length=512, help_text='Short description about the brand. Include keywords for better SEO and keep characters between 150-160.')
 
@@ -68,7 +68,7 @@ class Brand(models.Model):
     deleted     = models.BooleanField(default=False, db_index=True, help_text='If true, it means this brand has been deleted. All operations are stopped from now. Brand does not appears to public. This must be used rarely.')
     disable_claim = models.BooleanField(default=False, help_text='Set true to stop any further claims on this brand. Use this for top known brands or contracted clients.')
 
-    created_by  = models.ForeignKey(User, help_text='User that created this brand. This can be a staff or registered user.')
+    created_by  = models.ForeignKey(User, editable=False, help_text='User that created this brand. This can be a staff or registered user.')
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
 

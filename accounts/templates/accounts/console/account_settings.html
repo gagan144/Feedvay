@@ -228,8 +228,7 @@
 
                 // Post to server
                 $http.post(
-{#                    "{% url 'console_account_settings_basicinfo_update' %}",#}
-                        "/console/account/settings/basic-info/update/",
+                    "{% url 'console_account_settings_basicinfo_update' %}",
                     $.param(data)
                 ).then(
                     function successCallback(response) {
@@ -306,7 +305,7 @@
 
                 // Post to server
                 $http.post(
-                    "/console/account/settings/private-info/update/",
+                    "{% url 'console_account_settings_privinfo_update' %}",
                     $.param(data)
                 ).then(
                     function successCallback(response) {

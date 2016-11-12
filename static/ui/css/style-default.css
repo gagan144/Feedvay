@@ -3,7 +3,7 @@
 /*
  *   Feedvay UI Theme
  *   UI version: INSP - 2.6.2
- *   Created on: 05-11-2016 15:38:34 0
+ *   Created on: 12-11-2016 09:10:18 0
 */
 h1,
 h2,
@@ -8429,6 +8429,10 @@ label > small{
 }
 
 /* ----- Top navbar ----- */
+.top_nav_div{
+  border-bottom-color: #2a94db !important;
+}
+
 .top-navigation .nav > li > a {
   padding: 15px 15px !important;
 }

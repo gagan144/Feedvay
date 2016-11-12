@@ -8430,6 +8430,10 @@ label > small{
 }
 
 /* ----- Top navbar ----- */
+.top_nav_div{
+  border-bottom-color: {{ PRIMARY }} !important;
+}
+
 .top-navigation .nav > li > a {
   padding: 15px 15px !important;
 }

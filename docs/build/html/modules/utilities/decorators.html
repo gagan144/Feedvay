@@ -152,7 +152,7 @@
 <p>General usage decorators.</p>
 <span class="target" id="module-utilities.decorators"></span><dl class="function">
 <dt id="utilities.decorators.registered_user_only">
-<code class="descclassname">utilities.decorators.</code><code class="descname">registered_user_only</code><span class="sig-paren">(</span><em>function</em>, <em>login_url=u'/accounts/login/'</em>, <em>redirect_field_name='next'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/utilities/decorators.html#registered_user_only"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utilities.decorators.registered_user_only" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">utilities.decorators.</code><code class="descname">registered_user_only</code><span class="sig-paren">(</span><em>function</em>, <em>login_url=u'/accounts/login/'</em>, <em>redirect_field_name='next'</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.decorators.registered_user_only" title="Permalink to this definition">¶</a></dt>
 <dd><p>Django view decorator to only allow logged in &#8216;verified&#8217; registered user only.
 In case of check failure, it redirects to login page, otherwise returns 404.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
@@ -160,7 +160,7 @@ In case of check failure, it redirects to login page, otherwise returns 404.</p>
 
 <dl class="function">
 <dt id="utilities.decorators.staff_user_only">
-<code class="descclassname">utilities.decorators.</code><code class="descname">staff_user_only</code><span class="sig-paren">(</span><em>function</em>, <em>login_url='/admin/login/'</em>, <em>redirect_field_name='next'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/utilities/decorators.html#staff_user_only"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utilities.decorators.staff_user_only" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">utilities.decorators.</code><code class="descname">staff_user_only</code><span class="sig-paren">(</span><em>function</em>, <em>login_url='/admin/login/'</em>, <em>redirect_field_name='next'</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.decorators.staff_user_only" title="Permalink to this definition">¶</a></dt>
 <dd><p>Django view decorator to only allow logged in &#8216;staff&#8217; or &#8216;superuser&#8217; users only.
 If user is not logged in, it redirects to login page, otherwise returns 404.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>

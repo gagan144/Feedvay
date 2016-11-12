@@ -152,19 +152,19 @@
 <p>List of database models (MySQL &amp; MongoDb) for watchdog app.</p>
 <span class="target" id="module-watchdog.models"></span><dl class="class">
 <dt id="watchdog.models.ErrorLog">
-<em class="property">class </em><code class="descclassname">watchdog.models.</code><code class="descname">ErrorLog</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/watchdog/models.html#ErrorLog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#watchdog.models.ErrorLog" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">watchdog.models.</code><code class="descname">ErrorLog</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#watchdog.models.ErrorLog" title="Permalink to this definition">¶</a></dt>
 <dd><p>Model to store all system errors occurred during runtime as captured by <a class="reference internal" href="middleware.html#watchdog.middleware.ErrorLogMiddleware" title="watchdog.middleware.ErrorLogMiddleware"><code class="xref py py-class docutils literal"><span class="pre">watchdog.middleware.ErrorLogMiddleware</span></code></a> middleware.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 <dl class="method">
 <dt id="watchdog.models.ErrorLog.clean">
-<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/watchdog/models.html#ErrorLog.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#watchdog.models.ErrorLog.clean" title="Permalink to this definition">¶</a></dt>
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#watchdog.models.ErrorLog.clean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to clean &amp; validate data fields.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
 <dl class="staticmethod">
 <dt id="watchdog.models.ErrorLog.construct_checksum">
-<em class="property">static </em><code class="descname">construct_checksum</code><span class="sig-paren">(</span><em>class_name</em>, <em>message</em>, <em>traceback_text=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/watchdog/models.html#ErrorLog.construct_checksum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#watchdog.models.ErrorLog.construct_checksum" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">construct_checksum</code><span class="sig-paren">(</span><em>class_name</em>, <em>message</em>, <em>traceback_text=None</em><span class="sig-paren">)</span><a class="headerlink" href="#watchdog.models.ErrorLog.construct_checksum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructs a checksum based on class name, error message and traceback text.
 Class name is always used along with traceback text if not null otherwise message.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
@@ -172,7 +172,7 @@ Class name is always used along with traceback text if not null otherwise messag
 
 <dl class="classmethod">
 <dt id="watchdog.models.ErrorLog.post_save">
-<em class="property">classmethod </em><code class="descname">post_save</code><span class="sig-paren">(</span><em>sender</em>, <em>instance</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/watchdog/models.html#ErrorLog.post_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#watchdog.models.ErrorLog.post_save" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">post_save</code><span class="sig-paren">(</span><em>sender</em>, <em>instance</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#watchdog.models.ErrorLog.post_save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Post save trigger for this model. This will will called after the record has
 been created or updated.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
@@ -180,7 +180,7 @@ been created or updated.</p>
 
 <dl class="method">
 <dt id="watchdog.models.ErrorLog.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/watchdog/models.html#ErrorLog.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#watchdog.models.ErrorLog.save" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#watchdog.models.ErrorLog.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pre-save method for this model.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
@@ -189,7 +189,7 @@ been created or updated.</p>
 
 <dl class="class">
 <dt id="watchdog.models.ReportedProblem">
-<em class="property">class </em><code class="descclassname">watchdog.models.</code><code class="descname">ReportedProblem</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/watchdog/models.html#ReportedProblem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#watchdog.models.ReportedProblem" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">watchdog.models.</code><code class="descname">ReportedProblem</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#watchdog.models.ReportedProblem" title="Permalink to this definition">¶</a></dt>
 <dd><p>Model to store errors reported by the users. These do not include errors reported by the system
 however, may be linked to one.</p>
 <p><strong>Points</strong>:</p>
@@ -205,14 +205,14 @@ however, may be linked to one.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 <dl class="method">
 <dt id="watchdog.models.ReportedProblem.clean">
-<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/watchdog/models.html#ReportedProblem.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#watchdog.models.ReportedProblem.clean" title="Permalink to this definition">¶</a></dt>
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#watchdog.models.ReportedProblem.clean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to clean &amp; validate data fields.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
 <dl class="classmethod">
 <dt id="watchdog.models.ReportedProblem.post_save">
-<em class="property">classmethod </em><code class="descname">post_save</code><span class="sig-paren">(</span><em>sender</em>, <em>instance</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/watchdog/models.html#ReportedProblem.post_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#watchdog.models.ReportedProblem.post_save" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">post_save</code><span class="sig-paren">(</span><em>sender</em>, <em>instance</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#watchdog.models.ReportedProblem.post_save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Post save trigger for this model. This will will called after the record has
 been created or updated.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
@@ -220,7 +220,7 @@ been created or updated.</p>
 
 <dl class="method">
 <dt id="watchdog.models.ReportedProblem.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/watchdog/models.html#ReportedProblem.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#watchdog.models.ReportedProblem.save" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#watchdog.models.ReportedProblem.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Post save trigger for this model. This will will called after the record has
 been created or updated.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
@@ -230,7 +230,7 @@ been created or updated.</p>
 
 <dl class="class">
 <dt id="watchdog.models.Suggestion">
-<em class="property">class </em><code class="descclassname">watchdog.models.</code><code class="descname">Suggestion</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/watchdog/models.html#Suggestion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#watchdog.models.Suggestion" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">watchdog.models.</code><code class="descname">Suggestion</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#watchdog.models.Suggestion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Model to store suggestions made by user for various areas in the system.
 Suggestion is not an error, but rather an area of improvement that user
 feels must be present.</p>
@@ -243,14 +243,14 @@ feels must be present.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 <dl class="method">
 <dt id="watchdog.models.Suggestion.clean">
-<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/watchdog/models.html#Suggestion.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#watchdog.models.Suggestion.clean" title="Permalink to this definition">¶</a></dt>
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#watchdog.models.Suggestion.clean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to clean &amp; validate data fields.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
 <dl class="classmethod">
 <dt id="watchdog.models.Suggestion.post_save">
-<em class="property">classmethod </em><code class="descname">post_save</code><span class="sig-paren">(</span><em>sender</em>, <em>instance</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/watchdog/models.html#Suggestion.post_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#watchdog.models.Suggestion.post_save" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">post_save</code><span class="sig-paren">(</span><em>sender</em>, <em>instance</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#watchdog.models.Suggestion.post_save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Post save trigger for this model. This will will called after the record has
 been created or updated.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
@@ -258,7 +258,7 @@ been created or updated.</p>
 
 <dl class="method">
 <dt id="watchdog.models.Suggestion.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/watchdog/models.html#Suggestion.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#watchdog.models.Suggestion.save" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#watchdog.models.Suggestion.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pre-save method for this model.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>

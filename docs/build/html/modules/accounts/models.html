@@ -155,7 +155,7 @@
 <p>List of database models (MySQL &amp; MongoDb) for accounts app.</p>
 <span class="target" id="module-accounts.models"></span><dl class="class">
 <dt id="accounts.models.RegisteredUser">
-<em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">RegisteredUser</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#RegisteredUser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.RegisteredUser" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">RegisteredUser</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.RegisteredUser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extension of django <code class="xref py py-class docutils literal"><span class="pre">django.contrib.auth.models.User</span></code> model that maintains all public user
 information. For every public user, a record is created with reference to &#8216;User&#8217; model along with
 other attributes such as mode of registration, user personal settings etc.</p>
@@ -199,14 +199,14 @@ However, you can update this model without any intervention of &#8216;User&#8217
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 <dl class="method">
 <dt id="accounts.models.RegisteredUser.clean">
-<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#RegisteredUser.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.RegisteredUser.clean" title="Permalink to this definition">¶</a></dt>
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.RegisteredUser.clean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to clean &amp; validate data fields.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
 <dl class="staticmethod">
 <dt id="accounts.models.RegisteredUser.construct_username">
-<em class="property">static </em><code class="descname">construct_username</code><span class="sig-paren">(</span><em>country_tel_code</em>, <em>mobile_no</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#RegisteredUser.construct_username"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.RegisteredUser.construct_username" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">construct_username</code><span class="sig-paren">(</span><em>country_tel_code</em>, <em>mobile_no</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.RegisteredUser.construct_username" title="Permalink to this definition">¶</a></dt>
 <dd><p>Static method to create actual database username by concatenating
 country telephone code and 10-digit mobile number</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -229,7 +229,7 @@ country telephone code and 10-digit mobile number</p>
 
 <dl class="classmethod">
 <dt id="accounts.models.RegisteredUser.post_save">
-<em class="property">classmethod </em><code class="descname">post_save</code><span class="sig-paren">(</span><em>sender</em>, <em>instance</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#RegisteredUser.post_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.RegisteredUser.post_save" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">post_save</code><span class="sig-paren">(</span><em>sender</em>, <em>instance</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.RegisteredUser.post_save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Post save trigger for this model. This will be called after the record has
 been created or updated.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
@@ -237,14 +237,14 @@ been created or updated.</p>
 
 <dl class="method">
 <dt id="accounts.models.RegisteredUser.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#RegisteredUser.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.RegisteredUser.save" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.RegisteredUser.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pre-save method for this model.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="accounts.models.RegisteredUser.set_password">
-<code class="descname">set_password</code><span class="sig-paren">(</span><em>new_password</em>, <em>send_owls=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#RegisteredUser.set_password"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.RegisteredUser.set_password" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_password</code><span class="sig-paren">(</span><em>new_password</em>, <em>send_owls=True</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.RegisteredUser.set_password" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to set a registered user password and save it.
 This also sends any owls (Email or SMS) if required. Any owls related errors are silently ignored.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -279,13 +279,13 @@ before changing as per your use case for security reasons.</p>
 
 <dl class="method">
 <dt id="accounts.models.RegisteredUser.trans_registered">
-<code class="descname">trans_registered</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#RegisteredUser.trans_registered"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.RegisteredUser.trans_registered" title="Permalink to this definition">¶</a></dt>
+<code class="descname">trans_registered</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.RegisteredUser.trans_registered" title="Permalink to this definition">¶</a></dt>
 <dd><p>User has registered. Status is transitioned from <code class="docutils literal"><span class="pre">lead</span></code> to <code class="docutils literal"><span class="pre">verification_pending</span></code>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="accounts.models.RegisteredUser.trans_verification_completed">
-<code class="descname">trans_verification_completed</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#RegisteredUser.trans_verification_completed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.RegisteredUser.trans_verification_completed" title="Permalink to this definition">¶</a></dt>
+<code class="descname">trans_verification_completed</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.RegisteredUser.trans_verification_completed" title="Permalink to this definition">¶</a></dt>
 <dd><p>User has verified himself. Status is transitioned from <code class="docutils literal"><span class="pre">verification_pending</span></code> to <code class="docutils literal"><span class="pre">verified</span></code>.</p>
 </dd></dl>
 
@@ -293,7 +293,7 @@ before changing as per your use case for security reasons.</p>
 
 <dl class="class">
 <dt id="accounts.models.UserProfile">
-<em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserProfile</code><span class="sig-paren">(</span><em>*args</em>, <em>**values</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserProfile</code><span class="sig-paren">(</span><em>*args</em>, <em>**values</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserProfile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mongodb model to store registered user information. This model includes wide variety
 of user related attributes.</p>
 <p><strong>Attribute organisation</strong>:
@@ -353,7 +353,7 @@ present in &#8216;list_attributes&#8217;. Model will not save until all required
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 <dl class="class">
 <dt id="accounts.models.UserProfile.DetailedAttribute">
-<em class="property">class </em><code class="descname">DetailedAttribute</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile.DetailedAttribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile.DetailedAttribute" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">DetailedAttribute</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserProfile.DetailedAttribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mongodb embedded document to store an attribute in detail. This not only includes attribute name and value,
 but also other meta information such as active, last_updated_on etc.</p>
 <div class="admonition warning">
@@ -365,7 +365,7 @@ but also other meta information such as active, last_updated_on etc.</p>
 
 <dl class="class">
 <dt id="accounts.models.UserProfile.UserAttributes">
-<em class="property">class </em><code class="descclassname">UserProfile.</code><code class="descname">UserAttributes</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile.UserAttributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile.UserAttributes" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">UserProfile.</code><code class="descname">UserAttributes</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserProfile.UserAttributes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mongodb embedded document for <a class="reference internal" href="#accounts.models.UserProfile" title="accounts.models.UserProfile"><code class="xref py py-class docutils literal"><span class="pre">accounts.models.UserProfile</span></code></a> model.
 It is this document that stores user attributes in key-value pairs.</p>
 <div class="admonition note">
@@ -389,7 +389,7 @@ so <strong>DO NOT</strong> use them in queries.</p>
 
 <dl class="method">
 <dt id="accounts.models.UserProfile.add_update_attribute">
-<code class="descclassname">UserProfile.</code><code class="descname">add_update_attribute</code><span class="sig-paren">(</span><em>name</em>, <em>value</em>, <em>auto_save=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile.add_update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile.add_update_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">UserProfile.</code><code class="descname">add_update_attribute</code><span class="sig-paren">(</span><em>name</em>, <em>value</em>, <em>auto_save=True</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserProfile.add_update_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to add new attribute if it does not exists or update an attribute if it is not locked.
 An attribute will automatically be revived if found inactive.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -414,7 +414,7 @@ An attribute will automatically be revived if found inactive.</p>
 
 <dl class="method">
 <dt id="accounts.models.UserProfile.delete_attribute">
-<code class="descclassname">UserProfile.</code><code class="descname">delete_attribute</code><span class="sig-paren">(</span><em>name</em>, <em>auto_save=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile.delete_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile.delete_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">UserProfile.</code><code class="descname">delete_attribute</code><span class="sig-paren">(</span><em>name</em>, <em>auto_save=True</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserProfile.delete_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to delete an attribute, that is mark attribute active as false.
 An already deleted (inactive) attribute will again be marked inactive.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -437,8 +437,16 @@ An already deleted (inactive) attribute will again be marked inactive.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="accounts.models.UserProfile.get_meta_dict">
+<code class="descclassname">UserProfile.</code><code class="descname">get_meta_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserProfile.get_meta_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method that returns dictionary of nested objects with key as attribute name and
+value as dictionary object containing information for that attribute.
+:return: Dictionary of format {&#8220;&lt;attribute_name&#8221;&gt;: { &lt;information dict&gt; },  }</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="accounts.models.UserProfile.lock_attribute">
-<code class="descclassname">UserProfile.</code><code class="descname">lock_attribute</code><span class="sig-paren">(</span><em>name</em>, <em>auto_save=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile.lock_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile.lock_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">UserProfile.</code><code class="descname">lock_attribute</code><span class="sig-paren">(</span><em>name</em>, <em>auto_save=True</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserProfile.lock_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to lock an attribute. Locking an attribute will prevent any updation or deletion of an attribute.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -455,18 +463,19 @@ An already deleted (inactive) attribute will again be marked inactive.</p>
 </tr>
 </tbody>
 </table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="accounts.models.UserProfile.save">
-<code class="descclassname">UserProfile.</code><code class="descname">save</code><span class="sig-paren">(</span><em>complete_save=True</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile.save" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">UserProfile.</code><code class="descname">save</code><span class="sig-paren">(</span><em>complete_save=True</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserProfile.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pre-save method for this model.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="accounts.models.UserProfile.unlock_attribute">
-<code class="descclassname">UserProfile.</code><code class="descname">unlock_attribute</code><span class="sig-paren">(</span><em>name</em>, <em>auto_save=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserProfile.unlock_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserProfile.unlock_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">UserProfile.</code><code class="descname">unlock_attribute</code><span class="sig-paren">(</span><em>name</em>, <em>auto_save=True</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserProfile.unlock_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to unlock an attribute and release it from locked state.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -483,13 +492,14 @@ An already deleted (inactive) attribute will again be marked inactive.</p>
 </tr>
 </tbody>
 </table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="accounts.models.UserSession">
-<em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserSession</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserSession"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserSession" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserSession</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserSession" title="Permalink to this definition">¶</a></dt>
 <dd><p>Model to link user to its session. Currently, django does not provide direct linking of
 user to its sessions. On login, a session is created and send session_id to the browser
 in the cookie, which is received back in the request from where server resolve session.
@@ -501,7 +511,7 @@ a &#8216;logged in&#8217; signal which is captured and an entry is made with use
 
 <dl class="class">
 <dt id="accounts.models.UserToken">
-<em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserToken</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserToken"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserToken" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserToken</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserToken" title="Permalink to this definition">¶</a></dt>
 <dd><p>Model to store tokens issued to a registered user for various purposes such as registration.</p>
 <p><strong>Points</strong>:</p>
 <blockquote>
@@ -520,21 +530,21 @@ a &#8216;logged in&#8217; signal which is captured and an entry is made with use
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 <dl class="method">
 <dt id="accounts.models.UserToken.clean">
-<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserToken.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserToken.clean" title="Permalink to this definition">¶</a></dt>
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserToken.clean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to clean &amp; validate data fields.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="accounts.models.UserToken.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserToken.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserToken.save" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserToken.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pre-save method for this model.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
 <dl class="staticmethod">
 <dt id="accounts.models.UserToken.verify_user_token">
-<em class="property">static </em><code class="descname">verify_user_token</code><span class="sig-paren">(</span><em>username</em>, <em>purpose</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#UserToken.verify_user_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.UserToken.verify_user_token" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">verify_user_token</code><span class="sig-paren">(</span><em>username</em>, <em>purpose</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserToken.verify_user_token" title="Permalink to this definition">¶</a></dt>
 <dd><p>Static method to verify token given a username and value.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -560,7 +570,7 @@ a &#8216;logged in&#8217; signal which is captured and an entry is made with use
 
 <dl class="function">
 <dt id="accounts.models.force_logout_user">
-<code class="descclassname">accounts.models.</code><code class="descname">force_logout_user</code><span class="sig-paren">(</span><em>user_id</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#force_logout_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.force_logout_user" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">accounts.models.</code><code class="descname">force_logout_user</code><span class="sig-paren">(</span><em>user_id</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.force_logout_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to forcefully logout a user from all web login only.
 Technically, this method finds all session references of a user from <a class="reference internal" href="#accounts.models.UserSession" title="accounts.models.UserSession"><code class="xref py py-class docutils literal"><span class="pre">accounts.models.UserSession</span></code></a>.
 and delete them from SessionStore one-by-one.</p>
@@ -579,7 +589,7 @@ and delete them from SessionStore one-by-one.</p>
 
 <dl class="function">
 <dt id="accounts.models.user_logged_in_handler">
-<code class="descclassname">accounts.models.</code><code class="descname">user_logged_in_handler</code><span class="sig-paren">(</span><em>sender</em>, <em>request</em>, <em>user</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#user_logged_in_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.user_logged_in_handler" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">accounts.models.</code><code class="descname">user_logged_in_handler</code><span class="sig-paren">(</span><em>sender</em>, <em>request</em>, <em>user</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.user_logged_in_handler" title="Permalink to this definition">¶</a></dt>
 <dd><p>User login signal handler that creates an entry in <code class="xref py py-class docutils literal"><span class="pre">accounts.model.UserSession</span></code> to
 map the session to current user.</p>
 <p>Here session has already been created, hence it can be easily accessed from <code class="docutils literal"><span class="pre">request.session</span></code>.</p>
@@ -588,7 +598,7 @@ map the session to current user.</p>
 
 <dl class="function">
 <dt id="accounts.models.user_logged_out_handler">
-<code class="descclassname">accounts.models.</code><code class="descname">user_logged_out_handler</code><span class="sig-paren">(</span><em>sender</em>, <em>request</em>, <em>user</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/accounts/models.html#user_logged_out_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#accounts.models.user_logged_out_handler" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">accounts.models.</code><code class="descname">user_logged_out_handler</code><span class="sig-paren">(</span><em>sender</em>, <em>request</em>, <em>user</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.user_logged_out_handler" title="Permalink to this definition">¶</a></dt>
 <dd><p>User logout signal handler that deletes user-session entry from <code class="xref py py-class docutils literal"><span class="pre">accounts.model.UserSession</span></code>.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>

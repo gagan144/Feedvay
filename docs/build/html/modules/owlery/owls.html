@@ -168,14 +168,14 @@ independent process to send them.</li>
 </dl>
 <span class="target" id="module-owlery.owls"></span><dl class="class">
 <dt id="owlery.owls.EmailOwl">
-<em class="property">class </em><code class="descclassname">owlery.owls.</code><code class="descname">EmailOwl</code><a class="reference internal" href="../../_modules/owlery/owls.html#EmailOwl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.owls.EmailOwl" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">owlery.owls.</code><code class="descname">EmailOwl</code><a class="headerlink" href="#owlery.owls.EmailOwl" title="Permalink to this definition">¶</a></dt>
 <dd><p>Owl to handle all emails. This class defines various email template that can used to send email.
 All methods composes email according to the parameters and store them in <a class="reference internal" href="models.html#owlery.models.EmailMessage" title="owlery.models.EmailMessage"><code class="xref py py-class docutils literal"><span class="pre">owlery.models.EmailMessage</span></code></a>
 from where they are picked up by a cron process for dispatching.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 <dl class="staticmethod">
 <dt id="owlery.owls.EmailOwl.send_password_change_success">
-<em class="property">static </em><code class="descname">send_password_change_success</code><span class="sig-paren">(</span><em>user</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/owls.html#EmailOwl.send_password_change_success"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.owls.EmailOwl.send_password_change_success" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">send_password_change_success</code><span class="sig-paren">(</span><em>user</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.EmailOwl.send_password_change_success" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends password change success email to the user.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -196,7 +196,7 @@ from where they are picked up by a cron process for dispatching.</p>
 
 <dl class="staticmethod">
 <dt id="owlery.owls.EmailOwl.send_password_reset">
-<em class="property">static </em><code class="descname">send_password_reset</code><span class="sig-paren">(</span><em>email_address</em>, <em>user_token</em>, <em>username=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/owls.html#EmailOwl.send_password_reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.owls.EmailOwl.send_password_reset" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">send_password_reset</code><span class="sig-paren">(</span><em>email_address</em>, <em>user_token</em>, <em>username=None</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.EmailOwl.send_password_reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends a &#8216;password reset/recovery&#8217; email containing verification code.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -221,7 +221,7 @@ from where they are picked up by a cron process for dispatching.</p>
 
 <dl class="class">
 <dt id="owlery.owls.SmsOwl">
-<em class="property">class </em><code class="descclassname">owlery.owls.</code><code class="descname">SmsOwl</code><a class="reference internal" href="../../_modules/owlery/owls.html#SmsOwl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.owls.SmsOwl" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">owlery.owls.</code><code class="descname">SmsOwl</code><a class="headerlink" href="#owlery.owls.SmsOwl" title="Permalink to this definition">¶</a></dt>
 <dd><p>Owl to handle all sms. This class defines various SMS templates that can be send in an <strong>asynchronous</strong>
 manner.</p>
 <p>Following is the complete SMS workflow:</p>
@@ -236,7 +236,7 @@ and sends the message.</li>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 <dl class="staticmethod">
 <dt id="owlery.owls.SmsOwl.send_password_change_success">
-<em class="property">static </em><code class="descname">send_password_change_success</code><span class="sig-paren">(</span><em>mobile_no</em>, <em>username=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/owls.html#SmsOwl.send_password_change_success"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.owls.SmsOwl.send_password_change_success" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">send_password_change_success</code><span class="sig-paren">(</span><em>mobile_no</em>, <em>username=None</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.SmsOwl.send_password_change_success" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends a password change success SMS to the user.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -258,7 +258,7 @@ and sends the message.</li>
 
 <dl class="staticmethod">
 <dt id="owlery.owls.SmsOwl.send_password_reset">
-<em class="property">static </em><code class="descname">send_password_reset</code><span class="sig-paren">(</span><em>mobile_no</em>, <em>user_token</em>, <em>username=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/owls.html#SmsOwl.send_password_reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.owls.SmsOwl.send_password_reset" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">send_password_reset</code><span class="sig-paren">(</span><em>mobile_no</em>, <em>user_token</em>, <em>username=None</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.SmsOwl.send_password_reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends a &#8216;password reset/recovery&#8217; SMS containing verification code.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -281,7 +281,7 @@ and sends the message.</li>
 
 <dl class="staticmethod">
 <dt id="owlery.owls.SmsOwl.send_reg_verification">
-<em class="property">static </em><code class="descname">send_reg_verification</code><span class="sig-paren">(</span><em>mobile_no</em>, <em>user_token</em>, <em>username=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/owlery/owls.html#SmsOwl.send_reg_verification"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#owlery.owls.SmsOwl.send_reg_verification" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">send_reg_verification</code><span class="sig-paren">(</span><em>mobile_no</em>, <em>user_token</em>, <em>username=None</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.SmsOwl.send_reg_verification" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends a &#8216;registration verification&#8217; SMS containing verification code.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />

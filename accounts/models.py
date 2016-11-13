@@ -51,7 +51,7 @@ class RegisteredUser(models.Model):
         - Registration can be multiple times. Only last registration information is kept for now.
 
 
-    **State chart diagram for state machine**:
+    **State chart diagram for user status**:
 
         .. image:: ../../_static/accounts/registereduser_statechart.jpg
 

@@ -14,6 +14,7 @@ Apps and modules
    modules/watchdog/index
    modules/owlery/index
    modules/utilities/index
+   modules/brands/index
    modules/management_commands/index
    modules/console/index
 

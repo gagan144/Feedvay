@@ -34,6 +34,10 @@ class Brand(models.Model):
         - If verification fails, it is mandatory to provide reason. This reason will be shown to the user.
         - **Claims** on the brand can disabled if brand is known such as top brands or contracted clients.
 
+    **State chart diagram for brand status**:
+
+        .. image:: ../../_static/brands/brand_status_statechart.jpg
+
     **Authors**: Gagandeep Singh
     """
     # --- Enums ---

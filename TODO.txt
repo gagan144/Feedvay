@@ -14,7 +14,6 @@
     - Suggestions Display view
 
 - Brands
-    - Brand active definition. Mark brand delete? What to disable when brand is marked inactive.
 
 
 - Data privacy conventions (public, encypted, client shared etc)

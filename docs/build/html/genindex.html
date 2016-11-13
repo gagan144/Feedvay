@@ -89,6 +89,7 @@
 <li class="toctree-l1"><a class="reference internal" href="modules/watchdog/index.html">Watchdog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/owlery/index.html">Owlery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/utilities/index.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/brands/index.html">Brands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/management_commands/index.html">Management Commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/console/index.html">Console</a></li>
 </ul>
@@ -172,14 +173,18 @@
   <dt><a href="modules/accounts/models.html#module-accounts.models">accounts.models (module)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/accounts/utils.html#module-accounts.utils">accounts.utils (module)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/accounts/views.html#module-accounts.views">accounts.views (module)</a>
+  </dt>
+
+      
+  <dt><a href="modules/brands/models.html#brands.models.Brand.add_owner">add_owner() (brands.models.Brand method)</a>
   </dt>
 
       
@@ -198,6 +203,20 @@
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/accounts/forms.html#accounts.forms.BasicInfoForm">BasicInfoForm (class in accounts.forms)</a>
+  </dt>
+
+      
+  <dt><a href="modules/brands/models.html#brands.models.Brand">Brand (class in brands.models)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="modules/brands/models.html#brands.models.BrandOwner">BrandOwner (class in brands.models)</a>
+  </dt>
+
+      
+  <dt><a href="modules/brands/models.html#module-brands.models">brands.models (module)</a>
   </dt>
 
   </dl></td>
@@ -221,6 +240,14 @@
       <dd><dl>
         
   <dt><a href="modules/accounts/models.html#accounts.models.UserToken.clean">(accounts.models.UserToken method)</a>
+  </dt>
+
+        
+  <dt><a href="modules/brands/models.html#brands.models.Brand.clean">(brands.models.Brand method)</a>
+  </dt>
+
+        
+  <dt><a href="modules/brands/models.html#brands.models.BrandOwner.clean">(brands.models.BrandOwner method)</a>
   </dt>
 
         
@@ -280,6 +307,10 @@
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="modules/brands/models.html#brands.models.Brand.delete_owner">delete_owner() (brands.models.Brand method)</a>
+  </dt>
+
       
   <dt><a href="modules/main/views.html#feedvay.views.docs">docs() (in module feedvay.views)</a>
   </dt>
@@ -385,6 +416,12 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
+  <dt><a href="modules/brands/models.html#brands.models.Brand.mark_deleted">mark_deleted() (brands.models.Brand method)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
   <dt><a href="modules/owlery/models.html#owlery.models.EmailMessage.mark_send">mark_send() (owlery.models.EmailMessage method)</a>
   </dt>
 
@@ -408,6 +445,10 @@
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/owlery/owls.html#module-owlery.owls">owlery.owls (module)</a>
+  </dt>
+
+      
+  <dt><a href="modules/brands/models.html#brands.models.Brand.owners">owners (brands.models.Brand attribute)</a>
   </dt>
 
   </dl></td>
@@ -532,6 +573,14 @@
   </dt>
 
         
+  <dt><a href="modules/brands/models.html#brands.models.Brand.save">(brands.models.Brand method)</a>
+  </dt>
+
+        
+  <dt><a href="modules/brands/models.html#brands.models.BrandOwner.save">(brands.models.BrandOwner method)</a>
+  </dt>
+
+        
   <dt><a href="modules/owlery/models.html#owlery.models.EmailMessage.save">(owlery.models.EmailMessage method)</a>
   </dt>
 
@@ -612,10 +661,22 @@
   <dt><a href="modules/accounts/models.html#accounts.models.RegisteredUser.trans_registered">trans_registered() (accounts.models.RegisteredUser method)</a>
   </dt>
 
+      
+  <dt><a href="modules/brands/models.html#brands.models.Brand.trans_revise_verification">trans_revise_verification() (brands.models.Brand method)</a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/accounts/models.html#accounts.models.RegisteredUser.trans_verification_completed">trans_verification_completed() (accounts.models.RegisteredUser method)</a>
+  </dt>
+
+      
+  <dt><a href="modules/brands/models.html#brands.models.Brand.trans_verification_failed">trans_verification_failed() (brands.models.Brand method)</a>
+  </dt>
+
+      
+  <dt><a href="modules/brands/models.html#brands.models.Brand.trans_verified">trans_verified() (brands.models.Brand method)</a>
   </dt>
 
   </dl></td>

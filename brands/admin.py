@@ -5,13 +5,36 @@ from django.contrib import admin
 
 from brands.models import *
 
+class BrandOwnerInline(admin.TabularInline):
+    """
+    Django admin inline model for :class:`brands.models.BrandOwner`.
+
+    **Authors**: Gagandeep Singh
+    """
+    model = BrandOwner
+    can_delete = False
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = [field.name for field in self.model._meta.fields]
+        return readonly_fields
+
+    def has_add_permission(self, request):
+        return False
+
+
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
+    """
+    Django admin model for :class;`brands.models.Brand`.
+
+    **Authors**: Gagandeep Singh
+    """
     list_display = ('name', 'brand_uid', 'status', 'active', 'deleted', 'modified_on')
     list_filter = ('status', 'active', 'deleted', 'created_on')
     raw_id_fields = ('created_by', )
     search_fields = ('name', 'brand_uid')
     list_per_page = 20
+    inlines = [BrandOwnerInline]
 
     fieldsets = (
         (None, {
@@ -37,6 +60,11 @@ class BrandAdmin(admin.ModelAdmin):
                 readonly_fields.remove('active')
 
         return readonly_fields
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        obj.save()
 
     def delete_model(self, request, obj):
         obj.deleted = True

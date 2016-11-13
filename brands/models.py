@@ -72,8 +72,17 @@ class Brand(models.Model):
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
 
+    @property
+    def owners(self):
+        """
+        Model property to return all brand ownership (:class:`brands.models.BrandOwner`).
+
+        **Authors**: Gagandeep Singh
+        """
+        return self.brandowner_set.all()
+
     def __unicode__(self):
-        return self.name
+        return "{}: {}".format(self.id, self.name)
 
     def mark_deleted(self):
         """
@@ -82,6 +91,8 @@ class Brand(models.Model):
         You cannot edit this brand and its entities however, you can view them.
 
         Deleted brand is not shown to the public.
+
+        **Authors**: Gagandeep Singh
         """
 
         self.deleted = True
@@ -93,6 +104,8 @@ class Brand(models.Model):
     def trans_verified(self):
         """
         Transition edge to transit brand status to verified.
+
+        **Authors**: Gagandeep Singh
         """
         self.active = True
 
@@ -102,20 +115,57 @@ class Brand(models.Model):
         """
         Transition edge for brand verification failed. A reason must be provided stating
         why this brand was failed.
+
+        **Authors**: Gagandeep Singh
         """
         self.active = False
         self.failed_reason = reason
 
     @fsm_log_by
     @transition(field=status, source=ST_VERF_FAILED, target=ST_VERF_PENDING)
-    def trans_verification_failed(self):
+    def trans_revise_verification(self):
         """
         Transition edge to revise brand verification. This means brand has been editted and
         now again queued for verification.
+
+        **Authors**: Gagandeep Singh
         """
         self.active = False
 
     # --- /Transitions ---
+
+    # --- Owner management ---
+    def add_owner(self, reg_user):
+        """
+        Method to add new registered user as owner to this brand.
+        :param reg_user: :class:`accounts.models.RegisteredUser` instance
+        :return: :class:`brands.models.BrandOwner` instance if successfully created.
+
+        Throws exception: IntegrityError if user is already an owner.
+
+        **Authors**: Gagandeep Singh
+        """
+        ownership = BrandOwner.objects.create(
+            brand = self,
+            registered_user = reg_user
+        )
+
+        return ownership
+
+    def delete_owner(self, reg_user):
+        """
+        Method to disassociate (delete) a registered user from brand ownership.
+
+        :param reg_user: :class:`accounts.models.RegisteredUser` instance
+
+        Throws exception: DoesNotExist(BrandOwner) if user is not an owner of this brand.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        BrandOwner.objects.get(brand=self, registered_user=reg_user).delete()
+
+    # --- /Owner management ---
 
     def clean(self):
         """
@@ -173,6 +223,9 @@ class BrandOwner(models.Model):
 
     class Meta:
         unique_together = ('brand', 'registered_user')
+
+    def __unicode__(self):
+        return "{} <-> {}".format(self.brand.name, self.registered_user)
 
 
     def clean(self):

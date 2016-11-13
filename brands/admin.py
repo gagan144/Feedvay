@@ -43,6 +43,9 @@ class BrandAdmin(admin.ModelAdmin):
         ('Status', {
             'fields': ('status', 'failed_reason', 'active', 'deleted', 'disable_claim')
         }),
+        ('Customizations', {
+            'fields': ('logo', )
+        }),
         ('Miscellaneous', {
             'fields': ('created_by', 'created_on', 'modified_on')
         }),

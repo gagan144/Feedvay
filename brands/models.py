@@ -15,6 +15,12 @@ import uuid
 
 from accounts.models import RegisteredUser
 
+def upload_brand_logo_to(instance, filename):
+    return "brands/{brand_uid}/logo__{filename}".format(
+        brand_uid = str(instance.brand_uid),
+        filename = filename.replace(" ","_")
+    )
+
 class Brand(models.Model):
     """
     Model to capture brand details. A brand is a broad term that includes all types of brands,
@@ -59,7 +65,7 @@ class Brand(models.Model):
     owners      = models.ManyToManyField(RegisteredUser, through='BrandOwner', help_text='Owners of this brand.')
 
     # Customization
-    # logo
+    logo        = models.ImageField(upload_to=upload_brand_logo_to, help_text='Brand logo of size 300x100 pixels.')
     # icon
     # banner
     # splashscreen
@@ -75,15 +81,6 @@ class Brand(models.Model):
     created_by  = models.ForeignKey(User, editable=False, help_text='User that created this brand. This can be a staff or registered user.')
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
-
-    @property
-    def owners(self):
-        """
-        Model property to return all brand ownership (:class:`brands.models.BrandOwner`).
-
-        **Authors**: Gagandeep Singh
-        """
-        return self.brandowner_set.all()
 
     def __unicode__(self):
         return "{}: {}".format(self.id, self.name)

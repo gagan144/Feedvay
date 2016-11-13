@@ -17,7 +17,12 @@ django-fsm-log
 pyjwt
 django-recaptcha
 jsonobject
+boto
+django-storages
+# Pillow
 
-# Documentation
+
+
+# ----- Documentation -----
 # sphinx
 # sphinx_rtd_theme

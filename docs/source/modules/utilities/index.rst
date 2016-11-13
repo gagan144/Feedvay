@@ -12,4 +12,5 @@ Contents
        api_utils
        decorators
        theme
+       custom_storages
 

@@ -4,6 +4,11 @@
 from django.conf import settings
 from storages.backends.s3boto import S3BotoStorage
 
-class MediaStorage(S3BotoStorage):
-        location = settings.MEDIAFILES_LOCATION
 
+class MediaStorage(S3BotoStorage):
+    """
+    Amazon Web Services (AWS) S3 Storage for media files.
+
+    **Authors**: Gagandeep Singh
+    """
+    location = settings.MEDIAFILES_LOCATION

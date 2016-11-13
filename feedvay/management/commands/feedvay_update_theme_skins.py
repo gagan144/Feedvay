@@ -30,7 +30,7 @@ class Command(BaseCommand):
 
         PATH = os.path.join(settings.BASE_DIR, "static/ui/css/style-default.css")
 
-        user_input = raw_input("This will override '{}' and all brand skin files. Are you sure (y/n)?".format(PATH))
+        user_input = raw_input("Are you sure (y/n)? This will override '{}' and all brand skin files: ".format(PATH))
         if user_input in ['Y', 'y']:
             # (1) Feedvay signature theme skin.
             self.stdout.write(self.style.SUCCESS('Rendering default project theme...'))

@@ -4,19 +4,34 @@
 from django.shortcuts import render_to_response
 from django.utils import timezone
 
+from jsonobject import *
+
+class UiTheme(JsonObject):
+    """
+    Json wrapper class to define an UI theme.
+
+    **Authors**: Gagandeep Singh
+    """
+    _allow_dynamic_properties = False
+
+    primary     = StringProperty(required=True)
+    primary_dark = StringProperty(required=True)
+    primary_disabled = StringProperty(required=True)
+
+
 def render_skin(custom, clr_primary, clr_prim_hover, clr_prim_disabled):
     """
     Method to render theme file with given parameters. This methods renders
     '/templates/theme/inspinia-style-template.css' theme templates using the
     parameters and return string content of the file.
 
-    :param custom: False if render for Feedvay else True
+    :param custom: (bool) False if render for Feedvay else True
     :param clr_primary: Main primary color
     :param clr_prim_hover: Darker color of primary used for mouse hover
     :param clr_prim_disabled: Transparent color of primary used for disabled components
     :return: Content of theme file (String)
 
-
+    **Authors**: Gagandeep Singh
     """
     data = {
         "custom": custom,

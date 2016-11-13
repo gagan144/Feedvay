@@ -8472,3 +8472,21 @@ div.error{
   color: #cc5965;
 }
 /* ----- /Validations ----- */
+
+/* ----- Bootstrap radio/checkbox ----- */
+.checkbox-primary input[type="checkbox"]:checked + label::before,
+.checkbox-primary input[type="radio"]:checked + label::before {
+  background-color: {{ PRIMARY }};
+  border-color: {{ PRIMARY }};
+}
+
+.radio-primary input[type="radio"] + label::after {
+  background-color: {{ PRIMARY }};
+}
+.radio-primary input[type="radio"]:checked + label::before {
+  border-color: {{ PRIMARY }};
+}
+.radio-primary input[type="radio"]:checked + label::after {
+  background-color: {{ PRIMARY }};
+}
+/* ----- /Bootstrap radio/checkbox ----- */

@@ -44,7 +44,7 @@ class BrandAdmin(admin.ModelAdmin):
             'fields': ('status', 'failed_reason', 'active', 'deleted', 'disable_claim')
         }),
         ('Customizations', {
-            'fields': ('logo', )
+            'fields': ('logo', 'ui_theme', 'theme_file')
         }),
         ('Miscellaneous', {
             'fields': ('created_by', 'created_on', 'modified_on')
@@ -65,9 +65,14 @@ class BrandAdmin(admin.ModelAdmin):
         return readonly_fields
 
     def save_model(self, request, obj, form, change):
-        if not change:
+        update_theme = False
+        if change:
+            if form.changed_data.__contains__('ui_theme'):
+                update_theme = True
+        else:
             obj.created_by = request.user
-        obj.save()
+
+        obj.save(update_theme=update_theme)
 
     def delete_model(self, request, obj):
         obj.deleted = True

@@ -3,7 +3,7 @@
 /*
  *   Feedvay UI Theme
  *   UI version: INSP - 2.6.2
- *   Created on: 12-11-2016 09:10:18 0
+ *   Created on: 13-11-2016 11:23:47 0
 */
 h1,
 h2,
@@ -8471,3 +8471,21 @@ div.error{
   color: #cc5965;
 }
 /* ----- /Validations ----- */
+
+/* ----- Bootstrap radio/checkbox ----- */
+.checkbox-primary input[type="checkbox"]:checked + label::before,
+.checkbox-primary input[type="radio"]:checked + label::before {
+  background-color: #2a94db;
+  border-color: #2a94db;
+}
+
+.radio-primary input[type="radio"] + label::after {
+  background-color: #2a94db;
+}
+.radio-primary input[type="radio"]:checked + label::before {
+  border-color: #2a94db;
+}
+.radio-primary input[type="radio"]:checked + label::after {
+  background-color: #2a94db;
+}
+/* ----- /Bootstrap radio/checkbox ----- */

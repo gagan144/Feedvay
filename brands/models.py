@@ -5,18 +5,26 @@ from __future__ import unicode_literals
 
 
 from django.db import models
-from django_extensions.db.fields import ShortUUIDField
+from django_mysql.models import JSONField
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.contrib.auth.models import User
 import uuid
+import StringIO
+from django.core.files.uploadedfile import InMemoryUploadedFile,SimpleUploadedFile
 
 from accounts.models import RegisteredUser
+from utilities.theme import UiTheme, render_skin
 
 def upload_brand_logo_to(instance, filename):
     return "brands/{brand_uid}/logo__{filename}".format(
+        brand_uid = str(instance.brand_uid),
+        filename = filename.replace(" ","_")
+    )
+def upload_brand_theme_file_to(instance, filename):
+    return "brands/{brand_uid}/{filename}".format(
         brand_uid = str(instance.brand_uid),
         filename = filename.replace(" ","_")
     )
@@ -69,9 +77,10 @@ class Brand(models.Model):
     # icon
     # banner
     # splashscreen
-    # theme_colors = JOSN
+    ui_theme    = JSONField(default=None, blank=True, null=True, help_text="Custom UI theme for this brand. This must be of format 'utilities.theme.UiTheme'")
+    theme_file  = models.FileField(upload_to=upload_brand_theme_file_to, editable=False, help_text='Theme file link which is automatically generated if ui_theme is defined')
 
-
+    # Status
     status      = FSMField(default=ST_VERF_PENDING, choices=CH_STATUS, protected=True, db_index=True, editable=False, help_text='Verification status of brand.')
     failed_reason = models.TextField(null=True, blank=True, help_text='Reason stating why this brand was failed during verification. This is shown to the user.')
     active      = models.BooleanField(default=False, db_index=True, help_text='Switch to disable brand temporarly. Configurations/editting can be made however, brand does not appear to public.')
@@ -168,6 +177,46 @@ class Brand(models.Model):
 
     # --- /Owner management ---
 
+    def update_theme_files(self, auto_save=True):
+        """
+        Method to update all theme files only if ui_theme is defined.
+
+        :return: (bool) True if file was created and set to the field (irrespective of save), False if ui_theme was not set.
+
+        **Authors**: Gagandeep Singh
+        """
+        if self.ui_theme:
+            ui_theme = UiTheme(self.ui_theme)
+
+            # render file
+            content = render_skin(
+                custom=True,
+                clr_primary = ui_theme.primary,
+                clr_prim_hover = ui_theme.primary_dark,
+                clr_prim_disabled = ui_theme.primary_disabled
+            )
+
+            # Create InMemoryUploadObject
+            f_io = StringIO.StringIO(content)
+            mem_file_css = InMemoryUploadedFile(
+                f_io,
+                u'file',
+                'theme.css',
+                u'text/css',
+                f_io.len,
+                None
+            )
+
+            self.theme_file = mem_file_css
+
+            if auto_save:
+                self.save()
+
+            return True
+        else:
+            return False
+
+
     def clean(self):
         """
         Method to clean & validate data fields.
@@ -179,6 +228,16 @@ class Brand(models.Model):
             # Update modified date
             self.modified_on = timezone.now()
 
+        # Check UI Theme
+        if self.ui_theme is not None:
+            if self.ui_theme == {}:
+                self.ui_theme = None
+            else:
+                try:
+                    theme_obj = UiTheme(self.ui_theme)
+                except Exception as ex:
+                    raise ValidationError("ui_theme: " + ex.message)
+
         # Status relate validations
         if self.status == Brand.ST_VERF_FAILED and self.failed_reason in [None, '']:
             raise ValidationError("Please provide reason for verification failure.")
@@ -188,7 +247,7 @@ class Brand(models.Model):
 
         super(self.__class__, self).clean()
 
-    def save(self, *args, **kwargs):
+    def save(self, update_theme=False, *args, **kwargs):
         """
         Pre-save method for this model.
 
@@ -196,6 +255,12 @@ class Brand(models.Model):
         """
 
         self.clean()
+
+        # Update theme
+        if update_theme:
+            # Theme errors have been checked in clean()
+            self.update_theme_files(auto_save=False)
+
         super(self.__class__, self).save(*args, **kwargs)
 
     def delete(self, using=None, keep_parents=False):

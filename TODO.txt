@@ -14,7 +14,7 @@
     - Suggestions Display view
 
 - Brands
-
+    - image size validations
 
 - Data privacy conventions (public, encypted, client shared etc)
 - SEO

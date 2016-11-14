@@ -5,7 +5,6 @@ from django.utils.deprecation import MiddlewareMixin
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.http.response import Http404
 from django.core.urlresolvers import reverse
-
 from accounts.models import RegisteredUser
 from brands.models import Brand, BrandOwner
 
@@ -15,23 +14,25 @@ class ConsoleBrandSwitchMiddleware(MiddlewareMixin):
     Middleware to handle user console url or user brand url. User console urls and user
     brand urls are same except the fact that all brand console url are prefixed with
     ``/b/<brand_uid>``. For example:
+
         - **User console urls**: /console/path/to/app/page/
-        - **User brand urls**:   /console**/b/<brand_uid>**/path/to/app/page/
+        - **User brand urls**:   /console/b/<brand_uid>/path/to/app/page/
 
 
-    This middleware first checks url against regex ``/console/b/<brand_uid/``, if there is a match then
+    This middleware first checks url against regex ``/console/b/<brand_uid>/``, if there is a match then
 
         - It retrieves brand using 'brand_uid' from database.
         - Create a variable variable ``curr_brand`` inside request.
-        - Strips off '/b/<brand_uid>/' from url and set ``request.path_info`` to new url against which view has been defined.
+        - Strips off ``/b/<brand_uid>/`` from url and set ``request.path_info`` to new url against which view has been defined.
         - Corresponding view is then called as per the normal url.
 
-    If url is not matched with regex, then middleware is simply bypassed.
+    If url is not matched with regex, then all checks are simply bypassed.
 
     In this way, even if url has brand information in prefix, same view is used for user's console as well as user's brand console.
 
     **Authors**: Gagandeep Singh
     """
+
     def process_request(self, request):
         curr_url = request.path
 

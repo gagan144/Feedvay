@@ -44,7 +44,7 @@ class BrandAdmin(admin.ModelAdmin):
             'fields': ('status', 'failed_reason', 'active', 'deleted', 'disable_claim')
         }),
         ('Customizations', {
-            'fields': ('logo', 'ui_theme', 'theme_file')
+            'fields': ('logo', 'icon', 'ui_theme', 'theme_file')
         }),
         ('Miscellaneous', {
             'fields': ('created_by', 'created_on', 'modified_on')

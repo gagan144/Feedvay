@@ -23,6 +23,11 @@ def upload_brand_logo_to(instance, filename):
         brand_uid = str(instance.brand_uid),
         filename = filename.replace(" ","_")
     )
+def upload_brand_icon_to(instance, filename):
+    return "brands/{brand_uid}/icon__{filename}".format(
+        brand_uid = str(instance.brand_uid),
+        filename = filename.replace(" ","_")
+    )
 def upload_brand_theme_file_to(instance, filename):
     return "brands/{brand_uid}/{filename}".format(
         brand_uid = str(instance.brand_uid),
@@ -74,7 +79,7 @@ class Brand(models.Model):
 
     # Customization
     logo        = models.ImageField(upload_to=upload_brand_logo_to, help_text='Brand logo of size 300x100 pixels.')
-    # icon
+    icon        = models.ImageField(upload_to=upload_brand_icon_to, help_text='Brand icon of size 64x64 px.')
     # banner
     # splashscreen
     ui_theme    = JSONField(default=None, blank=True, null=True, help_text="Custom UI theme for this brand. This must be of format 'utilities.theme.UiTheme'")

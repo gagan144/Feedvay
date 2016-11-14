@@ -7,12 +7,16 @@
 {% block page_header %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-xs-12">
-            <h2>Management Console</h2>
+            <h2>
+                {% if request.curr_brand %}{{ request.curr_brand.name }}{% endif %}
+                management console
+            </h2>
         </div>
     </div>
 {% endblock %}
 
 {% block content %}
+    {{ request.curr_brand }}
     <div ng-cloak>
         <div ng-controller="MainCtrl">
             {$ msg $}

@@ -22,7 +22,11 @@
 
     <!-- Theme -->
 {#    <link href="{% get_static_prefix %}ui/css/style.css" rel="stylesheet">#}
-    <link href="{% get_static_prefix %}ui/css/style-default.css" rel="stylesheet">
+    {% if request.curr_brand and request.curr_brand.theme_file %}
+        <link href="{{ request.curr_brand.theme_file.url }}" rel="stylesheet">
+    {% else %}
+        <link href="{% get_static_prefix %}ui/css/style-default.css" rel="stylesheet">
+    {% endif %}
     <link href="{% get_static_prefix %}ui/css/custom.css" rel="stylesheet">
 
     {% block head %}
@@ -78,9 +82,15 @@
                         <button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
                             <i class="fa fa-reorder"></i>
                         </button>
-                        <a href="{% url 'console_home' %}" class="navbar-brand navbar_brand_custom" title="Feedvay management console">
-                            <img src="{% get_static_prefix %}images/feedvay_logo.png" style="height: 34px !important;" alt="Feedvay">
-                        </a>
+                        {% if request.curr_brand %}
+                            <a href="{% url 'console_home' %}b/{{ request.curr_brand.brand_uid }}/" class="navbar-brand navbar_brand_custom" title="{{ request.curr_brand.name }} management console">
+                                <img src="{{ request.curr_brand.logo.url }}" style="height: 34px !important;" alt="{{ request.curr_brand.name }}">
+                            </a>
+                        {% else %}
+                            <a href="{% url 'console_home' %}" class="navbar-brand navbar_brand_custom" title="Feedvay management console">
+                                <img src="{% get_static_prefix %}images/feedvay_logo.png" style="height: 34px !important;" alt="Feedvay">
+                            </a>
+                        {% endif %}
                     </div>
                     <div class="navbar-collapse collapse" id="navbar">
                         <ul class="nav navbar-nav">
@@ -94,8 +104,8 @@
                                     <li><a href="">Dashboard</a></li>
                                     {% if list_owned_brands.count %}<li role="separator" class="divider divider_custom"></li>{% endif %}
                                     {% for b in list_owned_brands %}
-                                        <li>
-                                            <a href="">
+                                        <li {% if b == request.curr_brand %}class="active"{% endif %}>
+                                            <a href="{% url 'console_home' %}b/{{ b.brand_uid }}/">
                                                 <img src="{{ b.icon.url }}" style="height: 16px;">&nbsp;
                                                 {{ b.name }}
                                             </a>
@@ -168,7 +178,10 @@
                                     <i class="caret"></i>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{% url 'console_accounts_settings' %}#/profile"><i class="fa fa-user"></i>&nbsp;&nbsp;My Account</a></li>
+                                    {% if request.curr_brand %}
+                                        <li><a href="{% url 'console_home' %}"><i class="fa fa-dashboard"></i>&nbsp;&nbsp;My console</a></li>
+                                    {% endif %}
+{#                                    <li><a href="{% url 'console_accounts_settings' %}#/profile"><i class="fa fa-user"></i>&nbsp;&nbsp;My Account</a></li>#}
                                     <li><a href="{% url 'console_accounts_settings' %}"><i class="fa fa-cog"></i>&nbsp;&nbsp;Settings</a></li>
                                     <li role="separator" class="divider divider_custom"></li>
                                     <li><a href="{% url 'accounts_logout' %}"><i class="fa fa-sign-out"></i>&nbsp;&nbsp;Logout</a></li>

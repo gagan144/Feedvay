@@ -51,17 +51,21 @@ class ConsoleBrandSwitchMiddleware(MiddlewareMixin):
                         # Fetch brand from db
                         brand = Brand.objects.get(brand_uid=brand_uid)
 
+                        # Check if any user association with brand; permission aloowed or not
                         try:
-                            # Check ownership
-                            BrandOwner.objects.get(brand_id=brand.id, registered_user_id=reg_user.id)
+                            # (1) Brand ownership
+                            ownership = BrandOwner.objects.get(brand_id=brand.id, registered_user_id=reg_user.id)
 
                             # Set brand in request object so that it can be used in templates
                             request.curr_brand = brand
                         except BrandOwner.DoesNotExist:
-                            # Ownership not found; Return forbidden response
+                            # Ownership not found
+                            # (2) Check any other association or brand access
+                            pass
+
                             return HttpResponseForbidden('You do not have permissions to access this page.')
 
-                        # Everything ok here now
+                        # Everything ok here now; prepare for routing
                         # Create new path by stripping off '/b/<brand_uid>/' from curr_url
                         split_url.__delitem__(3)
                         split_url.__delitem__(2)

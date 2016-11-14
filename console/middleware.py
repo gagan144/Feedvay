@@ -7,7 +7,7 @@ from django.http.response import Http404
 from brands.models import Brand
 
 
-class ConsoleBrandMiddleware(MiddlewareMixin):
+class ConsoleBrandSwitchMiddleware(MiddlewareMixin):
     """
     Middleware to handle user console url or user brand url. User console urls and user
     brand urls are same except the fact that all brand console url are prefixed with
@@ -30,7 +30,6 @@ class ConsoleBrandMiddleware(MiddlewareMixin):
     **Authors**: Gagandeep Singh
     """
     def process_request(self, request):
-        print "######"
         curr_url = request.path
         if curr_url.startswith('/console/b/'):
             split_url = curr_url.split('/')

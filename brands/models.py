@@ -281,8 +281,8 @@ class BrandOwner(models.Model):
     **Authors**: Gagandeep Singh
     """
 
-    brand           = models.ForeignKey(Brand, db_index=True, help_text='Associated brand in the ownership.')
-    registered_user = models.ForeignKey(RegisteredUser, db_index=True, help_text='Associated registered user in the ownership.')
+    brand           = models.ForeignKey(Brand, db_index=True, on_delete=models.CASCADE, help_text='Associated brand in the ownership.')
+    registered_user = models.ForeignKey(RegisteredUser, db_index=True, on_delete=models.CASCADE, help_text='Associated registered user in the ownership.')
 
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')

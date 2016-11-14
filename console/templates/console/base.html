@@ -86,12 +86,16 @@
                         <ul class="nav navbar-nav">
 
                             <li class="dropdown">
-                                <a aria-expanded="false" role="button" href="javascript: void(0);" class="dropdown-toggle" data-toggle="dropdown"> Menu item <span class="caret"></span></a>
+                                <a aria-expanded="false" role="button" href="javascript: void(0);" class="dropdown-toggle" data-toggle="dropdown">
+                                    Brands
+                                    <span class="caret"></span>
+                                </a>
                                 <ul role="menu" class="dropdown-menu">
-                                    <li><a href="">Menu item</a></li>
-                                    <li><a href="">Menu item</a></li>
-                                    <li><a href="">Menu item</a></li>
-                                    <li><a href="">Menu item</a></li>
+                                    <li><a href="">Dashboard</a></li>
+                                    {% if list_owned_brands.count %}<li role="separator" class="divider divider_custom"></li>{% endif %}
+                                    {% for b in list_owned_brands %}
+                                        <li><a href="">{{ b.name }}</a></li>
+                                    {% endfor %}
                                 </ul>
                             </li>
                             <li class="dropdown">

@@ -140,6 +140,10 @@
     .mobile_show{
         display: none;
     }
+
+    .mobile_hide{
+        display: inline;
+    }
 }
 
 /* ---------- Mobile ---------- */
@@ -150,6 +154,10 @@
 
     .mobile_show{
         display: inline;
+    }
+
+    .mobile_hide{
+        display: none;
     }
 }
 

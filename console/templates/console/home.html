@@ -4,14 +4,37 @@
 {% extends 'console/base.html' %}
 {% load static %}
 
+{% block head %}
+    <!-- Favicon -->
+    <link rel="shortcut icon"  href="{% if request.curr_brand %}{{ request.curr_brand.icon.url }}{% else %}{% get_static_prefix %}images/favicon.png{% endif %}" />
+
+    <title>{% if request.curr_brand %}{{ request.curr_brand.name }} - {% endif %}Feedvay Management Console</title>
+{% endblock %}
+
 {% block page_header %}
     <div class="row wrapper border-bottom white-bg page-heading">
-        <div class="col-xs-12">
-            <h2>
-                {% if request.curr_brand %}{{ request.curr_brand.name }}{% endif %}
-                Management Console
-            </h2>
-        </div>
+        {% if request.curr_brand %}
+            <div class="col-xs-10">
+                <h2 class="m-b-none">
+                    {{ request.curr_brand.name }}<br/>
+                    <small>Management console</small>
+                </h2>
+            </div>
+            <div class="col-xs-2">
+                <div class="title-action">
+                    <a href="" class="btn btn-primary">
+                        <i class="fa fa-cog"></i>
+                        <span class="mobile_hide">&nbsp;Settings</span>
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-md-12">
+                <h2 style="margin-bottom: 0px;">
+                    Management console
+                </h2>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
 

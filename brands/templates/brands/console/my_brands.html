@@ -75,6 +75,22 @@
                     text-decoration: none !important;
                 }
 
+                .panel_brand > .panel_body > .details{
+                    margin-top: 10px;
+                    font-size: 11px;
+                }
+
+                .panel_brand > .deleted{
+                    top: 0;
+                    right: 0;
+                    border-top-right-radius: 0px;
+                    border-bottom-left-radius: 0px;
+                }
+
+                .panel_brand.inactive{
+                    opacity: 0.64;
+                }
+
                 @media (max-width: 767px) {
                     .panel_brand{
                         width: 100% !important;
@@ -83,7 +99,12 @@
             </style>
 
             {% for b in list_owned_brands %}
-                <div class="panel_brand">
+                <div class="panel_brand {% if b.deleted %}inactive{% endif %}">
+                    {% if b.deleted %}
+                        <span class="deleted label label-danger" >
+                            Deleted
+                        </span>
+                    {% endif %}
                     <div align="center" class="logo">
                         <a href="{% url 'console_home' %}b/{{ b.brand_uid }}/">
                             <img src="{{ b.logo.url }}">
@@ -96,6 +117,10 @@
                         <small>
                             {{ b.description|truncatechars:150 }}
                         </small>
+
+                        <div class="details">
+                            <span class="label label-warning">Verification failed</span>
+                        </div>
                     </div>
                 </div>
             {% endfor %}

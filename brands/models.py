@@ -96,6 +96,9 @@ class Brand(models.Model):
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
 
+    class Meta:
+        ordering = ('name', )
+
     def __unicode__(self):
         return "{}: {}".format(self.id, self.name)
 

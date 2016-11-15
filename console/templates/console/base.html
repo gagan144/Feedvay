@@ -101,7 +101,12 @@
                                     <span class="caret"></span>
                                 </a>
                                 <ul role="menu" class="dropdown-menu">
-                                    <li><a href="">Dashboard</a></li>
+                                    <li>
+                                        <a href="{% url 'console_brands' %}">
+                                            <i class="fa fa-star"></i>&nbsp;
+                                            My brands
+                                        </a>
+                                    </li>
                                     {% if list_owned_brands.count %}<li role="separator" class="divider divider_custom"></li>{% endif %}
                                     {% for b in list_owned_brands %}
                                         <li {% if b == request.curr_brand %}class="active"{% endif %}>
@@ -197,7 +202,7 @@
             <!-- Header -->
             {% block page_header %}
                 <div class="row wrapper border-bottom white-bg page-heading">
-                    <div class="col-md-8">
+                    <div class="col-xs-8">
                         <h2>This is main title</h2>
                         <ol class="breadcrumb">
                             <li>
@@ -208,7 +213,7 @@
                             </li>
                         </ol>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-xs-4">
                         <div class="title-action">
                             <a href="" class="btn btn-primary">This is action area</a>
                         </div>

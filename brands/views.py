@@ -3,4 +3,18 @@
 # permission of Gagandeep Singh.
 from django.shortcuts import render
 
-# Create your views here.
+from utilities.decorators import registered_user_only
+
+# ==================== Console ====================
+@registered_user_only
+def console_brands(request):
+    """
+    View to display all user brands; owned as well as associated.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    data = {}
+    return render(request, 'brands/console/my_brands.html', data)
+# ==================== /Console ====================

@@ -1,0 +1,106 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'console/base.html' %}
+{% load static commontags %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-8">
+            <h2 class="m-b-none">
+                <i class="fa fa-star"></i>
+                Brands
+            </h2>
+        </div>
+        <div class="col-xs-4">
+            <div class="title-action" style="padding-top: 20px !important;">
+                <a href="" class="btn btn-primary">
+                    <i class="fa fa-plus"></i>
+                    <span class="mobile_hide">&nbsp;Create new brand</span>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    {% if not list_owned_brands %}
+        <div align="center">
+            <h2 style="margin-bottom: 20px;">
+                You do not have any associated brands!
+            </h2>
+            <p>
+                <a href="" class="btn btn-primary">
+                    <i class="fa fa-plus"></i>
+                    <span class="mobile_hide">&nbsp;Add now</span>
+                </a>
+            </p>
+        </div>
+    {% else %}
+        <!-- User owned brands -->
+        <div>
+            <h2 class="m-t-none">
+                My brands <br/>
+                <small style="font-size: 13px;">All brands owned by you</small>
+            </h2>
+            <hr style="margin: 10px 0px 20px 0px;"/>
+
+            <style>
+                .panel_brand{
+                    float: left;
+                    margin:0px 15px 15px 0px;
+                    background-color: #FFFFFF;
+                    border: 1px solid #e7eaec;
+                    border-radius: 3px;
+                }
+                .panel_brand:hover{
+                    border-color: #b4b8ba;
+                }
+                .panel_brand > .logo{
+                    padding: 15px;
+                    border-bottom: 1px solid #e7eaec;
+                }
+                .panel_brand > .logo > img, .panel_brand > .logo > a > img{
+                    height: 65px;
+                    text-decoration: none;
+                }
+
+                .panel_brand > .panel_body{
+                    padding: 15px;
+                }
+
+                .panel_brand > .panel_body .title{
+{#                    font-weight: 600 !important;#}
+                    font-size: 14px !important;
+                    text-decoration: none !important;
+                }
+
+                @media (max-width: 767px) {
+                    .panel_brand{
+                        width: 100% !important;
+                    }
+                }
+            </style>
+
+            {% for b in list_owned_brands %}
+                <div class="panel_brand">
+                    <div align="center" class="logo">
+                        <a href="{% url 'console_home' %}b/{{ b.brand_uid }}/">
+                            <img src="{{ b.logo.url }}">
+                        </a>
+                    </div>
+                    <div class="panel_body">
+                        <div>
+                            <a class="title" href="{% url 'console_home' %}b/{{ b.brand_uid }}/">{{ b.name }}</a>
+                        </div>
+                        <small>
+                            {{ b.description|truncatechars:150 }}
+                        </small>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <!-- /User owned brands -->
+    {% endif %}
+
+{% endblock %}

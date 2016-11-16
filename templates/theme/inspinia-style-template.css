@@ -3777,7 +3777,7 @@ img.circle-border {
   color: inherit;
 }
 .breadcrumb > .active {
-  color: inherit;
+  color: {{ PRIMARY }};
 }
 code {
   background-color: #F9F2F4;

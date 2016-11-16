@@ -17,4 +17,18 @@ def console_brands(request):
     """
     data = {}
     return render(request, 'brands/console/my_brands.html', data)
+
+@registered_user_only
+def console_create_brand(request):
+    """
+    View to add new brand. Newely created brand is marked for verification which is then
+    published after manual verification.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    data = {}
+    return render(request, 'brands/console/create_brand.html', data)
+
 # ==================== /Console ====================

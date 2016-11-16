@@ -1,0 +1,28 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'console/base.html' %}
+{% load static commontags %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-12">
+            <h2>
+                <i class="fa fa-plus"></i>
+                Create new brand
+            </h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{% url 'console_brands' %}">My brands</a>
+                </li>
+                <li class="active">
+                    Create
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    Create new brand
+{% endblock %}

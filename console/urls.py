@@ -16,6 +16,7 @@ url_account = [
 
 url_brands = [
     url(r'^$', views_brands.console_brands, name='console_brands'),
+    url(r'^create/$', views_brands.console_create_brand, name='console_brand_create'),
 ]
 
 urlpatterns = [

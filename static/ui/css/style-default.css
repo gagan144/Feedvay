@@ -3,7 +3,7 @@
 /*
  *   Feedvay UI Theme
  *   UI version: INSP - 2.6.2
- *   Created on: 13-11-2016 11:36:55 0
+ *   Created on: 16-11-2016 17:07:20 0
 */
 h1,
 h2,
@@ -3776,7 +3776,7 @@ img.circle-border {
   color: inherit;
 }
 .breadcrumb > .active {
-  color: inherit;
+  color: #2a94db;
 }
 code {
   background-color: #F9F2F4;

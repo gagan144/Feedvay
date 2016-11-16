@@ -8393,10 +8393,6 @@ body.md-skin {
 
 /* =================== Customization =================== */
 
-/*.breadcrumb > .active {*/
-    /*color: #0e9aef !important;*/
-/*}*/
-
 .help-block{
   color: #979797 !important;
 }
@@ -8427,6 +8423,14 @@ label > small{
 
 .btn-primary.btn-outline[disabled] {
     color: #FFFFFF;
+}
+
+.content_box {
+  background-color: #ffffff;
+  color: inherit;
+  padding: 15px 20px 20px 20px;
+  border: solid 1px #e7eaec;
+  border-radius: 3px;
 }
 
 /* ----- Top navbar ----- */

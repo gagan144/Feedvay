@@ -44,6 +44,10 @@
     margin: 10px 0px !important;
 }
 
+.hr_dark{
+    border-color: #b4b8ba;
+}
+
 /* ----- form loader ----- */
 .form-loading, .ps-container:hover.ps-in-scrolling.ps-in-scrolling, .ps-in-scrolling {
     pointer-events: none
@@ -130,6 +134,121 @@
     padding: 8px 20px;
 }
 /* ----- /panel alert ----- */
+
+/* ---------- Ribbon ---------- */
+.label-ribbon {
+    position: absolute!important;
+    top: 12px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.label-ribbon:before {
+    position: absolute;
+    top: 100%;
+    border-top: 12px solid;
+    border-right: 0 solid transparent;
+    border-left: 0 solid transparent;
+}
+
+.label-ribbon.left {
+    left: -12px;
+    padding-left: 12px;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+}
+
+.label-ribbon.left:before {
+    left: 0;
+    border-left-width: 12px;
+}
+
+
+.label-ribbon.right {
+    right: -12px;
+    padding-right: 12px;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.label-ribbon.right:before {
+    right: 0;
+    border-right-width: 12px;
+}
+
+.badge-primary.label-ribbon:before,
+.label-primary.label-ribbon:before,
+.badge-primary.label-ribbon:before {
+    border-top-color: #2e75a4;
+}
+
+.badge-danger.label-ribbon:before,
+.label-danger.label-ribbon:before,
+.badge-danger.label-ribbon:before {
+    border-top-color: #ed5565;
+}
+
+.badge-warning.label-ribbon:before,
+.label-warning.label-ribbon:before,
+.badge-warning.label-ribbon:before {
+    border-top-color: #f8ac59;
+}
+
+.label-corner:before, .label-ribbon:before {
+    display: block;
+    content: "";
+    border-bottom: 0 solid transparent;
+    background: 0 0;
+}
+/* ---------- /Ribbon ---------- */
+
+/* ---------- Panel brand ---------- */
+.panel_brand{
+    float: left;
+    margin:0px 15px 15px 0px;
+    background-color: #FFFFFF;
+    border: 1px solid #e7eaec;
+    border-radius: 3px;
+    position: relative;
+}
+.panel_brand:hover{
+    border-color: #b4b8ba;
+}
+.panel_brand > .logo{
+    padding: 15px;
+    border-bottom: 1px solid #e7eaec;
+}
+.panel_brand > .logo > img, .panel_brand > .logo > a > img{
+    height: 65px;
+    text-decoration: none;
+}
+
+.panel_brand > .panel_body{
+    padding: 15px;
+}
+
+.panel_brand > .panel_body .title{
+    font-size: 14px !important;
+    text-decoration: none !important;
+}
+
+.panel_brand.inactive{
+    opacity: 0.64;
+}
+
+.panel_brand > .footer_title{
+    padding: 2px 15px;
+    font-size: 12px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+@media (max-width: 767px) {
+    .panel_brand{
+        width: 100% !important;
+    }
+}
+/* ---------- /Panel brand ---------- */
 
 .fake_readonly{
     background-color: #FFFFFF !important;

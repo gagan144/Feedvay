@@ -43,68 +43,16 @@
                 My brands <br/>
                 <small style="font-size: 13px;">All brands owned by you</small>
             </h2>
-            <hr style="margin: 10px 0px 20px 0px;"/>
-
-            <style>
-                .panel_brand{
-                    float: left;
-                    margin:0px 15px 15px 0px;
-                    background-color: #FFFFFF;
-                    border: 1px solid #e7eaec;
-                    border-radius: 3px;
-                }
-                .panel_brand:hover{
-                    border-color: #b4b8ba;
-                }
-                .panel_brand > .logo{
-                    padding: 15px;
-                    border-bottom: 1px solid #e7eaec;
-                }
-                .panel_brand > .logo > img, .panel_brand > .logo > a > img{
-                    height: 65px;
-                    text-decoration: none;
-                }
-
-                .panel_brand > .panel_body{
-                    padding: 15px;
-                }
-
-                .panel_brand > .panel_body .title{
-{#                    font-weight: 600 !important;#}
-                    font-size: 14px !important;
-                    text-decoration: none !important;
-                }
-
-                .panel_brand > .panel_body > .details{
-                    margin-top: 10px;
-                    font-size: 11px;
-                }
-
-                .panel_brand > .deleted{
-                    top: 0;
-                    right: 0;
-                    border-top-right-radius: 0px;
-                    border-bottom-left-radius: 0px;
-                }
-
-                .panel_brand.inactive{
-                    opacity: 0.64;
-                }
-
-                @media (max-width: 767px) {
-                    .panel_brand{
-                        width: 100% !important;
-                    }
-                }
-            </style>
+            <hr class="hr_dark" style="margin: 10px 0px 20px 0px;"/>
 
             {% for b in list_owned_brands %}
                 <div class="panel_brand {% if b.deleted %}inactive{% endif %}">
                     {% if b.deleted %}
-                        <span class="deleted label label-danger" >
+                        <span href="#" class="label label-danger label-ribbon right">
                             Deleted
                         </span>
                     {% endif %}
+
                     <div align="center" class="logo">
                         <a href="{% url 'console_home' %}b/{{ b.brand_uid }}/">
                             <img src="{{ b.logo.url }}">
@@ -117,11 +65,16 @@
                         <small>
                             {{ b.description|truncatechars:150 }}
                         </small>
-
-                        <div class="details">
-                            <span class="label label-warning">Verification failed</span>
-                        </div>
                     </div>
+                    {% if b.status == 'verification_failed' %}
+                        <div class="footer_title bg-danger">
+                            Verification danger
+                        </div>
+                    {% elif b.status == 'verification_pending' %}
+                        <div class="footer_title bg-warning">
+                            Verification pending
+                        </div>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>

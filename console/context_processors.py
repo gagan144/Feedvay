@@ -15,7 +15,7 @@ def console(request):
         reg_user = request.user.registereduser
 
         return {
-            "list_owned_brands": Brand.objects.filter(owners=reg_user).only('brand_uid', 'name', 'logo', 'icon')
+            "list_owned_brands": Brand.objects.filter(owners=reg_user).only('brand_uid', 'name', 'logo', 'icon', 'status')
         }
     else:
         return {}

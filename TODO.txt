@@ -16,7 +16,7 @@
 - Brands
     - image size validations
     - New Brand
-        -
+        - Autocomplete brand name check
 
 - Data privacy conventions (public, encypted, client shared etc)
 - SEO

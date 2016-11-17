@@ -69,9 +69,13 @@
                     <div style="margin: 10px 0px 5px 0px;">
                         <img id="logo_preview" src="" class="img-thumbnail" style="max-width: 300px;">
                     </div>
-                    <input type="file" name="file_logo" ng-model="data.file_logo" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" required validate-file="" preview-image="'logo_preview'">
+                    <input type="file" name="file_logo" ng-model="data.file_logo" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" required validate-file="" preview-image="'logo_preview'" ng-change="get_colors();">
 
                     {$ form_new_brand.file_logo.$valid $}
+
+                    <div>
+                        {$ pallets $}
+                    </div>
                 </div>
             </div>
 
@@ -80,6 +84,7 @@
 {% endblock %}
 
 {% block scripts %}
+    <script src="{% get_static_prefix %}lib/vibrantjs/Vibrant.js"></script>
     <script>
         'use strict';
 
@@ -105,7 +110,46 @@
         });
 
         APP.controller('NewBrandFormCtrl', function($scope){
+            $scope.pallets = [];
 
+            $scope.get_colors = function($event){
+                var elem = event.target;
+
+{#                $scope.pallets = [];#}
+
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var img_data = e.target.result;
+
+                    var image = new Image(200, 200);
+                    image.src = img_data;
+
+                    var vibrant = new Vibrant(image);
+                    var swatches = vibrant.swatches();
+
+                    for (var swatch in swatches){
+                        if (swatches.hasOwnProperty(swatch) && swatches[swatch]){
+                            var hex_color = swatches[swatch].getHex();
+{#                            $scope.pallets.push(hex_color);#}
+                            console.log(swatch, hex_color);
+                        }
+                    }
+                }
+                reader.readAsDataURL(elem.files[0]);
+
+
+
+{#                var vibrant = new Vibrant(elem);#}
+{#                var swatches = vibrant.swatches()#}
+{#                for (var swatch in swatches){#}
+{#                    if (swatches.hasOwnProperty(swatch) && swatches[swatch]){#}
+{#                        console.log(swatch, swatches[swatch].getHex())#}
+{#                    }#}
+{#                }#}
+
+
+
+            }
         });
     </script>
 {% endblock %}

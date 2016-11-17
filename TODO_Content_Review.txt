@@ -12,3 +12,9 @@
     - Brands
         - My brands
             - When user has no brands
+        - Brand creation
+
+
+# ---------- Illustrations -----------
+- Brand
+    - Create new

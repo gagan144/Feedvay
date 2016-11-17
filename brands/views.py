@@ -28,7 +28,9 @@ def console_create_brand(request):
 
     **Authors**: Gagandeep Singh
     """
-    data = {}
+    data = {
+        "app_name": "app_create_brand"
+    }
     return render(request, 'brands/console/create_brand.html', data)
 
 # ==================== /Console ====================

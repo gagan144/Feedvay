@@ -24,16 +24,88 @@
 {% endblock %}
 
 {% block content %}
-    <div class="content_box">
-        <form method="get" class="form-horizontal">
+    <div class="content_box" style="padding-top: 30px;" >
+        <form name="form_new_brand" class="form-horizontal" ng-controller="NewBrandFormCtrl" novalidate>
             <div class="form-group">
-                <label class="col-sm-3 control-label">Name:</label>
+                <label class="col-sm-3 control-label">Name<span class="required">*</span>:</label>
                 <div class="col-sm-7">
-                    <input type="text" name="name" class="form-control">
+                    <input type="text" name="name" ng-model="data.name" class="form-control" placeholder="Enter name of the brand." required>
                 </div>
             </div>
+
             <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">Description<span class="required">*</span>:</label>
+                <div class="col-sm-7">
+                    <textarea name="description" ng-model="data.description" class="form-control" placeholder="Recommended limit 150-160 characters." rows="4" style="resize:vertical;" required></textarea>
+                    <p class="help-block">
+                        Short and catchy description about your brand. Describe organisation purpose,
+                        target audience and use keywords that best relate to the brand.<br/>
+                        We recommend you to limit your description below 150-160 characters for better
+                        user attention and search engine optimization (SEO). However, feel free to express thoughts as
+                        per your wish.
+                    </p>
+                </div>
+            </div>
+
+            <div class="hr-line-dashed"></div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">
+                    Logo<span class="required">*</span>:
+                </label>
+                <div class="col-sm-7" style="padding-top: 7px;">
+                    Upload a beautiful logo image of your brand that will be visible to public. Your
+                    logo is your unique identity and expresses your organisation at its best. Kindly keep in
+                    mind the following guidelines for better quality:
+                    <ul>
+                        <li>Image must be of <code>300x100 pixel</code> resolution (width being larger).</li>
+                        <li><code>.PNG</code> extension is recommended with transparent background if your background is empty.</li>
+                        <li>Size of the image must be less than <code>15 KB</code> for fast download even in slow network conditions.</li>
+                    </ul>
+
+                    <script>
+
+                    </script>
+                    <div style="margin: 10px 0px 5px 0px;">
+                        <img id="logo_preview" src="" class="img-thumbnail" style="max-width: 300px;">
+                    </div>
+                    <input type="file" name="file_logo" ng-model="data.file_logo" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" required validate-file="" preview-image="'logo_preview'">
+
+                    {$ form_new_brand.file_logo.$valid $}
+                </div>
+            </div>
 
         </form>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        'use strict';
+
+        var APP = angular.module('{{ app_name }}',[
+            'feedvay.watchdog',
+            'feedvay.common',
+
+            'ngCookies',
+            'ui.bootstrap'
+        ])
+        .run(function($http, $cookies) {
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+            $http.defaults.xsrfCookieName = 'csrftoken';
+            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+        })
+        .config(function($interpolateProvider, $httpProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+
+            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+        });
+
+        APP.controller('NewBrandFormCtrl', function($scope){
+
+        });
+    </script>
 {% endblock %}

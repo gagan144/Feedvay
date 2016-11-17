@@ -55,6 +55,51 @@ function remodelDatetime($filter) {
     };
 }
 
+function validateFile() {
+    // DOM usage: validate-file
+    return {
+        require: 'ngModel',
+        link: function (scope, el, attrs, ngModel) {
+            //change event is fired when file is selected
+            el.bind('change', function () {
+                scope.$apply(function () {
+                    ngModel.$setViewValue(el.val());
+                    ngModel.$render();
+                })
+            })
+        }
+    }
+}
+
+function previewImage() {
+    // DOM usage: preview-image
+    return {
+        require: 'ngModel',
+        scope: {
+            preview_id: "=previewImage"
+        },
+        link: function (scope, elem, attrs, ngModel) {
+            //change event is fired when file is selected
+            elem.bind('change', function () {
+                var $img_preview = angular.element("#"+scope.preview_id);
+
+                if (elem[0].files && elem[0].files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $img_preview.attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(elem[0].files[0]);
+                }
+                else {
+                    $img_preview.attr('src', '');
+                }
+
+
+            })
+        }
+    }
+}
+
 /* ----- UI Theme ----- */
 /**
  * pageTitle - Directive for set Page title - mata title
@@ -83,6 +128,8 @@ function pageTitle($rootScope, $timeout) {
 angular.module('feedvay.common',[])
 .directive("compareTo", compareTo)
 .directive('remodelDatetime', remodelDatetime)
+.directive('validateFile', validateFile)
+.directive('previewImage', previewImage)
 
 .directive('pageTitle', pageTitle);
 

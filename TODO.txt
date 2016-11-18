@@ -14,7 +14,6 @@
     - Suggestions Display view
 
 - Brands
-    - Model: slug
     - image size validations
     - New Brand
         - Autocomplete brand name check

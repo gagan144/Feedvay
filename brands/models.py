@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 
 from django.db import models
+from django.template.defaultfilters import slugify
 from django_mysql.models import JSONField
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
@@ -75,6 +76,7 @@ class Brand(models.Model):
     # --- Fields ---
     brand_uid   = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True, editable=False, help_text='Unique ID of a brand which are hard to guess and can be used in urls. ')
     name        = models.CharField(max_length=255, unique=True, db_index=True, help_text='Name of the brand.')
+    slug        = models.SlugField(unique=True, blank=True, db_index=True, help_text='Slug of the name used for url referencing and dedupe matching.')
     description = models.TextField(max_length=512, help_text='Short description about the brand. Include keywords for better SEO and keep characters between 150-160.')
 
     owners      = models.ManyToManyField(RegisteredUser, through='BrandOwner', help_text='Owners of this brand.')
@@ -237,6 +239,10 @@ class Brand(models.Model):
         if self.pk:
             # Update modified date
             self.modified_on = timezone.now()
+
+        # Name sulg
+        if not self.slug:
+            self.slug = slugify(self.name)
 
         # Check UI Theme
         if self.ui_theme is not None:

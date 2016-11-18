@@ -38,7 +38,7 @@ class BrandAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {
-            'fields': ('brand_uid', 'name', 'description')
+            'fields': ('brand_uid', 'name', 'slug', 'description')
         }),
         ('Status', {
             'fields': ('status', 'failed_reason', 'active', 'disable_claim')

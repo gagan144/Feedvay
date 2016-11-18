@@ -45,6 +45,7 @@
             'feedvay.common',
 
             'ngCookies',
+            'ngMessages',
             'ui.bootstrap',
             'colorpicker.module'
         ])
@@ -75,38 +76,32 @@
 
                 $scope.pallets = [];
 
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    var img_data = e.target.result;
+                if (elem.files && elem.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var img_data = e.target.result;
 
-                    var image = new Image(200, 200);
-                    image.src = img_data;
+                        var image = new Image(200, 200);
+                        image.src = img_data;
 
-                    var vibrant = new Vibrant(image);
-                    var swatches = vibrant.swatches();
+                        var vibrant = new Vibrant(image);
+                        var swatches = vibrant.swatches();
 
-                    for (var swatch in swatches){
-                        if (swatches.hasOwnProperty(swatch) && swatches[swatch]){
-                            var hex_color = swatches[swatch].getHex();
-                            $scope.pallets.push(hex_color);
-                            console.log(swatch, hex_color);
+                        var pallets = []
+                        for (var swatch in swatches) {
+                            if (swatches.hasOwnProperty(swatch) && swatches[swatch]) {
+                                var hex_color = swatches[swatch].getHex();
+                                pallets.push(hex_color);
+{#                                console.log(swatch, hex_color);#}
+                            }
                         }
+
+                        $scope.$apply(function () {
+                            $scope.pallets = pallets;
+                        });
                     }
+                    reader.readAsDataURL(elem.files[0]);
                 }
-                reader.readAsDataURL(elem.files[0]);
-
-
-
-{#                var vibrant = new Vibrant(elem);#}
-{#                var swatches = vibrant.swatches()#}
-{#                for (var swatch in swatches){#}
-{#                    if (swatches.hasOwnProperty(swatch) && swatches[swatch]){#}
-{#                        console.log(swatch, swatches[swatch].getHex())#}
-{#                    }#}
-{#                }#}
-
-
-
             }
 
             $scope.submit_brand = function(form_obj){

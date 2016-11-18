@@ -12,7 +12,7 @@
     <div class="form-group">
         <label class="col-sm-3 control-label">Name<span class="required">*</span>:</label>
         <div class="col-sm-7">
-            <input type="text" name="name" ng-model="data.name" class="form-control" placeholder="Enter name of the brand." required>
+            <input type="text" name="name" ng-model="data.name" class="form-control" placeholder="Enter name of the brand." required ng-class="{'error': (form_create_edit_brand.name.$dirty && form_create_edit_brand.name.$invalid) }">
         </div>
     </div>
 
@@ -20,7 +20,11 @@
     <div class="form-group">
         <label class="col-sm-3 control-label">Description<span class="required">*</span>:</label>
         <div class="col-sm-7">
-            <textarea name="description" ng-model="data.description" class="form-control" placeholder="Recommended limit 150-160 characters." rows="4" style="resize:vertical;" required></textarea>
+            <textarea name="description" ng-model="data.description" class="form-control" placeholder="Recommended limit 150-160 characters." rows="4" style="resize:vertical;" required ng-class="{'error': (form_create_edit_brand.description.$dirty && form_create_edit_brand.description.$invalid) }"></textarea>
+            <div class="text-warning" ng-if="data.description.length > 160">
+                <i class="fa fa-exclamation-triangle"></i>&nbsp;
+                You have exceeded 160 characters.
+            </div>
             <p class="help-block">
                 Short and catchy description about your brand. Describe organisation purpose,
                 target audience and use keywords that best relate to the brand.<br/>
@@ -50,8 +54,11 @@
                 <img id="logo_preview" src="" class="img-thumbnail" style="max-width: 300px;">
             </div>
             <input type="file" name="file_logo" ng-model="data.file_logo" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" required validate-file="" preview-image="'logo_preview'" ng-change="get_colors();">
+            <div ng-messages="form_create_edit_brand.file_logo.$dirty && form_create_edit_brand.file_logo.$error" role="alert" class="error_messages">
+                <label ng-message="required" class="error">Please select an image.</label>
+            </div>
 
-            {$ form_create_edit_brand.file_logo.$valid $}
+            {$ form_create_edit_brand.file_logo.$error $}
 
             <div>
                 {$ pallets $}

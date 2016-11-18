@@ -29,8 +29,8 @@ class BrandAdmin(admin.ModelAdmin):
 
     **Authors**: Gagandeep Singh
     """
-    list_display = ('name', 'brand_uid', 'status', 'active', 'deleted', 'modified_on')
-    list_filter = ('status', 'active', 'deleted', 'created_on')
+    list_display = ('name', 'brand_uid', 'status', 'active', 'modified_on')
+    list_filter = ('status', 'active', 'created_on')
     raw_id_fields = ('created_by', )
     search_fields = ('name', 'brand_uid')
     list_per_page = 20
@@ -41,7 +41,7 @@ class BrandAdmin(admin.ModelAdmin):
             'fields': ('brand_uid', 'name', 'description')
         }),
         ('Status', {
-            'fields': ('status', 'failed_reason', 'active', 'deleted', 'disable_claim')
+            'fields': ('status', 'failed_reason', 'active', 'disable_claim')
         }),
         ('Customizations', {
             'fields': ('logo', 'icon', 'ui_theme', 'theme_file')
@@ -53,7 +53,6 @@ class BrandAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = [field.name for field in self.model._meta.fields if not field.editable]
-        readonly_fields.append('deleted')
         readonly_fields.append('active')
 
         if obj:
@@ -75,5 +74,5 @@ class BrandAdmin(admin.ModelAdmin):
         obj.save(update_theme=update_theme)
 
     def delete_model(self, request, obj):
-        obj.deleted = True
+        obj.trans_delete()
         obj.save()

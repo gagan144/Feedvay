@@ -109,7 +109,7 @@
                                     </li>
                                     {% if list_owned_brands.count %}<li role="separator" class="divider divider_custom"></li>{% endif %}
                                     {% for b in list_owned_brands %}
-                                        <li {% if b == request.curr_brand %}class="active"{% endif %} style="{% if b.deleted %}opacity:0.6;{% endif %}">
+                                        <li {% if b == request.curr_brand %}class="active"{% endif %} style="{% if b.status == 'deleted' %}opacity:0.6;{% endif %}">
                                             <a href="{% url 'console_home' %}b/{{ b.brand_uid }}/">
                                                 <img src="{{ b.icon.url }}" style="height: 16px;">&nbsp;
                                                 {{ b.name }}

@@ -4,9 +4,11 @@
 
 from django.core.management.base import BaseCommand, CommandError
 import os
+from django.db.models import Q
 
 from utilities.theme import render_skin
 from brands.models import Brand
+
 
 class Command(BaseCommand):
     """
@@ -49,7 +51,7 @@ class Command(BaseCommand):
 
             # (2) Brand skins
             self.stdout.write(self.style.SUCCESS("Updating themes for brands ..."))
-            for brand in Brand.objects.filter(deleted=False):
+            for brand in Brand.objects.all().exclude(status=Brand.ST_DELETED):
                 self.stdout.write(self.style.SUCCESS("Updating brand '{}'...".format(brand.name)))
                 brand.update_theme_files(auto_save=True)
 

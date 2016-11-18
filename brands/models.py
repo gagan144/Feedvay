@@ -49,7 +49,7 @@ class Brand(models.Model):
             - **Failed** brands are not operational and are not shown to the public.
             - **Verified** brands have no restrictions.
         - Brand can be **active** or inactive. It cannot be active if it is not verified. However when verified, activeness can be toggled.
-        - Brand cannot be deleted. To **delete** brand, mark it ``deleted``. A brand can be marked deleted at any status or time.
+        - Brand cannot be deleted. To **delete** brand,change status to ``deleted``. A brand can be marked any time.
         - If verification fails, it is mandatory to provide reason. This reason will be shown to the user.
         - **Claims** on the brand can disabled if brand is known such as top brands or contracted clients.
 
@@ -63,11 +63,13 @@ class Brand(models.Model):
     ST_VERF_PENDING = 'verification_pending'
     ST_VERIFIED = 'verified'
     ST_VERF_FAILED = 'verification_failed'
+    ST_DELETED = 'deleted'
 
     CH_STATUS = (
         (ST_VERF_PENDING, 'Verification pending'),
         (ST_VERIFIED, 'Verified'),
-        (ST_VERF_FAILED, 'Verification failed')
+        (ST_VERF_FAILED, 'Verification failed'),
+        (ST_DELETED, 'Deleted')
     )
 
     # --- Fields ---
@@ -89,7 +91,6 @@ class Brand(models.Model):
     status      = FSMField(default=ST_VERF_PENDING, choices=CH_STATUS, protected=True, db_index=True, editable=False, help_text='Verification status of brand.')
     failed_reason = models.TextField(null=True, blank=True, help_text='Reason stating why this brand was failed during verification. This is shown to the user.')
     active      = models.BooleanField(default=False, db_index=True, help_text='Switch to disable brand temporarly. Configurations/editting can be made however, brand does not appear to public.')
-    deleted     = models.BooleanField(default=False, db_index=True, help_text='If true, it means this brand has been deleted. All operations are stopped from now. Brand does not appears to public. This must be used rarely.')
     disable_claim = models.BooleanField(default=False, help_text='Set true to stop any further claims on this brand. Use this for top known brands or contracted clients.')
 
     created_by  = models.ForeignKey(User, editable=False, help_text='User that created this brand. This can be a staff or registered user.')
@@ -102,19 +103,6 @@ class Brand(models.Model):
     def __unicode__(self):
         return "{}: {}".format(self.id, self.name)
 
-    def mark_deleted(self):
-        """
-        Method to mark this brand deleted. Use this method with caution.
-        Caution! Once marked, all operations on the brand are stopped and everything is freezed.
-        You cannot edit this brand and its entities however, you can view them.
-
-        Deleted brand is not shown to the public.
-
-        **Authors**: Gagandeep Singh
-        """
-
-        self.deleted = True
-        self.save()
 
     # --- Transitions ---
     @fsm_log_by
@@ -149,6 +137,20 @@ class Brand(models.Model):
         **Authors**: Gagandeep Singh
         """
         self.active = False
+
+    @fsm_log_by
+    @transition(field=status, source=[ST_VERF_PENDING, ST_VERIFIED, ST_VERF_FAILED], target=ST_DELETED)
+    def trans_delete(self):
+        """
+        Transition edge to mark this brand as deleted. Use this method with caution.
+        Once marked, all operations on the brand are stopped and everything is freezed.
+        You cannot edit this brand and its entities however, you can view them.
+
+        Deleted brand is not shown to the public.
+
+        **Authors**: Gagandeep Singh
+        """
+        pass
 
     # --- /Transitions ---
 
@@ -272,7 +274,7 @@ class Brand(models.Model):
         super(self.__class__, self).save(*args, **kwargs)
 
     def delete(self, using=None, keep_parents=False):
-        raise ValidationError("You cannot delete a brand. Please use 'mark_deleted()' method to mark this marked as deleted.")
+        raise ValidationError("You cannot delete a brand. Please use 'trans_delete()' method to mark this marked as deleted.")
 
 
 class BrandOwner(models.Model):

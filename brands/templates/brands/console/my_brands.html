@@ -46,8 +46,8 @@
             <hr class="hr_dark" style="margin: 10px 0px 20px 0px;"/>
 
             {% for b in list_owned_brands %}
-                <div class="panel_brand {% if b.deleted %}inactive{% endif %}">
-                    {% if b.deleted %}
+                <div class="panel_brand {% if b.status == 'deleted' %}inactive{% endif %}">
+                    {% if b.status == 'deleted' %}
                         <span href="#" class="label label-danger label-ribbon right">
                             Deleted
                         </span>

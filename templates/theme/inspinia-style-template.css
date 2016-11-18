@@ -8433,6 +8433,15 @@ label > small{
   border-radius: 3px;
 }
 
+.table_borderless tbody tr td,
+.table_borderless tbody tr th,
+.table_borderless thead tr th,
+.table_borderless thead tr td,
+.table_borderless tfoot tr th,
+.table_borderless tfoot tr td {
+    border: none;
+}
+
 /* ----- Top navbar ----- */
 .top_nav_div{
   border-bottom-color: {{ PRIMARY }} !important;

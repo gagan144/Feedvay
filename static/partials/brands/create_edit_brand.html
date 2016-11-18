@@ -1,0 +1,130 @@
+<style>
+    .color_preview_group {
+        padding: 3px;
+    }
+
+    .color_preview_group > div {
+        width: 25px;
+        height: 25px;
+    }
+</style>
+<form name="form_create_edit_brand" class="form-horizontal" novalidate>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Name<span class="required">*</span>:</label>
+        <div class="col-sm-7">
+            <input type="text" name="name" ng-model="data.name" class="form-control" placeholder="Enter name of the brand." required>
+        </div>
+    </div>
+
+    <div class="hr-line-dashed"></div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Description<span class="required">*</span>:</label>
+        <div class="col-sm-7">
+            <textarea name="description" ng-model="data.description" class="form-control" placeholder="Recommended limit 150-160 characters." rows="4" style="resize:vertical;" required></textarea>
+            <p class="help-block">
+                Short and catchy description about your brand. Describe organisation purpose,
+                target audience and use keywords that best relate to the brand.<br/>
+                We recommend you to limit your description below 150-160 characters for better
+                user attention and search engine optimization (SEO). However, feel free to express thoughts as
+                per your wish.
+            </p>
+        </div>
+    </div>
+
+    <div class="hr-line-dashed"></div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">
+            Logo<span class="required">*</span>:
+        </label>
+        <div class="col-sm-7" style="padding-top: 7px;">
+            Upload a beautiful logo image of your brand that will be visible to public. Your
+            logo is your unique identity and expresses your organisation at its best. Kindly keep in
+            mind the following guidelines for better quality:
+            <ul>
+                <li>Image must be of <code>300x100 pixel</code> resolution (width being larger).</li>
+                <li><code>.PNG</code> extension is recommended with transparent background if your background is empty.</li>
+                <li>Size of the image must be less than <code>15 KB</code> to avoid viewing delay in slow networks.</li>
+            </ul>
+
+            <div style="margin: 10px 0px 5px 0px;">
+                <img id="logo_preview" src="" class="img-thumbnail" style="max-width: 300px;">
+            </div>
+            <input type="file" name="file_logo" ng-model="data.file_logo" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" required validate-file="" preview-image="'logo_preview'" ng-change="get_colors();">
+
+            {$ form_create_edit_brand.file_logo.$valid $}
+
+            <div>
+                {$ pallets $}
+            </div>
+        </div>
+    </div>
+
+    <div class="hr-line-dashed"></div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">
+            Icon<span class="required">*</span>:
+        </label>
+        <div class="col-sm-7" style="padding-top: 7px;">
+            Icon of your brand which can be your logo or major part of the logo. <br/>
+            Guidelines to upload an icon image are:
+            <ul>
+                <li>Image must be of <code>64x64 pixel</code> resolution.</li>
+                <li><code>.PNG</code> extension is recommended with transparent background if your background is empty.</li>
+                <li>Size of the image must be less than <code>15 KB</code> to avoid viewing delay in slow networks.</li>
+            </ul>
+
+            <div style="margin: 10px 0px 5px 0px;">
+                <img id="icon_preview" src="" class="img-thumbnail" style="max-width: 64px;">
+            </div>
+            <input type="file" name="file_icon" ng-model="data.file_icon" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" required validate-file="" preview-image="'icon_preview'">
+
+            {$ form_create_edit_brand.file_icon.$valid $}
+        </div>
+    </div>
+
+    <div class="hr-line-dashed"></div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">
+            Customization:
+        </label>
+        <div class="col-sm-7" style="padding-top: 7px;">
+            Personalize your brand pages & web portal by changing UI theme.
+            We have identified few major colors from your logo for your ease, however you can always
+            select your own color.
+
+            <table class="table table_borderless" style="margin: 10px 0px 0px 0px;width: auto;">
+                <tr>
+                    <td style="width: inherit;padding-top: 13px;">
+                        <label>Primary:</label>
+                    </td>
+                    <td>
+                        <div class="input-group" style="display: inline-table;">
+                            <span class="input-group-addon color_preview_group">
+                                <div ng-style="{'background-color': data.ui_theme.primary}">&nbsp;</div>
+                            </span>
+                            <input colorpicker type="text" ng-model="data.ui_theme.primary" class="form-control fake_readonly" style="width: 100px;" readonly/>
+                            <a href="javascript: void(0);" class="input-group-addon" ng-click="data.ui_theme.primary = null;">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+
+                        <div class="pallets">
+                            <span class="swatch swatch_picker" ng-repeat="pallet in pallets" ng-style="{'background-color': pallet}" ng-click="data.ui_theme.primary=pallet;" title="{$ pallet $}"></span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+
+    <div class="hr-line-dashed"></div>
+    <div class="form-group">
+        <div class="col-sm-9 col-sm-offset-3">
+            <button class="btn btn-primary" type="submit" ng-disabled="form_create_edit_brand.$invalid" ng-click="submit_brand(form_create_edit_brand);">
+                {$ purpose=='edit'?'Update and send for verification':'Create and send for verification' $}
+            </button>
+        </div>
+    </div>
+
+</form>

@@ -254,6 +254,27 @@
     background-color: #FFFFFF !important;
 }
 
+/* ----- Pallets & swatches ----- */
+.swatch {
+    display: inline-block;
+    height: 34px;
+    width: 34px;
+    border: solid 1px rgba(0, 0, 0, 0.3);
+    border-radius: 50px;
+    -webkit-transition: 1s;
+    -moz-transition: 1s;
+    margin-right: 5px;
+}
+.swatch.swatch_picker{
+    cursor: pointer;
+}
+
+.pallets{
+    display: inline-table;
+    margin-left: 12px;
+}
+/* ----- Pallets & swatches ----- */
+
 /* ---------- Desktop ---------- */
 @media (min-width: 767px) {
     .mobile_show{

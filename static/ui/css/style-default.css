@@ -3,7 +3,7 @@
 /*
  *   Feedvay UI Theme
  *   UI version: INSP - 2.6.2
- *   Created on: 18-11-2016 15:32:59 0
+ *   Created on: 18-11-2016 16:16:35 0
 */
 h1,
 h2,
@@ -8430,6 +8430,15 @@ label > small{
   padding: 15px 20px 20px 20px;
   border: solid 1px #e7eaec;
   border-radius: 3px;
+}
+
+.table_borderless tbody tr td,
+.table_borderless tbody tr th,
+.table_borderless thead tr th,
+.table_borderless thead tr td,
+.table_borderless tfoot tr th,
+.table_borderless tfoot tr td {
+    border: none;
 }
 
 /* ----- Top navbar ----- */

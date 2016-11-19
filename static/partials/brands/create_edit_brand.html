@@ -8,11 +8,6 @@
         height: 25px;
     }
 </style>
-<!-- delete -->
-    <input type="file" file-model="myFile"/>
-        <button ng-click="submit_brand()">upload me</button>
-    <!-- /delete -->
-
 <form name="form_create_edit_brand" class="form-horizontal" novalidate>
 
     <div class="form-group">
@@ -59,13 +54,10 @@
             <div style="margin: 10px 0px 5px 0px;">
                 <img id="logo_preview" src="" class="img-thumbnail" style="max-width: 300px;">
             </div>
-            <!-- <input type="file" name="file_logo" ng-model="data.file_logo" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" required validate-file="" preview-image="'logo_preview'" ng-change="get_colors();"> -->
-{#            <input type="file" file-model="myFile"/>#}
+            <input type="file" name="file_logo" file-model="file_logo" ng-model="data.file_logo" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" required validate-file="" preview-image="'logo_preview'" ng-change="get_colors();">
             <div ng-messages="form_create_edit_brand.file_logo.$dirty && form_create_edit_brand.file_logo.$error" role="alert" class="error_messages">
                 <label ng-message="required" class="error">Please select an image.</label>
             </div>
-
-            {$ file_logo $}
 
             {$ form_create_edit_brand.file_logo.$error $}
         </div>
@@ -88,7 +80,7 @@
             <div style="margin: 10px 0px 5px 0px;">
                 <img id="icon_preview" src="" class="img-thumbnail" style="max-width: 64px;">
             </div>
-            <input type="file" name="file_icon" ng-model="data.file_icon" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" required validate-file="" preview-image="'icon_preview'">
+            <input type="file" name="file_icon" file-model="file_icon" ng-model="data.file_icon" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" required validate-file="" preview-image="'icon_preview'">
             <div ng-messages="form_create_edit_brand.file_icon.$dirty && form_create_edit_brand.file_icon.$error" role="alert" class="error_messages">
                 <label ng-message="required" class="error">Please select an image.</label>
             </div>
@@ -115,7 +107,7 @@
                             <span class="input-group-addon color_preview_group">
                                 <div ng-style="{'background-color': data.ui_theme__primary}">&nbsp;</div>
                             </span>
-                            <input colorpicker type="text" ng-model="data.ui_theme__primary" class="form-control fake_readonly" style="width: 100px;" placeholder="Select" readonly/>
+                            <input colorpicker type="text" name="ui_theme__primary" ng-model="data.ui_theme__primary" class="form-control" style="width: 100px;" placeholder="Select" validate-hex-color />
                             <a href="javascript: void(0);" class="input-group-addon" ng-click="data.ui_theme__primary = null;">
                                 <i class="fa fa-times"></i>
                             </a>
@@ -123,6 +115,10 @@
 
                         <div class="pallets">
                             <span class="swatch swatch_picker" ng-repeat="pallet in pallets" ng-style="{'background-color': pallet}" ng-click="data.ui_theme__primary=pallet;" title="{$ pallet $}"></span>
+                        </div>
+
+                        <div ng-messages="form_create_edit_brand.ui_theme__primary.$dirty && form_create_edit_brand.ui_theme__primary.$error" role="alert" class="error_messages">
+                            <label ng-message="validate-hex-color" class="error">Invalid color code.</label>
                         </div>
                     </td>
                 </tr>

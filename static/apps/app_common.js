@@ -124,7 +124,34 @@ function fileModel($parse) {
             });
         }
     };
-};
+}
+
+
+function validateHexColor() {
+    // DOM usage: validate-hex-color
+    return {
+        require: 'ngModel',
+        link: function (scope, elem, attr, ngModel) {
+            var regex = /^#[0-9A-F]{6}$/i;
+
+            function validate_hex_color(value){
+                if(value == null){
+                    ngModel.$setValidity('validate-hex-color', true);
+                }
+                else{
+                    var valid = regex.test(value);
+                    ngModel.$setValidity('validate-hex-color', valid);
+                }
+                return value;
+            }
+
+            ngModel.$parsers.push(validate_hex_color);      // For DOM -> model validation
+            ngModel.$formatters.push(validate_hex_color);   // For model -> DOM validation
+        }
+    };
+}
+
+
 
 /* ----- UI Theme ----- */
 /**
@@ -157,6 +184,7 @@ angular.module('feedvay.common',[])
 .directive('remodelDatetime', remodelDatetime)
 .directive('validateFile', validateFile)
 .directive('previewImage', previewImage)
+.directive('validateHexColor', validateHexColor)
 .directive('fileModel', ['$parse', fileModel])
 
 .directive('pageTitle', pageTitle);

@@ -4,6 +4,7 @@
 from django.shortcuts import render
 
 from utilities.decorators import registered_user_only
+from utilities.api_utils import ApiResponse
 
 # ==================== Console ====================
 @registered_user_only
@@ -32,5 +33,18 @@ def console_create_brand(request):
         "app_name": "app_create_brand"
     }
     return render(request, 'brands/console/create_brand.html', data)
+
+@registered_user_only
+def console_save_brand(request):
+    """
+    API view to create or edit a brand. User fills and submits form and depending upon
+    whether id is provided or not, brand is either created or updated request is made.
+    """
+
+    if request.method.lower() == 'post':
+        pass
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
 # ==================== /Console ====================

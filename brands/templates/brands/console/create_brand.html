@@ -135,15 +135,19 @@
             }
 
             $scope.submit_brand = function(form_obj){
-{#                if(form_obj.$invalid){#}
-{#                    return false;#}
-{#                }#}
-
-                var file = $scope.myFile;
+                if(form_obj.$invalid){
+                    return false;
+                }
 
                 // Prepare form data
                 var fd = new FormData();
-                fd.append('file', file);
+                for(var key in $scope.data){
+                    if(!key.startsWith("file_")) {
+                        fd.append(key, $scope.data[key]);
+                    }
+                }
+                fd.append('file_logo', $scope.file_logo);
+                fd.append('file_icon', $scope.file_icon);
 
                 $http.post(
                     "{% url 'console_save_brand' %}",

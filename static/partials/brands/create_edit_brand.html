@@ -19,6 +19,14 @@
 
     <div class="hr-line-dashed"></div>
     <div class="form-group">
+        <label class="col-sm-3 control-label">Acronym:</label>
+        <div class="col-sm-7">
+            <input type="text" name="acronym" ng-model="data.acronym" class="form-control" placeholder="Acronym of your brand." maxlength="10" required ng-class="{'error': (form_create_edit_brand.name.$dirty && form_create_edit_brand.name.$invalid) }">
+        </div>
+    </div>
+
+    <div class="hr-line-dashed"></div>
+    <div class="form-group">
         <label class="col-sm-3 control-label">Description<span class="required">*</span>:</label>
         <div class="col-sm-7">
             <textarea name="description" ng-model="data.description" class="form-control" placeholder="Recommended limit 150-160 characters." rows="4" style="resize:vertical;" required ng-class="{'error': (form_create_edit_brand.description.$dirty && form_create_edit_brand.description.$invalid) }"></textarea>

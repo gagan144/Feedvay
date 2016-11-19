@@ -10,11 +10,12 @@ class BrandCreateEditForm(forms.Form):
     Form to create or edit a brand.
     """
     name    = forms.CharField(required=True, max_length=255)
+    acronym = forms.CharField(required=False, max_length=10)
     description = forms.CharField(required=True)
     file_logo    = forms.ImageField(required=True)
     file_icon   = forms.ImageField(required=True)
 
-    ui_theme__primary = forms.CharField(required=True, max_length=7)
+    ui_theme__primary = forms.CharField(required=False, max_length=7)
 
     def clean(self):
         form_data = self.cleaned_data

@@ -100,6 +100,29 @@ class UserTokenAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+@admin.register(UserClaim)
+class UserClaimAdmin(admin.ModelAdmin):
+    """
+    Django admin model for :class:`accounts.models.UserClaim`.
+
+    **Authors**: Gagandeep Singh
+    """
+    list_display = ('registered_user', 'entity', 'entity_id', 'status', 'created_on')
+    list_filter = ('entity', 'status', 'created_on')
+    search_fields = ('registered_user__user__username', 'entity')
+    list_per_page = 20
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = [field.name for field in self.model._meta.fields if not field.editable]
+        return readonly_fields
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 
 # ---------- Override Django User Admin ----------
 class UserAdminOverride(auth_admin.UserAdmin):

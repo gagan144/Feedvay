@@ -52,7 +52,8 @@ class Brand(models.Model):
         - Brand can be **active** or inactive. It cannot be active if it is not verified. However when verified, activeness can be toggled.
         - Brand cannot be deleted. To **delete** brand,change status to ``deleted``. A brand can be marked any time.
         - If verification fails, it is mandatory to provide reason. This reason will be shown to the user.
-        - **Claims** on the brand can disabled if brand is known such as top brands or contracted clients.
+        - **Claims** on the brand can disabled if brand is known such as top brands or contracted clients. This can
+          **ONLY** be done by staff user. Owner do not have rights to set this property.
 
     **State chart diagram for brand status**:
 
@@ -93,7 +94,7 @@ class Brand(models.Model):
     status      = FSMField(default=ST_VERF_PENDING, choices=CH_STATUS, protected=True, db_index=True, editable=False, help_text='Verification status of brand.')
     failed_reason = models.TextField(null=True, blank=True, help_text='Reason stating why this brand was failed during verification. This is shown to the user.')
     active      = models.BooleanField(default=False, db_index=True, help_text='Switch to disable brand temporarly. Configurations/editting can be made however, brand does not appear to public.')
-    disable_claim = models.BooleanField(default=False, help_text='Set true to stop any further claims on this brand. Use this for top known brands or contracted clients.')
+    disable_claim = models.BooleanField(default=False, help_text='Set true to stop any further claims on this brand. Only staff can set this property, user cannot.')
 
     created_by  = models.ForeignKey(User, editable=False, help_text='User that created this brand. This can be a staff or registered user.')
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')

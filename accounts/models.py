@@ -399,13 +399,23 @@ class UserClaim(models.Model):
     **Points**:
 
         - Only :class:`accounts.models.RegisterUser` can make a claim.
+        - Claim cannot be made on disabled entities.
+        - If an entity's claim is disabled after being claimed, all claims are automatically rejected.
+          Claim permission on entity can only be disabled by staff.
+        - Remark is necessary when claim is rejected.
+        - Scoring is automatically updated for the user when status changes.
+        - This model automatically sends owls on status update.
+
+    ** Statechart diagram for claim status**:
+
+
 
     **Authors**: Gagandeep Singh
     """
     # --- Enums ---
     ENTITY_BRAND = 'brand'
     CH_ENTITY = (
-        (ENTITY_BRAND, 'Brand')
+        (ENTITY_BRAND, 'Brand'),
     )
 
     ST_NEW = 'new'
@@ -419,12 +429,20 @@ class UserClaim(models.Model):
 
     # --- Fields ---
     registered_user = models.ForeignKey(RegisteredUser, db_index=True, editable=False, help_text='Registered user who made a claim.')
-    entity      = models.CharField(choices=CH_ENTITY, editable=False, help_text='Entity on which claim has been made.')
-    entity_id   = models.IntegerField(editable=False, help_text='Model instance id of that entity.')
-    status      = FSMField(default=ST_NEW, protected=True, db_index=True, editable=False, help_text='Status of user registration.')
+    entity      = models.CharField(choices=CH_ENTITY, max_length=32, editable=False, help_text='Entity class on which claim has been made.')
+    entity_id   = models.IntegerField(editable=False, help_text='Entity model instance id which is being claimed.')
+    status      = FSMField(default=ST_NEW, protected=True, db_index=True, editable=False, help_text='Status of the claim.')
+
+    remarks     = models.TextField(null=True, blank=True, help_text='Remarks related to this claim. Required when claim is rejected.')
+
+    created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which claim was made.')
+    modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this claim was modified.')
 
     class Meta:
         unique_together = ('registered_user', 'entity', 'entity_id')
+
+    def __unicode__(self):
+        return "{} - {}:{}".format(self.registered_user, self.entity, self.entity_id)
 
     # ----- Transitions -----
     @fsm_log_by
@@ -432,6 +450,8 @@ class UserClaim(models.Model):
     def trans_accept(self):
         """
         Claim has been found genuine and has been accepted. Call this after everythin has been processed.
+
+        **Authors**: Gagandeep Singh
         """
         pass
 
@@ -440,6 +460,8 @@ class UserClaim(models.Model):
     def trans_accept(self):
         """
         Claim has been found genuine and has been accepted. Call this after everything has been processed.
+
+        **Authors**: Gagandeep Singh
         """
         pass
 
@@ -448,8 +470,49 @@ class UserClaim(models.Model):
     def trans_reject(self):
         """
         Claim was found false. Call this after everything has been processed.
+
+        **Authors**: Gagandeep Singh
         """
         pass
+
+    def clean(self):
+        """
+        Method to clean & validate data fields.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        if self.pk:
+            # Update modified date
+            self.modified_on = timezone.now()
+
+        # Verify entity being claimed
+        if self.entity == UserClaim.ENTITY_BRAND:
+            from brands.models import Brand
+            try:
+                brand = Brand.objects.get(id=int(self.entity_id))
+                if not self.pk and brand.disable_claim:
+                    # Check only for new claim; Brand claim can be disabled after a claim.
+                    raise ValidationError("Brand with id '{}' cannot be claimed.".format(self.entity_id))
+
+            except Brand.DoesNotExist:
+                raise ValidationError("Brand with id '{}' does not exists.".format(self.entity_id))
+
+        # Remarks check
+        if self.status == UserClaim.ST_REJECTED and (self.remarks is None or self.remarks == ''):
+            raise ValidationError("Please provide a remark for rejecting this claim.")
+
+        super(self.__class__, self).clean()
+
+    def save(self, *args, **kwargs):
+        """
+        Pre-save method for this model.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        self.clean()
+        super(self.__class__, self).save(*args, **kwargs)
 
 # ---------- MongoDb models ----------
 

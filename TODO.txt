@@ -18,7 +18,6 @@
     - image size validations
     - New Brand
         - Autocomplete brand name check
-    - Sphinx docs
 
 - Data privacy conventions (public, encypted, client shared etc)
 - SEO

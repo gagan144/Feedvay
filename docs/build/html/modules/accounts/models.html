@@ -293,6 +293,58 @@ before changing as per your use case for security reasons.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="accounts.models.UserClaim">
+<em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserClaim</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserClaim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to record all claims by registered user on various entities such as
+brands, POBS etc.</p>
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Only <code class="xref py py-class docutils literal"><span class="pre">accounts.models.RegisterUser</span></code> can make a claim.</li>
+<li>Claim cannot be made on disabled entities.</li>
+<li>If an entity&#8217;s claim is disabled after being claimed, all claims are automatically rejected.
+Claim permission on entity can only be disabled by staff.</li>
+<li>Remark is necessary when claim is rejected.</li>
+<li>Scoring is automatically updated for the user when status changes.</li>
+<li>This model automatically sends owls on status update.</li>
+</ul>
+</div></blockquote>
+<p><strong>Statechart diagram for claim status</strong>:</p>
+<blockquote>
+<div><img alt="../../_images/user_claim_statechart.jpg" src="../../_images/user_claim_statechart.jpg" />
+</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="accounts.models.UserClaim.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserClaim.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.UserClaim.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserClaim.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.UserClaim.trans_approved">
+<code class="descname">trans_approved</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserClaim.trans_approved" title="Permalink to this definition">¶</a></dt>
+<dd><p>Claim has been found genuine and has been accepted. Call this after everything has been processed.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.UserClaim.trans_disapproved">
+<code class="descname">trans_disapproved</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserClaim.trans_disapproved" title="Permalink to this definition">¶</a></dt>
+<dd><p>Claim was found false. Call this after everything has been processed.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="accounts.models.UserProfile">
 <em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserProfile</code><span class="sig-paren">(</span><em>*args</em>, <em>**values</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserProfile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mongodb model to store registered user information. This model includes wide variety
@@ -376,14 +428,13 @@ so <strong>DO NOT</strong> use them in queries.</p>
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<dl class="last docutils">
-<dt>Following attributes will be replaced by that in <code class="xref py py-class docutils literal"><span class="pre">django.contrib.auth.models.User</span></code> model:</dt>
-<dd><ul class="first last simple">
+<p>Following attributes will be replaced by that in <code class="xref py py-class docutils literal"><span class="pre">django.contrib.auth.models.User</span></code> model:</p>
+<blockquote class="last">
+<div><ul class="simple">
 <li>first_name</li>
 <li>last_name</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </div>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>

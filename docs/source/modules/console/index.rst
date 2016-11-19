@@ -54,4 +54,5 @@ Contents
 
        views
        middleware
+       context_processors
 

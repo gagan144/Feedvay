@@ -406,9 +406,9 @@ class UserClaim(models.Model):
         - Scoring is automatically updated for the user when status changes.
         - This model automatically sends owls on status update.
 
-    ** Statechart diagram for claim status**:
+    **Statechart diagram for claim status**:
 
-
+        .. image:: ../../_static/accounts/user_claim_statechart.jpg
 
     **Authors**: Gagandeep Singh
     """
@@ -447,17 +447,7 @@ class UserClaim(models.Model):
     # ----- Transitions -----
     @fsm_log_by
     @transition(field=status, source=ST_NEW, target=ST_ACCEPTED)
-    def trans_accept(self):
-        """
-        Claim has been found genuine and has been accepted. Call this after everythin has been processed.
-
-        **Authors**: Gagandeep Singh
-        """
-        pass
-
-    @fsm_log_by
-    @transition(field=status, source=ST_NEW, target=ST_ACCEPTED)
-    def trans_accept(self):
+    def trans_approved(self):
         """
         Claim has been found genuine and has been accepted. Call this after everything has been processed.
 
@@ -467,7 +457,7 @@ class UserClaim(models.Model):
 
     @fsm_log_by
     @transition(field=status, source=ST_NEW, target=ST_REJECTED)
-    def trans_reject(self):
+    def trans_disapproved(self):
         """
         Claim was found false. Call this after everything has been processed.
 
@@ -607,6 +597,7 @@ class UserProfile(Document):
 
         .. warning::
             Following attributes will be replaced by that in :class:`django.contrib.auth.models.User` model:
+
                 - first_name
                 - last_name
 

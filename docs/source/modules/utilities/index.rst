@@ -13,4 +13,5 @@ Contents
        decorators
        theme
        custom_storages
+       validators
 

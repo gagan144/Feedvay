@@ -210,6 +210,7 @@
     border: 1px solid #e7eaec;
     border-radius: 3px;
     position: relative;
+    width: 280px;
 }
 .panel_brand:hover{
     border-color: #b4b8ba;

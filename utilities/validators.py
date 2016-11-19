@@ -13,4 +13,4 @@ def validate_hex_color(value):
 
     **Authors**: Gagandeep Singh
     """
-    return False if re.match('^#[0-9A-F]{6}$', value, re.IGNORECASE) else True
+    return True if re.match('^#[0-9A-F]{6}$', value, re.IGNORECASE) else False

@@ -20,6 +20,7 @@ class BrandCreateEditForm(forms.Form):
         form_data = self.cleaned_data
 
         # validate primary color
-        if not validate_hex_color(form_data['ui_theme__primary']):
-            self._errors["ui_theme__primary"] = ["Invalid color code."]
+        if form_data['ui_theme__primary']:
+            if not validate_hex_color(form_data['ui_theme__primary']):
+                self._errors["ui_theme__primary"] = ["Invalid color code."]
         return form_data

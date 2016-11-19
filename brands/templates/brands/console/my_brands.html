@@ -62,9 +62,9 @@
                         <div>
                             <a class="title" href="{% url 'console_home' %}b/{{ b.brand_uid }}/">{{ b.name }}</a>
                         </div>
-                        <small>
+                        <div style="font-size: 85%;">
                             {{ b.description|truncatechars:150 }}
-                        </small>
+                        </div>
                     </div>
                     {% if b.status == 'verification_failed' %}
                         <div class="footer_title bg-danger">

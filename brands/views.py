@@ -4,6 +4,7 @@
 from django.shortcuts import render
 
 from brands.forms import *
+from brands import operations as ops
 
 from utilities.decorators import registered_user_only
 from utilities.api_utils import ApiResponse
@@ -56,11 +57,10 @@ def console_save_brand(request):
 
             if brand_id:
                 # Brand edit; Create edit request
-                pass
+                raise NotImplementedError("Brand edit yet to be implemented.")
             else:
-                # New Brand; Create brand
+                ops.create_new_brand(form_data, request.user.registereduser)
                 return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Your request has been send for verification.').gen_http_response()
-
         else:
             return ApiResponse(status=ApiResponse.ST_FAILED, message='Incomplete/Invalid submission.').gen_http_response()
     else:

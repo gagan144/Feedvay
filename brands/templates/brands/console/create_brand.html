@@ -111,7 +111,7 @@
                 // Prepare form data
                 var fd = new FormData();
                 for(var key in $scope.data){
-                    if(!key.startsWith("file_")) {
+                    if(!key.startsWith("file_") && $scope.data[key]!=null) {
                         fd.append(key, $scope.data[key]);
                     }
                 }

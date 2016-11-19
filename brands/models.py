@@ -78,6 +78,7 @@ class Brand(models.Model):
     brand_uid   = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True, editable=False, help_text='Unique ID of a brand which are hard to guess and can be used in urls. ')
     name        = models.CharField(max_length=255, unique=True, db_index=True, help_text='Name of the brand.')
     slug        = models.SlugField(unique=True, blank=True, db_index=True, help_text='Slug of the name used for url referencing and dedupe matching.')
+    acronym     = models.CharField(max_length=10, null=True, blank=True, help_text='Acronym of the brand.')
     description = models.TextField(max_length=512, help_text='Short description about the brand. Include keywords for better SEO and keep characters between 150-160.')
 
     owners      = models.ManyToManyField(RegisteredUser, through='BrandOwner', help_text='Owners of this brand.')

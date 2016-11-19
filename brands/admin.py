@@ -32,13 +32,13 @@ class BrandAdmin(admin.ModelAdmin):
     list_display = ('name', 'brand_uid', 'status', 'active', 'modified_on')
     list_filter = ('status', 'active', 'created_on')
     raw_id_fields = ('created_by', )
-    search_fields = ('name', 'brand_uid')
+    search_fields = ('name', 'acronym', 'brand_uid')
     list_per_page = 20
     inlines = [BrandOwnerInline]
 
     fieldsets = (
         (None, {
-            'fields': ('brand_uid', 'name', 'slug', 'description')
+            'fields': ('brand_uid', 'name', 'slug', 'acronym', 'description')
         }),
         ('Status', {
             'fields': ('status', 'failed_reason', 'active', 'disable_claim')

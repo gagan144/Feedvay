@@ -83,8 +83,8 @@
                             <i class="fa fa-reorder"></i>
                         </button>
                         {% if request.curr_brand %}
-                            <a href="{% url 'console_home' %}b/{{ request.curr_brand.brand_uid }}/" class="navbar-brand navbar_brand_custom" title="{{ request.curr_brand.name }} management console">
-                                <img src="{{ request.curr_brand.logo.url }}" style="height: 34px !important;" alt="{{ request.curr_brand.name }}">
+                            <a href="{% url 'console_home' %}b/{{ request.curr_brand.brand_uid }}/" class="navbar-brand navbar_brand_custom" title="{% if request.curr_brand.acronym %}{{ request.curr_brand.acronym }}{% else %}{{ request.curr_brand.name }}{% endif %} management console">
+                                <img src="{{ request.curr_brand.logo.url }}" style="height: 34px !important;" alt="{% if request.curr_brand.acronym %}{{ request.curr_brand.acronym }}{% else %}{{ request.curr_brand.name }}{% endif %}">
                             </a>
                         {% else %}
                             <a href="{% url 'console_home' %}" class="navbar-brand navbar_brand_custom" title="Feedvay management console">

@@ -32,21 +32,7 @@
     <div class="content_box" style="padding-top: 30px;margin-bottom: 20px;">
 {#        <div ng-include="'{% get_static_prefix %}partials/brands/create_edit_brand.html'" ng-controller="NewBrandFormCtrl" ng-init="purpose='edit'"></div>#}
         <div static-include="{% get_static_prefix %}partials/brands/create_edit_brand.html" ng-controller="NewBrandFormCtrl" ng-init="purpose='create'"></div>
-
-
     </div>
-
-{#    <div ng-controller = "NewBrandFormCtrl">#}
-{#        <input type="file" file-model="myFile"/>#}
-{#        <button ng-click="submit_brand()">upload me</button>#}
-{#    </div>#}
-
-
-{#    <div ng-controller = "myCtrl">#}
-{#        <input type="file" file-model="myFile"/>#}
-{#        <button ng-click="uploadFile()">upload me</button>#}
-{#        {{ myFile }}#}
-{#    </div>#}
 {% endblock %}
 
 {% block scripts %}
@@ -78,25 +64,8 @@
             $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
         });
 
-
-{#        APP.directive('fileModel', ['$parse', function ($parse) {#}
-{#            return {#}
-{#                restrict: 'A',#}
-{#                link: function (scope, element, attrs) {#}
-{#                    var model = $parse(attrs.fileModel);#}
-{#                    var modelSetter = model.assign;#}
-{##}
-{#                    element.bind('change', function () {#}
-{#                        scope.$apply(function () {#}
-{#                            modelSetter(scope, element[0].files[0]);#}
-{#                        });#}
-{#                    });#}
-{#                }#}
-{#            };#}
-{#        }]);#}
-
-        APP.controller('NewBrandFormCtrl', function($scope, $http){
-            $scope.pallets = []; //["#7a4426", "#7b9eae", "#348945", "#141414"];
+        APP.controller('NewBrandFormCtrl', function($scope, $http, $window){
+            $scope.pallets = [];
             $scope.data = {
                 ui_theme__primary: null
             }
@@ -157,112 +126,21 @@
                         headers: {'Content-Type': undefined}
                     }
                 )
-                .success(function () {
+                .success(function (response) {
+                    if(response.status=='success'){
+                        $window.location.href = '{% url 'console_brands' %}';
+                    }else{
+
+                    }
                 })
-                .error(function () {
+                .error(function (response) {
+                    console.log(response)
+
                 });
 
             }
 
-{#            $scope.submit_brand = function(form_obj){#}
-{#                if(form_obj.$invalid){#}
-{#                    return false;#}
-{#                }#}
-{##}
-{#                var post_data = new FormData();#}
-{#                for(var key in $scope.data){#}
-{#                    post_data.append(key, $scope.data[key]);#}
-{#                }#}
-{#                post_data.append('file_logo', $scope.file_logo);#}
-{##}
-{#                // Post to server#}
-{#                $http.post(#}
-{#                    "{% url 'console_save_brand' %}",#}
-{#                    post_data,#}
-{#                    {#}
-{#                        transformRequest: angular.identity,#}
-{#                        headers: {'Content-Type': undefined}#}
-{#                    }#}
-{#                    //$.param($scope.data),#}
-{#                )#}
-{#                $http({#}
-{#                    method: 'POST',#}
-{#                    url: "{% url 'console_save_brand' %}",#}
-{#                    headers: {#}
-{#                        'Content-Type': $scope.data.file_logo.type#}
-{#                    },#}
-{#                    data: {#}
-{#                        file_test: $scope.data.file_logo#}
-{#                    }#}
-{#                })#}
-{#                .then(#}
-{#                    function successCallback(response) {#}
-{#                        $scope.flags.submitting = false;#}
-{##}
-{#                        if(response.data.status == 'success'){#}
-{#                            $scope.flags.success = true;#}
-{#                            $scope.data_chng_pass = {};#}
-{#                        }else{#}
-{#                            $scope.flags.submit_err_msg = response.data.message;#}
-{#                        }#}
-{#                    },#}
-{#                    function errorCallback(response) {#}
-{#                        $scope.flags.submitting = false;#}
-{#                        if(response.status != -1){#}
-{#                            $scope.flags.error = true;#}
-{#                        }else{#}
-{#                            $.growl.error({#}
-{#                                title: '<i class="fa fa-signal"></i> Network error!',#}
-{#                                message: "Please check your internet connection."#}
-{#                            });#}
-{#                        }#}
-{#                    }#}
-{#                );#}
-{##}
-{#            }#}
-
-
         });
 
-
-{#        APP.service('fileUpload', ['$http', function ($http) {#}
-{#            this.uploadFileToUrl = function(file, uploadUrl){#}
-{#                var fd = new FormData();#}
-{#                fd.append('file', file);#}
-{#                $http.post(uploadUrl, fd, {#}
-{#                    transformRequest: angular.identity,#}
-{#                    headers: {'Content-Type': undefined}#}
-{#                })#}
-{#                .success(function(){#}
-{#                })#}
-{#                .error(function(){#}
-{#                });#}
-{#            }#}
-{#        }]);#}
-
-        APP.controller('myCtrl', function($scope, $http){
-
-            $scope.uploadFile = function(){
-                var file = $scope.myFile;
-                console.log('file is ' );
-                console.dir(file);
-                var uploadUrl = "{% url 'console_save_brand' %}";
-
-                var fd = new FormData();
-                fd.append('file', file);
-                $http.post(uploadUrl, fd, {
-                    transformRequest: angular.identity,
-                    headers: {'Content-Type': undefined}
-                })
-                .success(function(){
-                })
-                .error(function(){
-                });
-
-
-                //fileUpload.uploadFileToUrl(file, uploadUrl);
-            };
-
-        });
     </script>
 {% endblock %}

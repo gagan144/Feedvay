@@ -13,7 +13,7 @@
     <div class="form-group">
         <label class="col-sm-3 control-label">Name<span class="required">*</span>:</label>
         <div class="col-sm-7">
-            <input type="text" name="name" ng-model="data.name" class="form-control" placeholder="Enter name of the brand." required ng-class="{'error': (form_create_edit_brand.name.$dirty && form_create_edit_brand.name.$invalid) }">
+            <input type="text" name="name" ng-model="data.name" class="form-control" placeholder="Enter name of the brand." maxlength="255" required ng-class="{'error': (form_create_edit_brand.name.$dirty && form_create_edit_brand.name.$invalid) }">
         </div>
     </div>
 
@@ -107,7 +107,7 @@
                             <span class="input-group-addon color_preview_group">
                                 <div ng-style="{'background-color': data.ui_theme__primary}">&nbsp;</div>
                             </span>
-                            <input colorpicker type="text" name="ui_theme__primary" ng-model="data.ui_theme__primary" class="form-control" style="width: 100px;" placeholder="Select" validate-hex-color />
+                            <input colorpicker type="text" name="ui_theme__primary" ng-model="data.ui_theme__primary" class="form-control" style="width: 100px;" maxlength="7" placeholder="Select" validate-hex-color />
                             <a href="javascript: void(0);" class="input-group-addon" ng-click="data.ui_theme__primary = null;">
                                 <i class="fa fa-times"></i>
                             </a>

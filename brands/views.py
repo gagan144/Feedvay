@@ -3,6 +3,8 @@
 # permission of Gagandeep Singh.
 from django.shortcuts import render
 
+from brands.forms import *
+
 from utilities.decorators import registered_user_only
 from utilities.api_utils import ApiResponse
 
@@ -39,10 +41,28 @@ def console_save_brand(request):
     """
     API view to create or edit a brand. User fills and submits form and depending upon
     whether id is provided or not, brand is either created or updated request is made.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
     """
 
     if request.method.lower() == 'post':
-        pass
+        form_brand = BrandCreateEditForm(request.POST, request.FILES)
+
+        if form_brand.is_valid():
+            form_data = form_brand.cleaned_data
+            brand_id = request.POST.get('id', None)
+
+            if brand_id:
+                # Brand edit; Create edit request
+                pass
+            else:
+                # New Brand; Create brand
+                return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Your request has been send for verification.').gen_http_response()
+
+        else:
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Incomplete/Invalid submission.').gen_http_response()
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()

@@ -390,6 +390,67 @@ def user_logged_out_handler(sender, request, user, **kwargs):
 user_logged_in.connect(user_logged_in_handler)
 user_logged_out.connect(user_logged_out_handler)
 
+# ---------- User Claims ----------
+class UserClaim(models.Model):
+    """
+    Model to record all claims by registered user on various entities such as
+    brands, POBS etc.
+
+    **Points**:
+
+        - Only :class:`accounts.models.RegisterUser` can make a claim.
+
+    **Authors**: Gagandeep Singh
+    """
+    # --- Enums ---
+    ENTITY_BRAND = 'brand'
+    CH_ENTITY = (
+        (ENTITY_BRAND, 'Brand')
+    )
+
+    ST_NEW = 'new'
+    ST_ACCEPTED = 'accepted'
+    ST_REJECTED = 'rejected'
+    CH_STATUS = (
+        (ST_NEW, 'New'),
+        (ST_ACCEPTED, 'Accepted'),
+        (ST_REJECTED, 'Rejected')
+    )
+
+    # --- Fields ---
+    registered_user = models.ForeignKey(RegisteredUser, db_index=True, editable=False, help_text='Registered user who made a claim.')
+    entity      = models.CharField(choices=CH_ENTITY, editable=False, help_text='Entity on which claim has been made.')
+    entity_id   = models.IntegerField(editable=False, help_text='Model instance id of that entity.')
+    status      = FSMField(default=ST_NEW, protected=True, db_index=True, editable=False, help_text='Status of user registration.')
+
+    class Meta:
+        unique_together = ('registered_user', 'entity', 'entity_id')
+
+    # ----- Transitions -----
+    @fsm_log_by
+    @transition(field=status, source=ST_NEW, target=ST_ACCEPTED)
+    def trans_accept(self):
+        """
+        Claim has been found genuine and has been accepted. Call this after everythin has been processed.
+        """
+        pass
+
+    @fsm_log_by
+    @transition(field=status, source=ST_NEW, target=ST_ACCEPTED)
+    def trans_accept(self):
+        """
+        Claim has been found genuine and has been accepted. Call this after everything has been processed.
+        """
+        pass
+
+    @fsm_log_by
+    @transition(field=status, source=ST_NEW, target=ST_REJECTED)
+    def trans_reject(self):
+        """
+        Claim was found false. Call this after everything has been processed.
+        """
+        pass
+
 # ---------- MongoDb models ----------
 
 class UserProfile(Document):

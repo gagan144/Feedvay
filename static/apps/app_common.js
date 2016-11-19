@@ -1,6 +1,16 @@
 'use strict';
 
 // ---------- Directives ----------
+function staticInclude($http, $templateCache, $compile) {
+    return function (scope, element, attrs) {
+        var templatePath = attrs.staticInclude;
+        $http.get(templatePath, {cache: $templateCache}).success(function (response) {
+            var contents = element.html(response).contents();
+            $compile(contents)(scope);
+        });
+    };
+};
+
 function compareTo() {
     return {
         require: "ngModel",
@@ -100,6 +110,22 @@ function previewImage() {
     }
 }
 
+function fileModel($parse) {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            var model = $parse(attrs.fileModel);
+            var modelSetter = model.assign;
+
+            element.bind('change', function(){
+                scope.$apply(function(){
+                    modelSetter(scope, element[0].files[0]);
+                });
+            });
+        }
+    };
+};
+
 /* ----- UI Theme ----- */
 /**
  * pageTitle - Directive for set Page title - mata title
@@ -126,10 +152,12 @@ function pageTitle($rootScope, $timeout) {
 // ---------- /Directives ----------
 
 angular.module('feedvay.common',[])
+.directive('staticInclude', staticInclude)
 .directive("compareTo", compareTo)
 .directive('remodelDatetime', remodelDatetime)
 .directive('validateFile', validateFile)
 .directive('previewImage', previewImage)
+.directive('fileModel', ['$parse', fileModel])
 
 .directive('pageTitle', pageTitle);
 

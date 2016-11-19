@@ -8,7 +8,13 @@
         height: 25px;
     }
 </style>
+<!-- delete -->
+    <input type="file" file-model="myFile"/>
+        <button ng-click="submit_brand()">upload me</button>
+    <!-- /delete -->
+
 <form name="form_create_edit_brand" class="form-horizontal" novalidate>
+
     <div class="form-group">
         <label class="col-sm-3 control-label">Name<span class="required">*</span>:</label>
         <div class="col-sm-7">
@@ -53,10 +59,13 @@
             <div style="margin: 10px 0px 5px 0px;">
                 <img id="logo_preview" src="" class="img-thumbnail" style="max-width: 300px;">
             </div>
-            <input type="file" name="file_logo" ng-model="data.file_logo" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" required validate-file="" preview-image="'logo_preview'" ng-change="get_colors();">
+            <!-- <input type="file" name="file_logo" ng-model="data.file_logo" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" required validate-file="" preview-image="'logo_preview'" ng-change="get_colors();"> -->
+{#            <input type="file" file-model="myFile"/>#}
             <div ng-messages="form_create_edit_brand.file_logo.$dirty && form_create_edit_brand.file_logo.$error" role="alert" class="error_messages">
                 <label ng-message="required" class="error">Please select an image.</label>
             </div>
+
+            {$ file_logo $}
 
             {$ form_create_edit_brand.file_logo.$error $}
         </div>
@@ -104,16 +113,16 @@
                     <td>
                         <div class="input-group" style="display: inline-table;">
                             <span class="input-group-addon color_preview_group">
-                                <div ng-style="{'background-color': data.ui_theme.primary}">&nbsp;</div>
+                                <div ng-style="{'background-color': data.ui_theme__primary}">&nbsp;</div>
                             </span>
-                            <input colorpicker type="text" ng-model="data.ui_theme.primary" class="form-control fake_readonly" style="width: 100px;" placeholder="Select" readonly/>
-                            <a href="javascript: void(0);" class="input-group-addon" ng-click="data.ui_theme.primary = null;">
+                            <input colorpicker type="text" ng-model="data.ui_theme__primary" class="form-control fake_readonly" style="width: 100px;" placeholder="Select" readonly/>
+                            <a href="javascript: void(0);" class="input-group-addon" ng-click="data.ui_theme__primary = null;">
                                 <i class="fa fa-times"></i>
                             </a>
                         </div>
 
                         <div class="pallets">
-                            <span class="swatch swatch_picker" ng-repeat="pallet in pallets" ng-style="{'background-color': pallet}" ng-click="data.ui_theme.primary=pallet;" title="{$ pallet $}"></span>
+                            <span class="swatch swatch_picker" ng-repeat="pallet in pallets" ng-style="{'background-color': pallet}" ng-click="data.ui_theme__primary=pallet;" title="{$ pallet $}"></span>
                         </div>
                     </td>
                 </tr>

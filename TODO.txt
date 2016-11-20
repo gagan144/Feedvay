@@ -14,7 +14,6 @@
     - Suggestions Display view
 
 - Brands
-    - UI Changes; submit errors & ladda
     - image size validations
     - New Brand
         - Autocomplete brand name check

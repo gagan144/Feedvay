@@ -30,8 +30,8 @@
                     <li ng-class="{'active': $state.current.name=='details'}">
                         <a ui-sref="details"><i class="fa fa-info-circle"></i> Details</a>
                     </li>
-                    <li ng-class="{'active': $state.current.name=='owners'}">
-                        <a ui-sref="owners"><i class="fa fa-users"></i> Owners</a>
+                    <li ng-class="{'active': $state.current.name=='ownership'}">
+                        <a ui-sref="ownership"><i class="fa fa-users"></i> Ownership</a>
                     </li>
                 </ul>
                 <div class="tab-content">
@@ -87,10 +87,10 @@
                     templateUrl: "/static/partials/brands/delete.html",
                     data: { pageTitle: 'Details - {{ request.curr_brand.name }}' }
                 })
-                .state('owners', {
-                    url: "/owners",
+                .state('ownership', {
+                    url: "/ownership",
                     templateUrl: "/static/partials/brands/brand_owners.html",
-                    data: { pageTitle: 'Owners - {{ request.curr_brand.name }}' },
+                    data: { pageTitle: 'Ownership - {{ request.curr_brand.name }}' },
 {#                    controller: SecurityCtrl,#}
                 })
 

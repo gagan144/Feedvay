@@ -37,4 +37,5 @@ Contents
        models
        forms
        operations
+       api
 

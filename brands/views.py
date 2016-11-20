@@ -6,7 +6,7 @@ from django.shortcuts import render
 from brands.forms import *
 from brands import operations as ops
 
-from utilities.decorators import registered_user_only
+from utilities.decorators import registered_user_only, brand_console
 from utilities.api_utils import ApiResponse
 
 # ==================== Console ====================
@@ -67,5 +67,21 @@ def console_save_brand(request):
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+
+@registered_user_only
+@brand_console
+def console_brand_settings(request):
+    """
+    View for brand settings. Only applicable for brand console.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    data = {
+        "app_name": "app_brand_settings"
+    }
+    return render(request, 'brands/console/brand_settings.html', data)
 
 # ==================== /Console ====================

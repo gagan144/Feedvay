@@ -58,3 +58,27 @@ def registered_user_only(function, login_url=settings.LOGIN_URL, redirect_field_
     wrap.__doc__ = function.__doc__
     wrap.__name__ = function.__name__
     return wrap
+
+
+def brand_console(function):
+    """
+    Django view decorator to allow only brand related console page.
+    In case of failure, returns http 404.
+
+    .. note::
+        This decorators does not check user authentication. This decorator must be used after
+        any authentication check decorator.
+
+    **Authors**: Gagandeep Singh
+    """
+    def wrap(request, *args, **kwargs):
+        try:
+            curr_brand = request.curr_brand
+            return function(request, *args, **kwargs)
+        except AttributeError:
+            # Does not have curr_brand in request; Invalid access
+            raise Http404("Invalid link.")
+
+    wrap.__doc__ = function.__doc__
+    wrap.__name__ = function.__name__
+    return wrap

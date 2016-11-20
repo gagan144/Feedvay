@@ -24,5 +24,7 @@ urlpatterns = [
     url(r'^$', views.home, name='console_home'),
 
     url(r'^account/', include(url_account)),
+
     url(r'^brands/', include(url_brands)),
+    url(r'^settings/$', views_brands.console_brand_settings, name='console_brand_settings'),    # Only for brand console
 ]

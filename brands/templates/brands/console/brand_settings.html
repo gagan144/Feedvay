@@ -1,0 +1,136 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'console/base.html' %}
+{% load static commontags %}
+
+{% block head %}
+    <!-- Favicon -->
+    <link rel="shortcut icon"  href="{% if request.curr_brand %}{{ request.curr_brand.icon.url }}{% else %}{% get_static_prefix %}images/favicon.png{% endif %}" />
+
+    <title page-title></title>
+{% endblock %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-12">
+            <h2 class="m-b-none">
+                {{ request.curr_brand.name }}<br/>
+                <small>Settings</small>
+            </h2>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div ng-controller="MainCtrl" class="animated fadeInRight" ng-cloak>
+        <div class="tabs-container">
+            <div class="tabs-left">
+                <ul class="nav nav-tabs">
+                    <li ng-class="{'active': $state.current.name=='details'}">
+                        <a ui-sref="details"><i class="fa fa-info-circle"></i> Details</a>
+                    </li>
+                    <li ng-class="{'active': $state.current.name=='owners'}">
+                        <a ui-sref="owners"><i class="fa fa-users"></i> Owners</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active">
+                        <div class="panel-body">
+                            <!-- Partial view div -->
+                            <div ui-view></div>
+                            <!-- Partial view div -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% get_static_prefix %}ui/js/ui-router/angular-ui-router.min.js"></script>
+    <script>
+        'use strict';
+
+        var APP = angular.module('{{ app_name }}',[
+            'feedvay.common',
+            'feedvay.watchdog',
+
+            'ngCookies',
+            'ngMessages',
+            'ui.router',                    // Routing
+            'oc.lazyLoad',                  // ocLazyLoad
+            'ui.bootstrap',
+        ])
+        .config(function($interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+
+            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+
+            // ----- Routing -----
+            $urlRouterProvider.otherwise("/details");   // Default state to load
+
+            $ocLazyLoadProvider.config({
+                // Set to true if you want to see what and when is dynamically loaded
+                debug: false
+            });
+
+            $stateProvider
+                .state('details', {
+                    url: "/details",
+                    templateUrl: "/static/partials/brands/delete.html",
+                    data: { pageTitle: 'Details - {{ request.curr_brand.name }}' }
+                })
+                .state('owners', {
+                    url: "/owners",
+                    templateUrl: "/static/partials/brands/brand_owners.html",
+                    data: { pageTitle: 'Owners - {{ request.curr_brand.name }}' },
+{#                    controller: SecurityCtrl,#}
+                })
+
+        })
+        .run(function($rootScope, $http, $cookies, $state) {
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+            $http.defaults.xsrfCookieName = 'csrftoken';
+            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+            // ----- Routing -----
+            $rootScope.$state = $state;
+
+            $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
+                event.preventDefault();
+                //console.log(error);
+
+                if(error.status == -1){
+                    $.growl.error({
+                        title: '<i class="fa fa-signal"></i> Network error!',
+                        message: "Please check your internet connection."
+                    });
+                }else{
+                    $.growl.error({
+                        title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                        message: "Something went wrong. Our engineers will be informed."
+                    });
+                }
+
+            });
+
+        });
+
+
+        APP.controller('MainCtrl', function($scope){
+
+        });
+
+        // ========== State Controllers ==========
+
+
+    </script>
+{% endblock %}

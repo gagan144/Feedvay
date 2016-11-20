@@ -165,7 +165,7 @@ function pageTitle($rootScope, $timeout) {
                 var title = 'Feedvay Management Console';
                 // Create your own title pattern
                 if (toState.data && toState.data.pageTitle){
-                    title = toState.data.pageTitle + ' - Feedvay';
+                    title = toState.data.pageTitle;
                 }
                 $timeout(function() {
                     element.text(title);

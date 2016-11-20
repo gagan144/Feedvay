@@ -29,7 +29,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="content_box" style="padding-top: 30px;margin-bottom: 20px;">
+    <div class="content_box" style="padding-top: 30px;margin-bottom: 20px;" ng-cloak>
 {#        <div ng-include="'{% get_static_prefix %}partials/brands/create_edit_brand.html'" ng-controller="NewBrandFormCtrl" ng-init="purpose='edit'"></div>#}
         <div static-include="{% get_static_prefix %}partials/brands/create_edit_brand.html" ng-controller="NewBrandFormCtrl" ng-init="data.purpose='create'"></div>
     </div>

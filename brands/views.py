@@ -5,6 +5,7 @@ from django.shortcuts import render
 
 from brands.forms import *
 from brands import operations as ops
+from brands.models import Brand, BrandOwner
 
 from utilities.decorators import registered_user_only, brand_console
 from utilities.api_utils import ApiResponse
@@ -80,7 +81,8 @@ def console_brand_settings(request):
     **Authors**: Gagandeep Singh
     """
     data = {
-        "app_name": "app_brand_settings"
+        "app_name": "app_brand_settings",
+        "list_other_owners": request.curr_brand.owners.all().exclude(user_id=request.user.id).select_related('user')
     }
     return render(request, 'brands/console/brand_settings.html', data)
 

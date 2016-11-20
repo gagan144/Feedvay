@@ -18,3 +18,4 @@
 # ---------- Illustrations -----------
 - Brand
     - Create new
+    - Settings

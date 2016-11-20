@@ -9,6 +9,117 @@
     <link rel="shortcut icon"  href="{% if request.curr_brand %}{{ request.curr_brand.icon.url }}{% else %}{% get_static_prefix %}images/favicon.png{% endif %}" />
 
     <title page-title></title>
+
+
+    <!-- Templates -->
+    <script type="text/ng-template" id="tmpl_ownership">
+        <div>
+            <h2 style="margin-top: 0px;">
+                <i class="fa fa-users"></i>&nbsp;
+                Ownership
+            </h2>
+            <hr style="margin-top: 15px;"/>
+
+            <!-- Self ownership -->
+            <div>
+                You are currently owner of the brand <span class="semi_bold">{$ brand_name $}</span>. Being owner
+                gives you full rights & permissions over this brand and entities belonging to this brand. Be careful
+                will modifying any settings of this brand.
+
+                <div style="margin-top: 20px; padding-left: 50px;">
+                    <h3>
+                        <i class="fa fa-chain-broken"></i>&nbsp;
+                        Disassociate yourself
+                    </h3>
+                    <div>
+                        <p style="margin-bottom: 10px">
+                            If you are no longer associated with this brand or wish to abandon your ownership for some reason,
+                            you can click below button to disassociate yourself (Confirmation is asked).
+                        </p>
+
+                        <div  ng-hide="open_form">
+                            <button class="btn btn-primary" type="button" ng-click="open_form=true;">
+                                Release ownership
+                            </button>
+                        </div>
+
+                        <div class="panel panel-default" ng-show="open_form">
+                            <div class="panel-body panel_body_realign">
+                                <form name="form_disassociate" ng-class="{'form-loading': flags.submitting }" novalidate >
+                                    <div class="form-group">
+                                        <div class="checkbox checkbox-primary" style="margin-top: 0px;">
+                                            <input id="chk_confirm" type="checkbox" name="confirm" ng-model="data.confirm" required>
+                                            <label for="chk_confirm">
+                                                I agree that I willfully disassociate myself from the brand <span class="text-primary semi_bold">{{ request.curr_brand.name }}</span>.
+                                                <br/>By this I release any kind of ownership or authority over this brand on Feedvay system.
+                                                <br/>Also, I am also aware of the fact that my actions is irreversible once I commit.
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="hr-line-dashed"></div>
+                                    <div class="form-group">
+                                        <button ladda="flags.submitting" type="button" class="btn btn-danger ladda-button" ng-disabled="form_disassociate.$invalid" ng-click="submit_disassociation(form_disassociate);" data-style="zoom-in">
+                                            Confirm disassociation
+                                        </button>
+                                        <button class="btn btn-default" type="button"  ng-click="open_form=false;">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <!-- /Self ownership -->
+
+            {%  if list_other_owners %}
+            <!-- Other owners -->
+            <div style="margin-top: 40px;">
+                <h3 style="margin-top: 0px;">
+                    Other owners
+                    <br><small>Other owner of this brand</small>
+                </h3>
+                <hr style="margin-top: 15px;"/>
+                <div class="row">
+                    {% for owner in list_other_owners %}
+                        <div class="col-lg-6">
+                            <div class="contact-box">
+                                <div class="col-sm-4">
+                                    <div class="text-center">
+                                        <img alt="image" class="img-circle m-t-xs img-responsive" src="{% get_static_prefix %}images/avatar_default.png">
+                                    </div>
+                                </div>
+                                <div class="col-sm-8">
+                                    <h3>
+                                        <strong>{{ owner.user.first_name }} {{ owner.user.last_name }}</strong>
+                                    </h3>
+                                    <p>
+                                        <i class="fa fa-phone"></i>&nbsp;
+                                        {{ owner.user.username }}
+                                    </p>
+                                    {% if owner.user.email %}
+                                    <p>
+                                        <i class="fa fa-email"></i>&nbsp;
+                                        {{ owner.user.email }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- /Other owners -->
+            {% endif %}
+
+        </div>
+    </script>
+    <!-- /Templates -->
 {% endblock %}
 
 {% block page_header %}
@@ -89,9 +200,9 @@
                 })
                 .state('ownership', {
                     url: "/ownership",
-                    templateUrl: "/static/partials/brands/brand_owners.html",
+                    templateUrl: "tmpl_ownership",
                     data: { pageTitle: 'Ownership - {{ request.curr_brand.name }}' },
-{#                    controller: SecurityCtrl,#}
+                    controller: OwnershipCtrl,
                 })
 
         })
@@ -128,6 +239,14 @@
         APP.controller('MainCtrl', function($scope){
 
         });
+
+        // ========== State Controllers ==========
+
+        // --- Ownership ---
+        function OwnershipCtrl($scope) {
+            $scope.open_form = false;
+        }
+
 
         // ========== State Controllers ==========
 

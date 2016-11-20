@@ -34,6 +34,24 @@ class BrandCreateEditForm(forms.Form):
             if Brand.does_exists(form_data['name']):
                 self._errors["name"] = ["Brand already exists."]
 
+        # validate logo & icon
+        if not Brand.validate_logo_image(form_data['file_logo']):
+            self._errors['file_logo'] = [
+                'Logo must be {}x{} and less than {} KB.'.format(
+                    Brand.LOGO_DIM[0],
+                    Brand.LOGO_DIM[1],
+                    Brand.LOGO_MAX_SIZE/1024
+                )
+            ]
+        if not Brand.validate_icon_image(form_data['file_icon']):
+            self._errors['file_icon'] = [
+                'Icon must be {}x{} and less than {} KB.'.format(
+                    Brand.ICON_DIM[0],
+                    Brand.ICON_DIM[1],
+                    Brand.ICON_MAX_SIZE/1024
+                )
+            ]
+
 
         # validate primary color
         if form_data['ui_theme__primary']:

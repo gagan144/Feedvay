@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.db.models import Q
+from django.db.models.fields.files import ImageFieldFile
 from django.template.defaultfilters import slugify
 from django_mysql.models import JSONField
 from django_fsm import FSMField, transition
@@ -16,6 +17,7 @@ from django.contrib.auth.models import User
 import uuid
 import StringIO
 from django.core.files.uploadedfile import InMemoryUploadedFile,SimpleUploadedFile
+from PIL import Image
 
 from accounts.models import RegisteredUser
 from utilities.theme import UiTheme, render_skin
@@ -55,6 +57,10 @@ class Brand(models.Model):
         - If verification fails, it is mandatory to provide reason. This reason will be shown to the user.
         - **Claims** on the brand can disabled if brand is known such as top brands or contracted clients. This can
           **ONLY** be done by staff user. Owner do not have rights to set this property.
+        - Logo & icon dimensions & size constraints must not change, however to change these settings
+            - Make changes in LOGO_DIM, LOGO_MAX_SIZE etc in Brand enums.
+            - Make changes for client side validations in '/static/partials/brands/create_edit_brand.html'.
+            - Make changes in :class:``brands.forms.BrandCreateEditForm``.
 
     **State chart diagram for brand status**:
 
@@ -63,6 +69,12 @@ class Brand(models.Model):
     **Authors**: Gagandeep Singh
     """
     # --- Enums ---
+    LOGO_DIM = (300, 100)
+    LOGO_MAX_SIZE = 20*1024 # in bytes
+
+    ICON_DIM = (64, 64)
+    ICON_MAX_SIZE = 15*1024 # in bytes
+
     ST_VERF_PENDING = 'verification_pending'
     ST_VERIFIED = 'verified'
     ST_VERF_FAILED = 'verification_failed'
@@ -243,9 +255,23 @@ class Brand(models.Model):
             # Update modified date
             self.modified_on = timezone.now()
 
-        # Name sulg
+        # Name slug
         if not self.slug:
             self.slug = slugify(self.name)
+
+        # Images
+        if not Brand.validate_logo_image(self.logo):
+            raise ValidationError('Logo must be {}x{} and less than {} KB.'.format(
+                Brand.LOGO_DIM[0],
+                Brand.LOGO_DIM[1],
+                Brand.LOGO_MAX_SIZE/1024
+            ))
+        if not Brand.validate_icon_image(self.icon):
+            raise ValidationError('Icon must be {}x{} and less than {} KB.'.format(
+                Brand.ICON_DIM[0],
+                Brand.ICON_DIM[1],
+                Brand.ICON_MAX_SIZE/1024
+            ))
 
         # Check UI Theme
         if self.ui_theme is not None:
@@ -257,7 +283,7 @@ class Brand(models.Model):
                 except Exception as ex:
                     raise ValidationError("ui_theme: " + ex.message)
 
-        # Status relate validations
+        # Status related validations
         if self.status == Brand.ST_VERF_FAILED and self.failed_reason in [None, '']:
             raise ValidationError("Please provide reason for verification failure.")
 
@@ -293,9 +319,57 @@ class Brand(models.Model):
 
         :param name: Name of the brand
         :return: (bool) True if brand exists else False
+
+        **Authors**: Gagandeep Singh
         """
         slug = slugify(name)
         return Brand.objects.filter(Q(name=name)|Q(slug=slug))
+
+    @staticmethod
+    def validate_logo_image(img_obj):
+        """
+        Method to validate brand logo image.
+        Handles both ``InMemoryUploadedFile`` and ``ImageFieldFile`` objects.
+
+        :param img_obj: InMemory object of image
+        :return: True if image is valid
+
+        **Authors**: Gagandeep Singh
+        """
+        if isinstance(img_obj, InMemoryUploadedFile):
+            # InMemory object
+            size = img_obj.size
+            dim = Image.open(img_obj).size
+        elif isinstance(img_obj, ImageFieldFile):
+            # Django model field from ImageField
+            size = img_obj._get_size()
+            dim = img_obj._get_image_dimensions()
+
+        return (size <= Brand.LOGO_MAX_SIZE and dim == Brand.LOGO_DIM)
+
+    @staticmethod
+    def validate_icon_image(img_obj):
+        """
+        Method to validate brand icon image.
+        Handles both ``InMemoryUploadedFile`` and ``ImageFieldFile`` objects.
+
+        :param img_obj: InMemory object of image
+        :return: True if image is valid
+
+        **Authors**: Gagandeep Singh
+        """
+        if isinstance(img_obj, InMemoryUploadedFile):
+            # InMemory object
+            size = img_obj.size
+            dim = Image.open(img_obj).size
+        elif isinstance(img_obj, ImageFieldFile):
+            # Django model field from ImageField
+            size = img_obj._get_size()
+            dim = img_obj._get_image_dimensions()
+
+        return (size <= Brand.ICON_MAX_SIZE and dim == Brand.ICON_DIM)
+
+
 
 class BrandOwner(models.Model):
     """

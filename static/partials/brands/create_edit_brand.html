@@ -70,18 +70,19 @@
             <ul>
                 <li>Image must be of <code>300x100 pixel</code> resolution (width being larger).</li>
                 <li><code>.PNG</code> extension is recommended with transparent background if your background is empty.</li>
-                <li>Size of the image must be less than <code>15 KB</code> to avoid viewing delay in slow networks.</li>
+                <li>Size of the image must be less than <code>20 KB</code> to avoid viewing delay in slow networks.</li>
             </ul>
 
             <div style="margin: 10px 0px 5px 0px;">
                 <img id="logo_preview" src="" class="img-thumbnail" style="max-width: 300px;">
             </div>
             <input type="file" name="file_logo" file-model="file_logo" ng-model="data.file_logo" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" required validate-file="" preview-image="'logo_preview'" ng-change="get_colors();">
+            <label ng-if="flags.val_errors.file_logo" class="error">
+                {$ flags.val_errors.file_logo.join(", "); $}
+            </label>
             <div ng-messages="form_create_edit_brand.file_logo.$dirty && form_create_edit_brand.file_logo.$error" role="alert" class="error_messages">
                 <label ng-message="required" class="error">Please select an image.</label>
             </div>
-
-            {$ form_create_edit_brand.file_logo.$error $}
         </div>
     </div>
 
@@ -103,6 +104,9 @@
                 <img id="icon_preview" src="" class="img-thumbnail" style="max-width: 64px;">
             </div>
             <input type="file" name="file_icon" file-model="file_icon" ng-model="data.file_icon" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" required validate-file="" preview-image="'icon_preview'">
+            <label ng-if="flags.val_errors.file_icon" class="error">
+                {$ flags.val_errors.file_icon.join(", "); $}
+            </label>
             <div ng-messages="form_create_edit_brand.file_icon.$dirty && form_create_edit_brand.file_icon.$error" role="alert" class="error_messages">
                 <label ng-message="required" class="error">Please select an image.</label>
             </div>

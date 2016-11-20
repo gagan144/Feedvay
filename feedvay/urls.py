@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^accounts/', include('accounts.urls')),
     url(r'^console/', include('console.urls')),
     url(r'^watchdog/', include('watchdog.urls')),
+    url(r'^brands/', include('brands.urls')),
 
     # Admin and staff
     url(r'^admin/', admin.site.urls),

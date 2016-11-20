@@ -9,11 +9,17 @@
     }
 </style>
 <form name="form_create_edit_brand" class="form-horizontal" novalidate>
-
     <div class="form-group">
         <label class="col-sm-3 control-label">Name<span class="required">*</span>:</label>
         <div class="col-sm-7">
-            <input type="text" name="name" ng-model="data.name" class="form-control" placeholder="Enter name of the brand." maxlength="255" required ng-class="{'error': (form_create_edit_brand.name.$dirty && form_create_edit_brand.name.$invalid) }">
+            <input type="text" name="name" ng-model="data.name" class="form-control" placeholder="Enter name of the brand." minlength="5" maxlength="255" required ng-class="{'error': (form_create_edit_brand.name.$dirty && form_create_edit_brand.name.$invalid) || flags.val_errors.name }">
+            <label ng-if="flags.val_errors.name" class="error">
+                {$ flags.val_errors.name.join(", "); $}
+            </label>
+            <p ng-if="list_brands.length">
+                <span class="semi_bold">Do you mean: </span>
+                <a href="#"  ng-repeat="b in list_brands">{$ b.name $}</a>
+            </p>
         </div>
     </div>
 
@@ -21,7 +27,7 @@
     <div class="form-group">
         <label class="col-sm-3 control-label">Acronym:</label>
         <div class="col-sm-7">
-            <input type="text" name="acronym" ng-model="data.acronym" class="form-control" placeholder="Acronym of your brand." maxlength="10" required ng-class="{'error': (form_create_edit_brand.name.$dirty && form_create_edit_brand.name.$invalid) }">
+            <input type="text" name="acronym" ng-model="data.acronym" class="form-control" placeholder="Acronym of your brand." maxlength="10" ng-class="{'error': (form_create_edit_brand.acronym.$dirty && form_create_edit_brand.acronym.$invalid) }">
         </div>
     </div>
 
@@ -143,7 +149,7 @@
             </p>
 
             <button ladda="flags.submitting" class="btn btn-primary ladda-button" type="button" ng-disabled="form_create_edit_brand.$invalid" ng-click="submit_brand(form_create_edit_brand);" data-style="zoom-in">
-                {$ purpose=='edit'?'Update and send for verification':'Create and send for verification' $}
+                {$ data.purpose=='edit'?'Update and send for verification':'Create and send for verification' $}
             </button>
         </div>
     </div>

@@ -62,7 +62,8 @@ def console_save_brand(request):
                 ops.create_new_brand(form_data, request.user.registereduser)
                 return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Your request has been send for verification.').gen_http_response()
         else:
-            return ApiResponse(status=ApiResponse.ST_FAILED, message='Incomplete/Invalid submission.').gen_http_response()
+            errors = dict(form_brand.errors)
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()

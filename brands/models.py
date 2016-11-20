@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 
 from django.db import models
+from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django_mysql.models import JSONField
 from django_fsm import FSMField, transition
@@ -284,6 +285,17 @@ class Brand(models.Model):
     def delete(self, using=None, keep_parents=False):
         raise ValidationError("You cannot delete a brand. Please use 'trans_delete()' method to mark this marked as deleted.")
 
+    # ----- Static methods -----
+    @staticmethod
+    def does_exists(name):
+        """
+        Method to check if brand exists with given name or with slug of given name.
+
+        :param name: Name of the brand
+        :return: (bool) True if brand exists else False
+        """
+        slug = slugify(name)
+        return Brand.objects.filter(Q(name=name)|Q(slug=slug))
 
 class BrandOwner(models.Model):
     """

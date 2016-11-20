@@ -12,13 +12,21 @@
     <div class="form-group">
         <label class="col-sm-3 control-label">Name<span class="required">*</span>:</label>
         <div class="col-sm-7">
-            <input type="text" name="name" ng-model="data.name" class="form-control" placeholder="Enter name of the brand." minlength="5" maxlength="255" required ng-class="{'error': (form_create_edit_brand.name.$dirty && form_create_edit_brand.name.$invalid) || flags.val_errors.name }">
+            <input type="text" name="name" ng-model="data.name" class="form-control" placeholder="Enter name of the brand." minlength="2" maxlength="255" required autocomplete="off"
+                   ng-class="{'error': (form_create_edit_brand.name.$dirty && form_create_edit_brand.name.$invalid) || flags.val_errors.name }"
+                   ng-change="find_brand(data.name)"
+            >
+            <div ng-messages="form_create_edit_brand.name.$dirty && form_create_edit_brand.name.$error" role="alert" class="error_messages">
+                <label ng-message="required" class="error">Please enter brand name.</label>
+                <label ng-message="minlength" class="error">Brand name must be atleast 2 character long.</label>
+                <label ng-message="maxlength" class="error">Brand name cannot be longer than 255 characters.</label>
+            </div>
             <label ng-if="flags.val_errors.name" class="error">
                 {$ flags.val_errors.name.join(", "); $}
             </label>
-            <p ng-if="list_brands.length">
-                <span class="semi_bold">Do you mean: </span>
-                <a href="#"  ng-repeat="b in list_brands">{$ b.name $}</a>
+            <p ng-if="list_brands.length" style="margin: 5px 0px 5px 5px;">
+                <span class="semi_bold" style="margin-right:5px;">Do you mean:</span>
+                <a href="javascript: void(0);" ng-repeat="b in list_brands" style="margin-right:10px;">{$ b.name $}</a>
             </p>
         </div>
     </div>
@@ -27,7 +35,7 @@
     <div class="form-group">
         <label class="col-sm-3 control-label">Acronym:</label>
         <div class="col-sm-7">
-            <input type="text" name="acronym" ng-model="data.acronym" class="form-control" placeholder="Acronym of your brand." maxlength="10" ng-class="{'error': (form_create_edit_brand.acronym.$dirty && form_create_edit_brand.acronym.$invalid) }">
+            <input type="text" name="acronym" ng-model="data.acronym" class="form-control" placeholder="Acronym of your brand." maxlength="10" autocomplete="off" ng-class="{'error': (form_create_edit_brand.acronym.$dirty && form_create_edit_brand.acronym.$invalid) }">
         </div>
     </div>
 

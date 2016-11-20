@@ -38,12 +38,15 @@
 {% block scripts %}
     <script src="{% get_static_prefix %}ui/js/plugins/colorpicker/bootstrap-colorpicker-module.js"></script>
     <script src="{% get_static_prefix %}lib/vibrantjs/Vibrant.js"></script>
+
+    <script src="{% get_static_prefix %}apps/brands/brands.js"></script>
     <script>
         'use strict';
 
         var APP = angular.module('{{ app_name }}',[
             'feedvay.watchdog',
             'feedvay.common',
+            'feedvay.brands',
 
             'ngCookies',
             'ngMessages',
@@ -65,7 +68,8 @@
             $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
         });
 
-        APP.controller('NewBrandFormCtrl', function($scope, $http, $window){
+        APP.controller('NewBrandFormCtrl', function($scope, $http, $window, ServiceBrandExistence){
+            $scope.ServiceBrandExistence = ServiceBrandExistence;
             $scope.pallets = [];
             $scope.data = {
                 ui_theme__primary: null
@@ -112,9 +116,12 @@
             }
 
             $scope.list_brands = [];
-            $scope.get_brands = function(value){
-
+            $scope.find_brand = function(value){
+                $scope.list_brands = ServiceBrandExistence.find(value).then(function (response) {
+                    $scope.list_brands = response;
+                });
             }
+
 
             $scope.submit_brand = function(form_obj){
                 if(form_obj.$invalid){

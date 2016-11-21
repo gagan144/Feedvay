@@ -24,6 +24,7 @@
 
 - Crons
     - Delete orphan sessions & UserSessions
+    - Delete expired notification messages
 
 - Logo
 - SMS Gateway service classes

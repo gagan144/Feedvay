@@ -3,9 +3,10 @@
 # permission of Gagandeep Singh.
 from django.shortcuts import render_to_response
 from django.contrib.auth.models import User
-from owlery.models import *
+from django.utils import timezone
+from django.conf import settings
 
-
+from owlery.models import SmsMessage, EmailMessage
 
 class SmsOwl:
     """

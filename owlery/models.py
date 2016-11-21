@@ -9,6 +9,8 @@ from django.conf import settings
 
 from django.utils import timezone
 import re
+import ujson
+
 
 # ---------- Validators ----------
 def validate_sms_no(value):
@@ -278,3 +280,214 @@ class EmailMessage(models.Model):
 
         self.clean()
         super(self.__class__, self).save(*args, **kwargs)
+
+
+class NotificationMessage(models.Model):
+    """
+    Model to store all notification message (for system as well as for users). The model acts like a buffer/queueing stage
+    from where pending messages can be picked up by independent cron process and dispatch it to
+    push notification service to be send to devices.
+
+    **Target:** Defines the consumer of this notification. These may be:
+
+        - **System**: Message is meant for the system (such as mobile app) to take some action. These messages
+          are not shown to the user and user may never come to know about these messages
+        - **User**: Message is meant for the user and are dsiplayed to him.
+
+    **Transmission Types:**
+
+        - **Unicast**: A transmission to a single receiver.
+        - **Multicast**: A transmission to a group of receivers. This requires ``group`` field.
+        - **Broadcast**: A transmission to all receivers connected to the platform. These message may not be
+          pushed to the user, but rather pulled by the devices on periodic request basis.
+
+    **Points:**
+
+        - If target is``system`` is message body must be JSON string.
+        - If  transmission is ``unicast``, registered user is required. If  transmission is ``multicast``,group name is required.
+          In case of broadcast, neither registered user or group is maintained.
+        - In case of multicast and broadcast, ``status`` is changes to ``send`` only if
+          message is send to all recipients.
+        - All notifications are removed after ``settings.NOTIF_EXPIRY`` days according to ``created_on`` date.
+        - For broadcast messages, :class:`owlery.models.NotificationTrack` is not maintained
+
+    **Authors**: Gagandeep Singh
+    """
+
+    # --- Enums ---
+    TARGET_SYSTEM = 'system'
+    TARGET_USER = 'user'
+    CH_TARGET = (
+        (TARGET_SYSTEM, 'System'),
+        (TARGET_USER, 'User')
+    )
+
+    TRANSM_UNICAST = 'unicast'
+    TRANSM_MULTICAST = 'multicast'
+    TRANSM_BROADCAST = 'broadcast'
+
+    CH_TRANSMISSION = (
+        (TRANSM_UNICAST, 'Unicast'),
+        (TRANSM_MULTICAST, 'Multicast'),
+        (TRANSM_BROADCAST, 'Broadcast')
+    )
+
+    PR_LOW = 'low'
+    PR_NORMAL = 'normal'
+    PR_HIGH = 'high'
+    PR_URGENT = 'urgent'    # Will be send immediately
+    CH_PRIORITY = (
+        (PR_LOW, 'Low'),
+        (PR_NORMAL, 'Normal'),
+        (PR_HIGH, 'High'),
+        (PR_URGENT, 'Urgent')
+    )
+
+    ST_NEW = 'new'
+    ST_SEND = 'send'
+    ST_FAILED = 'failed'
+    CH_STATUS = (
+        (ST_NEW, 'New'),
+        (ST_SEND, 'Send'),
+        (ST_FAILED, 'Failed')
+    )
+
+
+
+    # --- Fields ---
+    target      = models.CharField(max_length=16, choices=CH_TARGET, db_index=True, editable=False, help_text='Consumer of the message.')
+    transmission = models.CharField(max_length=16, choices=CH_TRANSMISSION, db_index=True, editable=False, help_text='Transmission type for the message.')
+    type        = models.CharField(max_length=64, db_index=True, editable=False, help_text='Type of the message (User updates, promotional etc).')
+
+    title       = models.CharField(max_length=255, null=True, blank=True, editable=False, help_text='Titile of the message. (Optional)')
+    message     = models.TextField(max_length=512, editable=False, help_text='Message body.')
+    on_click_url = models.URLField(null=True, blank=True, help_text='Url to open when user clicks on the message.(Optional)')
+
+    registered_user = models.ForeignKey('accounts.RegisteredUser', null=True, blank=True, editable=True, help_text="Registered user in case of 'unicast' message.")
+    group       = models.CharField(max_length=128, null=True, blank=True, editable=False, help_text='Name of the group. (In case of multicast only)')
+
+    priority    = models.CharField(max_length=16, choices=CH_PRIORITY, default=PR_NORMAL, help_text='Priority of this message.')
+
+    status      = models.CharField(max_length=16, default=ST_NEW, choices=CH_STATUS, help_text='Send status of the message.')
+
+    created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this email was created. This is NOT send date.')
+    modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was updated.')
+
+    def __unicode__(self):
+        return "{}".format(self.id)
+
+    def determine_recipients(self):
+        """
+        Method to determine list of recipients :class:`accounts.models.RegisteredUser` as per message transmission type.
+        :return: List<RegisteredUser> or ``'*'`` in case of broadcast message.
+
+        **Authors**: Gagandeep Singh
+        """
+        if self.transmission == NotificationMessage.TRANSM_UNICAST:
+            return [self.registered_user]
+        elif self.transmission == NotificationMessage.TRANSM_MULTICAST:
+            raise NotImplementedError("Implement message group for multicast")
+        else:
+            return "*"
+
+    def clean(self):
+        """
+        Method to clean & validate data fields.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        # Check target
+        if self.target == NotificationMessage.TARGET_SYSTEM:
+            try:
+                ujson.loads(self.message)
+            except ValueError:
+                raise ValidationError("Message body should be a JSON string since target is 'system'.")
+
+        # Check transmission
+        if self.transmission == NotificationMessage.TRANSM_UNICAST:
+            if self.registered_user is None:
+                raise ValidationError("Registered user required as message is 'unicast'.")
+
+        if self.transmission == NotificationMessage.TRANSM_MULTICAST:
+            if not self.group or self.group=='':
+                raise ValidationError("Group is required as message is 'multicast'.")
+
+
+
+        if self.pk:
+            # Update modified date
+            self.modified_on = timezone.now()
+
+        super(self.__class__, self).clean()
+
+    def save(self, *args, **kwargs):
+        """
+        Pre-save method for this model.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        self.clean()
+        super(self.__class__, self).save(*args, **kwargs)
+
+
+class NotificationTrack(models.Model):
+    """
+    Model to track all recipients of a :class:`owlery.models.NotificationMessage`. Every recipient message
+    status is tracked individually and include send, read datetimes etc.
+
+    **Points**:
+
+        - Broadcast messages are not tracked.
+
+    .. note::
+        Recipient entry may or may not be present. So always use ``get_or_create()`` to update recipient status.
+
+    **Authors**: Gagandeep Singh
+    """
+
+    # --- Enums ---
+    SERV_FIRBASE = 'google_firebase'
+    CH_SERVICE = (
+        (SERV_FIRBASE, 'Google Firebase'),
+    )
+
+    # --- Fields ---
+    notif_message   = models.ForeignKey(NotificationMessage, db_index=True, limit_choices_to={'transmission__ne':NotificationMessage.TRANSM_BROADCAST}, editable=False, help_text='Notification message reference.')
+    registered_user = models.ForeignKey('accounts.RegisteredUser', db_index=True, help_text='Recipient registered user')
+
+    sender      = models.CharField(max_length=64, choices=CH_SERVICE, null=True, blank=True, editable=False, help_text="Push notification service that send this message.")
+    send_on     = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this message was successfully send.')
+    read_on     = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this message was read.')
+
+    class Meta:
+        unique_together = ('notif_message', 'registered_user')
+
+    def __unicode__(self):
+        return "{} - {}".format(self.notif_message_id)
+
+    def clean(self):
+        """
+        Method to clean & validate data fields.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        # Check Message not to be broadcast
+        if self.notif_message.transmission == NotificationMessage.TRANSM_BROADCAST:
+            raise ValidationError("No tracking is maintained for 'Broadcast Messages'.")
+
+        super(self.__class__, self).clean()
+
+    def save(self, *args, **kwargs):
+        """
+        Pre-save method for this model.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        self.clean()
+        super(self.__class__, self).save(*args, **kwargs)
+
+

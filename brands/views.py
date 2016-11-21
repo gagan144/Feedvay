@@ -86,4 +86,38 @@ def console_brand_settings(request):
     }
     return render(request, 'brands/console/brand_settings.html', data)
 
+@registered_user_only
+@brand_console
+def console_brand_disassociate(request):
+    """
+    API view to disassociate current user from the brand. Only applicable for brand console.
+
+    **Points**:
+
+        - **Registered user** is obtained from current session.
+        - **Brand** is obtained from ``request.curr_brand``.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        brand = request.curr_brand
+        reg_user = request.user.registereduser
+
+        confirm = request.POST.get('confirm', False)
+        if confirm == 'true':
+            try:
+                # brand.delete_owner(reg_user)  #TODO: Uncomment
+                return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok').gen_http_response()
+            except BrandOwner.DoesNotExist:
+                # No association found; Invalid request
+                return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='You are not associated with this brand.').gen_http_response()
+        else:
+            # Confirmation missing.
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Please confirm your action.').gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
 # ==================== /Console ====================

@@ -202,6 +202,8 @@ class Brand(models.Model):
 
         BrandOwner.objects.get(brand=self, registered_user=reg_user).delete()
 
+        # TODO: Send owls
+
     # --- /Owner management ---
 
     def update_theme_files(self, auto_save=True):

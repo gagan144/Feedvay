@@ -59,10 +59,15 @@
 
                                     <div class="hr-line-dashed"></div>
                                     <div class="form-group">
+                                        <p class="text-danger" ng-if="flags.error">
+                                            <i class="fa fa-exclamation-triangle"></i>&nbsp;
+                                            {$ flags.error $}
+                                        </p>
+
                                         <button ladda="flags.submitting" type="button" class="btn btn-danger ladda-button" ng-disabled="form_disassociate.$invalid" ng-click="submit_disassociation(form_disassociate);" data-style="zoom-in">
                                             Confirm disassociation
                                         </button>
-                                        <button class="btn btn-default" type="button"  ng-click="open_form=false;">
+                                        <button class="btn btn-default" type="button"  ng-click="data.confirm=null;open_form=false;">
                                             Cancel
                                         </button>
                                     </div>
@@ -243,8 +248,48 @@
         // ========== State Controllers ==========
 
         // --- Ownership ---
-        function OwnershipCtrl($scope) {
+        function OwnershipCtrl($scope, $http, $window) {
             $scope.open_form = false;
+            $scope.flags = {
+                submitting: false,
+                error: null
+            }
+
+            $scope.submit_disassociation = function(form_obj){
+                if(form_obj.$invalid){
+                    return false;
+                }
+
+                $scope.flags.submitting = true;
+                $scope.flags.error = null;
+
+                $http.post(
+                    "/console/b/{{ request.curr_brand.brand_uid }}/brands/disassociate/",
+                    $.param($scope.data)
+                )
+                .success(function (response, status, headers, config) {
+                    $scope.flags.submitting = false;
+
+                    if(response.status=='success'){
+                        $window.location.href = '{% url 'console_brands' %}';
+                    }else{
+                        $scope.flags.error = response.message;
+                    }
+                })
+                .error(function (response, status, headers, config) {
+                    $scope.flags.submitting = false;
+
+                    if(status != -1){
+                        $scope.flags.error = "Something went wrong. Our engineers will be informed.";
+                    }else{
+                        $.growl.error({
+                            title: '<i class="fa fa-signal"></i> Network error!',
+                            message: "Please check your internet connection."
+                        });
+                    }
+                });
+
+            }
         }
 
 

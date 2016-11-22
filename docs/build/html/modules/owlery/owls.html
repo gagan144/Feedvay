@@ -175,6 +175,55 @@ All methods composes email according to the parameters and store them in <a clas
 from where they are picked up by a cron process for dispatching.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 <dl class="staticmethod">
+<dt id="owlery.owls.EmailOwl.send_brand_disassociation_success">
+<em class="property">static </em><code class="descname">send_brand_disassociation_success</code><span class="sig-paren">(</span><em>user</em>, <em>brand</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.EmailOwl.send_brand_disassociation_success" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends confirmation email to user&#8217; disassociation from a brand.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>user</strong> &#8211; User instance to whom email is to be send</li>
+<li><strong>brand</strong> &#8211; <a class="reference internal" href="../brands/models.html#brands.models.Brand" title="brands.models.Brand"><code class="xref py py-class docutils literal"><span class="pre">brands.models.Brand</span></code></a> model instance</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Returns <code class="xref py py-class docutils literal"><span class="pre">owlery.model.EmailMessage</span></code> instance if email address was present else None</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Email is send immediately.</p>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="owlery.owls.EmailOwl.send_brand_partner_left_message">
+<em class="property">static </em><code class="descname">send_brand_partner_left_message</code><span class="sig-paren">(</span><em>brand</em>, <em>reg_user_disass</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.EmailOwl.send_brand_partner_left_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends an email to all brand owners about a partner&#8217;s disassociation.
+At this point user has left brand.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>brand</strong> &#8211; <a class="reference internal" href="../brands/models.html#brands.models.Brand" title="brands.models.Brand"><code class="xref py py-class docutils literal"><span class="pre">brands.models.Brand</span></code></a> model instance</li>
+<li><strong>reg_user_disass</strong> &#8211; Registered user instance that left the brand</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Returns List&lt;<code class="xref py py-class docutils literal"><span class="pre">owlery.model.EmailMessage</span></code> instance&gt; of those owners who had email address.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
 <dt id="owlery.owls.EmailOwl.send_password_change_success">
 <em class="property">static </em><code class="descname">send_password_change_success</code><span class="sig-paren">(</span><em>user</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.EmailOwl.send_password_change_success" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends password change success email to the user.</p>
@@ -190,7 +239,7 @@ from where they are picked up by a cron process for dispatching.</p>
 </table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This method returns &#8216;None&#8217; when email is not found in user instance.</p>
+<p class="last">Email is send immediately.</p>
 </div>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
@@ -221,6 +270,45 @@ from where they are picked up by a cron process for dispatching.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="owlery.owls.NotificationOwl">
+<em class="property">class </em><code class="descclassname">owlery.owls.</code><code class="descname">NotificationOwl</code><a class="headerlink" href="#owlery.owls.NotificationOwl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Owl to handle all notification that can be send in an <strong>asynchronous</strong> manner to all devices (mobile or web) of a user.</p>
+<p>Following is the complete notification workflow:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Call any of the defined handler methods with required parameters.</li>
+<li>The method uses parameters to compose a message and creates database entry.</li>
+<li>An independent process running periodically picks up this message as per its priority
+and sends the message to push service.</li>
+</ol>
+</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="staticmethod">
+<dt id="owlery.owls.NotificationOwl.send_brand_partner_left_notif">
+<em class="property">static </em><code class="descname">send_brand_partner_left_notif</code><span class="sig-paren">(</span><em>brand</em>, <em>reg_user_disass</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.NotificationOwl.send_brand_partner_left_notif" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends notifications to all brand owners about a partner&#8217;s disassociation.
+At this point user has left brand.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>brand</strong> &#8211; <a class="reference internal" href="../brands/models.html#brands.models.Brand" title="brands.models.Brand"><code class="xref py py-class docutils literal"><span class="pre">brands.models.Brand</span></code></a> model instance</li>
+<li><strong>reg_user_disass</strong> &#8211; Registered user instance that left the brand</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Returns <code class="xref py py-class docutils literal"><span class="pre">owlery.model.NotificationMessage</span></code> instance, None if there are no owners of the brand</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="owlery.owls.SmsOwl">
 <em class="property">class </em><code class="descclassname">owlery.owls.</code><code class="descname">SmsOwl</code><a class="headerlink" href="#owlery.owls.SmsOwl" title="Permalink to this definition">¶</a></dt>
 <dd><p>Owl to handle all sms. This class defines various SMS templates that can be send in an <strong>asynchronous</strong>
@@ -235,6 +323,29 @@ and sends the message.</li>
 </ol>
 </div></blockquote>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="staticmethod">
+<dt id="owlery.owls.SmsOwl.send_brand_disassociation_success">
+<em class="property">static </em><code class="descname">send_brand_disassociation_success</code><span class="sig-paren">(</span><em>mobile_no</em>, <em>brand</em>, <em>username=None</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.SmsOwl.send_brand_disassociation_success" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a SMS confirmation to the user about his disassociation from the brand.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mobile_no</strong> &#8211; Mobile number. +91-9999999999 is converted to +919999999999</li>
+<li><strong>brand</strong> &#8211; <a class="reference internal" href="../brands/models.html#brands.models.Brand" title="brands.models.Brand"><code class="xref py py-class docutils literal"><span class="pre">brands.models.Brand</span></code></a> model instance</li>
+<li><strong>username</strong> &#8211; (Optional) Username of user to which SMS is to be send.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Returns <code class="xref py py-class docutils literal"><span class="pre">owlery.model.SmsMessage</span></code> instance.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
 <dl class="staticmethod">
 <dt id="owlery.owls.SmsOwl.send_password_change_success">
 <em class="property">static </em><code class="descname">send_password_change_success</code><span class="sig-paren">(</span><em>mobile_no</em>, <em>username=None</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.SmsOwl.send_password_change_success" title="Permalink to this definition">¶</a></dt>

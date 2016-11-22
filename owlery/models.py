@@ -310,7 +310,7 @@ class NotificationMessage(models.Model):
 
     **Points:**
 
-        - If target is``system`` is message body must be JSON string.
+        - If target is ``system`` is message body must be JSON string.
         - If  transmission is ``multicast``, group name is required.
         - In case of multicast and broadcast, ``status`` is changes to ``send`` only if
           message is send to all recipients.

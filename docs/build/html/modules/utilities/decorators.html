@@ -154,6 +154,19 @@
 <h1>Decorators<a class="headerlink" href="#decorators" title="Permalink to this headline">¶</a></h1>
 <p>General usage decorators.</p>
 <span class="target" id="module-utilities.decorators"></span><dl class="function">
+<dt id="utilities.decorators.brand_console">
+<code class="descclassname">utilities.decorators.</code><code class="descname">brand_console</code><span class="sig-paren">(</span><em>function</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.decorators.brand_console" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django view decorator to allow only brand related console page.
+In case of failure, returns http 404.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This decorators does not check user authentication. This decorator must be used after
+any authentication check decorator.</p>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="utilities.decorators.registered_user_only">
 <code class="descclassname">utilities.decorators.</code><code class="descname">registered_user_only</code><span class="sig-paren">(</span><em>function</em>, <em>login_url=u'/accounts/login/'</em>, <em>redirect_field_name='next'</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.decorators.registered_user_only" title="Permalink to this definition">¶</a></dt>
 <dd><p>Django view decorator to only allow logged in &#8216;verified&#8217; registered user only.

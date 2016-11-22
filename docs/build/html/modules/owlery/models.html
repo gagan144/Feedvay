@@ -187,6 +187,103 @@ up by an independent process that sends emails and update its status.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="owlery.models.NotificationMessage">
+<em class="property">class </em><code class="descclassname">owlery.models.</code><code class="descname">NotificationMessage</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.models.NotificationMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to store all kinds of notification messages. The model acts like a buffer/queueing stage
+from where pending messages can be picked up by independent cron process and dispatch it to
+push notification service to be send to devices.</p>
+<p>This model does <strong>not maintain</strong> recipients. They are recorded in seperate model.</p>
+<p><strong>Notification Target:</strong> Defines the consumer of this notification. These may be:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>System</strong>: Message is meant for the system (such as mobile app) to take some action. These messages
+are not shown to the user and user may never come to know about these messages</li>
+<li><strong>User</strong>: Message is meant for the user and are dsiplayed to him.</li>
+</ul>
+</div></blockquote>
+<p><strong>Notification Transmission Types:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>Unicast</strong>: A transmission to a single receiver.</li>
+<li><strong>Multicast</strong>: A transmission to a group of receivers. This requires <code class="docutils literal"><span class="pre">group</span></code> field.</li>
+<li><strong>Broadcast</strong>: A transmission to all receivers connected to the platform. These message may not be
+pushed to the user, but rather pulled by the devices on periodic request basis.</li>
+</ul>
+</div></blockquote>
+<p><strong>Points:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li>If target is <code class="docutils literal"><span class="pre">system</span></code> is message body must be JSON string.</li>
+<li>If  transmission is <code class="docutils literal"><span class="pre">multicast</span></code>, group name is required.</li>
+<li>In case of multicast and broadcast, <code class="docutils literal"><span class="pre">status</span></code> is changes to <code class="docutils literal"><span class="pre">send</span></code> only if
+message is send to all recipients.</li>
+<li>All notifications are removed after <code class="docutils literal"><span class="pre">settings.NOTIF_EXPIRY</span></code> days according to <code class="docutils literal"><span class="pre">created_on</span></code> date.</li>
+<li>For broadcast messages, recipients may not be maintained</li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This model may or may not determine actual recipients. This list is obtained from
+<a class="reference internal" href="#owlery.models.NotificationRecipient" title="owlery.models.NotificationRecipient"><code class="xref py py-class docutils literal"><span class="pre">owlery.models.NotificationRecipient</span></code></a> model by querying it for this model instance.
+However, it is possible that user who&#8217;s entry is not recorded in NotificationRecipient can
+update his status for this message by creating new record at runtime. So always use
+<code class="docutils literal"><span class="pre">get_or_create()</span></code> with NotificationRecipient model.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This model does not specify message recipients. All recipients have to be created explicitly in
+<a class="reference internal" href="#owlery.models.NotificationRecipient" title="owlery.models.NotificationRecipient"><code class="xref py py-class docutils literal"><span class="pre">owlery.models.NotificationRecipient</span></code></a> after entry has been created in this model.</p>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="owlery.models.NotificationMessage.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#owlery.models.NotificationMessage.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="owlery.models.NotificationMessage.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.models.NotificationMessage.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="owlery.models.NotificationRecipient">
+<em class="property">class </em><code class="descclassname">owlery.models.</code><code class="descname">NotificationRecipient</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.models.NotificationRecipient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to track all recipients of a <a class="reference internal" href="#owlery.models.NotificationMessage" title="owlery.models.NotificationMessage"><code class="xref py py-class docutils literal"><span class="pre">owlery.models.NotificationMessage</span></code></a>. Every recipient message
+status is tracked individually and includes send, read datetimes etc information.</p>
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Recipients of broadcast messages may or may not be maintained.</li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Recipient entry may or may not be present. So always use <code class="docutils literal"><span class="pre">get_or_create()</span></code> while updating recipient status.</p>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="owlery.models.NotificationRecipient.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#owlery.models.NotificationRecipient.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="owlery.models.NotificationRecipient.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.models.NotificationRecipient.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="owlery.models.SmsMessage">
 <em class="property">class </em><code class="descclassname">owlery.models.</code><code class="descname">SmsMessage</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.models.SmsMessage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Model to store all SMS send to the users. This model act as a buffer/queue which is picked up

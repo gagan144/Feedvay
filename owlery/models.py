@@ -4,6 +4,7 @@
 from __future__ import unicode_literals
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+from django.db.models.signals import post_save
 from django.core.exceptions import ValidationError
 from django.conf import settings
 
@@ -54,12 +55,13 @@ class SmsMessage(models.Model):
     TYPE_REG_VERIF = 'reg_verification'
     TYPE_PASS_RESET = 'password_reset'
     TYPE_PASS_CHNG_SUCC = 'password_change_success'
-    # TYPE_REG_RESULT = 'reg_result'  # Result can by anything; success, failure, info etc
+    TYPE_BRAND_DISASS_SUCC = 'brand_disassociation_success'
+
     CH_TYPE = (
         (TYPE_REG_VERIF, 'Registration Verification'),
         (TYPE_PASS_RESET, 'Password Reset'),
         (TYPE_PASS_CHNG_SUCC, 'Password change success'),
-        # (TYPE_REG_RESULT, 'Registration Result')
+        (TYPE_BRAND_DISASS_SUCC, 'Brand disassociation success')
     )
 
     PR_LOW = 'low'
@@ -173,13 +175,16 @@ class EmailMessage(models.Model):
     TYPE_REG_VERIF = 'reg_verification'
     TYPE_PASS_RESET = 'password_reset'
     TYPE_PASS_CHNG_SUCC = 'password_change_success'
+    TYPE_BRAND_DISASS_SUCC = 'brand_disassociation_success'
+    TYPE_BRAND_PARTNER_LEFT = 'brand_partner_left'
     # TYPE_REG_RESULT = 'reg_result'  # Result can by anything; success, failure, info etc
     # TYPE_PROMOTION = 'promotion'
     CH_TYPE = (
         (TYPE_REG_VERIF, 'Registration Verification'),
         (TYPE_PASS_RESET, 'Password Reset'),
         (TYPE_PASS_CHNG_SUCC, 'Password change success'),
-        # (TYPE_REG_RESULT, 'Registration Result'),
+        (TYPE_BRAND_DISASS_SUCC, 'Brand disassociation success'),
+        (TYPE_BRAND_PARTNER_LEFT, 'Brand partner left')
         # (TYPE_PROMOTION, 'Promotion')
     )
 
@@ -284,17 +289,19 @@ class EmailMessage(models.Model):
 
 class NotificationMessage(models.Model):
     """
-    Model to store all notification message (for system as well as for users). The model acts like a buffer/queueing stage
+    Model to store all kinds of notification messages. The model acts like a buffer/queueing stage
     from where pending messages can be picked up by independent cron process and dispatch it to
     push notification service to be send to devices.
 
-    **Target:** Defines the consumer of this notification. These may be:
+    This model does **not maintain** recipients. They are recorded in seperate model.
+
+    **Notification Target:** Defines the consumer of this notification. These may be:
 
         - **System**: Message is meant for the system (such as mobile app) to take some action. These messages
           are not shown to the user and user may never come to know about these messages
         - **User**: Message is meant for the user and are dsiplayed to him.
 
-    **Transmission Types:**
+    **Notification Transmission Types:**
 
         - **Unicast**: A transmission to a single receiver.
         - **Multicast**: A transmission to a group of receivers. This requires ``group`` field.
@@ -304,12 +311,22 @@ class NotificationMessage(models.Model):
     **Points:**
 
         - If target is``system`` is message body must be JSON string.
-        - If  transmission is ``unicast``, registered user is required. If  transmission is ``multicast``,group name is required.
-          In case of broadcast, neither registered user or group is maintained.
+        - If  transmission is ``multicast``, group name is required.
         - In case of multicast and broadcast, ``status`` is changes to ``send`` only if
           message is send to all recipients.
         - All notifications are removed after ``settings.NOTIF_EXPIRY`` days according to ``created_on`` date.
-        - For broadcast messages, :class:`owlery.models.NotificationTrack` is not maintained
+        - For broadcast messages, recipients may not be maintained
+
+    .. note::
+        This model may or may not determine actual recipients. This list is obtained from
+        :class:`owlery.models.NotificationRecipient` model by querying it for this model instance.
+        However, it is possible that user who's entry is not recorded in NotificationRecipient can
+        update his status for this message by creating new record at runtime. So always use
+        ``get_or_create()`` with NotificationRecipient model.
+
+    .. warning::
+        This model does not specify message recipients. All recipients have to be created explicitly in
+        :class:`owlery.models.NotificationRecipient` after entry has been created in this model.
 
     **Authors**: Gagandeep Singh
     """
@@ -343,6 +360,11 @@ class NotificationMessage(models.Model):
         (PR_URGENT, 'Urgent')
     )
 
+    TYPE_BRAND_PARTNER_LEFT = 'brand_partner_left'
+    CH_TYPE = (
+        (TYPE_BRAND_PARTNER_LEFT, 'Brand partner left'),
+    )
+
     ST_NEW = 'new'
     ST_SEND = 'send'
     ST_FAILED = 'failed'
@@ -352,18 +374,15 @@ class NotificationMessage(models.Model):
         (ST_FAILED, 'Failed')
     )
 
-
-
     # --- Fields ---
     target      = models.CharField(max_length=16, choices=CH_TARGET, db_index=True, editable=False, help_text='Consumer of the message.')
     transmission = models.CharField(max_length=16, choices=CH_TRANSMISSION, db_index=True, editable=False, help_text='Transmission type for the message.')
-    type        = models.CharField(max_length=64, db_index=True, editable=False, help_text='Type of the message (User updates, promotional etc).')
+    type        = models.CharField(max_length=64, choices=CH_TYPE, db_index=True, editable=False, help_text='Type of the message (User updates, promotional etc).')
 
     title       = models.CharField(max_length=255, null=True, blank=True, editable=False, help_text='Titile of the message. (Optional)')
     message     = models.TextField(max_length=512, editable=False, help_text='Message body.')
     on_click_url = models.URLField(null=True, blank=True, help_text='Url to open when user clicks on the message.(Optional)')
 
-    registered_user = models.ForeignKey('accounts.RegisteredUser', null=True, blank=True, editable=True, help_text="Registered user in case of 'unicast' message.")
     group       = models.CharField(max_length=128, null=True, blank=True, editable=False, help_text='Name of the group. (In case of multicast only)')
 
     priority    = models.CharField(max_length=16, choices=CH_PRIORITY, default=PR_NORMAL, help_text='Priority of this message.')
@@ -376,19 +395,10 @@ class NotificationMessage(models.Model):
     def __unicode__(self):
         return "{}".format(self.id)
 
-    def determine_recipients(self):
-        """
-        Method to determine list of recipients :class:`accounts.models.RegisteredUser` as per message transmission type.
-        :return: List<RegisteredUser> or ``'*'`` in case of broadcast message.
-
-        **Authors**: Gagandeep Singh
-        """
-        if self.transmission == NotificationMessage.TRANSM_UNICAST:
-            return [self.registered_user]
-        elif self.transmission == NotificationMessage.TRANSM_MULTICAST:
-            raise NotImplementedError("Implement message group for multicast")
-        else:
-            return "*"
+    def recipient_count(self):
+        return self.notificationrecipient_set.all().count()
+    recipient_count.allow_tags = True
+    recipient_count.short_description = 'Recipient count'
 
     def clean(self):
         """
@@ -405,15 +415,9 @@ class NotificationMessage(models.Model):
                 raise ValidationError("Message body should be a JSON string since target is 'system'.")
 
         # Check transmission
-        if self.transmission == NotificationMessage.TRANSM_UNICAST:
-            if self.registered_user is None:
-                raise ValidationError("Registered user required as message is 'unicast'.")
-
         if self.transmission == NotificationMessage.TRANSM_MULTICAST:
             if not self.group or self.group=='':
                 raise ValidationError("Group is required as message is 'multicast'.")
-
-
 
         if self.pk:
             # Update modified date
@@ -432,17 +436,17 @@ class NotificationMessage(models.Model):
         super(self.__class__, self).save(*args, **kwargs)
 
 
-class NotificationTrack(models.Model):
+class NotificationRecipient(models.Model):
     """
     Model to track all recipients of a :class:`owlery.models.NotificationMessage`. Every recipient message
-    status is tracked individually and include send, read datetimes etc.
+    status is tracked individually and includes send, read datetimes etc information.
 
     **Points**:
 
-        - Broadcast messages are not tracked.
+        - Recipients of broadcast messages may or may not be maintained.
 
     .. note::
-        Recipient entry may or may not be present. So always use ``get_or_create()`` to update recipient status.
+        Recipient entry may or may not be present. So always use ``get_or_create()`` while updating recipient status.
 
     **Authors**: Gagandeep Singh
     """
@@ -465,7 +469,7 @@ class NotificationTrack(models.Model):
         unique_together = ('notif_message', 'registered_user')
 
     def __unicode__(self):
-        return "{} - {}".format(self.notif_message_id)
+        return "{} - {}".format(self.notif_message_id, self.registered_user_id)
 
     def clean(self):
         """

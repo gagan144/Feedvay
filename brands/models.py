@@ -189,20 +189,38 @@ class Brand(models.Model):
 
         return ownership
 
-    def delete_owner(self, reg_user):
+    def delete_owner(self, reg_user, send_owls=True):
         """
         Method to disassociate (delete) a registered user from brand ownership.
 
-        :param reg_user: :class:`accounts.models.RegisteredUser` instance
+        :param reg_user: :class:`accounts.models.RegisteredUser` instance of the user giving awya the ownership
+        :param send_owls: Set True if you want to send owls.
 
         Throws exception: DoesNotExist(BrandOwner) if user is not an owner of this brand.
+
+        **Owls send**:
+
+            - **To disassociated user**: SMS, Email
+            - **To other owners**: Email, Notification
 
         **Authors**: Gagandeep Singh
         """
 
+        # Delete owner
         BrandOwner.objects.get(brand=self, registered_user=reg_user).delete()
 
-        # TODO: Send owls
+        if send_owls:
+            # --- Send all owls ---
+            from owlery import owls
+
+            # (a) Send to released user
+            owls.SmsOwl.send_brand_disassociation_success(reg_user.user.username, self, reg_user.user.username)
+            owls.EmailOwl.send_brand_disassociation_success(reg_user.user, self)
+
+            # (b) send notification and email to all remaining owners of the brand
+            owls.EmailOwl.send_brand_partner_left_message(self, reg_user)
+            owls.NotificationOwl.send_brand_partner_left_notif(self, reg_user)
+
 
     # --- /Owner management ---
 

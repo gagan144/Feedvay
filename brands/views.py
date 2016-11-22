@@ -108,7 +108,7 @@ def console_brand_disassociate(request):
         confirm = request.POST.get('confirm', False)
         if confirm == 'true':
             try:
-                # brand.delete_owner(reg_user)  #TODO: Uncomment
+                brand.delete_owner(reg_user, send_owls=True)
                 return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok').gen_http_response()
             except BrandOwner.DoesNotExist:
                 # No association found; Invalid request

@@ -8,6 +8,9 @@
     - Mobile/Desktop client check (django-mobile)
     - New Feature Promotion
 
+- Notification
+    - Common url for mobile & web ?
+
 - UI
     - Summernote css
     - Report Display view

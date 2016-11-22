@@ -381,7 +381,8 @@ class NotificationMessage(models.Model):
 
     title       = models.CharField(max_length=255, null=True, blank=True, editable=False, help_text='Titile of the message. (Optional)')
     message     = models.TextField(max_length=512, editable=False, help_text='Message body.')
-    on_click_url = models.URLField(null=True, blank=True, help_text='Url to open when user clicks on the message.(Optional)')
+    url_web     = models.URLField(null=True, blank=True, help_text='Url to open on web when user clicks on the message.(Optional)')
+    url_mobile  = models.CharField(max_length=512, null=True, blank=True, help_text='Url to open on mobile when user taps on the message.(Optional)')
 
     group       = models.CharField(max_length=128, null=True, blank=True, editable=False, help_text='Name of the group. (In case of multicast only)')
 

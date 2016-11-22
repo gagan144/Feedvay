@@ -412,7 +412,7 @@ class NotificationOwl:
                     transmission = NotificationMessage.TRANSM_UNICAST,
                     type = NotificationMessage.TYPE_BRAND_PARTNER_LEFT,
                     message = message_body,
-                    on_click_url = "/console/b/{}/settings/#/ownership".format(brand.brand_uid),
+                    url_web = "/console/b/{}/settings/#/ownership".format(brand.brand_uid),
                     priority = NotificationMessage.PR_HIGH
                 )
 

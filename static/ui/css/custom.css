@@ -48,6 +48,15 @@
     border-color: #b4b8ba;
 }
 
+.image_loading{
+    background-image: url('/static/images/loading/spinner_1.gif');
+    background-size: 32px;
+    min-height: 32px;
+    min-width: 32px;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
 /* ----- form loader ----- */
 .form-loading, .ps-container:hover.ps-in-scrolling.ps-in-scrolling, .ps-in-scrolling {
     pointer-events: none

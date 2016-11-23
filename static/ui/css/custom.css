@@ -283,9 +283,22 @@
     display: inline-table;
     margin-left: 12px;
 }
-/* ----- Pallets & swatches ----- */
+/* ----- /Pallets & swatches ----- */
 
-/* ---------- Desktop ---------- */
+/* ----- Top alert strip ----- */
+.alert_top_strip{
+    font-size: 11px;
+    padding: 3px 15px;
+    margin: 0px -15px !important;
+}
+
+.alert_top_strip > a {
+    color: inherit;
+    text-decoration: underline;
+}
+/* ----- /Top alert strip ----- */
+
+/* =============== Desktop =============== */
 @media (min-width: 767px) {
     .mobile_show{
         display: none;
@@ -296,7 +309,7 @@
     }
 }
 
-/* ---------- Mobile ---------- */
+/* =============== Mobile =============== */
 @media (max-width: 767px) {
     .navbar_brand_custom{
         border-right: none !important;

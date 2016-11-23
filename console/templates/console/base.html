@@ -114,6 +114,12 @@
                                             <a href="{% url 'console_home' %}b/{{ b.brand_uid }}/">
                                                 <img src="{{ b.icon.url }}" style="height: 16px;">&nbsp;
                                                 {{ b.name }}
+
+                                                {% if b.status == 'verification_pending' %}
+                                                    <i class="fa fa-clock-o text-warning" style="margin-left: 10px" tooltip-placement="right" uib-tooltip="Verification pending!"></i>
+                                                {% elif b.status == 'verification_failed' %}
+                                                    <i class="fa fa-ban text-danger" style="margin-left: 10px" tooltip-placement="right" uib-tooltip="Verification failed!"></i>
+                                                {% endif %}
                                             </a>
                                         </li>
                                     {% endfor %}
@@ -198,6 +204,24 @@
                     </div>
                 </nav>
             </div>
+
+            {% if request.curr_brand %}
+                <!-- Alert strip -->
+                {% if request.curr_brand.status == 'verification_pending' %}
+                    <div class="bg-warning alert_top_strip">
+                        <i class="fa fa-exclamation-triangle"></i>&nbsp;
+                        Verification of this brand is in progress.
+                        <a href="/console/b/{{ request.curr_brand.brand_uid }}/settings/#/details">Know more</a>
+                    </div>
+                {% elif request.curr_brand.status == 'verification_failed' %}
+                    <div class="bg-danger alert_top_strip">
+                        <i class="fa fa-ban"></i>&nbsp;
+                        Verification of this brand has been failed.
+                        <a href="/console/b/{{ request.curr_brand.brand_uid }}/settings/#/details">Click here</a> to know more.
+                    </div>
+                {% endif %}
+                <!-- /Alert strip -->
+            {% endif %}
             <!-- /Top Navbar -->
 
             <!-- Header -->

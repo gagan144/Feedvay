@@ -124,6 +124,54 @@
 
         </div>
     </script>
+
+    <script type="text/ng-template" id="tmpl_details">
+        <div>
+            <h2 style="margin-top: 0px;">
+                <i class="fa fa-info-circle"></i>&nbsp;
+                Details
+            </h2>
+            <hr style="margin-top: 15px;"/>
+
+            {% if request.curr_brand.status == 'verified' %}
+                <div class="alert alert-success">
+                    <h3>
+                        <i class="fa fa-check-circle"></i>&nbsp;Verified!
+                    </h3>
+                    <p>
+                        Your brand has been verified and is visible to public.
+                    </p>
+                </div>
+            {% elif request.curr_brand.status == 'verification_pending' %}
+                <div class="alert alert-warning">
+                    <h3>
+                        <i class="fa fa-clock-o"></i>&nbsp;Verification pending!
+                    </h3>
+                    <p>
+                        Verification of your brand is still pending. Our team will shortly review your submission and
+                        update you automatically. <br/>
+                        Until then, your brand remains hidden from the public.
+                    </p>
+                </div>
+            {% elif request.curr_brand.status == 'verification_failed' %}
+                <div class="alert alert-warning">
+                    <h3>
+                        <i class="fa fa-ban"></i>&nbsp;Verification failed!
+                    </h3>
+                    <p>
+                        Verification of your brand has been failed as per your submitted details. Kindly go through the
+                        following instructions, correct your details accordingly and re-submit your brand.
+                    </p>
+                    <div style="margin: 5px 0px 0px 10px;padding-left: 20px;">
+                        {{ request.curr_brand.failed_reason|safeseq }}
+                    </div>
+                    <p>Please note that your brand is hidden from the public until it is verified.</p>
+                </div>
+            {% endif %}
+
+            <div static-include="{% get_static_prefix %}partials/brands/create_edit_brand.html"  ng-init="data.purpose='edit'"></div>
+        </div>
+    </script>
     <!-- /Templates -->
 {% endblock %}
 
@@ -169,12 +217,15 @@
 
 {% block scripts %}
     <script src="{% get_static_prefix %}ui/js/ui-router/angular-ui-router.min.js"></script>
+
+    <script src="{% get_static_prefix %}apps/brands/brands.js"></script>
     <script>
         'use strict';
 
         var APP = angular.module('{{ app_name }}',[
             'feedvay.common',
             'feedvay.watchdog',
+            'feedvay.brands',
 
             'ngCookies',
             'ngMessages',
@@ -200,8 +251,9 @@
             $stateProvider
                 .state('details', {
                     url: "/details",
-                    templateUrl: "/static/partials/brands/delete.html",
-                    data: { pageTitle: 'Details - {{ request.curr_brand.name }}' }
+                    templateUrl: "tmpl_details",
+                    data: { pageTitle: 'Details - {{ request.curr_brand.name }}' },
+                    controller: DetailsCtrl,
                 })
                 .state('ownership', {
                     url: "/ownership",
@@ -247,6 +299,11 @@
 
         // ========== State Controllers ==========
 
+        // ----- Details -----
+        function DetailsCtrl($scope, $http, $window, ServiceBrandExistence){
+
+        }
+
         // --- Ownership ---
         function OwnershipCtrl($scope, $http, $window) {
             $scope.open_form = false;
@@ -291,6 +348,8 @@
 
             }
         }
+
+
 
 
         // ========== State Controllers ==========

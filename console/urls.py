@@ -18,6 +18,7 @@ url_brands = [
     url(r'^$', views_brands.console_brands, name='console_brands'),
     url(r'^create/$', views_brands.console_create_brand, name='console_brand_create'),
     url(r'^save/$', views_brands.console_save_brand, name='console_save_brand'),
+    url(r'^request-update/$', views_brands.console_brand_request_update, name='console_brand_request_update'),  # Only for brand console
 
     url(r'^disassociate/$', views_brands.console_brand_disassociate, name='console_brand_disassociate'),    # Only for brand console
 ]

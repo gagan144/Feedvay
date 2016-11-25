@@ -176,9 +176,9 @@
     <script type="text/ng-template" id="tmpl_modal_review_submit">
         <div class="inmodal">
             <div class="modal-header" style="padding: 20px 15px;">
-                <button type="button" class="close" ng-click="close()">
-                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-                </button>
+{#                <button type="button" class="close" ng-click="close()">#}
+{#                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>#}
+{#                </button>#}
                 <h4 class="modal-title">
                     <i class="fa fa-pencil-square-o"></i>&nbsp;
                     Review and submit brand changes
@@ -253,7 +253,7 @@
 
                 </div>
             </div>
-            <div class="modal-footer" ng-if="!flags.submitted">
+            <div class="modal-footer">
                 <span ng-if="flags.error" class="text-danger pull-left">
                     Something went wrong. Our engineers will be informed.
                 </span>
@@ -436,6 +436,12 @@
             $scope.data = angular.copy(master_data);
             {% endwith %}
 
+            $scope.flags = {
+                error: false,
+                err_msg: null,
+                val_errors: null
+            }
+
             $scope.list_brands = [];
             $scope.find_brand = function(value){
                 if(value) {
@@ -482,6 +488,10 @@
                     return false;
                 }
 
+                $scope.flags.error= false;
+                $scope.flags.err_msg = null;
+                $scope.flags.val_errors= null;
+
 
                 var data_updates = {};
                 for(var key in $scope.data){
@@ -490,7 +500,6 @@
                     }
                 }
 
-                console.log(data_updates);
                 if(!Object.keys(data_updates).length){
                     alert("Nothing has changed!");
                     return false;
@@ -502,6 +511,7 @@
                     templateUrl: 'tmpl_modal_review_submit',
                     controller: 'UpdateReviewSubmitCtrl',
                     size: 'lg',
+                    backdrop: 'static',
                     windowClass: "animated bounceIn",
                     resolve: {
                         data: function(){
@@ -520,12 +530,25 @@
                     }
                 });
 
+                modalInstance.result.then(
+                    function(result_err){
+                        // Modal returned data; It must be an error.
+                        console.log("Modal :", result_err);
+                        $scope.flags.error = true;
+                        $scope.flags.err_msg = result_err.err_msg;
+                        $scope.flags.val_errors= result_err.val_errors;
+                    },
+                    function(){
+                        // dismissed
+                    }
+                )
+
             }
 
 
         }
 
-        APP.controller('UpdateReviewSubmitCtrl', function($scope, $uibModalInstance, data){
+        APP.controller('UpdateReviewSubmitCtrl', function($scope, $uibModalInstance, $http, $window, data){
             $scope.data = data;
 
             $scope.field_text = {
@@ -533,11 +556,78 @@
                 "acronym": "Acronym",
                 "description": "Description",
                 "ui_theme__primary": "Primary color"
-            }
+            };
 
             $scope.close = function () {
                 $uibModalInstance.dismiss('cancel');
             };
+
+            $scope.flags = {
+                submitting: false,
+                error: false,
+                err_msg: null,
+                val_errors: null
+            };
+            $scope.submit_changes = function(){
+                $scope.flags.submitting = true;
+                $scope.flags.error = false;
+                $scope.flags.err_msg = null;
+                $scope.flags.val_errors = null;
+
+                var data_updates = $scope.data.data_updates;
+
+                // Prepare form data
+                var fd = new FormData();
+                for(var key in data_updates){
+                    if(!key.startsWith("file_") && data_updates[key]!=null) {
+                        fd.append(key, data_updates[key]);
+                    }
+                }
+                if($scope.data.file_logo) {
+                    fd.append('file_logo', $scope.data.file_logo);
+                }
+                if($scope.data.file_icon) {
+                    fd.append('file_icon', $scope.data.file_icon);
+                }
+
+                $http.post(
+                    "/console/b/{{ request.curr_brand.brand_uid }}/brands/request-update/",
+                    fd,
+                    {
+                        transformRequest: angular.identity,
+                        headers: {'Content-Type': undefined}
+                    }
+                )
+                .success(function (response, status, headers, config) {
+                    $scope.flags.submitting = false;
+
+                    if(response.status=='success'){
+                        $window.location.reload();
+                    }else{
+                        var data_return = {
+                            err_msg: response.message
+                        };
+
+                        if(response.status == 'failed'){
+                            data_return["val_errors"] = response.errors;
+                        }
+
+                        $uibModalInstance.close(data_return);
+                    }
+                })
+                .error(function (response, status, headers, config) {
+                    $scope.flags.submitting = false;
+
+                    if(status != -1){
+                        $scope.flags.error = true;
+                    }else{
+                        $.growl.error({
+                            title: '<i class="fa fa-signal"></i> Network error!',
+                            message: "Please check your internet connection."
+                        });
+                    }
+                });
+            }
         });
 
 

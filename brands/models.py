@@ -57,10 +57,13 @@ class Brand(models.Model):
         - If verification fails, it is mandatory to provide reason. This reason will be shown to the user.
         - **Claims** on the brand can disabled if brand is known such as top brands or contracted clients. This can
           **ONLY** be done by staff user. Owner do not have rights to set this property.
-        - Logo & icon dimensions & size constraints must not change, however to change these settings
-            - Make changes in LOGO_DIM, LOGO_MAX_SIZE etc in Brand enums.
-            - Make changes for client side validations in '/static/partials/brands/create_edit_brand.html'.
+        - To make changes in fields take care the following:
+            - For Logo & icon dimensions & size constraints (must not change), make changes in
+              LOGO_DIM, LOGO_MAX_SIZE etc in brand enums.
             - Make changes in :class:``brands.forms.BrandCreateEditForm``.
+            - Make changes for client side validations in '/static/partials/brands/create_edit_brand.html'.
+            - Make changes in 'brands/templates/brands/console/brand_settings.html'. Also in review modal.
+
 
     **State chart diagram for brand status**:
 

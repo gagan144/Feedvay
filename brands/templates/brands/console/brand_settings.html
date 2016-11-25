@@ -169,8 +169,109 @@
                 </div>
             {% endif %}
 
-            <div static-include="{% get_static_prefix %}partials/brands/create_edit_brand.html"  ng-init="data.purpose='edit'"></div>
+            <div static-include="{% get_static_prefix %}partials/brands/create_edit_brand.html"  ng-init="ACTION='edit'"></div>
         </div>
+    </script>
+
+    <script type="text/ng-template" id="tmpl_modal_review_submit">
+        <div class="inmodal">
+            <div class="modal-header" style="padding: 20px 15px;">
+                <button type="button" class="close" ng-click="close()">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">
+                    <i class="fa fa-pencil-square-o"></i>&nbsp;
+                    Review and submit brand changes
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 20px;">
+                    Following is the summary of the changes that you have requested.
+                    Please review them carefully before submitting.
+
+                    <p style="margin: 5px 0px 0px 0px;" ng-if="data.brand_status!='verification_pending'">
+                        After submitting, your change request will be queued for verification where one of our team member
+                        will evaluate the changes for correctness and commit it accordingly. You will be automatically
+                        updated accordignly.
+                    </p>
+                </div>
+
+                <div style="padding: 0px 10px 0px 10px;">
+
+                    <div ng-repeat="(field, new_value) in data.data_updates" ng-if="['file_logo', 'file_icon'].indexOf(field)==-1">
+                        <div class="form-group" >
+                            <label class="control-label">{$ field_text[field] $}:</label>
+                            <div class="row">
+                                <div class="col-xs-5 text-muted">
+                                    {$ data.master_data[field] $}
+                                </div>
+                                <div class="col-xs-2" align="center" style="font-size: larger;">
+                                    <i class="fa fa-arrow-right text-success"></i>
+                                </div>
+                                <div class="col-xs-5">
+                                    {$ new_value $}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                    </div>
+
+                    <div ng-if="data.file_logo">
+                        <div class="form-group">
+                            <label class="control-label">Logo:</label>
+                            <div class="row">
+                                <div class="col-xs-5">
+                                    <img ng-src="{$ data.logo_url $}" class="img-thumbnail" style="max-width: 300px;">
+                                </div>
+                                <div class="col-xs-2" align="center" style="font-size: larger;">
+                                    <i class="fa fa-arrow-right text-success"></i>
+                                </div>
+                                <div class="col-xs-5">
+                                    <h3>{$ data.file_logo.name $}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                    </div>
+
+                    <div ng-if="data.file_icon">
+                        <div class="form-group">
+                            <label class="control-label">Logo:</label>
+                            <div class="row">
+                                <div class="col-xs-5">
+                                    <img ng-src="{$ data.icon_url $}" class="img-thumbnail" style="max-width: 300px;">
+                                </div>
+                                <div class="col-xs-2" align="center" style="font-size: larger;">
+                                    <i class="fa fa-arrow-right text-success"></i>
+                                </div>
+                                <div class="col-xs-5">
+                                    <h3>{$ data.file_icon.name $}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer" ng-if="!flags.submitted">
+                <span ng-if="flags.error" class="text-danger pull-left">
+                    Something went wrong. Our engineers will be informed.
+                </span>
+
+                <div ng-if="flags.submitting">
+                    <img src="{% get_static_prefix %}images/loading/spinner_1.gif" style="height: 16px;">&nbsp;
+                    Submitting changes ...
+                </div>
+                <div ng-show="!flags.submitting">
+                    <button type="button" class="btn btn-white" ng-click="close()">Close</button>
+                    <button type="button" class="btn btn-primary" ng-click="submit_changes()">
+                        Submit {$ data.brand_status!='verification_pending'?'for verification':'' $}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
     </script>
     <!-- /Templates -->
 {% endblock %}
@@ -232,6 +333,7 @@
             'ui.router',                    // Routing
             'oc.lazyLoad',                  // ocLazyLoad
             'ui.bootstrap',
+            'angular-ladda'
         ])
         .config(function($interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             $interpolateProvider.startSymbol('{$');
@@ -254,6 +356,22 @@
                     templateUrl: "tmpl_details",
                     data: { pageTitle: 'Details - {{ request.curr_brand.name }}' },
                     controller: DetailsCtrl,
+                    resolve: {
+                        loadPlugin: function ($ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                {
+                                    files:['{% get_static_prefix %}lib/vibrantjs/Vibrant.js']
+                                },
+                                {
+                                    name: 'colorpicker.module',
+                                    files: [
+                                        '{% get_static_prefix %}ui/css/plugins/colorpicker/colorpicker.css',
+                                        '{% get_static_prefix %}ui/js/plugins/colorpicker/bootstrap-colorpicker-module.js'
+                                    ]
+                                }
+                            ]);
+                        }
+                    }
                 })
                 .state('ownership', {
                     url: "/ownership",
@@ -300,9 +418,128 @@
         // ========== State Controllers ==========
 
         // ----- Details -----
-        function DetailsCtrl($scope, $http, $window, ServiceBrandExistence){
+        function DetailsCtrl($scope, $http, $window, ServiceBrandExistence, $uibModal){
+            $scope.ServiceBrandExistence = ServiceBrandExistence;
+
+            $scope.pallets = [];
+            {% with brand=request.curr_brand %}
+            $scope.logo_url = "{{ brand.logo.url }}";
+            $scope.icon_url = "{{ brand.icon.url }}";
+            var master_data = {
+                id: {{ brand.id }},
+                name: "{{ brand.name }}",
+                acronym: {% if brand.acronym %}"{{ brand.acronym }}"{% else %}null{% endif %},
+                description: "{{ brand.description }}",
+
+                ui_theme__primary: {% if brand.ui_theme %}"{{ brand.ui_theme.primary }}"{% else %}null{% endif %},
+            }
+            $scope.data = angular.copy(master_data);
+            {% endwith %}
+
+            $scope.list_brands = [];
+            $scope.find_brand = function(value){
+                if(value) {
+                    $scope.list_brands = ServiceBrandExistence.find(value).then(function (response) {
+                        $scope.list_brands = response;
+                    });
+                }
+            }
+
+            $scope.get_colors = function($event){
+                var elem = event.target;
+
+                $scope.pallets = [];
+
+                if (elem.files && elem.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var img_data = e.target.result;
+
+                        var image = new Image(200, 200);
+                        image.src = img_data;
+
+                        var vibrant = new Vibrant(image);
+                        var swatches = vibrant.swatches();
+
+                        var pallets = []
+                        for (var swatch in swatches) {
+                            if (swatches.hasOwnProperty(swatch) && swatches[swatch]) {
+                                var hex_color = swatches[swatch].getHex();
+                                pallets.push(hex_color);
+                            }
+                        }
+
+                        $scope.$apply(function () {
+                            $scope.pallets = pallets;
+                        });
+                    }
+                    reader.readAsDataURL(elem.files[0]);
+                }
+            }
+
+            $scope.submit_brand = function(form_obj) {
+                if(form_obj.$invalid) {
+                    return false;
+                }
+
+
+                var data_updates = {};
+                for(var key in $scope.data){
+                    if($scope.data[key] != master_data[key]){
+                        data_updates[key] = $scope.data[key];
+                    }
+                }
+
+                console.log(data_updates);
+                if(!Object.keys(data_updates).length){
+                    alert("Nothing has changed!");
+                    return false;
+                }
+
+                // Open review modal
+                var modalInstance = $uibModal.open({
+                    animation: true,
+                    templateUrl: 'tmpl_modal_review_submit',
+                    controller: 'UpdateReviewSubmitCtrl',
+                    size: 'lg',
+                    windowClass: "animated bounceIn",
+                    resolve: {
+                        data: function(){
+                            return {
+                                master_data: master_data,
+                                logo_url: $scope.logo_url,
+                                icon_url: $scope.icon_url,
+                                brand_status: "{{ request.curr_brand.status }}",
+
+                                data_updates: angular.copy(data_updates),
+                                file_logo: $scope.file_logo,
+                                file_icon: $scope.file_icon
+                            }
+                        }
+
+                    }
+                });
+
+            }
+
 
         }
+
+        APP.controller('UpdateReviewSubmitCtrl', function($scope, $uibModalInstance, data){
+            $scope.data = data;
+
+            $scope.field_text = {
+                "name": "Name",
+                "acronym": "Acronym",
+                "description": "Description",
+                "ui_theme__primary": "Primary color"
+            }
+
+            $scope.close = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+        });
+
 
         // --- Ownership ---
         function OwnershipCtrl($scope, $http, $window) {

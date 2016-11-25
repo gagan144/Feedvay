@@ -116,7 +116,7 @@
                                                 {{ b.name }}
 
                                                 {% if b.status == 'verification_pending' %}
-                                                    <i class="fa fa-clock-o text-warning" style="margin-left: 10px" tooltip-placement="right" uib-tooltip="Verification pending!"></i>
+                                                    <i class="fa fa-exclamation-circle text-warning" style="margin-left: 10px" tooltip-placement="right" uib-tooltip="Verification pending!"></i>
                                                 {% elif b.status == 'verification_failed' %}
                                                     <i class="fa fa-ban text-danger" style="margin-left: 10px" tooltip-placement="right" uib-tooltip="Verification failed!"></i>
                                                 {% endif %}

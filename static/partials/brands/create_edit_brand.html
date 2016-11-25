@@ -61,7 +61,7 @@
     <div class="hr-line-dashed"></div>
     <div class="form-group">
         <label class="col-sm-3 control-label">
-            Logo<span class="required">*</span>:
+            Logo<span class="required" ng-if="ACTION=='create'">*</span>:
         </label>
         <div class="col-sm-7" style="padding-top: 7px;">
             Upload a beautiful logo image of your brand that will be visible to public. Your
@@ -74,9 +74,9 @@
             </ul>
 
             <div style="margin: 10px 0px 5px 0px;">
-                <img id="logo_preview" src="" class="img-thumbnail" style="max-width: 300px;">
+                <img id="logo_preview" ng-src="{$ logo_url $}" src="" class="img-thumbnail" style="max-width: 300px;">
             </div>
-            <input type="file" name="file_logo" file-model="file_logo" ng-model="data.file_logo" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" required validate-file="" preview-image="'logo_preview'" ng-change="get_colors();">
+            <input type="file" name="file_logo" file-model="file_logo" ng-model="data.file_logo" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" ng-required="ACTION=='create'" validate-file="" preview-image="'logo_preview'" ng-change="get_colors();">
             <label ng-if="flags.val_errors.file_logo" class="error">
                 {$ flags.val_errors.file_logo.join(", "); $}
             </label>
@@ -89,7 +89,7 @@
     <div class="hr-line-dashed"></div>
     <div class="form-group">
         <label class="col-sm-3 control-label">
-            Icon<span class="required">*</span>:
+            Icon<span class="required" ng-if="ACTION=='create'">*</span>:
         </label>
         <div class="col-sm-7" style="padding-top: 7px;">
             Icon of your brand which can be your logo or major part of the logo. <br/>
@@ -101,9 +101,9 @@
             </ul>
 
             <div style="margin: 10px 0px 5px 0px;">
-                <img id="icon_preview" src="" class="img-thumbnail" style="max-width: 64px;">
+                <img id="icon_preview" ng-src="{$ icon_url $}" src="" class="img-thumbnail" style="max-width: 64px;">
             </div>
-            <input type="file" name="file_icon" file-model="file_icon" ng-model="data.file_icon" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" required validate-file="" preview-image="'icon_preview'">
+            <input type="file" name="file_icon" file-model="file_icon" ng-model="data.file_icon" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" ng-required="ACTION=='create'" validate-file="" preview-image="'icon_preview'">
             <label ng-if="flags.val_errors.file_icon" class="error">
                 {$ flags.val_errors.file_icon.join(", "); $}
             </label>
@@ -160,8 +160,11 @@
                 <i class="fa fa-exclamation-triangle"></i> {$ flags.err_msg $}
             </p>
 
-            <button ladda="flags.submitting" class="btn btn-primary ladda-button" type="button" ng-disabled="form_create_edit_brand.$invalid" ng-click="submit_brand(form_create_edit_brand);" data-style="zoom-in">
-                {$ data.purpose=='edit'?'Update and send for verification':'Create and send for verification' $}
+            <button ng-if="ACTION=='create'" ladda="flags.submitting" class="btn btn-primary ladda-button" type="button" ng-disabled="form_create_edit_brand.$invalid" ng-click="submit_brand(form_create_edit_brand);" data-style="zoom-in">
+                Create and send for verification
+            </button>
+            <button ng-if="ACTION=='edit'" ladda="flags.submitting" class="btn btn-primary ladda-button" type="button" ng-disabled="form_create_edit_brand.$invalid || form_create_edit_brand.$pristine" ng-click="submit_brand(form_create_edit_brand);" data-style="zoom-in">
+                Review and submit changes
             </button>
         </div>
     </div>

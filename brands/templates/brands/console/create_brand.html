@@ -30,8 +30,8 @@
 
 {% block content %}
     <div class="content_box" style="padding-top: 30px;margin-bottom: 20px;" ng-cloak>
-{#        <div ng-include="'{% get_static_prefix %}partials/brands/create_edit_brand.html'" ng-controller="NewBrandFormCtrl" ng-init="purpose='edit'"></div>#}
-        <div static-include="{% get_static_prefix %}partials/brands/create_edit_brand.html" ng-controller="NewBrandFormCtrl" ng-init="data.purpose='create'"></div>
+{#        <div ng-include="'{% get_static_prefix %}partials/brands/create_edit_brand.html'" ng-controller="NewBrandFormCtrl" ng-init="ACTION='edit'"></div>#}
+        <div static-include="{% get_static_prefix %}partials/brands/create_edit_brand.html" ng-controller="NewBrandFormCtrl" ng-init="ACTION='create'"></div>
     </div>
 {% endblock %}
 
@@ -75,6 +75,15 @@
                 ui_theme__primary: null
             }
 
+            $scope.list_brands = [];
+            $scope.find_brand = function(value){
+                if(value) {
+                    $scope.list_brands = ServiceBrandExistence.find(value).then(function (response) {
+                        $scope.list_brands = response;
+                    });
+                }
+            }
+
             $scope.flags = {
                 submitting: false,
                 error: false,
@@ -115,12 +124,7 @@
                 }
             }
 
-            $scope.list_brands = [];
-            $scope.find_brand = function(value){
-                $scope.list_brands = ServiceBrandExistence.find(value).then(function (response) {
-                    $scope.list_brands = response;
-                });
-            }
+
 
 
             $scope.submit_brand = function(form_obj){

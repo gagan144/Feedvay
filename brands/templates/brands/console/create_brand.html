@@ -148,7 +148,7 @@
                 fd.append('file_icon', $scope.file_icon);
 
                 $http.post(
-                    "{% url 'console_save_brand' %}",
+                    "{% url 'console_brand_create' %}",
                     fd,
                     {
                         transformRequest: angular.identity,

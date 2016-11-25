@@ -25,9 +25,9 @@ def console_brands(request):
 
 # ----- Brand CRUD -----
 @registered_user_only
-def console_create_brand(request):
+def console_brand_new(request):
     """
-    View to add new brand. Newely created brand is marked for verification which is then
+    View to add new brand. Newly created brand is marked for verification which is then
     published after manual verification.
 
     **Type**: GET
@@ -40,10 +40,9 @@ def console_create_brand(request):
     return render(request, 'brands/console/create_brand.html', data)
 
 @registered_user_only
-def console_save_brand(request):
+def console_brand_create(request):
     """
-    API view to create or edit a brand. User fills and submits form and depending upon
-    whether id is provided or not, brand is either created or updated request is made.
+    An API view to create a NEW brand. User fills a form and submit data.
 
     **Type**: POST
 
@@ -55,14 +54,9 @@ def console_save_brand(request):
 
         if form_brand.is_valid():
             form_data = form_brand.cleaned_data
-            brand_id = request.POST.get('id', None)
 
-            if brand_id:
-                # Brand edit; Create edit request
-                raise NotImplementedError("Brand edit yet to be implemented.")
-            else:
-                ops.create_new_brand(form_data, request.user.registereduser)
-                return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Your request has been send for verification.').gen_http_response()
+            ops.create_new_brand(form_data, request.user.registereduser)
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Your request has been send for verification.').gen_http_response()
         else:
             errors = dict(form_brand.errors)
             return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()

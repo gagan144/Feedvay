@@ -8,17 +8,8 @@ from utilities.validators import *
 
 class BrandCreateEditForm(forms.Form):
     """
-    Form to create or edit a brand.
+    Form to create new brand.
     """
-
-    PUR_CREATE = 'create'
-    PUR_EDIT = 'edit'
-    CH_PURPOSE = (
-        (PUR_CREATE, 'Create'),
-        (PUR_EDIT, 'Edit')
-    )
-
-    purpose = forms.ChoiceField(required=True, choices=CH_PURPOSE)
     name    = forms.CharField(required=True, max_length=255)
     acronym = forms.CharField(required=False, max_length=10)
     description = forms.CharField(required=True)
@@ -30,9 +21,8 @@ class BrandCreateEditForm(forms.Form):
     def clean(self):
         form_data = self.cleaned_data
 
-        if form_data['purpose'] == BrandCreateEditForm.PUR_CREATE:
-            if Brand.does_exists(form_data['name']):
-                self._errors["name"] = ["Brand already exists."]
+        if Brand.does_exists(form_data['name']):
+            self._errors["name"] = ["Brand already exists."]
 
         # validate logo & icon
         if not Brand.validate_logo_image(form_data['file_logo']):

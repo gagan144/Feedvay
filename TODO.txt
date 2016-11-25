@@ -15,7 +15,6 @@
     - Suggestions Display view
 
 - Brands
-    - Remove purpose from brand create
     - image size validations (Client side only)
 
 - Data privacy conventions (public, encypted, client shared etc)

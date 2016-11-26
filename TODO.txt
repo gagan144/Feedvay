@@ -16,6 +16,10 @@
 
 - Brands
     - image size validations (Client side only)
+    - Change request
+        - Upload file s3
+        - show brands
+        - fail/accept request
 
 - Data privacy conventions (public, encypted, client shared etc)
 - SEO

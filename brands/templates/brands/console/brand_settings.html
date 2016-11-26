@@ -283,6 +283,18 @@
 
 
     </script>
+
+    <script type="text/ng-template" id="tmpl_change_requests">
+        <div>
+            <h2 style="margin-top: 0px;">
+                <i class="fa fa-pencil-square-o"></i>&nbsp;
+                Change requests
+            </h2>
+            <hr style="margin-top: 15px;"/>
+
+
+        </div>
+    </script>
     <!-- /Templates -->
 {% endblock %}
 
@@ -307,6 +319,9 @@
                     </li>
                     <li ng-class="{'active': $state.current.name=='ownership'}">
                         <a ui-sref="ownership"><i class="fa fa-users"></i> Ownership</a>
+                    </li>
+                    <li ng-class="{'active': $state.current.name=='change-requests'}">
+                        <a ui-sref="change-requests"><i class="fa fa-pencil-square-o"></i> Change requests</a>
                     </li>
                 </ul>
                 <div class="tab-content">
@@ -389,6 +404,14 @@
                     data: { pageTitle: 'Ownership - {{ request.curr_brand.name }}' },
                     controller: OwnershipCtrl,
                 })
+                .state('change-requests', {
+                    url: "/change-requests",
+                    templateUrl: "tmpl_change_requests",
+                    data: { pageTitle: 'Chnage requests - {{ request.curr_brand.name }}' },
+{#                    controller: ChangeRequestCtrl,#}
+                })
+
+
 
         })
         .run(function($rootScope, $http, $cookies, $state) {
@@ -609,7 +632,11 @@
                 )
                 .success(function (response, status, headers, config) {
                     if(response.status=='success'){
-                        $window.location.reload();
+                        {% if request.curr_brand.status == 'verified' %}
+                            $window.location = "#/change-requests";
+                        {% else %}
+                            $window.location.reload();
+                        {% endif %}
                     }else{
                         $scope.flags.submitting = false;
                         var data_return = {

@@ -96,16 +96,6 @@ def console_brand_request_update(request):
                 return ApiResponse(status=ApiResponse.ST_SUCCESS, message='All updates made successfully').gen_http_response()
             except Exception as ex:
                 return ApiResponse(status=ApiResponse.ST_FAILED, message=ex.message).gen_http_response()
-
-        # form_brand_change = None
-        #
-        # if True:#form_brand_change.is_valid():
-        #     # form_data = form_brand_change.cleaned_data
-        #
-        #     return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Your request has been send for verification.').gen_http_response()
-        # else:
-        #     errors = dict(form_brand_change.errors)
-        #     return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()

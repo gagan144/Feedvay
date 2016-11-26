@@ -175,6 +175,30 @@ All methods composes email according to the parameters and store them in <a clas
 from where they are picked up by a cron process for dispatching.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 <dl class="staticmethod">
+<dt id="owlery.owls.EmailOwl.send_brand_change_request">
+<em class="property">static </em><code class="descname">send_brand_change_request</code><span class="sig-paren">(</span><em>brand</em>, <em>requester</em>, <em>brandchangereq</em>, <em>url</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.EmailOwl.send_brand_change_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends an email to all brand owners about the change request.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>brand</strong> &#8211; <a class="reference internal" href="../brands/models.html#brands.models.Brand" title="brands.models.Brand"><code class="xref py py-class docutils literal"><span class="pre">brands.models.Brand</span></code></a> model instance</li>
+<li><strong>requester</strong> &#8211; Registered user that requested the change.</li>
+<li><strong>brandchangereq</strong> &#8211; Request instance <a class="reference internal" href="../brands/models.html#brands.models.BrandChangeRequest" title="brands.models.BrandChangeRequest"><code class="xref py py-class docutils literal"><span class="pre">brands.models.BrandChangeRequest</span></code></a></li>
+<li><strong>url</strong> &#8211; Url to redirect your to viw page.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Returns List&lt;<code class="xref py py-class docutils literal"><span class="pre">owlery.model.EmailMessage</span></code> instance&gt; of those owners who had email address.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
 <dt id="owlery.owls.EmailOwl.send_brand_disassociation_success">
 <em class="property">static </em><code class="descname">send_brand_disassociation_success</code><span class="sig-paren">(</span><em>user</em>, <em>brand</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.EmailOwl.send_brand_disassociation_success" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends confirmation email to user&#8217; disassociation from a brand.</p>

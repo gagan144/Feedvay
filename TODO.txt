@@ -17,19 +17,24 @@
 - Brands
     - image size validations (Client side only)
     - Change request
+        - BrandChangeRequest statechart
         - Upload file s3
-        - show brands
+        - show brands change requests
         - fail/accept request
 
 - Data privacy conventions (public, encypted, client shared etc)
 - SEO
 
-- Geography
-    - Country tel code
-
 - Crons
     - Delete orphan sessions & UserSessions
     - Delete expired notification messages
+    - Owls
 
 - Logo
 - SMS Gateway service classes
+
+-----------------------------
+- Notification display on console
+- Geography (Country tel code)
+- User roles
+- POBS

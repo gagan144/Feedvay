@@ -1,0 +1,22 @@
+Hi {{ receiver_name }},<br/>
+
+<p>
+    We have received an update request for your brand <b>{{ brand.name }}</b>. Your request will be processed
+    shortly by one of our team member and we will inform you accordingly. All previously pending requests (if any)
+    are outdated and will not be considered for change.
+</p>
+
+<p>
+    Kindly keep yourself in the loop for any updates. To review your request, please visit the following
+    <a href="{{ url }}" target="_blank">link</a>.
+</p>
+
+<p>
+    <b>Requester:</b> {{ requester_name }}<br/>
+    <b>Date:</b> {{ dated|date:"d M, Y" }}
+</p>
+
+<p>
+    Best Regards,<br/>
+    Team Feedvay
+</p>

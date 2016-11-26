@@ -19,6 +19,7 @@ django-recaptcha
 jsonobject
 boto
 django-storages
+tinys3
 # Pillow
 
 

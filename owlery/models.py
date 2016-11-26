@@ -177,6 +177,7 @@ class EmailMessage(models.Model):
     TYPE_PASS_CHNG_SUCC = 'password_change_success'
     TYPE_BRAND_DISASS_SUCC = 'brand_disassociation_success'
     TYPE_BRAND_PARTNER_LEFT = 'brand_partner_left'
+    TYPE_BRAND_CHNG_REQ = 'brand_change_request'
     # TYPE_REG_RESULT = 'reg_result'  # Result can by anything; success, failure, info etc
     # TYPE_PROMOTION = 'promotion'
     CH_TYPE = (
@@ -184,7 +185,8 @@ class EmailMessage(models.Model):
         (TYPE_PASS_RESET, 'Password Reset'),
         (TYPE_PASS_CHNG_SUCC, 'Password change success'),
         (TYPE_BRAND_DISASS_SUCC, 'Brand disassociation success'),
-        (TYPE_BRAND_PARTNER_LEFT, 'Brand partner left')
+        (TYPE_BRAND_PARTNER_LEFT, 'Brand partner left'),
+        (TYPE_BRAND_CHNG_REQ, 'Brand change request')
         # (TYPE_PROMOTION, 'Promotion')
     )
 

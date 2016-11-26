@@ -13,6 +13,7 @@
         - My brands
             - When user has no brands
         - Brand creation
+        - Settings
 
 
 # ---------- Illustrations -----------

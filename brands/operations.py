@@ -3,9 +3,16 @@
 # permission of Gagandeep Singh.
 
 from django.db import transaction
+from django.conf import settings
+from django.utils import timezone
+import tinys3
+import uuid
+import os
+import copy
 
-from brands.models import Brand, BrandOwner
+from brands.models import Brand, BrandOwner, BrandChangeRequest
 from accounts.models import UserClaim
+from owlery import owls
 
 def create_new_brand(data, claim_reg_user):
     """
@@ -100,3 +107,85 @@ def reregister_or_update_brand(brand, data, files=None):
     # Save brand
     update_theme = True if primary_color else False
     brand.save(update_theme=update_theme)
+
+def create_brand_change_log(request, brand, reg_user, data, files=None):
+    """
+    Method to create a change request log for a brand. This method is only applicable for
+    ``verified`` brand.
+
+    :param brand: Brand that needs to be updated.
+    :param reg_user: Registered User that requested the change.
+    :param data: Dictionary of fields-value pair that must be updated.
+    :param files: (Optional) Dictionary of files to update logo/icon etc. Usually this is ``request.FILES``.
+
+    **Points**:
+
+        - Files handled: ``file_log``, ``file_icon``
+
+
+    .. note:
+        Only applicable for brand with status ``verified``.
+
+    **Authors**: Gagandeep Singh
+    """
+
+    # Validate entry point
+    if brand.status != Brand.ST_VERIFIED:
+        raise Exception('This method is only applicable for verified brands.')
+    if len(data)==0 and (files is None or len(files)==0):
+        raise Exception("Please provide data or files that needs to be updated")
+
+    # OK! Now proceed
+    data = copy.deepcopy(data)
+
+    # TODO: Upload files if any
+    file_urls = None
+    if len(files):
+        file_urls = {}
+        s3conn = tinys3.Connection(
+            settings.AWS_ACCESS_KEY_ID,
+            settings.AWS_SECRET_ACCESS_KEY,
+            default_bucket = settings.AWS_STORAGE_BUCKET_NAME,
+        )
+
+        if files.get('file_logo', None):
+            file_obj = files['file_logo']
+            id = str(uuid.uuid4())
+            fname, ext = os.path.splitext(file_obj.name)
+            new_filename = "{}.{}".format(id, ext.replace('.',''))
+
+            upload_path = "brands/{brand_uid}/lg-{filename}".format(
+                brand_uid = brand.brand_uid,
+                filename = new_filename
+            )
+
+            result = s3conn.upload(upload_path, file_obj, close=True)
+            file_urls['logo'] = result
+        # if files.get('file_icon', None):
+        #     brand.icon = files['file_icon']
+
+        data['files'] = file_urls
+
+    # Create change request entry
+    with transaction.atomic():
+        # Outdate all previous pending requests
+        BrandChangeRequest.objects.filter(brand=brand, status=BrandChangeRequest.ST_NEW).update(
+            status = BrandChangeRequest.ST_OUTDATED,
+            modified_on = timezone.now()
+        )
+
+        # insert new request
+        instance = BrandChangeRequest.objects.create(
+            brand = brand,
+            registered_user = reg_user,
+            data_changes = data
+        )
+
+    # Send owls
+    url = request.build_absolute_uri("/console/b/{}/settings/#/change-requests".format(brand.brand_uid))
+    owls.EmailOwl.send_brand_change_request(
+        brand,
+        reg_user,
+        instance,
+        url
+    )

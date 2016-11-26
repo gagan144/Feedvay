@@ -191,8 +191,18 @@
 
                     <p style="margin: 5px 0px 0px 0px;" ng-if="data.brand_status!='verification_pending'">
                         After submitting, your change request will be queued for verification where one of our team member
-                        will evaluate the changes for correctness and commit it accordingly. You will be automatically
-                        updated accordignly.
+                        will evaluate the changes for correctness and update them accordingly. Your change request is
+                        atomic that means your change request will be accepted if and only if all fields in the request
+                        are valid. If any field change is found incorrect, your request will be rejected.
+                        <br/>
+                        Please follow-up for any updates regarding your request, however we will inform you automatically.
+
+                        <br/><br/>
+                        <span style="font-style: italic">
+                            Also note that all previously pending change requests (if any) will be marked out-dated and
+                            will not be eligible for the change. In case you still want to make update, we recommend you
+                            to include your previous changes in this update.
+                        </span>
                     </p>
                 </div>
 
@@ -533,7 +543,6 @@
                 modalInstance.result.then(
                     function(result_err){
                         // Modal returned data; It must be an error.
-                        console.log("Modal :", result_err);
                         $scope.flags.error = true;
                         $scope.flags.err_msg = result_err.err_msg;
                         $scope.flags.val_errors= result_err.val_errors;

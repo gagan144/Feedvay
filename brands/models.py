@@ -500,10 +500,12 @@ class BrandChangeRequest(models57.Model):
     ST_NEW = 'new'
     ST_SUCCESS = 'success'
     ST_REJECTED = 'rejected'
+    ST_OUTDATED = 'outdated'
     CH_STATUS =(
         (ST_NEW, 'New'),
         (ST_SUCCESS, 'Success'),
-        (ST_REJECTED, 'Rejected')
+        (ST_REJECTED, 'Rejected'),
+        (ST_OUTDATED, 'Outdated')
     )
 
     # --- Fields ---

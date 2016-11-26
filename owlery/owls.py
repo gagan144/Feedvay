@@ -359,6 +359,59 @@ class EmailOwl:
 
         return list_emails
 
+    @staticmethod
+    def send_brand_change_request(brand, requester, brandchangereq, url):
+        """
+        Sends an email to all brand owners about the change request.
+
+        :param brand: :class:`brands.models.Brand` model instance
+        :param requester: Registered user that requested the change.
+        :param brandchangereq: Request instance :class:`brands.models.BrandChangeRequest`
+        :param url: Url to redirect your to viw page.
+        :return: Returns List<:class:`owlery.model.EmailMessage` instance> of those owners who had email address.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        requester_user = requester.user
+        requester_name = "{} {}".format(
+            requester_user.first_name,
+            requester_user.last_name
+        )
+
+        list_emails = []
+        for owner in brand.owners.all():
+            user_owner = owner.user
+            email_address = user_owner.email
+
+            if email_address is not None and email_address != '':
+                receiver_name = "{} {}".format(user_owner.first_name, user_owner.last_name)
+
+                # Create message body
+                message_body = render_to_response('owlery/owls/emails/brand_change_request.html', {
+                    "receiver_name": receiver_name,
+                    "requester_name": requester_name,
+                    "brand": brand,
+                    "dated": brandchangereq.created_on,
+                    "url": url
+                }).content
+
+                # Create database entry
+                email_msg = EmailMessage.objects.create(
+                    username = user_owner.username,
+                    email_id = email_address,
+
+                    subject = "Feedvay - Brand change request",
+                    message = message_body,
+
+                    type = EmailMessage.TYPE_BRAND_CHNG_REQ,
+                    priority = EmailMessage.PR_NORMAL
+                )
+
+                list_emails.append(email_msg)
+
+        return list_emails
+
 
 class NotificationOwl:
     """

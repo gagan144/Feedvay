@@ -84,7 +84,11 @@ def console_brand_request_update(request):
             return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="Denied! Brand '{}' has been deleted.".format(brand.name)).gen_http_response()
         elif brand.status == Brand.ST_VERIFIED:
             # Create Change log
-            pass
+            try:
+                ops.create_brand_change_log(request, brand, request.user.registereduser, request.POST, request.FILES)
+                return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Your change request has been queued for verification.').gen_http_response()
+            except Exception as ex:
+                return ApiResponse(status=ApiResponse.ST_FAILED, message=ex.message).gen_http_response()
         else:
             # Inplace update
             try:

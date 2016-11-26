@@ -634,6 +634,7 @@
                     if(response.status=='success'){
                         {% if request.curr_brand.status == 'verified' %}
                             $window.location = "#/change-requests";
+                            $window.location.reload();
                         {% else %}
                             $window.location.reload();
                         {% endif %}

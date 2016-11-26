@@ -555,3 +555,6 @@ class BrandChangeRequest(models57.Model):
 
         self.clean()
         super(self.__class__, self).save(*args, **kwargs)
+
+    def delete(self, using=None, keep_parents=False):
+        raise ValidationError("You cannot delete a change request. Mark it outdated instead.")

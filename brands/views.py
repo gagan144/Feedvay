@@ -85,8 +85,12 @@ def console_brand_request_update(request):
         elif brand.status == Brand.ST_VERIFIED:
             # Create Change log
             try:
-                ops.create_brand_change_log(request, brand, request.user.registereduser, request.POST, request.FILES)
-                return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Your change request has been queued for verification.').gen_http_response()
+                is_valid, errors = ops.create_brand_change_log(request, brand, request.user.registereduser, request.POST, request.FILES)
+                if is_valid:
+                    return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Your change request has been queued for verification.').gen_http_response()
+                else:
+                    return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()
+
             except Exception as ex:
                 return ApiResponse(status=ApiResponse.ST_FAILED, message=ex.message).gen_http_response()
         else:

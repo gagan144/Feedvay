@@ -599,11 +599,10 @@
                     }
                 )
                 .success(function (response, status, headers, config) {
-                    $scope.flags.submitting = false;
-
                     if(response.status=='success'){
                         $window.location.reload();
                     }else{
+                        $scope.flags.submitting = false;
                         var data_return = {
                             err_msg: response.message
                         };

@@ -76,3 +76,23 @@ class BrandAdmin(admin.ModelAdmin):
     def delete_model(self, request, obj):
         obj.trans_delete()
         obj.save()
+
+@admin.register(BrandChangeRequest)
+class BrandChangeRequestAdmin(admin.ModelAdmin):
+    """
+    Django admin model for :class:`brands.models.BrandChangeRequest`.
+
+    **Authors**: Gagandeep Singh
+    """
+    list_display = ('brand', 'registered_user', 'status', 'created_on')
+    list_filter = ('status', 'created_on')
+    raw_id_fields = ('brand', 'registered_user')
+    search_fields = ('brand__name', 'registered_user__user__username')
+    list_per_page = 20
+
+    def has_add_permission(self, request):
+        return False
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = [field.name for field in self.model._meta.fields if not field.editable]
+        return readonly_fields

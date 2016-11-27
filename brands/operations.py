@@ -54,6 +54,52 @@ def create_new_brand(data, claim_reg_user):
             registered_user = claim_reg_user
         )
 
+def mark_brand_verified(brand, remarks=None):
+    """
+    Method to mark brand verified. It is assumed here all prerequisites and verification process
+    have been completed.
+
+    :param brand: Brand that needs to be verified.
+    :param remarks: (optional) Any remarks related to verification. (can be HTML)
+
+    .. note:
+        Applicable only for ``verification_pending`` brand only.
+
+    **Authors**: Gagandeep Singh
+    """
+
+    # Validate entry point
+    if brand.status != Brand.ST_VERF_PENDING:
+        raise Exception('This method is only applicable for verification_pending brand.')
+
+    brand.trans_verified(remarks)
+    brand.save()
+
+    # Send owls
+    owls.SmsOwl.send_brand_verified(brand)
+    owls.EmailOwl.send_brand_verified(brand)
+    owls.NotificationOwl.send_brand_verified(brand)
+
+def mark_brand_verification_failed(brand, reason):
+    """
+    Method to mark a brand failed in verification. It is assumed here all checks have been made
+    before marking it failed.
+
+    :param brand: Brand that needs to be verified.
+    :param reason: Reason for failure. (ca be HTML)
+    """
+
+    # Validate entry point
+    if brand.status  != Brand.ST_VERF_PENDING:
+        raise Exception('This method is only applicable for verification_pending brand.')
+
+    brand.trans_verification_failed(reason)
+    brand.save()
+
+    # Send owls
+
+
+
 def reregister_or_update_brand(brand, data, files=None):
     """
     Method to revise brand status. A brand can be re-registered after verification failure by providing
@@ -108,7 +154,7 @@ def reregister_or_update_brand(brand, data, files=None):
     update_theme = True if primary_color else False
     brand.save(update_theme=update_theme)
 
-def create_brand_change_log(request, brand, reg_user, data, files=None):
+def create_brand_change_log(brand, reg_user, data, files=None):
     """
     Method to create a change request log for a brand. This method is only applicable for
     ``verified`` brand.
@@ -215,12 +261,10 @@ def create_brand_change_log(request, brand, reg_user, data, files=None):
             )
 
         # Send owls
-        url = request.build_absolute_uri("/console/b/{}/settings/#/change-requests".format(brand.brand_uid))
         owls.EmailOwl.send_brand_change_request(
             brand,
             reg_user,
-            instance,
-            url
+            instance
         )
 
         return is_valid, None

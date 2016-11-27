@@ -145,6 +145,37 @@ class SmsOwl:
 
         return sms
 
+    @staticmethod
+    def send_brand_verified(brand):
+        """
+        Sends brand successfully verified message to all owners of the brand.
+
+        :param brand: Instance of the brand
+        :return: List<:class:`owlery.model.SmsMessage`>
+
+        **Authors**: Gagandeep Singh
+        """
+
+        message_body = render_to_response('owlery/owls/sms/brand_verified.txt',{
+            "brand_name": brand.name
+        }).content
+
+        list_sms = []
+        for owner in brand.owners.all():
+            sms = SmsMessage.objects.create(
+                username = owner.user.username,
+                mobile_no = owner.user.username.replace('-',''),
+                message = message_body,
+                type = SmsMessage.TYPE_BRAND_VERIFIED,
+                priority = SmsMessage.PR_HIGH
+            )
+            list_sms.append(sms)
+
+        # TODO: Send SMS immediately using gateway
+
+        return list_sms
+
+
 class EmailOwl:
     """
     Owl to handle all emails. This class defines various email template that can used to send email.
@@ -360,14 +391,13 @@ class EmailOwl:
         return list_emails
 
     @staticmethod
-    def send_brand_change_request(brand, requester, brandchangereq, url):
+    def send_brand_change_request(brand, requester, brandchangereq):
         """
         Sends an email to all brand owners about the change request.
 
         :param brand: :class:`brands.models.Brand` model instance
         :param requester: Registered user that requested the change.
         :param brandchangereq: Request instance :class:`brands.models.BrandChangeRequest`
-        :param url: Url to redirect your to viw page.
         :return: Returns List<:class:`owlery.model.EmailMessage` instance> of those owners who had email address.
 
         **Authors**: Gagandeep Singh
@@ -393,7 +423,7 @@ class EmailOwl:
                     "requester_name": requester_name,
                     "brand": brand,
                     "dated": brandchangereq.created_on,
-                    "url": url
+                    "url": "{}/console/b/{}/settings/#/change-requests".format(settings.FEEDVAY_DOMAIN, brand.brand_uid)
                 }).content
 
                 # Create database entry
@@ -409,6 +439,53 @@ class EmailOwl:
                 )
 
                 list_emails.append(email_msg)
+
+        return list_emails
+
+    @staticmethod
+    def send_brand_verified(brand):
+        """
+        Sends an email to all brand owners about the change request.
+
+        :param brand: :class:`brands.models.Brand` model instance
+        :return: Returns List<:class:`owlery.model.EmailMessage` instance> of those owners who had email address.
+
+        **Authors**: Gagandeep Singh
+        """
+        url = "{}/console/b/{}/".format(settings.FEEDVAY_DOMAIN, brand.brand_uid)
+
+        list_emails = []
+        for owner in brand.owners.all():
+            user_owner = owner.user
+            email_address = user_owner.email
+
+            if email_address is not None and email_address != '':
+                receiver_name = "{} {}".format(user_owner.first_name, user_owner.last_name)
+
+                # Create message body
+                message_body = render_to_response('owlery/owls/emails/brand_verified.html', {
+                    "receiver_name": receiver_name,
+                    "brand": brand,
+                    "url": url
+                }).content
+
+                # Create database entry
+                email_msg = EmailMessage.objects.create(
+                    username = user_owner.username,
+                    email_id = email_address,
+
+                    subject = "Feedvay - Brand verified",
+                    message = message_body,
+
+                    type = EmailMessage.TYPE_BRAND_VERIFIED,
+                    priority = EmailMessage.PR_HIGH
+                )
+
+                list_emails.append(email_msg)
+
+        # Send emails
+        for email in list_emails:
+            email.force_send()
 
         return list_emails
 
@@ -441,7 +518,6 @@ class NotificationOwl:
         :param reg_user_disass: Registered user instance that left the brand
         :return: Returns :class:`owlery.model.NotificationMessage` instance, None if there are no owners of the brand
 
-
         **Authors**: Gagandeep Singh
         """
 
@@ -466,6 +542,48 @@ class NotificationOwl:
                     type = NotificationMessage.TYPE_BRAND_PARTNER_LEFT,
                     message = message_body,
                     url_web = "/console/b/{}/settings/#/ownership".format(brand.brand_uid),
+                    priority = NotificationMessage.PR_HIGH
+                )
+
+                # Create recipients in bulk
+                NotificationRecipient.objects.bulk_create([
+                    NotificationRecipient(
+                        notif_message = notif_msg,
+                        registered_user = owner
+                    ) for owner in brand.owners.all()
+                ])
+
+                return notif_msg
+        else:
+            return None
+
+    @staticmethod
+    def send_brand_verified(brand):
+        """
+        Sends notifications to all brand owners about brand successful verification.
+
+        :param brand: :class:`brands.models.Brand` model instance
+        :return: Returns :class:`owlery.model.NotificationMessage` instance, None if there are no owners of the brand
+
+        **Authors**: Gagandeep Singh
+        """
+
+        if brand.owners.all().count():
+            url_web = "{}/console/b/{}/".format(settings.FEEDVAY_DOMAIN, brand.brand_uid)
+
+            with transaction.atomic():
+                # Create message body
+                message_body = render_to_response('owlery/owls/notifications/brand_verified.html', {
+                    "brand": brand,
+                }).content
+
+                # Create entry
+                notif_msg = NotificationMessage.objects.create(
+                    target = NotificationMessage.TARGET_USER,
+                    transmission = NotificationMessage.TRANSM_UNICAST,
+                    type = NotificationMessage.TYPE_BRAND_VERIFIED,
+                    message = message_body,
+                    url_web = url_web,
                     priority = NotificationMessage.PR_HIGH
                 )
 

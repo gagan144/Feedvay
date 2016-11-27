@@ -41,7 +41,7 @@ class BrandAdmin(admin.ModelAdmin):
             'fields': ('brand_uid', 'name', 'slug', 'acronym', 'description')
         }),
         ('Status', {
-            'fields': ('status', 'failed_reason', 'active', 'disable_claim')
+            'fields': ('status', 'failed_reason', 'staff_remarks', 'active', 'disable_claim')
         }),
         ('Customizations', {
             'fields': ('logo', 'icon', 'ui_theme', 'theme_file')

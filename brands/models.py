@@ -122,6 +122,7 @@ class Brand(models.Model):
     # Status
     status      = FSMField(default=ST_VERF_PENDING, choices=CH_STATUS, protected=True, db_index=True, editable=False, help_text='Verification status of brand.')
     failed_reason = models.TextField(null=True, blank=True, help_text='Reason stating why this brand was failed during verification. This is shown to the user.')
+    staff_remarks = tinymce_models.HTMLField(null=True, blank=True, help_text='Remarks filled by staff. This can be related to anything such as user interaction for verification.')
     active      = models.BooleanField(default=False, db_index=True, help_text='Switch to disable brand temporarly. Configurations/editting can be made however, brand does not appear to public.')
     disable_claim = models.BooleanField(default=False, help_text='Set true to stop any further claims on this brand. Only staff can set this property, user cannot.')
 
@@ -139,13 +140,14 @@ class Brand(models.Model):
     # --- Transitions ---
     @fsm_log_by
     @transition(field=status, source=ST_VERF_PENDING, target=ST_VERIFIED)
-    def trans_verified(self):
+    def trans_verified(self, remarks=None):
         """
         Transition edge to transit brand status to verified.
 
         **Authors**: Gagandeep Singh
         """
         self.active = True
+        self.staff_remarks = remarks
 
     @fsm_log_by
     @transition(field=status, source=ST_VERF_PENDING, target=ST_VERF_FAILED)

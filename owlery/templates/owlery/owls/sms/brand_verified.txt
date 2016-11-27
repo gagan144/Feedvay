@@ -1,0 +1,2 @@
+Your brand ''{{brand_name}}' has been verified and is now visible to public.
+Regards Feedvay

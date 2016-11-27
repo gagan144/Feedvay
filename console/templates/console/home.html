@@ -8,7 +8,7 @@
     <!-- Favicon -->
     <link rel="shortcut icon"  href="{% if request.curr_brand %}{{ request.curr_brand.icon.url }}{% else %}{% get_static_prefix %}images/favicon.png{% endif %}" />
 
-    <title>{% if request.curr_brand %}{{ request.curr_brand.name }} - {% endif %} Management Console</title>
+    <title>{% if request.curr_brand %}{{ request.curr_brand.name }} - {% else %}Feedvay{% endif %} Management Console</title>
 {% endblock %}
 
 {% block page_header %}

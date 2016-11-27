@@ -421,13 +421,13 @@
                     <i class="fa fa-clock-o"></i>&nbsp;Verification pending!
                 </h3>
                 <p>
-                    Verification of your brand is still pending. Our team will shortly review your submission and
-                    update you automatically. <br/>
+                    Your brand has been queued for verification. Our team will shortly review your submission and
+                    update you automatically.<br/>
                     Until then, your brand remains hidden from the public.
                 </p>
             </div>
         {% elif request.curr_brand.status == 'verification_failed' %}
-            <div class="alert alert-warning">
+            <div class="alert alert-danger">
                 <h3>
                     <i class="fa fa-ban"></i>&nbsp;Verification failed!
                 </h3>
@@ -435,8 +435,8 @@
                     Verification of your brand has been failed as per your submitted details. Kindly go through the
                     following instructions, correct your details accordingly and re-submit your brand.
                 </p>
-                <div style="margin: 5px 0px 0px 10px;padding-left: 20px;">
-                    {{ request.curr_brand.failed_reason|safeseq }}
+                <div style="margin: 5px 0px 10px 0px;padding-left: 20px;">
+                    {{ request.curr_brand.failed_reason|safe }}
                 </div>
                 <p>Please note that your brand is hidden from the public until it is verified.</p>
             </div>

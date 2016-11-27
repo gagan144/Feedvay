@@ -170,7 +170,7 @@ def console_toggle_brand_active(request):
         brand = request.curr_brand
 
         if brand.status == Brand.ST_VERIFIED:
-            active = request.POST['active']
+            active = True if request.POST['active'] == 'true' else False
 
             brand.active = active
             brand.save()

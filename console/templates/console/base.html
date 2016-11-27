@@ -220,6 +220,14 @@
                         <a href="/console/b/{{ request.curr_brand.brand_uid }}/settings/#/details">Click here</a> to know more.
                     </div>
                 {% endif %}
+
+                {% if not request.curr_brand.active and request.curr_brand.status == 'verified' %}
+                    <div class="bg-muted alert_top_strip">
+                        <i class="fa fa-ban"></i>&nbsp;
+                        Your brand is hidden from public.
+                        <a href="/console/b/{{ request.curr_brand.brand_uid }}/settings/#/controls">Click here</a> to know more.
+                    </div>
+                {% endif %}
                 <!-- /Alert strip -->
             {% endif %}
             <!-- /Top Navbar -->

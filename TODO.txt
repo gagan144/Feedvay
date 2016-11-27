@@ -18,9 +18,7 @@
     - image size validations (Client side only)
     - Change request
         - BrandChangeRequest statechart
-        - show brands change requests
         - fail/accept request
-        - Brand activate/deactive (Control)
 
 - Data privacy conventions (public, encypted, client shared etc)
 - SEO

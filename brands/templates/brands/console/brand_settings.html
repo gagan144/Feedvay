@@ -132,43 +132,6 @@
                 Details
             </h2>
             <hr style="margin-top: 15px;"/>
-
-            {% if request.curr_brand.status == 'verified' %}
-                <div class="alert alert-success">
-                    <h3>
-                        <i class="fa fa-check-circle"></i>&nbsp;Verified!
-                    </h3>
-                    <p>
-                        Your brand has been verified and is visible to public.
-                    </p>
-                </div>
-            {% elif request.curr_brand.status == 'verification_pending' %}
-                <div class="alert alert-warning">
-                    <h3>
-                        <i class="fa fa-clock-o"></i>&nbsp;Verification pending!
-                    </h3>
-                    <p>
-                        Verification of your brand is still pending. Our team will shortly review your submission and
-                        update you automatically. <br/>
-                        Until then, your brand remains hidden from the public.
-                    </p>
-                </div>
-            {% elif request.curr_brand.status == 'verification_failed' %}
-                <div class="alert alert-warning">
-                    <h3>
-                        <i class="fa fa-ban"></i>&nbsp;Verification failed!
-                    </h3>
-                    <p>
-                        Verification of your brand has been failed as per your submitted details. Kindly go through the
-                        following instructions, correct your details accordingly and re-submit your brand.
-                    </p>
-                    <div style="margin: 5px 0px 0px 10px;padding-left: 20px;">
-                        {{ request.curr_brand.failed_reason|safeseq }}
-                    </div>
-                    <p>Please note that your brand is hidden from the public until it is verified.</p>
-                </div>
-            {% endif %}
-
             <div static-include="{% get_static_prefix %}partials/brands/create_edit_brand.html"  ng-init="ACTION='edit'"></div>
         </div>
     </script>
@@ -284,14 +247,66 @@
 
     </script>
 
-    <script type="text/ng-template" id="tmpl_control">
+    <script type="text/ng-template" id="tmpl_controls">
         <div>
             <h2 style="margin-top: 0px;">
                 <i class="fa fa-cogs"></i>&nbsp;
-                Control
+                Controls
             </h2>
             <hr style="margin-top: 15px;"/>
 
+            {% if request.curr_brand.status == 'verified' %}
+                <div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Enable/Disable brand
+                        </div>
+                        <div class="panel-body panel_body_realign">
+                            <p>
+                                You can temporally enable or disable your brand. A disabled brand will not be visible to the public
+                                but you can still manage console level settings. All POBS, surveys, feedback related to this brand will
+                                be disabled. Please use this option with caution.
+                            </p>
+
+                            <form role="form" name="form_brand_active" style="padding-left: 20px" novalidate>
+                                <table style="width:100%">
+                                    <tr>
+                                        <td style="width: 70px;">
+                                            <input type="checkbox" ng-model="data.active" class="js-switch" ui-switch="{color:'{{ request.curr_brand.ui_theme.primary }}'}" />
+                                        </td>
+                                        <td>
+                                            <div class="text-success" ng-if="data.active">
+                                                <i class="fa fa-check-circle"></i>&nbsp;
+                                                Enabled
+                                            </div>
+                                            <div class="text-danger" ng-if="!data.active">
+                                                <i class="fa fa-ban"></i>&nbsp;
+                                                Disabled! Your brand will be hidden from public.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="hr-line-dashed"></div>
+                                <button ladda="flags.submitting" class="btn btn-primary ladda-button" type="button" ng-disabled="form_brand_active.$invalid || form_brand_active.$pristine" ng-click="submit(form_brand_active);" data-style="zoom-in">
+                                    Save
+                                </button>
+
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    <h3>
+                        <i class="fa fa-exclamation-triangle"></i>&nbsp;Controls disabled!
+                    </h3>
+                    <p>
+                        You cannot control brand until it has been verified. Our team will shortly evaluate
+                        your request.
+                    </p>
+                </div>
+            {% endif %}
 
         </div>
     </script>
@@ -315,7 +330,7 @@
                 Something went wrong. Our engineers will be informed.
             </div>
 
-            <div class="alert alert-info" align="center" ng-if="data_change_requests.objects.length == 0">
+            <div class="alert alert-info" align="center" ng-if="data_change_requests.objects.length == 0" style="font-size: large;">
                 <i class="fa fa-exclamation-circle"></i>&nbsp;
                 You have not requested any changes yet!
             </div>
@@ -327,7 +342,7 @@
 
                 <div class="m-b-md m-t-md">
                     <strong>Found {$ data_change_requests.meta.total_count $} issues.</strong>
-                    <button type="button" class="btn btn-default btn-xs pull-right" ng-click="load_data()">
+                    <button type="button" class="btn btn-primary btn-xs pull-right" ng-click="load_data()">
                         <i class="fa fa-refresh"></i>&nbsp;
                         Refresh
                     </button>
@@ -338,14 +353,14 @@
                         <tbody>
                             <tr ng-repeat="req in data_change_requests.objects">
                                 <td>
-                                    <span class="label" ng-class="{'label-primary': req.status=='new', 'label-success': req.status=='success', 'label-danger': req.status=='rejected' }" style="text-transform: capitalize;">
+                                    <span class="label" ng-class="{'label-info': req.status=='new', 'label-success': req.status=='success', 'label-danger': req.status=='rejected' }" style="text-transform: capitalize;">
                                         {$ req.status $}
                                     </span>
                                 </td>
                                 <td class="issue-info">
-                                    <a href="javascript: void(0);">
+                                    <span class="semi_bold">
                                         REQUEST-{$ req.id $}
-                                    </a>
+                                    </span>
 
                                     <small ng-if="req.status=='new'">
                                         Verification pending.
@@ -390,6 +405,43 @@
 
 {% block content %}
     <div ng-controller="MainCtrl" class="animated fadeInRight" ng-cloak>
+
+        {% if request.curr_brand.status == 'verified' %}
+            <div class="alert alert-success">
+                <h3>
+                    <i class="fa fa-check-circle"></i>&nbsp;Verified!
+                </h3>
+                <p>
+                    Your brand has been verified and is visible to public.
+                </p>
+            </div>
+        {% elif request.curr_brand.status == 'verification_pending' %}
+            <div class="alert alert-warning">
+                <h3>
+                    <i class="fa fa-clock-o"></i>&nbsp;Verification pending!
+                </h3>
+                <p>
+                    Verification of your brand is still pending. Our team will shortly review your submission and
+                    update you automatically. <br/>
+                    Until then, your brand remains hidden from the public.
+                </p>
+            </div>
+        {% elif request.curr_brand.status == 'verification_failed' %}
+            <div class="alert alert-warning">
+                <h3>
+                    <i class="fa fa-ban"></i>&nbsp;Verification failed!
+                </h3>
+                <p>
+                    Verification of your brand has been failed as per your submitted details. Kindly go through the
+                    following instructions, correct your details accordingly and re-submit your brand.
+                </p>
+                <div style="margin: 5px 0px 0px 10px;padding-left: 20px;">
+                    {{ request.curr_brand.failed_reason|safeseq }}
+                </div>
+                <p>Please note that your brand is hidden from the public until it is verified.</p>
+            </div>
+        {% endif %}
+
         <div class="tabs-container">
             <div class="tabs-left">
                 <ul class="nav nav-tabs">
@@ -399,8 +451,8 @@
                     <li ng-class="{'active': $state.current.name=='ownership'}">
                         <a ui-sref="ownership"><i class="fa fa-users"></i> Ownership</a>
                     </li>
-                    <li ng-class="{'active': $state.current.name=='control'}">
-                        <a ui-sref="control"><i class="fa fa-cogs"></i> Control</a>
+                    <li ng-class="{'active': $state.current.name=='controls'}">
+                        <a ui-sref="controls"><i class="fa fa-cogs"></i> Controls</a>
                     </li>
                     <li ng-class="{'active': $state.current.name=='change-requests'}">
                         <a ui-sref="change-requests"><i class="fa fa-pencil-square-o"></i> Change requests</a>
@@ -486,11 +538,25 @@
                     data: { pageTitle: 'Ownership - {{ request.curr_brand.name }}' },
                     controller: OwnershipCtrl,
                 })
-                .state('control', {
-                    url: "/control",
-                    templateUrl: "tmpl_control",
+                .state('controls', {
+                    url: "/controls",
+                    templateUrl: "tmpl_controls",
                     data: { pageTitle: 'Control - {{ request.curr_brand.name }}' },
-{#                    controller: ChangeRequestCtrl,#}
+                    controller: ControlsCtrl,
+                    resolve: {
+                        loadPlugin: function ($ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                {
+                                    name: 'ui.switchery',
+                                    files: [
+                                        '{% get_static_prefix %}ui/css/plugins/switchery/switchery.css',
+                                        '{% get_static_prefix %}ui/js/plugins/switchery/switchery.js',
+                                        '{% get_static_prefix %}ui/js/plugins/switchery/ng-switchery.js'
+                                    ]
+                                }
+                            ]);
+                        }
+                    }
                 })
                 .state('change-requests', {
                     url: "/change-requests",
@@ -796,6 +862,47 @@
                         });
                     }
                 });
+
+            }
+        }
+
+        // ----- Controls -----
+        function ControlsCtrl($scope, $window, ServiceBrandToggleActive){
+            $scope.flags = {
+                submitting: false,
+                error: false
+            };
+
+            $scope.data = {
+                active: {% if request.curr_brand.active %}true{% else %}false{% endif %}
+            };
+
+            $scope.submit = function(form_obj){
+                if(form_obj.$invalid){
+                    return false;
+                }
+
+                $scope.flags.submitting = true;
+                ServiceBrandToggleActive.post('{{ request.curr_brand.brand_uid }}', $scope.data.active).then(
+                    function (response) {
+                        console.log(response);
+                        $window.location.reload();
+                    },
+                    function (response){
+                        $scope.flags.submitting = false;
+
+                        if(response.status != -1){
+                            $scope.flags.error = true;
+                        }else{
+                            $.growl.error({
+                                title: '<i class="fa fa-signal"></i> Network error!',
+                                message: "Please check your internet connection."
+                            });
+                        }
+                    }
+                );
+
+
 
             }
         }

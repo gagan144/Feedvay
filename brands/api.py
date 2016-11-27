@@ -5,7 +5,7 @@ from tastypie.resources import ModelResource, Resource, ALL, ALL_WITH_RELATIONS
 from tastypie.authentication import SessionAuthentication
 from django.db.models import Q
 
-from brands.models import Brand
+from brands.models import Brand, BrandChangeRequest
 
 class BrandExistenceAPI(ModelResource):
     """
@@ -39,3 +39,44 @@ class BrandExistenceAPI(ModelResource):
         q = bundle.request.GET['q']
 
         return queryset.filter(Q(name__icontains=q)|Q(slug__icontains=q))
+
+
+class BrandChangeRequestAPI(ModelResource):
+    """
+    Tastypie resource to get all change request for a brand.
+
+    .. warning::
+        This resource is only applicable for **brand console**.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+
+    class Meta:
+        queryset = BrandChangeRequest.objects.all().only('id', 'brand', 'registered_user', 'status', 'remarks', 'created_on', 'modified_on')
+        resource_name = 'brand_change_requests'
+        limit = 20
+        max_limit = None
+        fields = ('id', 'brand', 'registered_user', 'status', 'remarks', 'created_on', 'modified_on')
+        list_allowed_methods = ['get']
+        authentication = SessionAuthentication()
+
+    def obj_get_list(self, bundle, **kwargs):
+        try:
+            brand = bundle.request.curr_brand
+
+            queryset = self._meta.queryset
+            return queryset.filter(brand=brand).select_related('registered_user').order_by('-created_on')
+        except AttributeError:
+            raise Exception("Unauthorized access.")
+
+    def dehydrate(self, bundle):
+        obj = bundle.obj
+        bundle.data['brand_id'] = obj.brand_id
+        bundle.data['registered_user'] = {
+            "id": obj.registered_user_id,
+            "full_name": "{} {}".format(obj.registered_user.user.first_name, obj.registered_user.user.last_name)
+        }
+
+        return bundle.data

@@ -203,6 +203,7 @@ def create_brand_change_log(request, brand, reg_user, data, files=None):
             # Outdate all previous pending requests
             BrandChangeRequest.objects.filter(brand=brand, status=BrandChangeRequest.ST_NEW).update(
                 status = BrandChangeRequest.ST_OUTDATED,
+                remarks = 'This request was declined due to new request.',
                 modified_on = timezone.now()
             )
 

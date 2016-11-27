@@ -18,4 +18,22 @@ angular.module('feedvay.brands', [] )
         });
     }
 })
+.service('ServiceBrandChangeRequests', function($http){
+    this.get = function(brand_uid){
+        return $http.get('/console/b/'+brand_uid+'/brands/api/brand_change_requests/?format=json')
+        .then(function (response) {
+            return response.data;
+        });
+    }
+})
+.service('ServiceBrandToggleActive', function($http){
+    this.post = function(brand_uid, active){
+        return $http.post(
+            "/console/b/"+brand_uid+"/brands/toggle-active/",
+            $.param({"active": active})
+        ).then(function (response) {
+            return response;
+        });
+    }
+})
 // ---------- /Services ----------

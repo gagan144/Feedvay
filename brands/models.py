@@ -515,7 +515,7 @@ class BrandChangeRequest(models57.Model):
     data_changes = JSONField(editable=False, help_text="Change request data in JSON form. These are mapped to 'Brand' model.")
 
     status      = models.CharField(max_length=16, default=ST_NEW, choices=CH_STATUS, help_text='Status of this request.')
-    rejected_reason = tinymce_models.HTMLField(null=True, blank=True, help_text='Reason for rejecting this request. This is shown to the user.')
+    remarks     = tinymce_models.HTMLField(null=True, blank=True, help_text='Reason for rejecting this request. This is shown to the user.')
 
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
@@ -537,7 +537,7 @@ class BrandChangeRequest(models57.Model):
             raise ValidationError('You can log changes for verified brand only.')
 
         if self.status == BrandChangeRequest.ST_REJECTED:
-            if self.rejected_reason in [None, '']:
+            if self.remarks in [None, '']:
                 raise ValidationError('Please provide rejection reason.')
 
         if self.pk:

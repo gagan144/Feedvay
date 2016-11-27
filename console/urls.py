@@ -6,6 +6,7 @@ from console import views
 
 from accounts import views as views_accounts
 from brands import views as views_brands
+from brands import api as api_brands
 
 url_account = [
     url(r'^settings/$', views_accounts.console_account_settings, name='console_accounts_settings'),
@@ -14,6 +15,7 @@ url_account = [
     url(r'^password/change/$', views_accounts.console_password_change, name='console_password_change'),
 ]
 
+api_brand_change_req = api_brands.BrandChangeRequestAPI()
 url_brands = [
     url(r'^$', views_brands.console_brands, name='console_brands'),
     url(r'^new/$', views_brands.console_brand_new, name='console_brand_new'),
@@ -21,6 +23,10 @@ url_brands = [
     url(r'^request-update/$', views_brands.console_brand_request_update, name='console_brand_request_update'),  # Only for brand console
 
     url(r'^disassociate/$', views_brands.console_brand_disassociate, name='console_brand_disassociate'),    # Only for brand console
+    url(r'^toggle-active/$', views_brands.console_toggle_brand_active, name='console_toggle_brand_active'),    # Only for brand console
+
+    # Api
+    url(r'^api/', include(api_brand_change_req.urls)),
 ]
 
 urlpatterns = [

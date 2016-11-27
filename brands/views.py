@@ -156,4 +156,29 @@ def console_brand_disassociate(request):
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
+@registered_user_only
+@brand_console
+def console_toggle_brand_active(request):
+    """
+    An API view to toggle brand activeness. Only ``verified`` brand's activeness can be toggled.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        brand = request.curr_brand
+
+        if brand.status == Brand.ST_VERIFIED:
+            active = request.POST['active']
+
+            brand.active = active
+            brand.save()
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok').gen_http_response()
+        else:
+            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='You cannot change active property of unverified brand.').gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
 # ==================== /Console ====================

@@ -10,8 +10,10 @@ Contents
        :titlesonly:
 
        api_utils
+       aws
+       custom_storages
        decorators
        theme
-       custom_storages
        validators
+
 

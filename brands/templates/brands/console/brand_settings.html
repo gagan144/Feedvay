@@ -284,6 +284,18 @@
 
     </script>
 
+    <script type="text/ng-template" id="tmpl_control">
+        <div>
+            <h2 style="margin-top: 0px;">
+                <i class="fa fa-cogs"></i>&nbsp;
+                Control
+            </h2>
+            <hr style="margin-top: 15px;"/>
+
+
+        </div>
+    </script>
+
     <script type="text/ng-template" id="tmpl_change_requests">
         <div>
             <h2 style="margin-top: 0px;">
@@ -292,7 +304,74 @@
             </h2>
             <hr style="margin-top: 15px;"/>
 
+            <div align="center" class="text-primary" ng-if="flags.loading">
+                <img src="{% get_static_prefix %}images/loading/spinner_1.gif" style="height: 16px;">
+                &nbsp;
+                Loading ...
+            </div>
 
+            <div class="alert alert-danger" align="center" ng-if="flags.error">
+                <i class="fa fa-exclamation-triangle"></i>&nbsp;
+                Something went wrong. Our engineers will be informed.
+            </div>
+
+            <div class="alert alert-info" align="center" ng-if="data_change_requests.objects.length == 0">
+                <i class="fa fa-exclamation-circle"></i>&nbsp;
+                You have not requested any changes yet!
+            </div>
+
+            <div ng-if="data_change_requests.objects.length">
+                <p>
+                    Following is the list of all change requests mafde on this brand:
+                </p>
+
+                <div class="m-b-md m-t-md">
+                    <strong>Found {$ data_change_requests.meta.total_count $} issues.</strong>
+                    <button type="button" class="btn btn-default btn-xs pull-right" ng-click="load_data()">
+                        <i class="fa fa-refresh"></i>&nbsp;
+                        Refresh
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover issue-tracker">
+                        <tbody>
+                            <tr ng-repeat="req in data_change_requests.objects">
+                                <td>
+                                    <span class="label" ng-class="{'label-primary': req.status=='new', 'label-success': req.status=='success', 'label-danger': req.status=='rejected' }" style="text-transform: capitalize;">
+                                        {$ req.status $}
+                                    </span>
+                                </td>
+                                <td class="issue-info">
+                                    <a href="javascript: void(0);">
+                                        REQUEST-{$ req.id $}
+                                    </a>
+
+                                    <small ng-if="req.status=='new'">
+                                        Verification pending.
+                                    </small>
+                                    <small ng-if="req.status=='success'">
+                                        Request accepted.
+                                    </small>
+                                    <small ng-if="req.status=='rejected'" class="text-danger">
+                                        {$ req.remarks $}
+                                    </small>
+                                    <small ng-if="req.status=='outdated'">
+                                        {$ req.remarks $}
+                                    </small>
+                                </td>
+                                <td>
+                                    <small>Requested by</small><br/>
+                                    {$ req.registered_user.full_name $}
+                                </td>
+                                <td>
+                                    {$ req.created_on|date $}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </script>
     <!-- /Templates -->
@@ -319,6 +398,9 @@
                     </li>
                     <li ng-class="{'active': $state.current.name=='ownership'}">
                         <a ui-sref="ownership"><i class="fa fa-users"></i> Ownership</a>
+                    </li>
+                    <li ng-class="{'active': $state.current.name=='control'}">
+                        <a ui-sref="control"><i class="fa fa-cogs"></i> Control</a>
                     </li>
                     <li ng-class="{'active': $state.current.name=='change-requests'}">
                         <a ui-sref="change-requests"><i class="fa fa-pencil-square-o"></i> Change requests</a>
@@ -404,11 +486,17 @@
                     data: { pageTitle: 'Ownership - {{ request.curr_brand.name }}' },
                     controller: OwnershipCtrl,
                 })
+                .state('control', {
+                    url: "/control",
+                    templateUrl: "tmpl_control",
+                    data: { pageTitle: 'Control - {{ request.curr_brand.name }}' },
+{#                    controller: ChangeRequestCtrl,#}
+                })
                 .state('change-requests', {
                     url: "/change-requests",
                     templateUrl: "tmpl_change_requests",
-                    data: { pageTitle: 'Chnage requests - {{ request.curr_brand.name }}' },
-{#                    controller: ChangeRequestCtrl,#}
+                    data: { pageTitle: 'Change requests - {{ request.curr_brand.name }}' },
+                    controller: ChangeRequestCtrl,
                 })
 
 
@@ -710,6 +798,42 @@
                 });
 
             }
+        }
+
+        // ----- Change Requests -----
+        function ChangeRequestCtrl($scope, ServiceBrandChangeRequests){
+            $scope.flags = {
+                loading: true,
+                error: false
+            };
+
+            $scope.data_change_requests = [];
+
+            $scope.load_data = function(){
+                $scope.flags.loading = true;
+                $scope.flags.error = false;
+
+                ServiceBrandChangeRequests.get('{{ request.curr_brand.brand_uid }}').then(
+                    function (response) {
+                        $scope.data_change_requests = response;
+                        $scope.flags.loading = false;
+                    },
+                    function (response){
+                        $scope.flags.loading = false;
+
+                        if(response.status != -1){
+                            $scope.flags.error = true;
+                        }else{
+                            $.growl.error({
+                                title: '<i class="fa fa-signal"></i> Network error!',
+                                message: "Please check your internet connection."
+                            });
+                        }
+                    }
+                );
+            }
+
+            $scope.load_data();
         }
 
 

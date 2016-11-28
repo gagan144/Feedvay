@@ -62,7 +62,7 @@ def mark_brand_verified(brand, remarks=None):
     :param brand: Brand that needs to be verified.
     :param remarks: (optional) Any remarks related to verification. (can be HTML)
 
-    .. note:
+    .. note::
         Applicable only for ``verification_pending`` brand only.
 
     **Authors**: Gagandeep Singh
@@ -114,7 +114,7 @@ def reregister_or_update_brand(brand, data, files=None):
 
         - Files handled: ``file_log``, ``file_icon``
 
-    .. note:
+    .. note::
         Only applicable for brand with status ``verification_failed`` or ``verification_pending``.
 
     **Authors**: Gagandeep Singh
@@ -170,7 +170,7 @@ def create_brand_change_log(brand, reg_user, data, files=None):
         - Files handled: ``file_log``, ``file_icon``
 
 
-    .. note:
+    .. note::
         Only applicable for brand with status ``verified``.
 
     **Authors**: Gagandeep Singh
@@ -246,12 +246,11 @@ def create_brand_change_log(brand, reg_user, data, files=None):
     if is_valid:
         # Create change request entry
         with transaction.atomic():
-            # Outdate all previous pending requests
-            BrandChangeRequest.objects.filter(brand=brand, status=BrandChangeRequest.ST_NEW).update(
-                status = BrandChangeRequest.ST_OUTDATED,
-                remarks = 'This request was declined due to new request.',
-                modified_on = timezone.now()
-            )
+            # Out-date all previous pending requests
+            # You cannot use update query on protected FSM field 'status'
+            for req in BrandChangeRequest.objects.filter(brand=brand, status=BrandChangeRequest.ST_NEW):
+                req.trans_outdated()
+                req.save()
 
             # insert new request
             instance = BrandChangeRequest.objects.create(
@@ -266,8 +265,76 @@ def create_brand_change_log(brand, reg_user, data, files=None):
             reg_user,
             instance
         )
+        # TODO: send other owls
 
         return is_valid, None
     else:
         # Invalid
         return is_valid, errors
+
+
+def brand_change_request_reject(change_request, reasons):
+    """
+    Method to reject a change request by a user and send owls.
+
+    :param change_request: Change request instance :class:`brands.models.BrandChangeRequest`
+    :param reasons: Rejection reason (can be HTML), this is shown to the user.
+
+    .. note::
+        Only applicable for change request with status as ``new``.
+
+    **Authors**: Gagandeep Singh
+    """
+
+    if not change_request.status == BrandChangeRequest.ST_NEW:
+        raise Exception("Change request is not at status 'new'.")
+
+    change_request.trans_rejected(remarks=reasons)
+    change_request.save()
+
+    # TODO: Send owls
+
+def brand_change_request_accept_and_migrate(change_request, remarks):
+    """
+    Method to accept a brand change request and migrate it to the brand.
+    This method also sends owls.
+
+    :param change_request: Change request instance :class:`brands.models.BrandChangeRequest`
+    :param remarks: Remarks for accepting. Mostly used by staff.
+    """
+
+    brand = change_request.brand
+    data_changes = change_request.data_changes
+    with transaction.atomic():
+        # Set simple column fields
+        for field, val in data_changes.iteritems():
+            if field not in ['ui_theme__primary', 'files']:
+                setattr(brand, field, val)
+
+        # Ui theme
+        update_theme = False
+        if data_changes.has_key('ui_theme__primary'):
+            ui_theme = Brand.generate_uitheme(data_changes['ui_theme__primary'])
+            brand.ui_theme = ui_theme.to_json()
+            update_theme = True
+
+        # Files
+        if data_changes.has_key('files'):
+            file_urls = data_changes['files']
+
+            if file_urls.has_key('logo'):
+                brand.logo = file_urls['logo']
+
+            if file_urls.has_key('icon'):
+                brand.icon = file_urls['icon']
+
+        # Save brand
+        brand.save(update_theme=update_theme)
+
+        # Transit change request
+        change_request.trans_success(remarks=remarks)
+        change_request.save()
+
+    # TODO: send owls
+
+

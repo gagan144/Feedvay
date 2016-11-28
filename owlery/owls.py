@@ -422,6 +422,7 @@ class EmailOwl:
                     "receiver_name": receiver_name,
                     "requester_name": requester_name,
                     "brand": brand,
+                    "brandchangereq": brandchangereq,
                     "dated": brandchangereq.created_on,
                     "url": "{}/console/b/{}/settings/#/change-requests".format(settings.FEEDVAY_DOMAIN, brand.brand_uid)
                 }).content
@@ -431,7 +432,7 @@ class EmailOwl:
                     username = user_owner.username,
                     email_id = email_address,
 
-                    subject = "Feedvay - Brand change request",
+                    subject = "Feedvay - Brand change request (ID: {})".format(brandchangereq.id),
                     message = message_body,
 
                     type = EmailMessage.TYPE_BRAND_CHNG_REQ,

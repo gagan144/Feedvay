@@ -17,7 +17,6 @@
 - Brands
     - image size validations (Client side only)
     - Change request
-        - BrandChangeRequest statechart
         - fail/accept request
 
 - Data privacy conventions (public, encypted, client shared etc)

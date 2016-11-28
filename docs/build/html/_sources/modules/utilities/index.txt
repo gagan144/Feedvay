@@ -14,6 +14,7 @@ Contents
        custom_storages
        decorators
        theme
+       tastypi_utils
        validators
 
 

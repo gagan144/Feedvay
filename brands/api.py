@@ -6,6 +6,7 @@ from tastypie.authentication import SessionAuthentication
 from django.db.models import Q
 
 from brands.models import Brand, BrandChangeRequest
+from utilities.tastypie_utils import BrandConsoleSessionAuthentication, NoPaginator
 
 class BrandExistenceAPI(ModelResource):
     """
@@ -33,6 +34,7 @@ class BrandExistenceAPI(ModelResource):
         fields = ('id', 'brand_uid', 'name', 'acronym', 'slug')
         list_allowed_methods = ['get']
         authentication = SessionAuthentication()
+        paginator_class = NoPaginator
 
     def obj_get_list(self, bundle, **kwargs):
         queryset = self._meta.queryset
@@ -60,16 +62,24 @@ class BrandChangeRequestAPI(ModelResource):
         max_limit = None
         fields = ('id', 'brand', 'registered_user', 'status', 'remarks', 'created_on', 'modified_on')
         list_allowed_methods = ['get']
-        authentication = SessionAuthentication()
+        authentication = BrandConsoleSessionAuthentication() #SessionAuthentication()
 
-    def obj_get_list(self, bundle, **kwargs):
-        try:
-            brand = bundle.request.curr_brand
+    def apply_filters(self, request, applicable_filters):
+        object_list_filtered = self._meta.queryset.filter(**applicable_filters)
 
-            queryset = self._meta.queryset
-            return queryset.filter(brand=brand).select_related('registered_user').order_by('-created_on')
-        except AttributeError:
-            raise Exception("Unauthorized access.")
+        brand = request.curr_brand
+        object_list_filtered = object_list_filtered.filter(brand=brand).select_related('registered_user').order_by('-created_on')
+
+        return object_list_filtered
+
+    # def obj_get_list(self, bundle, **kwargs):
+    #     # try:
+    #     brand = bundle.request.curr_brand
+    #
+    #     queryset = self._meta.queryset
+    #     return queryset.filter(brand=brand).select_related('registered_user').order_by('-created_on')
+    #     # except AttributeError:
+    #     #     raise Exception("Unauthorized access.")
 
     def dehydrate(self, bundle):
         obj = bundle.obj

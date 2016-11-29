@@ -1,0 +1,1 @@
+Your update request for your brand '{{ change_req.brand.name }}' has been submitted and is under process. Your request id is '{{ change_req.id }}'.

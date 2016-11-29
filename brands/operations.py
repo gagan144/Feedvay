@@ -96,7 +96,7 @@ def mark_brand_verification_failed(brand, reason):
     brand.trans_verification_failed(reason)
     brand.save()
 
-    # Send owls
+    # TODO: Send owls
 
 
 
@@ -252,19 +252,16 @@ def create_brand_change_log(brand, reg_user, data, files=None):
                 req.save()
 
             # insert new request
-            instance = BrandChangeRequest.objects.create(
+            change_request = BrandChangeRequest.objects.create(
                 brand = brand,
                 registered_user = reg_user,
                 data_changes = data
             )
 
         # Send owls
-        owls.EmailOwl.send_brand_change_request(
-            brand,
-            reg_user,
-            instance
-        )
-        # TODO: send other owls
+        owls.SmsOwl.send_brand_change_request(change_request, reg_user)
+        owls.EmailOwl.send_brand_change_request(change_request, reg_user)
+        owls.NotificationOwl.send_brand_change_request(change_request, reg_user)
 
         return is_valid, None
     else:

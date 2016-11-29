@@ -19,6 +19,7 @@ django-recaptcha
 jsonobject
 boto
 django-storages
+shortuuid
 # Pillow
 
 

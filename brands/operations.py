@@ -188,7 +188,6 @@ def create_brand_change_log(brand, reg_user, data, files=None):
     is_valid = True
     errors = {}
 
-    file_urls = None
     if len(files):
         file_urls = {}
 
@@ -320,13 +319,14 @@ def brand_change_request_accept_and_migrate(change_request, remarks):
 
         # Files
         if data_changes.has_key('files'):
+            domain_path = "https://{}/".format(settings.AWS_S3_CUSTOM_DOMAIN)
             file_urls = data_changes['files']
 
             if file_urls.has_key('logo'):
-                brand.logo = file_urls['logo']
+                brand.logo = file_urls['logo'].replace(domain_path, '')
 
             if file_urls.has_key('icon'):
-                brand.icon = file_urls['icon']
+                brand.icon = file_urls['icon'].replace(domain_path, '')
 
         # Save brand
         brand.save(update_theme=update_theme)

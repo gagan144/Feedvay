@@ -15,6 +15,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.contrib.auth.models import User
 import uuid
+import shortuuid
 import StringIO
 import os
 from django.core.files.uploadedfile import InMemoryUploadedFile,SimpleUploadedFile
@@ -44,9 +45,13 @@ def upload_brand_icon_to(instance, filename):
         filename = new_filename #filename.replace(" ","_")
     )
 def upload_brand_theme_file_to(instance, filename):
+    id = str(shortuuid.ShortUUID().random(length=10))
+    fname, ext = os.path.splitext(filename)
+    new_filename = "theme_{}.{}".format(id, ext.replace('.',''))
+
     return "brands/{brand_uid}/{filename}".format(
         brand_uid = str(instance.brand_uid),
-        filename = filename.replace(" ","_")
+        filename = new_filename #filename.replace(" ","_")
     )
 
 class Brand(models.Model):

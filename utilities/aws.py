@@ -33,6 +33,7 @@ def upload_to_s3(file_obj, filename, path, content_type=None):
     if content_type:
         k.content_type = content_type
 
+    file_obj.seek(0)
     k.set_contents_from_string(file_obj.read())
     k.make_public()
 

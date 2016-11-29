@@ -1,0 +1,18 @@
+Hi {{ receiver_name }},<br/>
+
+<p>
+    Your brand <b>{{ brand.name }}</b> has been rejected in the verification process because of the following reasons:
+</p>
+<p style="padding-left: 20px;">
+    {{ brand.failed_reason|safe }}
+</p>
+
+<p>
+    Kindly review your <a href="{{ url }}" target="_blank">brand</a> again and make changes accordingly. Your
+    brand remains hidden from public until it has been fully verified.
+</p>
+
+<p>
+    Best Regards,<br/>
+    Team Feedvay
+</p>

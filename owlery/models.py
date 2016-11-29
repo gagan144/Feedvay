@@ -58,13 +58,15 @@ class SmsMessage(models.Model):
     TYPE_BRAND_DISASS_SUCC = 'brand_disassociation_success'
     TYPE_BRAND_CHNG_REQ = 'brand_change_request'
     TYPE_BRAND_VERIFIED = 'brand_verified'
+    TYPE_BRAND_VERIF_FAILED = 'brand_verification_failed'
     CH_TYPE = (
         (TYPE_REG_VERIF, 'Registration Verification'),
         (TYPE_PASS_RESET, 'Password Reset'),
         (TYPE_PASS_CHNG_SUCC, 'Password change success'),
         (TYPE_BRAND_DISASS_SUCC, 'Brand disassociation success'),
         (TYPE_BRAND_CHNG_REQ, 'Brand change request'),
-        (TYPE_BRAND_VERIFIED, 'Brand verified')
+        (TYPE_BRAND_VERIFIED, 'Brand verified'),
+        (TYPE_BRAND_VERIF_FAILED, 'Brand verification failed')
     )
 
     PR_LOW = 'low'
@@ -182,6 +184,7 @@ class EmailMessage(models.Model):
     TYPE_BRAND_PARTNER_LEFT = 'brand_partner_left'
     TYPE_BRAND_CHNG_REQ = 'brand_change_request'
     TYPE_BRAND_VERIFIED = 'brand_verified'
+    TYPE_BRAND_VERIF_FAILED = 'brand_verification_failed'
     CH_TYPE = (
         (TYPE_REG_VERIF, 'Registration Verification'),
         (TYPE_PASS_RESET, 'Password Reset'),
@@ -189,7 +192,8 @@ class EmailMessage(models.Model):
         (TYPE_BRAND_DISASS_SUCC, 'Brand disassociation success'),
         (TYPE_BRAND_PARTNER_LEFT, 'Brand partner left'),
         (TYPE_BRAND_CHNG_REQ, 'Brand change request'),
-        (TYPE_BRAND_VERIFIED, 'Brand verified')
+        (TYPE_BRAND_VERIFIED, 'Brand verified'),
+        (TYPE_BRAND_VERIF_FAILED, 'Brand verification failed')
     )
 
     PR_LOW = 'low'
@@ -367,10 +371,12 @@ class NotificationMessage(models.Model):
     TYPE_BRAND_PARTNER_LEFT = 'brand_partner_left'
     TYPE_BRAND_CHNG_REQ = 'brand_change_request'
     TYPE_BRAND_VERIFIED = 'brand_verified'
+    TYPE_BRAND_VERIF_FAILED = 'brand_verification_failed'
     CH_TYPE = (
         (TYPE_BRAND_PARTNER_LEFT, 'Brand partner left'),
         (TYPE_BRAND_CHNG_REQ, 'Brand change request'),
-        (TYPE_BRAND_VERIFIED, 'Brand verified')
+        (TYPE_BRAND_VERIFIED, 'Brand verified'),
+        (TYPE_BRAND_VERIF_FAILED, 'Brand verification failed')
     )
 
     ST_NEW = 'new'

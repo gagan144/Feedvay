@@ -96,9 +96,10 @@ def mark_brand_verification_failed(brand, reason):
     brand.trans_verification_failed(reason)
     brand.save()
 
-    # TODO: Send owls
-
-
+    # Send owls
+    owls.SmsOwl.send_brand_verification_failed(brand)
+    owls.EmailOwl.send_brand_verification_failed(brand)
+    owls.NotificationOwl.send_brand_verification_failed(brand)
 
 def reregister_or_update_brand(brand, data, files=None):
     """

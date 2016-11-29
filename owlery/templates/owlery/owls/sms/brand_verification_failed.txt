@@ -1,0 +1,1 @@
+Your brand '{{brand.name}}' verification has been rejected. Kindly review your submission.

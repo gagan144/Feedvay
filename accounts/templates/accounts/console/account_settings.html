@@ -193,6 +193,13 @@
         // --- /Security ---
 
         // --- Profile ---
+        APP.controller('AccountInfoCtrl', function($rootScope, $scope, $http){
+            $scope.data_acc_info = {
+                username: "{{ request.user.username }}",
+                email: $rootScope.USER_PROFILE.email?$rootScope.USER_PROFILE.email.value:null
+            }
+        });
+
         APP.controller('BasicInfoCtrl', function($rootScope, $scope, $http){
             $scope.flags = {
                 submitting: false,
@@ -274,7 +281,7 @@
             };
 
             $scope.data_priv_info = {
-                blood_group: $rootScope.USER_PROFILE.blood_group.active?$rootScope.USER_PROFILE.blood_group.value:null,
+                blood_group: $rootScope.USER_PROFILE.blood_group?$rootScope.USER_PROFILE.blood_group.value:null,
             };
 
             $scope.submit = function(form_obj){

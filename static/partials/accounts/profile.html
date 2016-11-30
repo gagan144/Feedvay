@@ -1,9 +1,55 @@
-<div>
+<div xmlns="http://www.w3.org/1999/html">
     <h2 style="margin-top: 0px;">
         <i class="fa fa-user"></i>&nbsp;
         Profile
     </h2>
     <hr style="margin-top: 15px;"/>
+
+    <!-- Account information -->
+    <div class="panel panel-default" ng-controller="AccountInfoCtrl">
+        <div class="panel-heading panel_heading_2">
+            <i class="fa fa-home"></i>&nbsp;
+            Feedvay account
+        </div>
+        <div class="panel_alerts">
+            <div ng-if="flags.success" class="alert alert-success">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <i class="fa fa-check-circle"></i>&nbsp;
+                Your changes have been <strong>successfully</strong> made.
+            </div>
+        </div>
+        <div class="panel-body panel_body_realign">
+            <form name="form_acc_info" class="form-horizontal" ng-class="{'form-loading': flags.submitting }" novalidate>
+                <div class="form-group" >
+                    <label class="col-sm-3 control-label">
+                        Username <small>(Mobile Number)</small>:
+                    </label>
+                    <div class="col-sm-8" style="padding-top: 7px;">
+                        {$ data_acc_info.username $}
+                    </div>
+                </div>
+                <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">
+                            Email address:
+                        </label>
+                        <div class="col-sm-5">
+                            <input type="email" class="form-control" ng-model="data_acc_info.email" name="email" ng-disabled="USER_PROFILE.email.locked" placeholder="example@domain.com">
+                            <p class="help-block m-b-none">
+                                This is only shared with our clients.
+                            </p>
+
+                            <div ng-messages="form_acc_info.email.$dirty && form_acc_info.email.$error" role="alert" class="error_messages">
+                                <label ng-message="required" class="error">Please tell us when you where born.</label>
+                                <label ng-message="email" class="error">Invalid email address.</label>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+    </div>
+    <!-- Account information -->
 
     <!-- Basic Information -->
     <div class="panel panel-default" ng-controller="BasicInfoCtrl">

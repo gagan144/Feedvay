@@ -8,7 +8,8 @@ from django.utils import timezone
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
 from django.core.exceptions import ValidationError
-from django.db.models.signals import post_save
+# from django.db.models.signals import post_save
+from mongoengine import signals as signals_mongo
 import random
 import string
 
@@ -177,29 +178,29 @@ class RegisteredUser(models.Model):
         self.clean()
         super(self.__class__, self).save(*args, **kwargs)
 
-    @classmethod
-    def post_save(cls, sender, instance, **kwargs):
-        """
-        Post save trigger for this model. This will be called after the record has
-        been created or updated.
-
-        **Authors**: Gagandeep Singh
-        """
-
-        # Update 'UserProfile' only if this exists
-        # Cannot create here because during registration, when 'RegisteredUser' is created this routine will not
-        # have date of birth, gender etc since they are not present in 'User' model.
-        # Update here make surety that User.<attributes> are same as UserProfile.<attributes>
-        try:
-            user = instance.user
-
-            user_profile = UserProfile.objects.get(registered_user_id=instance.id)
-            user_profile.add_update_attribute('first_name', user.first_name, auto_save=False)
-            user_profile.add_update_attribute('last_name', user.last_name, auto_save=False)
-            user_profile.save()
-
-        except mongo_DoesNotExist:
-            pass
+    # @classmethod
+    # def post_save(cls, sender, instance, **kwargs):
+    #     """
+    #     Post save trigger for this model. This will be called after the record has
+    #     been created or updated.
+    #
+    #     **Authors**: Gagandeep Singh
+    #     """
+    #
+    #     # Update 'UserProfile' only if this exists
+    #     # Cannot create here because during registration, when 'RegisteredUser' is created this routine will not
+    #     # have date of birth, gender etc since they are not present in 'User' model.
+    #     # Update here make surety that User.<attributes> are same as UserProfile.<attributes>
+    #     try:
+    #         user = instance.user
+    #
+    #         user_profile = UserProfile.objects.get(registered_user_id=instance.id)
+    #         user_profile.add_update_attribute('first_name', user.first_name, auto_save=False)
+    #         user_profile.add_update_attribute('last_name', user.last_name, auto_save=False)
+    #         user_profile.save()
+    #
+    #     except mongo_DoesNotExist:
+    #         pass
 
     def delete(self, using=None, keep_parents=False):
         # Override delete method to prevent record deletion.
@@ -218,7 +219,7 @@ class RegisteredUser(models.Model):
         **Authors**: Gagandeep Singh
         """
         return "{}-{}".format(country_tel_code, mobile_no)
-post_save.connect(RegisteredUser.post_save, sender=RegisteredUser)
+# post_save.connect(RegisteredUser.post_save, sender=RegisteredUser)
 
 
 class UserToken(models.Model):
@@ -560,9 +561,21 @@ class UserProfile(Document):
 
         This model is created only during registration process and updated each time :class:`accounts.models.RegisteredUser` is saved.
 
+    **Triggers and effects**:
+
+        This model migrates all changes in set of fields defined in ``USER_MODEL_FIELDS`` to :class:``django.contrib.auth.models.User`
+        model on attribute update or delete. This is done in ``save()`` method.
 
     **Authors**: Gagandeep Singh
     """
+
+    # --- Enums ---
+    # These are list of fields whos values are migrated to 'User' model on change.
+    USER_MODEL_FIELDS = [
+        'first_name',
+        'last_name',
+        'email'
+    ]
 
     # --- Embedded Documents ---
     class DetailedAttribute(EmbeddedDocument):
@@ -580,6 +593,7 @@ class UserProfile(Document):
 
         active      = BooleanField(required=True, default=True, help_text="Whether this attribute is active or not. Set False in case od delete.")
         locked      = BooleanField(required=True, default=False, help_text="If True attribute cannot be updated or deleted.")
+        verified    = BooleanField(required=True, default=False, help_text="Flag to indicate if this information is verified or not.")
         last_updated_on = DateTimeField(required=True, default=timezone.now, help_text="Date on which this record was last updated.")
 
         def __unicode__(self):
@@ -640,6 +654,8 @@ class UserProfile(Document):
 
         gender          = StringField(required=True, choices=CH_GENDER, help_text="User gender.")
         date_of_birth   = DateTimeField(required=True, help_text="Date of birth (with time as 00:00:00.00+0000)")
+        email           = EmailField(required=False, help_text="Email address. This must be same as 'email' in User model.")
+
         blood_group     = StringField(choices=CH_BLOOD_GROUP, help_text="Blood group of the user.")
     # --- /Embedded Documents ---
 
@@ -857,6 +873,30 @@ class UserProfile(Document):
     def delete(self, **write_concern):
         # Override delete method to prevent record deletion.
         raise ValidationError('Denied! You cannot delete UserProfile.')
+
+    @classmethod
+    def post_save(cls, sender, document, **kwargs):
+        """
+        Post-save method for UserProfile mongo model.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        # Migrate all user model changes to User model
+        user = RegisteredUser.objects.get(id=document.registered_user_id).user
+
+        save_user = False
+        for fieldname in UserProfile.USER_MODEL_FIELDS:
+            val = document.attributes[fieldname]
+            if val != getattr(user, fieldname):
+                setattr(user, fieldname, val)
+                save_user = True
+
+        if save_user:
+            user.save()
+
+signals_mongo.post_save.connect(UserProfile.post_save, sender=UserProfile)
+
 
 # ---------- Global Methods ----------
 def force_logout_user(user_id):

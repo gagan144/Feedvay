@@ -128,10 +128,11 @@ class BasicInfoForm(forms.Form):
         user_profile = UserProfile.objects.with_id(pk)
 
         errors = {}
-        user_profile.add_update_attribute('first_name', form_data['first_name'])
-        user_profile.add_update_attribute('last_name', form_data['last_name'])
-        user_profile.add_update_attribute('gender', form_data['gender'])
-        user_profile.add_update_attribute('date_of_birth', form_data['date_of_birth'])
+        user_profile.add_update_attribute('first_name', form_data['first_name'], auto_save=False)
+        user_profile.add_update_attribute('last_name', form_data['last_name'], auto_save=False)
+        user_profile.add_update_attribute('gender', form_data['gender'], auto_save=False)
+        user_profile.add_update_attribute('date_of_birth', form_data['date_of_birth'], auto_save=False)
+        user_profile.save()
 
         status = False if len(errors) else True
         return (status, errors)
@@ -166,12 +167,15 @@ class PrivateInfoForm(forms.Form):
         try:
             blood_group = form_data['blood_group']
             if blood_group:
-                user_profile.add_update_attribute('blood_group', form_data['blood_group'])
+                user_profile.add_update_attribute('blood_group', form_data['blood_group'], auto_save=False)
             else:
-                user_profile.delete_attribute('blood_group')
+                user_profile.delete_attribute('blood_group', auto_save=False)
 
         except ValidationError as ex:
             errors['blood_group'] = ex.message
+
+        if len(errors) == 0:
+            user_profile.save()
 
         status = False if len(errors) else True
         return (status, errors)

@@ -270,7 +270,7 @@ def create_brand_change_log(brand, reg_user, data, files=None):
         return is_valid, errors
 
 
-def brand_change_request_reject(change_request, reasons):
+def brand_change_request_rejected(change_request, reasons):
     """
     Method to reject a change request by a user and send owls.
 
@@ -289,7 +289,10 @@ def brand_change_request_reject(change_request, reasons):
     change_request.trans_rejected(remarks=reasons)
     change_request.save()
 
-    # TODO: Send owls
+    # Send owls
+    owls.SmsOwl.send_brand_change_request_rejected(change_request)
+    owls.EmailOwl.send_brand_change_request_rejected(change_request)
+    owls.NotificationOwl.send_brand_change_request_rejected(change_request)
 
 def brand_change_request_accept_and_migrate(change_request, remarks):
     """

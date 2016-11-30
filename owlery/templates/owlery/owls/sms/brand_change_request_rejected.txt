@@ -1,0 +1,1 @@
+Your brand change request with ID '{{change_req}}' for '{{change_req.brand.name}}' has been rejected. Kindly review your submission.

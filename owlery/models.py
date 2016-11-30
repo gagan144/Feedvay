@@ -59,6 +59,7 @@ class SmsMessage(models.Model):
     TYPE_BRAND_CHNG_REQ = 'brand_change_request'
     TYPE_BRAND_VERIFIED = 'brand_verified'
     TYPE_BRAND_VERIF_FAILED = 'brand_verification_failed'
+    TYPE_BRAND_CHNG_REQ_REJ = 'brand_change_request_rejected'
     CH_TYPE = (
         (TYPE_REG_VERIF, 'Registration Verification'),
         (TYPE_PASS_RESET, 'Password Reset'),
@@ -66,7 +67,8 @@ class SmsMessage(models.Model):
         (TYPE_BRAND_DISASS_SUCC, 'Brand disassociation success'),
         (TYPE_BRAND_CHNG_REQ, 'Brand change request'),
         (TYPE_BRAND_VERIFIED, 'Brand verified'),
-        (TYPE_BRAND_VERIF_FAILED, 'Brand verification failed')
+        (TYPE_BRAND_VERIF_FAILED, 'Brand verification failed'),
+        (TYPE_BRAND_CHNG_REQ_REJ, 'Brand change request rejected')
     )
 
     PR_LOW = 'low'
@@ -185,6 +187,7 @@ class EmailMessage(models.Model):
     TYPE_BRAND_CHNG_REQ = 'brand_change_request'
     TYPE_BRAND_VERIFIED = 'brand_verified'
     TYPE_BRAND_VERIF_FAILED = 'brand_verification_failed'
+    TYPE_BRAND_CHNG_REQ_REJ = 'brand_change_request_rejected'
     CH_TYPE = (
         (TYPE_REG_VERIF, 'Registration Verification'),
         (TYPE_PASS_RESET, 'Password Reset'),
@@ -193,7 +196,8 @@ class EmailMessage(models.Model):
         (TYPE_BRAND_PARTNER_LEFT, 'Brand partner left'),
         (TYPE_BRAND_CHNG_REQ, 'Brand change request'),
         (TYPE_BRAND_VERIFIED, 'Brand verified'),
-        (TYPE_BRAND_VERIF_FAILED, 'Brand verification failed')
+        (TYPE_BRAND_VERIF_FAILED, 'Brand verification failed'),
+        (TYPE_BRAND_CHNG_REQ_REJ, 'Brand change request rejected')
     )
 
     PR_LOW = 'low'
@@ -372,11 +376,13 @@ class NotificationMessage(models.Model):
     TYPE_BRAND_CHNG_REQ = 'brand_change_request'
     TYPE_BRAND_VERIFIED = 'brand_verified'
     TYPE_BRAND_VERIF_FAILED = 'brand_verification_failed'
+    TYPE_BRAND_CHNG_REQ_REJ = 'brand_change_request_rejected'
     CH_TYPE = (
         (TYPE_BRAND_PARTNER_LEFT, 'Brand partner left'),
         (TYPE_BRAND_CHNG_REQ, 'Brand change request'),
         (TYPE_BRAND_VERIFIED, 'Brand verified'),
-        (TYPE_BRAND_VERIF_FAILED, 'Brand verification failed')
+        (TYPE_BRAND_VERIF_FAILED, 'Brand verification failed'),
+        (TYPE_BRAND_CHNG_REQ_REJ, 'Brand change request rejected')
     )
 
     ST_NEW = 'new'

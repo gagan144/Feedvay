@@ -18,7 +18,7 @@
     - image size validations (Client side only)
     - Change request
         - fail/accept request
-
+    - Disable notifications for brand owners and only for brand authority users
 - Data privacy conventions (public, encypted, client shared etc)
 - SEO
 

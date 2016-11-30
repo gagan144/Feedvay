@@ -1,0 +1,17 @@
+Hi {{ receiver_name }},<br/>
+
+<p>
+    Your change request with ID <b>{{ change_req.id }}</b> for the brand <b>{{ change_req.brand.name }}</b> has been rejected due to the following reasons:
+</p>
+<p style="padding-left: 20px;">
+    {{ change_req.remarks|safe }}
+</p>
+
+<p>
+    Kindly review your <a href="{{ url }}" target="_blank">submission</a> again and make changes accordingly.
+</p>
+
+<p>
+    Best Regards,<br/>
+    Team Feedvay
+</p>

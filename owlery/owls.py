@@ -269,6 +269,37 @@ class SmsOwl:
 
         return list_sms
 
+    @staticmethod
+    def send_brand_change_request_accepted(change_req):
+        """
+        Sends SMS to all owners about change request acceptance and migration.
+
+        :param change_req: Request instance :class:`brands.models.BrandChangeRequest`
+        :return: List<:class:`owlery.model.SmsMessage`>
+
+        **Authors**: Gagandeep Singh
+        """
+
+        message_body = render_to_response('owlery/owls/sms/brand_change_request_accepted.txt',{
+            "change_req": change_req
+        }).content
+        brand = change_req.brand
+
+        list_sms = []
+        for owner in brand.owners.all():
+            sms = SmsMessage.objects.create(
+                username = owner.user.username,
+                mobile_no = owner.user.username.replace('-',''),
+                message = message_body,
+                type = SmsMessage.TYPE_BRAND_CHNG_REQ_ACC,
+                priority = SmsMessage.PR_URGENT
+            )
+            list_sms.append(sms)
+
+        # TODO: Send SMS immediately using gateway
+
+        return list_sms
+
 
 class EmailOwl:
     """
@@ -678,6 +709,54 @@ class EmailOwl:
 
         return list_emails
 
+    @staticmethod
+    def send_brand_change_request_accepted(change_req):
+        """
+        Sends an email to all brand owners about acceptance and migration of the change request.
+
+        :param change_req: Request instance :class:`brands.models.BrandChangeRequest`
+        :return: Returns List<:class:`owlery.model.EmailMessage` instance> of those owners who had email address.
+
+        **Authors**: Gagandeep Singh
+        """
+        brand = change_req.brand
+        url = "{}/console/b/{}/settings/#/details".format(settings.FEEDVAY_DOMAIN, brand.brand_uid)
+
+        list_emails = []
+        for owner in brand.owners.all():
+            user_owner = owner.user
+            email_address = user_owner.email
+
+            if email_address is not None and email_address != '':
+                receiver_name = "{} {}".format(user_owner.first_name, user_owner.last_name)
+
+                # Create message body
+                message_body = render_to_response('owlery/owls/emails/brand_change_request_accepted.html', {
+                    "receiver_name": receiver_name,
+                    "change_req": change_req,
+                    "url": url
+                }).content
+
+                # Create database entry
+                email_msg = EmailMessage.objects.create(
+                    username = user_owner.username,
+                    email_id = email_address,
+
+                    subject = "Feedvay - Brand change request accepted",
+                    message = message_body,
+
+                    type = EmailMessage.TYPE_BRAND_CHNG_REQ_ACC,
+                    priority = EmailMessage.PR_URGENT
+                )
+
+                list_emails.append(email_msg)
+
+        # Send emails
+        for email in list_emails:
+            email.force_send()
+
+        return list_emails
+
 
 class NotificationOwl:
     """
@@ -877,7 +956,7 @@ class NotificationOwl:
     @staticmethod
     def send_brand_change_request_rejected(change_req):
         """
-        Sends notifications to all brand owners about brand verification failure.
+        Sends notifications to all brand owners about brand change request rejection.
 
         :param change_req: Request instance :class:`brands.models.BrandChangeRequest`
         :return: Returns :class:`owlery.model.NotificationMessage` instance, None if there are no owners of the brand
@@ -900,6 +979,50 @@ class NotificationOwl:
                     target = NotificationMessage.TARGET_USER,
                     transmission = NotificationMessage.TRANSM_UNICAST,
                     type = NotificationMessage.TYPE_BRAND_CHNG_REQ_REJ,
+                    message = message_body,
+                    url_web = url_web,
+                    priority = NotificationMessage.PR_URGENT
+                )
+
+                # Create recipients in bulk
+                NotificationRecipient.objects.bulk_create([
+                    NotificationRecipient(
+                        notif_message = notif_msg,
+                        registered_user = owner
+                    ) for owner in brand.owners.all()
+                ])
+
+                return notif_msg
+
+        else:
+            return None
+
+    @staticmethod
+    def send_brand_change_request_accepted(change_req):
+        """
+        Sends notifications to all brand owners about brand change request acceptance.
+
+        :param change_req: Request instance :class:`brands.models.BrandChangeRequest`
+        :return: Returns :class:`owlery.model.NotificationMessage` instance, None if there are no owners of the brand
+
+        **Authors**: Gagandeep Singh
+        """
+        brand = change_req.brand
+
+        if brand.owners.all().count():
+            url_web = "{}/console/b/{}/settings/#/details".format(settings.FEEDVAY_DOMAIN, brand.brand_uid)
+
+            with transaction.atomic():
+                # Create message body
+                message_body = render_to_response('owlery/owls/notifications/brand_change_request_accepted.html', {
+                    "change_req": change_req,
+                }).content
+
+                # Create entry
+                notif_msg = NotificationMessage.objects.create(
+                    target = NotificationMessage.TARGET_USER,
+                    transmission = NotificationMessage.TRANSM_UNICAST,
+                    type = NotificationMessage.TYPE_BRAND_CHNG_REQ_ACC,
                     message = message_body,
                     url_web = url_web,
                     priority = NotificationMessage.PR_URGENT

@@ -368,12 +368,8 @@
                                     <small ng-if="req.status=='success'">
                                         Request accepted.
                                     </small>
-                                    <small ng-if="req.status=='rejected'" class="text-danger">
-                                        {$ req.remarks $}
-                                    </small>
-                                    <small ng-if="req.status=='outdated'">
-                                        {$ req.remarks $}
-                                    </small>
+                                    <small ng-if="req.status=='rejected'" class="text-danger" ng-bind-html="req.remarks"></small>
+                                    <small ng-if="req.status=='outdated'" ng-bind-html="req.remarks"></small>
                                 </td>
                                 <td>
                                     <small>Requested by</small><br/>
@@ -489,6 +485,7 @@
 
             'ngCookies',
             'ngMessages',
+            'ngSanitize',
             'ui.router',                    // Routing
             'oc.lazyLoad',                  // ocLazyLoad
             'ui.bootstrap',

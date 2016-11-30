@@ -14,11 +14,12 @@
     - Report Display view
     - Suggestions Display view
 
+- Accounts:
+    - EmailID edit in settings
+
 - Brands
-    - image size validations (Client side only)
-    - Change request
-        - fail/accept request
     - Disable notifications for brand owners and only for brand authority users
+
 - Data privacy conventions (public, encypted, client shared etc)
 - SEO
 
@@ -29,6 +30,12 @@
 
 - Logo
 - SMS Gateway service classes
+
+------------- Low priority --------------
+
+- Brands
+    - image size validations (Client side only)
+
 
 -----------------------------
 - Notification display on console

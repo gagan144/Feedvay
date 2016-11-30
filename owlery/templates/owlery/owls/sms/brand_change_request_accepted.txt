@@ -1,0 +1,1 @@
+Your change request for '{{brand_name}}' has been accepted and reflected.

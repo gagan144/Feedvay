@@ -336,6 +336,9 @@ def brand_change_request_accept_and_migrate(change_request, remarks):
         change_request.trans_success(remarks=remarks)
         change_request.save()
 
-    # TODO: send owls
+    # Send owls
+    owls.SmsOwl.send_brand_change_request_accepted(change_request)
+    owls.EmailOwl.send_brand_change_request_accepted(change_request)
+    owls.NotificationOwl.send_brand_change_request_accepted(change_request)
 
 

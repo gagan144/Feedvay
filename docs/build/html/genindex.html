@@ -211,6 +211,14 @@
   </dt>
 
       
+  <dt><a href="modules/brands/operations.html#brands.operations.brand_change_request_accept_and_migrate">brand_change_request_accept_and_migrate() (in module brands.operations)</a>
+  </dt>
+
+      
+  <dt><a href="modules/brands/operations.html#brands.operations.brand_change_request_rejected">brand_change_request_rejected() (in module brands.operations)</a>
+  </dt>
+
+      
   <dt><a href="modules/utilities/decorators.html#utilities.decorators.brand_console">brand_console() (in module utilities.decorators)</a>
   </dt>
 
@@ -222,12 +230,12 @@
   <dt><a href="modules/brands/api.html#brands.api.BrandChangeRequestAPI">BrandChangeRequestAPI (class in brands.api)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/utilities/tastypi_utils.html#utilities.tastypie_utils.BrandConsoleSessionAuthentication">BrandConsoleSessionAuthentication (class in utilities.tastypie_utils)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/brands/forms.html#brands.forms.BrandCreateEditForm">BrandCreateEditForm (class in brands.forms)</a>
   </dt>
@@ -597,7 +605,7 @@
   </dt>
 
       
-  <dt><a href="modules/accounts/models.html#accounts.models.RegisteredUser.post_save">post_save() (accounts.models.RegisteredUser class method)</a>
+  <dt><a href="modules/accounts/models.html#accounts.models.UserProfile.post_save">post_save() (accounts.models.UserProfile class method)</a>
   </dt>
 
       <dd><dl>
@@ -650,18 +658,14 @@
   <dt><a href="modules/accounts/views.html#accounts.views.registration_resend_code">registration_resend_code() (in module accounts.views)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/accounts/views.html#accounts.views.registration_verify">registration_verify() (in module accounts.views)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/accounts/forms.html#accounts.forms.RegistrationForm">RegistrationForm (class in accounts.forms)</a>
-  </dt>
-
-      
-  <dt><a href="modules/brands/operations.html#brands.operations.reject_change_request">reject_change_request() (in module brands.operations)</a>
   </dt>
 
       
@@ -764,12 +768,50 @@
   <dt><a href="modules/utilities/theme.html#utilities.theme.ColorUtils.scale_rgb_color">scale_rgb_color() (utilities.theme.ColorUtils static method)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/owlery/owls.html#owlery.owls.EmailOwl.send_brand_change_request">send_brand_change_request() (owlery.owls.EmailOwl static method)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="modules/owlery/owls.html#owlery.owls.NotificationOwl.send_brand_change_request">(owlery.owls.NotificationOwl static method)</a>
+  </dt>
+
+        
+  <dt><a href="modules/owlery/owls.html#owlery.owls.SmsOwl.send_brand_change_request">(owlery.owls.SmsOwl static method)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="modules/owlery/owls.html#owlery.owls.EmailOwl.send_brand_change_request_accepted">send_brand_change_request_accepted() (owlery.owls.EmailOwl static method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="modules/owlery/owls.html#owlery.owls.NotificationOwl.send_brand_change_request_accepted">(owlery.owls.NotificationOwl static method)</a>
+  </dt>
+
+        
+  <dt><a href="modules/owlery/owls.html#owlery.owls.SmsOwl.send_brand_change_request_accepted">(owlery.owls.SmsOwl static method)</a>
+  </dt>
+
+      </dl></dd>
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="modules/owlery/owls.html#owlery.owls.EmailOwl.send_brand_change_request_rejected">send_brand_change_request_rejected() (owlery.owls.EmailOwl static method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="modules/owlery/owls.html#owlery.owls.NotificationOwl.send_brand_change_request_rejected">(owlery.owls.NotificationOwl static method)</a>
+  </dt>
+
+        
+  <dt><a href="modules/owlery/owls.html#owlery.owls.SmsOwl.send_brand_change_request_rejected">(owlery.owls.SmsOwl static method)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="modules/owlery/owls.html#owlery.owls.EmailOwl.send_brand_disassociation_success">send_brand_disassociation_success() (owlery.owls.EmailOwl static method)</a>
   </dt>
@@ -788,6 +830,20 @@
   <dt><a href="modules/owlery/owls.html#owlery.owls.NotificationOwl.send_brand_partner_left_notif">send_brand_partner_left_notif() (owlery.owls.NotificationOwl static method)</a>
   </dt>
 
+      
+  <dt><a href="modules/owlery/owls.html#owlery.owls.EmailOwl.send_brand_verification_failed">send_brand_verification_failed() (owlery.owls.EmailOwl static method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="modules/owlery/owls.html#owlery.owls.NotificationOwl.send_brand_verification_failed">(owlery.owls.NotificationOwl static method)</a>
+  </dt>
+
+        
+  <dt><a href="modules/owlery/owls.html#owlery.owls.SmsOwl.send_brand_verification_failed">(owlery.owls.SmsOwl static method)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="modules/owlery/owls.html#owlery.owls.EmailOwl.send_brand_verified">send_brand_verified() (owlery.owls.EmailOwl static method)</a>
   </dt>

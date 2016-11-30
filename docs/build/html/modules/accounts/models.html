@@ -228,14 +228,6 @@ country telephone code and 10-digit mobile number</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
-<dl class="classmethod">
-<dt id="accounts.models.RegisteredUser.post_save">
-<em class="property">classmethod </em><code class="descname">post_save</code><span class="sig-paren">(</span><em>sender</em>, <em>instance</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.RegisteredUser.post_save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Post save trigger for this model. This will be called after the record has
-been created or updated.</p>
-<p><strong>Authors</strong>: Gagandeep Singh</p>
-</dd></dl>
-
 <dl class="method">
 <dt id="accounts.models.RegisteredUser.save">
 <code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.RegisteredUser.save" title="Permalink to this definition">¶</a></dt>
@@ -403,6 +395,10 @@ present in &#8216;list_attributes&#8217;. Model will not save until all required
 <p><strong>When this model is created/updated</strong>:</p>
 <blockquote>
 <div>This model is created only during registration process and updated each time <a class="reference internal" href="#accounts.models.RegisteredUser" title="accounts.models.RegisteredUser"><code class="xref py py-class docutils literal"><span class="pre">accounts.models.RegisteredUser</span></code></a> is saved.</div></blockquote>
+<p><strong>Triggers and effects</strong>:</p>
+<blockquote>
+<div>This model migrates all changes in set of fields defined in <code class="docutils literal"><span class="pre">USER_MODEL_FIELDS</span></code> to :class:<code class="docutils literal"><span class="pre">django.contrib.auth.models.User`</span>
+<span class="pre">model</span> <span class="pre">on</span> <span class="pre">attribute</span> <span class="pre">update</span> <span class="pre">or</span> <span class="pre">delete.</span> <span class="pre">This</span> <span class="pre">is</span> <span class="pre">done</span> <span class="pre">in</span> <span class="pre">``save()</span></code> method.</div></blockquote>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 <dl class="class">
 <dt id="accounts.models.UserProfile.DetailedAttribute">
@@ -515,6 +511,13 @@ value as dictionary object containing information for that attribute.
 </tr>
 </tbody>
 </table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="accounts.models.UserProfile.post_save">
+<em class="property">classmethod </em><code class="descclassname">UserProfile.</code><code class="descname">post_save</code><span class="sig-paren">(</span><em>sender</em>, <em>document</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserProfile.post_save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Post-save method for UserProfile mongo model.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 

@@ -204,6 +204,7 @@
             $scope.email = {
                 original: angular.copy(($rootScope.USER_PROFILE.email && $rootScope.USER_PROFILE.email.active)?$rootScope.USER_PROFILE.email.value:null),
                 submitting: false,
+                error: false,
                 verification_send: false,
                 send_verification: function(form_obj){
                     if(form_obj.$invalid){
@@ -211,8 +212,34 @@
                     }
 
                     $scope.email.submitting = true;
-                    $scope.email.verification_send = true;
+                    $scope.email.error = false;
+
+                    // Post to server
+                    $http.post(
+                        "{% url 'console_account_settings_email_change' %}",
+                        $.param({"new_email": $scope.data_acc_info.email})
+                    ).then(
+                        function successCallback(response) {
+                            $scope.email.submitting = false;
+
+                            if(response.data.status == 'success') {
+                                $scope.email.verification_send = true;
+                            }
+                        },
+                        function errorCallback(response) {
+                            $scope.flags.submitting = false;
+                            if(response.status != -1){
+                                $scope.email.error = true;
+                            }else{
+                                $.growl.error({
+                                    title: '<i class="fa fa-signal"></i> Network error!',
+                                    message: "Please check your internet connection."
+                                });
+                            }
+                        }
+                    );
                 }
+
             };
             // --- /Email ---
         });

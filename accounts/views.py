@@ -710,7 +710,7 @@ def console_account_settings_email_change(request):
             )
 
             # Create url
-            url = "{}/{}".format(settings.FEEDVAY_DOMAIN, reverse('accounts_verify_email', args=[json_web_token]))
+            url = "{}{}".format(settings.FEEDVAY_DOMAIN, reverse('accounts_verify_email', args=[json_web_token]))
 
             # Send email owl
             owls.EmailOwl.send_email_verification(reg_user, user_token, url, new_email)
@@ -736,6 +736,10 @@ def verify_email(request, web_token):
 
     **Authors**: Gagandeep Singh
     """
+    # Decode web token
+    data = jwt.decode(web_token, settings.JWT_SECRET_KEY)
+    reg_user = RegisteredUser.objects.get(id=data["reg_user_id"])
+
     pass
 
 

@@ -35,8 +35,6 @@
                         Email address<span class="required">*</span>:
                     </label>
                     <div class="col-sm-9">
-                        {$ email $}
-
                         <div class="row" ng-hide="email.verification_send">
                             <div class="col-sm-7">
                                 <form name="form_email" role="form" novalidate >
@@ -55,6 +53,11 @@
                                     <div ng-messages="form_email.email.$dirty && form_email.email.$error" role="alert" class="error_messages">
                                         <label ng-message="required" class="error">Please enter your email address.</label>
                                         <label ng-message="email" class="error">Invalid email address.</label>
+                                    </div>
+
+                                    <div class="text-danger" ng-if="email.error">
+                                        <i class="fa fa-exclamation-triangle"></i>
+                                        Something went wrong. Our engineers will be informed.
                                     </div>
                                 </form>
                             </div>

@@ -20,4 +20,7 @@ urlpatterns = [
     url(r'^recovery/plea/$', views.reset_password_plea, name='accounts_reset_password_plea'),
     url(r'^recovery/plea/verify/$', views.reset_password_plea_verify, name='accounts_reset_password_plea_verify'),
     url(r'^recover-account/$', views.recover_account, name='accounts_recover_account'),
+
+    # Email verification
+    url(r'^verify/email/(?P<web_token>.*)/$', views.verify_email, name='accounts_verify_email'),
 ]

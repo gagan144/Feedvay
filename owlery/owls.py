@@ -413,6 +413,50 @@ class EmailOwl:
             return None
 
     @staticmethod
+    def send_email_verification(reg_user, user_token, verif_url, email_address):
+        """
+        Method to send a verification link to newely added email address.
+
+        :param reg_user: RegisteredUser to whom email is send
+        :param user_token: User token for email verification
+        :param verif_url: Verification url
+        :param email_address: New email address to which link is to be send
+        :return: Returns :class:`owlery.model.EmailMessage` instance
+
+        **Authors**: Gagandeep Singh
+        """
+        user = reg_user.user
+        receiver_name = "{} {}".format(user.first_name, user.last_name)
+
+        # Create message body
+        message_body = render_to_response('owlery/owls/emails/email_verification.html', {
+            "receiver_name": receiver_name,
+            "url": verif_url,
+            "expire_min": (settings.VERIFICATION_EXPIRY/60),
+            "expire_time": user_token.humanize_expire_on("%I:%M %p")
+        }).content
+
+        # Create database entry
+        email_msg = EmailMessage.objects.create(
+            username = user.username,
+            email_id = email_address,
+
+            subject = "Feedvay - Email verification",
+            message = message_body,
+
+            type = EmailMessage.TYPE_EMAIL_VERIF,
+            priority = EmailMessage.PR_URGENT
+        )
+
+        # Send email since it is an urgent message
+        try:
+            email_msg.force_send()
+        except:
+            pass
+
+        return email_msg
+
+    @staticmethod
     def send_brand_disassociation_success(user, brand):
         """
         Sends confirmation email to user' disassociation from a brand.

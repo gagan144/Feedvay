@@ -63,7 +63,8 @@
             'ui.router',                    // Routing
             'oc.lazyLoad',                  // ocLazyLoad
             'ui.bootstrap',
-            'datePicker'
+            'datePicker',
+            'angular-ladda'
         ])
         .config(function($interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             $interpolateProvider.startSymbol('{$');
@@ -196,8 +197,24 @@
         APP.controller('AccountInfoCtrl', function($rootScope, $scope, $http){
             $scope.data_acc_info = {
                 username: "{{ request.user.username }}",
-                email: $rootScope.USER_PROFILE.email?$rootScope.USER_PROFILE.email.value:null
-            }
+                email: ($rootScope.USER_PROFILE.email && $rootScope.USER_PROFILE.email.active)?$rootScope.USER_PROFILE.email.value:null
+            };
+
+            // --- Email ---
+            $scope.email = {
+                original: angular.copy(($rootScope.USER_PROFILE.email && $rootScope.USER_PROFILE.email.active)?$rootScope.USER_PROFILE.email.value:null),
+                submitting: false,
+                verification_send: false,
+                send_verification: function(form_obj){
+                    if(form_obj.$invalid){
+                        return false;
+                    }
+
+                    $scope.email.submitting = true;
+                    $scope.email.verification_send = true;
+                }
+            };
+            // --- /Email ---
         });
 
         APP.controller('BasicInfoCtrl', function($rootScope, $scope, $http){

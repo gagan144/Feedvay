@@ -12,6 +12,7 @@ url_account = [
     url(r'^settings/$', views_accounts.console_account_settings, name='console_accounts_settings'),
     url(r'^settings/basic-info/update/$', views_accounts.console_account_settings_basicinfo_update, name='console_account_settings_basicinfo_update'),
     url(r'^settings/private-info/update/$', views_accounts.console_account_settings_privinfo_update, name='console_account_settings_privinfo_update'),
+    url(r'^settings/email/change/$', views_accounts.console_account_settings_email_change, name='console_account_settings_email_change'),
     url(r'^password/change/$', views_accounts.console_password_change, name='console_password_change'),
 ]
 

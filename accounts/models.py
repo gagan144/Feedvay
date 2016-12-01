@@ -241,9 +241,11 @@ class UserToken(models.Model):
     """
 
     PUR_REG_VERF = 'reg_verification'
+    PUR_EMAIL_VERIF = 'email_verification'
     PUR_PASS_RESET = 'password_reset'
     CH_PURPOSE = (
         (PUR_REG_VERF, 'Registration Verification'),
+        (PUR_EMAIL_VERIF, 'Email verification'),
         (PUR_PASS_RESET, 'Password Reset'),
     )
 
@@ -272,7 +274,7 @@ class UserToken(models.Model):
         """
 
         # Set expiry date
-        if self.purpose in [UserToken.PUR_REG_VERF, UserToken.PUR_PASS_RESET]:
+        if self.purpose in [UserToken.PUR_REG_VERF, UserToken.PUR_EMAIL_VERIF, UserToken.PUR_PASS_RESET]:
             self.value = UserToken.gen_verification_otp()
             self.expire_on = timezone.now() + timezone.timedelta(seconds=settings.VERIFICATION_EXPIRY)
 
@@ -888,6 +890,10 @@ class UserProfile(Document):
         save_user = False
         for fieldname in UserProfile.USER_MODEL_FIELDS:
             val = document.attributes[fieldname]
+
+            if fieldname == 'email' and val is None:
+                val = ''
+
             if val != getattr(user, fieldname):
                 setattr(user, fieldname, val)
                 save_user = True

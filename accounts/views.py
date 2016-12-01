@@ -673,6 +673,73 @@ def console_account_settings(request):
     return render(request, 'accounts/console/account_settings.html', data)
 
 @registered_user_only
+def console_account_settings_email_change(request):
+    """
+    An API view to change user email address.
+
+    **Points**:
+
+        1. Create email verification token.
+        2. Create json-web-token having new email address, registered user id.
+        3. For a verification link
+        4. Send email owl to the new email address.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        reg_user = request.user.registereduser
+        new_email = request.POST['new_email']
+
+        with transaction.atomic():
+            # Create email verification token
+            user_token = UserToken.objects.create(
+                registered_user = reg_user,
+                purpose = UserToken.PUR_EMAIL_VERIF
+            )
+
+            # Create json-web-token
+            json_web_token = jwt.encode(
+                {
+                    'reg_user_id': reg_user.id,
+                    'new_email': new_email
+                },
+                settings.JWT_SECRET_KEY,
+                algorithm = settings.JWT_ALOG
+            )
+
+            # Create url
+            url = "{}/{}".format(settings.FEEDVAY_DOMAIN, reverse('accounts_verify_email', args=[json_web_token]))
+
+            # Send email owl
+            owls.EmailOwl.send_email_verification(reg_user, user_token, url, new_email)
+
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='ok').gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+
+def verify_email(request, web_token):
+    """
+    View to verify email and update it to the registered user account.
+
+    **Points**:
+
+        - Decode json-web-token to obtain data
+        - Verify with UserToken if it is with expiry time
+        - Update email for registeredUser
+        - Loggin him in and redirect to account settings
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    pass
+
+
+@registered_user_only
 def console_password_change(request):
     """
     An API view to change user password. The user fills a form and submit old & new password.

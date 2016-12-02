@@ -178,30 +178,6 @@ class RegisteredUser(models.Model):
         self.clean()
         super(self.__class__, self).save(*args, **kwargs)
 
-    # @classmethod
-    # def post_save(cls, sender, instance, **kwargs):
-    #     """
-    #     Post save trigger for this model. This will be called after the record has
-    #     been created or updated.
-    #
-    #     **Authors**: Gagandeep Singh
-    #     """
-    #
-    #     # Update 'UserProfile' only if this exists
-    #     # Cannot create here because during registration, when 'RegisteredUser' is created this routine will not
-    #     # have date of birth, gender etc since they are not present in 'User' model.
-    #     # Update here make surety that User.<attributes> are same as UserProfile.<attributes>
-    #     try:
-    #         user = instance.user
-    #
-    #         user_profile = UserProfile.objects.get(registered_user_id=instance.id)
-    #         user_profile.add_update_attribute('first_name', user.first_name, auto_save=False)
-    #         user_profile.add_update_attribute('last_name', user.last_name, auto_save=False)
-    #         user_profile.save()
-    #
-    #     except mongo_DoesNotExist:
-    #         pass
-
     def delete(self, using=None, keep_parents=False):
         # Override delete method to prevent record deletion.
         raise ValidationError('You cannot delete RegisteredUser.')
@@ -219,7 +195,21 @@ class RegisteredUser(models.Model):
         **Authors**: Gagandeep Singh
         """
         return "{}-{}".format(country_tel_code, mobile_no)
-# post_save.connect(RegisteredUser.post_save, sender=RegisteredUser)
+
+    @staticmethod
+    def deconstruct_username(country_tel_code, actual_username):
+        """
+        Static method to obtain 10-digit mobile number from actual username by removing
+        country telephone code from actula username.
+
+        :param country_tel_code: Country telephone code
+        :param actual_username: '<country_tel_code>+<mobile_no>'
+        :return: 10-digit mobile number
+
+        **Authors**: Gagandeep Singh
+        """
+
+        return actual_username.replace("{}-".format(country_tel_code), "")
 
 
 class UserToken(models.Model):
@@ -596,6 +586,7 @@ class UserProfile(Document):
         active      = BooleanField(required=True, default=True, help_text="Whether this attribute is active or not. Set False in case od delete.")
         locked      = BooleanField(required=True, default=False, help_text="If True attribute cannot be updated or deleted.")
         verified    = BooleanField(required=True, default=False, help_text="Flag to indicate if this information is verified or not.")
+        remarks     = StringField(required=False, default=None, help_text='Remarks for this attributes such as verification remarks.')
         last_updated_on = DateTimeField(required=True, default=timezone.now, help_text="Date on which this record was last updated.")
 
         def __unicode__(self):
@@ -826,6 +817,38 @@ class UserProfile(Document):
             self.save()
 
         return updated
+
+    def mark_attribute_verification(self, name, is_verified, remarks, auto_save=True):
+        """
+        Method to mark an attribute verified or unverified.
+        This method can change ``verified`` value of an attribute even if it is locked.
+
+        :param name: Name of the attribute
+        :param is_verified: (bool) True if mark attribute as verified else False
+        :param remarks: Remarks for verification
+        :return: Tuple (found, updated)
+
+        **Authors**: Gagandeep Singh
+        """
+
+        if not isinstance(is_verified, bool):
+            raise Exception("'is_verified' must be a boolean.")
+
+        found = False
+        updated = False
+        for attr in self.list_attributes:
+            if attr.name == name:
+                found = True
+                attr.verified = is_verified
+
+                updated = True
+                break
+
+        # Save
+        if found and updated and auto_save:
+            self.save()
+
+        return (found, updated)
 
     def get_meta_dict(self):
         """

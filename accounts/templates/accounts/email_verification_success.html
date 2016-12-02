@@ -1,0 +1,37 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'base_simple.html' %}
+
+{% block head %}
+    <title>Feedvay| Email verified</title>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3" align="center">
+            <h1 class="text-success" style="margin: 0px 0px 20px 0px;">
+                <i class="fa fa-check-circle"></i>
+                Email successfully verified
+            </h1>
+
+            <p style="font-size: 15px;">
+                Your email <b>{{ new_email }}</b> has been successfully verified and updated into your
+                Feedvay account. This email will now be used for all communication purpose.
+
+                <br/><br/>
+                You can now login to your account and view your updated settings.
+            </p>
+
+            <p>
+                <a href="{% url 'accounts_login' %}?username={{ username }}&next={% url 'console_accounts_settings' %}%23/profile" class="btn btn-primary m-t">
+                    Login now
+                </a>
+            </p>
+
+            <p class="m-t" style="margin-top: 30px;">
+                <small>© 2017 Feedvay. All rights reserved.</small>
+            </p>
+        </div>
+    </div>
+{% endblock %}

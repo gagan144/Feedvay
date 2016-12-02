@@ -678,11 +678,11 @@ def console_account_settings_email_change(request):
     An API view to change user email address.
 
     **Points**:
-
-        1. Create email verification token.
-        2. Create json-web-token having new email address, registered user id.
-        3. For a verification link
-        4. Send email owl to the new email address.
+        1. Delete all previous email verification token if any.
+        2. Create email verification token.
+        3. Create json-web-token having new email address, registered user id.
+        4. For a verification link
+        5. Send email owl to the new email address.
 
     **Type**: POST
 
@@ -693,6 +693,9 @@ def console_account_settings_email_change(request):
         new_email = request.POST['new_email']
 
         with transaction.atomic():
+            # Delete all previous email verification token
+            UserToken.objects.filter(registered_user=reg_user, purpose=UserToken.PUR_EMAIL_VERIF).delete()
+
             # Create email verification token
             user_token = UserToken.objects.create(
                 registered_user = reg_user,
@@ -703,7 +706,8 @@ def console_account_settings_email_change(request):
             json_web_token = jwt.encode(
                 {
                     'reg_user_id': reg_user.id,
-                    'new_email': new_email
+                    'new_email': new_email,
+                    'user_token_id': user_token.id
                 },
                 settings.JWT_SECRET_KEY,
                 algorithm = settings.JWT_ALOG
@@ -728,9 +732,10 @@ def verify_email(request, web_token):
     **Points**:
 
         - Decode json-web-token to obtain data
-        - Verify with UserToken if it is with expiry time
+        - Verify with UserToken if it is within expiry time
         - Update email for registeredUser
-        - Loggin him in and redirect to account settings
+        - Log him in and redirect to account settings if already logged in
+          Else show success message.
 
     **Type**: GET
 
@@ -739,8 +744,36 @@ def verify_email(request, web_token):
     # Decode web token
     data = jwt.decode(web_token, settings.JWT_SECRET_KEY)
     reg_user = RegisteredUser.objects.get(id=data["reg_user_id"])
+    new_email = data['new_email']
 
-    pass
+    now = timezone.now()
+    try:
+        # Verify token
+        user_token = UserToken.objects.get(registered_user=reg_user, purpose=UserToken.PUR_EMAIL_VERIF, expire_on__gt=now)
+
+        # Update email for RegisteredUser
+        profile = reg_user.profile
+        profile.add_update_attribute('email', new_email, auto_save=False)
+        profile.mark_attribute_verification('email', True, 'User verified email through verification process.', auto_save=False)
+        profile.save()
+
+        # Delete user token
+        user_token.delete()
+
+        # Return response
+        if request.user.is_authenticated():
+            # User is already logged in, redirect to accounts settings
+            return HttpResponseRedirect(reverse('console_accounts_settings')+"#/profile")
+        else:
+            country_tel_code = '+91'    #TODO: Set default country_tel_code
+            data = {
+                "new_email": new_email,
+                "username": RegisteredUser.deconstruct_username(country_tel_code, reg_user.user.username)
+            }
+            return render(request, 'accounts/email_verification_success.html', data)
+
+    except UserToken.DoesNotExist:
+        raise Http404("Invalid or expired link! Please login and edit your email again.")
 
 
 @registered_user_only

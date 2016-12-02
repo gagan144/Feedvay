@@ -681,7 +681,7 @@ def console_account_settings_email_change(request):
         1. Delete all previous email verification token if any.
         2. Create email verification token.
         3. Create json-web-token having new email address, registered user id.
-        4. For a verification link
+        4. Form a verification link
         5. Send email owl to the new email address.
 
     **Type**: POST
@@ -734,6 +734,7 @@ def verify_email(request, web_token):
         - Decode json-web-token to obtain data
         - Verify with UserToken if it is within expiry time
         - Update email for registeredUser
+        - Delete user token
         - Log him in and redirect to account settings if already logged in
           Else show success message.
 

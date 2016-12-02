@@ -262,6 +262,25 @@ if the code he entered matched or not as he completes entering the code.</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
+<dl class="function">
+<dt id="accounts.views.verify_email">
+<code class="descclassname">accounts.views.</code><code class="descname">verify_email</code><span class="sig-paren">(</span><em>request</em>, <em>web_token</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.views.verify_email" title="Permalink to this definition">¶</a></dt>
+<dd><p>View to verify email and update it to the registered user account.</p>
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Decode json-web-token to obtain data</li>
+<li>Verify with UserToken if it is within expiry time</li>
+<li>Update email for registeredUser</li>
+<li>Delete user token</li>
+<li>Log him in and redirect to account settings if already logged in
+Else show success message.</li>
+</ul>
+</div></blockquote>
+<p><strong>Type</strong>: GET</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
 </div>
 
 

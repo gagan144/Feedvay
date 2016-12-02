@@ -36,7 +36,7 @@
     <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
         <link rel="up" title="Accounts" href="index.html"/>
         <link rel="next" title="Forms" href="forms.html"/>
-        <link rel="prev" title="Password Recovery" href="mod_password_recovery.html"/> 
+        <link rel="prev" title="Email Verification" href="mod_email_verification.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -221,6 +221,29 @@ country telephone code and 10-digit mobile number</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Actual username; &#8216;&lt;country_tel_code&gt;+&lt;mobile_no&gt;&#8217;</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="accounts.models.RegisteredUser.deconstruct_username">
+<em class="property">static </em><code class="descname">deconstruct_username</code><span class="sig-paren">(</span><em>country_tel_code</em>, <em>actual_username</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.RegisteredUser.deconstruct_username" title="Permalink to this definition">¶</a></dt>
+<dd><p>Static method to obtain 10-digit mobile number from actual username by removing
+country telephone code from actula username.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>country_tel_code</strong> &#8211; Country telephone code</li>
+<li><strong>actual_username</strong> &#8211; &#8216;&lt;country_tel_code&gt;+&lt;mobile_no&gt;&#8217;</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">10-digit mobile number</p>
 </td>
 </tr>
 </tbody>
@@ -514,6 +537,30 @@ value as dictionary object containing information for that attribute.
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="accounts.models.UserProfile.mark_attribute_verification">
+<code class="descclassname">UserProfile.</code><code class="descname">mark_attribute_verification</code><span class="sig-paren">(</span><em>name</em>, <em>is_verified</em>, <em>remarks</em>, <em>auto_save=True</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserProfile.mark_attribute_verification" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to mark an attribute verified or unverified.
+This method can change <code class="docutils literal"><span class="pre">verified</span></code> value of an attribute even if it is locked.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> &#8211; Name of the attribute</li>
+<li><strong>is_verified</strong> &#8211; (bool) True if mark attribute as verified else False</li>
+<li><strong>remarks</strong> &#8211; Remarks for verification</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Tuple (found, updated)</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
 <dl class="classmethod">
 <dt id="accounts.models.UserProfile.post_save">
 <em class="property">classmethod </em><code class="descclassname">UserProfile.</code><code class="descname">post_save</code><span class="sig-paren">(</span><em>sender</em>, <em>document</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserProfile.post_save" title="Permalink to this definition">¶</a></dt>
@@ -670,7 +717,7 @@ map the session to current user.</p>
         <a href="forms.html" class="btn btn-neutral float-right" title="Forms" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="mod_password_recovery.html" class="btn btn-neutral" title="Password Recovery" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="mod_email_verification.html" class="btn btn-neutral" title="Email Verification" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

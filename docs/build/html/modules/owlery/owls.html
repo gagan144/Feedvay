@@ -314,6 +314,30 @@ At this point user has left brand.</p>
 </dd></dl>
 
 <dl class="staticmethod">
+<dt id="owlery.owls.EmailOwl.send_email_verification">
+<em class="property">static </em><code class="descname">send_email_verification</code><span class="sig-paren">(</span><em>reg_user</em>, <em>user_token</em>, <em>verif_url</em>, <em>email_address</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.EmailOwl.send_email_verification" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to send a verification link to newely added email address.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>reg_user</strong> &#8211; RegisteredUser to whom email is send</li>
+<li><strong>user_token</strong> &#8211; User token for email verification</li>
+<li><strong>verif_url</strong> &#8211; Verification url</li>
+<li><strong>email_address</strong> &#8211; New email address to which link is to be send</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Returns <code class="xref py py-class docutils literal"><span class="pre">owlery.model.EmailMessage</span></code> instance</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
 <dt id="owlery.owls.EmailOwl.send_password_change_success">
 <em class="property">static </em><code class="descname">send_password_change_success</code><span class="sig-paren">(</span><em>user</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.EmailOwl.send_password_change_success" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends password change success email to the user.</p>

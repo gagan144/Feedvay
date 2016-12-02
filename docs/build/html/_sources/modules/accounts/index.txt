@@ -15,6 +15,7 @@ Modules
        mod_user_login.rst
        mod_sessions.rst
        mod_password_recovery.rst
+       mod_email_verification.rst
 
 
 Contents

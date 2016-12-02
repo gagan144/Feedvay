@@ -37,8 +37,8 @@
     - image size validations (Client side only)
 
 
------------------------------
-- Notification display on console
+------------- Infra ---------
 - Geography (Country tel code)
 - User roles
+- Elasticsearch
 - POBS

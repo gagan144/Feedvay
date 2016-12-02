@@ -13,6 +13,9 @@ import ujson
 
 from django.contrib.auth.models import User
 
+from rest_framework import viewsets, status, response
+from utilities.fcm_utils import UserDeviceSerializer
+
 from accounts.forms import *
 from accounts.models import *
 from accounts.utils import *
@@ -651,6 +654,49 @@ def recover_account(request):
         return HttpResponseForbidden('Forbidden! Use post.')
 
 #  ---------- /Password recovery ----------
+
+# ---------- User devices (FCM) ----------
+class UserDeviceViewSet(viewsets.ModelViewSet):
+    """
+    View to register or de-register user device for Google Firebase Cloud Messaging (FCM).
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    queryset = UserDevice.objects.all()
+    serializer_class = UserDeviceSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=False)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return response.Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        try:
+            device = UserDevice.objects.get(dev_id=serializer.data["dev_id"])
+        except UserDevice.DoesNotExist:
+            device = UserDevice(dev_id=serializer.data["dev_id"])
+        device.is_active = True
+        device.reg_id = serializer.data["reg_id"]
+        device.name = serializer.data["name"]
+        device.user = User.objects.get(id=serializer.data["user"])
+        device.save()
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = UserDevice.objects.get(dev_id=kwargs["pk"])
+            self.perform_destroy(instance)
+            return response.Response(status=status.HTTP_200_OK)
+        except UserDevice.DoesNotExist:
+            return response.Response(status=status.HTTP_404_NOT_FOUND)
+
+    def perform_destroy(self, instance):
+        instance.is_active = False
+        instance.save()
+# ---------- /User devices (FCM) ----------
 
 
 # ==================== Console ====================

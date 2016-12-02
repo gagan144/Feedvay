@@ -23,6 +23,7 @@ from importlib import import_module
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 from django.contrib.auth.signals import user_logged_in, user_logged_out
+from fcm.models import AbstractDevice
 
 from accounts.exceptions import *
 from owlery import owls
@@ -496,6 +497,27 @@ class UserClaim(models.Model):
 
         self.clean()
         super(self.__class__, self).save(*args, **kwargs)
+
+# ---------- User Devices ----------
+class UserDevice(AbstractDevice):
+    """
+    Model to keep track of user devices that have registered for
+    **Google Firebase Cloud Messaging (FCM)**. This model is specific for FCM only and might
+    not be applicable for other push notification services.
+
+    For every user's (not registered user) device and entry is created. Using this, query can be made
+    to obtain list of devices to those message is to be send.
+
+    .. note::
+        This model links :class:`django.contrib.auth.models.User` and not :class:`accounts.models.RegisteredUser`.
+        This is done to allow provision for staff user to also register their devices for push notifications.
+
+    **Authors**: Gagandeep Singh
+    """
+    user    = models.ForeignKey(User, db_index=True, help_text='User to which this device belongs to.')
+
+    def __unicode__(self):
+        return "{} - {}".format(self.user.username, self.dev_id)
 
 # ---------- MongoDb models ----------
 

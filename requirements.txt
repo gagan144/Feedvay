@@ -21,6 +21,7 @@ jsonobject
 boto
 django-storages
 shortuuid
+django-fcm
 # Pillow
 
 

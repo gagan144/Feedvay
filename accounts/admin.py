@@ -139,3 +139,27 @@ class UserAdminOverride(auth_admin.UserAdmin):
         return qs.filter(Q(registereduser=None) or (Q(is_staff=True) or Q(is_superuser=True)))
 admin.site.unregister(User)
 admin.site.register(User, UserAdminOverride)
+
+
+# ---------- Override FCM Device admin ----------
+from fcm.admin import Device, DeviceAdmin
+
+class UserDeviceAdmin(DeviceAdmin):
+    """
+    Django admin model for user device.
+
+    **Authors**: Gagandeep Singh
+    """
+    list_display = ['dev_id', 'user', 'name', 'is_active']
+    readonly_fields = ('id', 'dev_id', 'user', 'reg_id', 'name')
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+admin.site.unregister(Device)
+admin.site.register(Device, UserDeviceAdmin)
+

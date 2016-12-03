@@ -10,6 +10,15 @@ This app follows the same concept. For each delivery mechanism (SMS/Email) an ow
 Any process/routine that wants to send a message must handover the message to the corresponding owl using template,
 which then handles all delivery challenges. All log are maintained in the database for future reference.
 
+Modules
+-------
+
+    .. toctree::
+       :maxdepth: 2
+       :titlesonly:
+
+       mod_services.rst
+
 
 Contents
 --------

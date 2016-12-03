@@ -360,6 +360,22 @@ Claim permission on entity can only be disabled by staff.</li>
 </dd></dl>
 
 <dl class="class">
+<dt id="accounts.models.UserDevice">
+<em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserDevice</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserDevice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to keep track of user devices that have registered for
+<strong>Google Firebase Cloud Messaging (FCM)</strong>. This model is specific for FCM only and might
+not be applicable for other push notification services.</p>
+<p>For every user&#8217;s (not registered user) device and entry is created. Using this, query can be made
+to obtain list of devices to those message is to be send.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This model links <code class="xref py py-class docutils literal"><span class="pre">django.contrib.auth.models.User</span></code> and not <a class="reference internal" href="#accounts.models.RegisteredUser" title="accounts.models.RegisteredUser"><code class="xref py py-class docutils literal"><span class="pre">accounts.models.RegisteredUser</span></code></a>.
+This is done to allow provision for staff user to also register their devices for push notifications.</p>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
 <dt id="accounts.models.UserProfile">
 <em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserProfile</code><span class="sig-paren">(</span><em>*args</em>, <em>**values</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserProfile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mongodb model to store registered user information. This model includes wide variety

@@ -36,7 +36,7 @@
     <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
         <link rel="up" title="Owlery" href="index.html"/>
         <link rel="next" title="Owls" href="owls.html"/>
-        <link rel="prev" title="Owlery" href="index.html"/> 
+        <link rel="prev" title="Services" href="mod_services.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../accounts/index.html">Accounts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../watchdog/index.html">Watchdog</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Owlery</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#modules">Modules</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="owls.html">Owls</a></li>
@@ -192,29 +193,34 @@ up by an independent process that sends emails and update its status.</p>
 <dd><p>Model to store all kinds of notification messages. The model acts like a buffer/queueing stage
 from where pending messages can be picked up by independent cron process and dispatch it to
 push notification service to be send to devices.</p>
-<p>This model does <strong>not maintain</strong> recipients. They are recorded in seperate model.</p>
+<p>This model does <strong>not maintain</strong> recipients. They are recorded in separate model.</p>
 <p><strong>Notification Target:</strong> Defines the consumer of this notification. These may be:</p>
 <blockquote>
 <div><ul class="simple">
 <li><strong>System</strong>: Message is meant for the system (such as mobile app) to take some action. These messages
 are not shown to the user and user may never come to know about these messages</li>
-<li><strong>User</strong>: Message is meant for the user and are dsiplayed to him.</li>
+<li><strong>User</strong>: Message is meant for the user and are displayed to him.</li>
 </ul>
 </div></blockquote>
 <p><strong>Notification Transmission Types:</strong></p>
 <blockquote>
 <div><ul class="simple">
-<li><strong>Unicast</strong>: A transmission to a single receiver.</li>
-<li><strong>Multicast</strong>: A transmission to a group of receivers. This requires <code class="docutils literal"><span class="pre">group</span></code> field.</li>
-<li><strong>Broadcast</strong>: A transmission to all receivers connected to the platform. These message may not be
-pushed to the user, but rather pulled by the devices on periodic request basis.</li>
+<li><strong>Multicast</strong>: A transmission to a group of receivers. The list of receivers (devices) are obtained
+by quering <code class="docutils literal"><span class="pre">NotificationRecipient</span></code> for a notification to get recipients registered users and then
+their list of devices. End point is always a device and not user.</li>
+<li><strong>Broadcast</strong>: A transmission to all receivers who have subscribed to a topic/channel.</li>
 </ul>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">There are no <strong>unicast</strong> message. This is because receivers are devices and not users. Since
+a user may or may not have multiple devices, the transimision is always multicats.</p>
+</div>
 </div></blockquote>
 <p><strong>Points:</strong></p>
 <blockquote>
 <div><ul class="simple">
 <li>If target is <code class="docutils literal"><span class="pre">system</span></code> is message body must be JSON string.</li>
-<li>If  transmission is <code class="docutils literal"><span class="pre">multicast</span></code>, group name is required.</li>
+<li>If  transmission is <code class="docutils literal"><span class="pre">bradcast</span></code>, topic_channel is required.</li>
 <li>In case of multicast and broadcast, <code class="docutils literal"><span class="pre">status</span></code> is changes to <code class="docutils literal"><span class="pre">send</span></code> only if
 message is send to all recipients.</li>
 <li>All notifications are removed after <code class="docutils literal"><span class="pre">settings.NOTIF_EXPIRY</span></code> days according to <code class="docutils literal"><span class="pre">created_on</span></code> date.</li>
@@ -239,6 +245,21 @@ update his status for this message by creating new record at runtime. So always 
 <dt id="owlery.models.NotificationMessage.clean">
 <code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#owlery.models.NotificationMessage.clean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="owlery.models.NotificationMessage.force_send">
+<code class="descname">force_send</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#owlery.models.NotificationMessage.force_send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forcefully send notification using appropriate push messaging service.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(was_send, result)</td>
+</tr>
+</tbody>
+</table>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
@@ -344,7 +365,7 @@ accordingly.</p>
         <a href="owls.html" class="btn btn-neutral float-right" title="Owls" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Owlery" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="mod_services.html" class="btn btn-neutral" title="Services" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

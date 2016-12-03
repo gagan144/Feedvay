@@ -9,8 +9,8 @@ from accounts.models import UserDevice
 
 class FcmPushService:
     """
-    Gateway interface to Google Firebase Cloud Messaging that transforms :class:`owlery.models.NotificationMessage`
-    to FCM format and sends it.
+    Google Firebase Cloud Messaging (FCM) service interface that transforms :class:`owlery.models.NotificationMessage`
+    to FCM format suitable for sending.
 
     **Authors**: Gagandeep Singh
     """

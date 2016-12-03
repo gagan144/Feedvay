@@ -866,7 +866,10 @@ class NotificationOwl:
                     ) for owner in brand.owners.all()
                 ])
 
-                return notif_msg
+            # Send notification
+            notif_msg.force_send()
+
+            return notif_msg
         else:
             return None
 
@@ -910,7 +913,10 @@ class NotificationOwl:
                     ) for owner in brand.owners.all()
                 ])
 
-                return notif_msg
+            # Send notification
+            notif_msg.force_send()
+
+            return notif_msg
         else:
             return None
 
@@ -953,7 +959,10 @@ class NotificationOwl:
                     ) for owner in brand.owners.all()
                 ])
 
-                return notif_msg
+            # Send notification
+            notif_msg.force_send()
+
+            return notif_msg
         else:
             return None
 
@@ -996,8 +1005,10 @@ class NotificationOwl:
                     ) for owner in brand.owners.all()
                 ])
 
-                return notif_msg
+            # Send notification
+            notif_msg.force_send()
 
+            return notif_msg
         else:
             return None
 
@@ -1041,8 +1052,10 @@ class NotificationOwl:
                     ) for owner in brand.owners.all()
                 ])
 
-                return notif_msg
+            # Send notification
+            notif_msg.force_send()
 
+            return notif_msg
         else:
             return None
 
@@ -1086,8 +1099,10 @@ class NotificationOwl:
                     ) for owner in brand.owners.all()
                 ])
 
-                return notif_msg
+            # Send notification
+            notif_msg.force_send()
 
+            return notif_msg
         else:
             return None
 

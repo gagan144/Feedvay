@@ -69,7 +69,7 @@ class FcmPushService:
             raise Exception("Invalid target {}".format(notif.target))
 
         data['content-available'] = "1"
-        data['notID'] = notif.id
+        data['notId'] = notif.id
 
         self.data = data
 

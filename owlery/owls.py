@@ -852,6 +852,7 @@ class NotificationOwl:
                     target = NotificationMessage.TARGET_USER,
                     transmission = NotificationMessage.TRANSM_MULTICAST,
                     type = NotificationMessage.TYPE_BRAND_PARTNER_LEFT,
+                    title = '{} left {}'.format(reg_user_disass.user.first_name, brand.name),
                     message = message_body,
                     url_web = "/console/b/{}/settings/#/ownership".format(brand.brand_uid),
                     priority = NotificationMessage.PR_HIGH
@@ -895,6 +896,7 @@ class NotificationOwl:
                     target = NotificationMessage.TARGET_USER,
                     transmission = NotificationMessage.TRANSM_MULTICAST,
                     type = NotificationMessage.TYPE_BRAND_CHNG_REQ,
+                    title = '{} changes under process'.format(brand.name),
                     message = message_body,
                     url_web = url_web,
                     priority = NotificationMessage.PR_HIGH
@@ -937,6 +939,7 @@ class NotificationOwl:
                     target = NotificationMessage.TARGET_USER,
                     transmission = NotificationMessage.TRANSM_MULTICAST,
                     type = NotificationMessage.TYPE_BRAND_VERIFIED,
+                    title = '{} verified'.format(brand.name),
                     message = message_body,
                     url_web = url_web,
                     priority = NotificationMessage.PR_HIGH
@@ -979,6 +982,7 @@ class NotificationOwl:
                     target = NotificationMessage.TARGET_USER,
                     transmission = NotificationMessage.TRANSM_MULTICAST,
                     type = NotificationMessage.TYPE_BRAND_VERIF_FAILED,
+                    title = '{} verification failed'.format(brand.name),
                     message = message_body,
                     url_web = url_web,
                     priority = NotificationMessage.PR_URGENT
@@ -1023,6 +1027,7 @@ class NotificationOwl:
                     target = NotificationMessage.TARGET_USER,
                     transmission = NotificationMessage.TRANSM_MULTICAST,
                     type = NotificationMessage.TYPE_BRAND_CHNG_REQ_REJ,
+                    title = '{} change rejected'.format(brand.name),
                     message = message_body,
                     url_web = url_web,
                     priority = NotificationMessage.PR_URGENT
@@ -1067,6 +1072,7 @@ class NotificationOwl:
                     target = NotificationMessage.TARGET_USER,
                     transmission = NotificationMessage.TRANSM_MULTICAST,
                     type = NotificationMessage.TYPE_BRAND_CHNG_REQ_ACC,
+                    title = '{} change accepted'.format(brand.name),
                     message = message_body,
                     url_web = url_web,
                     priority = NotificationMessage.PR_URGENT

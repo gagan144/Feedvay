@@ -14,9 +14,6 @@
     - Report Display view
     - Suggestions Display view
 
-- Accounts:
-    - EmailID edit in settings
-
 - Brands
     - Disable notifications for brand owners and only for brand authority users
 

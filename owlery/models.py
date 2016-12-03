@@ -8,10 +8,12 @@ from django.db.models.signals import post_save
 from django.core.exceptions import ValidationError
 from django.conf import settings
 
+from django.core.mail import send_mail
+
 from django.utils import timezone
 import re
 import ujson
-
+from requests.exceptions import ConnectionError
 
 # ---------- Validators ----------
 def validate_sms_no(value):
@@ -260,7 +262,6 @@ class EmailMessage(models.Model):
 
         **Authors**: Gagandeep Singh
         """
-        from django.core.mail import send_mail
 
         send_mail(
             subject = self.subject,
@@ -311,25 +312,29 @@ class NotificationMessage(models.Model):
     from where pending messages can be picked up by independent cron process and dispatch it to
     push notification service to be send to devices.
 
-    This model does **not maintain** recipients. They are recorded in seperate model.
+    This model does **not maintain** recipients. They are recorded in separate model.
 
     **Notification Target:** Defines the consumer of this notification. These may be:
 
         - **System**: Message is meant for the system (such as mobile app) to take some action. These messages
           are not shown to the user and user may never come to know about these messages
-        - **User**: Message is meant for the user and are dsiplayed to him.
+        - **User**: Message is meant for the user and are displayed to him.
 
     **Notification Transmission Types:**
 
-        - **Unicast**: A transmission to a single receiver.
-        - **Multicast**: A transmission to a group of receivers. This requires ``group`` field.
-        - **Broadcast**: A transmission to all receivers connected to the platform. These message may not be
-          pushed to the user, but rather pulled by the devices on periodic request basis.
+        - **Multicast**: A transmission to a group of receivers. The list of receivers (devices) are obtained
+          by quering ``NotificationRecipient`` for a notification to get recipients registered users and then
+          their list of devices. End point is always a device and not user.
+        - **Broadcast**: A transmission to all receivers who have subscribed to a topic/channel.
+
+        .. warning::
+            There are no **unicast** message. This is because receivers are devices and not users. Since
+            a user may or may not have multiple devices, the transimision is always multicats.
 
     **Points:**
 
         - If target is ``system`` is message body must be JSON string.
-        - If  transmission is ``multicast``, group name is required.
+        - If  transmission is ``bradcast``, topic_channel is required.
         - In case of multicast and broadcast, ``status`` is changes to ``send`` only if
           message is send to all recipients.
         - All notifications are removed after ``settings.NOTIF_EXPIRY`` days according to ``created_on`` date.
@@ -357,12 +362,12 @@ class NotificationMessage(models.Model):
         (TARGET_USER, 'User')
     )
 
-    TRANSM_UNICAST = 'unicast'
+    # TRANSM_UNICAST = 'unicast'
     TRANSM_MULTICAST = 'multicast'
     TRANSM_BROADCAST = 'broadcast'
 
     CH_TRANSMISSION = (
-        (TRANSM_UNICAST, 'Unicast'),
+        # (TRANSM_UNICAST, 'Unicast'),
         (TRANSM_MULTICAST, 'Multicast'),
         (TRANSM_BROADCAST, 'Broadcast')
     )
@@ -407,16 +412,17 @@ class NotificationMessage(models.Model):
     transmission = models.CharField(max_length=16, choices=CH_TRANSMISSION, db_index=True, editable=False, help_text='Transmission type for the message.')
     type        = models.CharField(max_length=64, choices=CH_TYPE, db_index=True, editable=False, help_text='Type of the message (User updates, promotional etc).')
 
-    title       = models.CharField(max_length=255, null=True, blank=True, editable=False, help_text='Titile of the message. (Optional)')
+    title       = models.CharField(max_length=255, null=True, blank=True, editable=False, help_text='Title of the message. (Optional)')
     message     = models.TextField(max_length=512, editable=False, help_text='Message body.')
     url_web     = models.URLField(null=True, blank=True, help_text='Url to open on web when user clicks on the message.(Optional)')
     url_mobile  = models.CharField(max_length=512, null=True, blank=True, help_text='Url to open on mobile when user taps on the message.(Optional)')
 
-    group       = models.CharField(max_length=128, null=True, blank=True, editable=False, help_text='Name of the group. (In case of multicast only)')
+    topic_channel = models.CharField(max_length=128, verbose_name='Topic/Channel', null=True, blank=True, editable=False, help_text='Topic or channel to which message is to be broadcasted. (In case of broadcast only)')
 
     priority    = models.CharField(max_length=16, choices=CH_PRIORITY, default=PR_NORMAL, help_text='Priority of this message.')
 
     status      = models.CharField(max_length=16, default=ST_NEW, choices=CH_STATUS, help_text='Send status of the message.')
+    send_result = models.TextField(null=True, blank=True, editable=False, help_text='Result as returned by push service.')
 
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this email was created. This is NOT send date.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was updated.')
@@ -428,6 +434,36 @@ class NotificationMessage(models.Model):
         return self.notificationrecipient_set.all().count()
     recipient_count.allow_tags = True
     recipient_count.short_description = 'Recipient count'
+
+
+    def force_send(self):
+        """
+        Forcefully send notification using appropriate push messaging service.
+
+        :return: (was_send, result)
+
+        **Authors**: Gagandeep Singh
+        """
+        from owlery.services.firebase import FcmPushService
+
+        try:
+            srv_fcm = FcmPushService(self)
+            was_send, result = srv_fcm.send()
+
+            if was_send:
+                self.notificationrecipient_set.all().update(
+                    sender = NotificationRecipient.SERV_FIRBASE,
+                    send_on = timezone.now()
+                )
+        except ConnectionError as ex:
+            was_send = False
+            result = ex.message
+
+        self.status = NotificationMessage.ST_SEND if was_send else NotificationMessage.ST_FAILED
+        self.send_result = result
+        self.save()
+
+        return (was_send, result)
 
     def clean(self):
         """
@@ -444,9 +480,9 @@ class NotificationMessage(models.Model):
                 raise ValidationError("Message body should be a JSON string since target is 'system'.")
 
         # Check transmission
-        if self.transmission == NotificationMessage.TRANSM_MULTICAST:
-            if not self.group or self.group=='':
-                raise ValidationError("Group is required as message is 'multicast'.")
+        if self.transmission == NotificationMessage.TRANSM_BROADCAST:
+            if not self.topic_channel or self.topic_channel=='':
+                raise ValidationError("Topic is required as message is 'braodcast'.")
 
         if self.pk:
             # Update modified date
@@ -492,6 +528,7 @@ class NotificationRecipient(models.Model):
 
     sender      = models.CharField(max_length=64, choices=CH_SERVICE, null=True, blank=True, editable=False, help_text="Push notification service that send this message.")
     send_on     = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this message was successfully send.')
+
     read_on     = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this message was read.')
 
     class Meta:

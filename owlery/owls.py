@@ -850,7 +850,7 @@ class NotificationOwl:
                 # Create entry
                 notif_msg = NotificationMessage.objects.create(
                     target = NotificationMessage.TARGET_USER,
-                    transmission = NotificationMessage.TRANSM_UNICAST,
+                    transmission = NotificationMessage.TRANSM_MULTICAST,
                     type = NotificationMessage.TYPE_BRAND_PARTNER_LEFT,
                     message = message_body,
                     url_web = "/console/b/{}/settings/#/ownership".format(brand.brand_uid),
@@ -893,7 +893,7 @@ class NotificationOwl:
                 # Create entry
                 notif_msg = NotificationMessage.objects.create(
                     target = NotificationMessage.TARGET_USER,
-                    transmission = NotificationMessage.TRANSM_UNICAST,
+                    transmission = NotificationMessage.TRANSM_MULTICAST,
                     type = NotificationMessage.TYPE_BRAND_CHNG_REQ,
                     message = message_body,
                     url_web = url_web,
@@ -935,7 +935,7 @@ class NotificationOwl:
                 # Create entry
                 notif_msg = NotificationMessage.objects.create(
                     target = NotificationMessage.TARGET_USER,
-                    transmission = NotificationMessage.TRANSM_UNICAST,
+                    transmission = NotificationMessage.TRANSM_MULTICAST,
                     type = NotificationMessage.TYPE_BRAND_VERIFIED,
                     message = message_body,
                     url_web = url_web,
@@ -977,7 +977,7 @@ class NotificationOwl:
                 # Create entry
                 notif_msg = NotificationMessage.objects.create(
                     target = NotificationMessage.TARGET_USER,
-                    transmission = NotificationMessage.TRANSM_UNICAST,
+                    transmission = NotificationMessage.TRANSM_MULTICAST,
                     type = NotificationMessage.TYPE_BRAND_VERIF_FAILED,
                     message = message_body,
                     url_web = url_web,
@@ -1021,7 +1021,7 @@ class NotificationOwl:
                 # Create entry
                 notif_msg = NotificationMessage.objects.create(
                     target = NotificationMessage.TARGET_USER,
-                    transmission = NotificationMessage.TRANSM_UNICAST,
+                    transmission = NotificationMessage.TRANSM_MULTICAST,
                     type = NotificationMessage.TYPE_BRAND_CHNG_REQ_REJ,
                     message = message_body,
                     url_web = url_web,
@@ -1065,7 +1065,7 @@ class NotificationOwl:
                 # Create entry
                 notif_msg = NotificationMessage.objects.create(
                     target = NotificationMessage.TARGET_USER,
-                    transmission = NotificationMessage.TRANSM_UNICAST,
+                    transmission = NotificationMessage.TRANSM_MULTICAST,
                     type = NotificationMessage.TYPE_BRAND_CHNG_REQ_ACC,
                     message = message_body,
                     url_web = url_web,

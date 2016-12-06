@@ -118,6 +118,11 @@ class Survey(models.Model):
         - Audience filer to automatically set to {} if audience type is ``self``.
         - Survey with status ``draft`` & ``paused`` are not visible to the public.
 
+    **State chart diagram for brand status**:
+
+        .. image:: ../../_static/surveys/survey_statechart.jpg
+
+
     **Authors**: Gagandeep Singh
     """
 
@@ -151,13 +156,13 @@ class Survey(models.Model):
 
     ST_DRAFT = 'draft'
     ST_PUBLISHED = 'published'
-    ST_PAUSE = 'paused'
-    ST_STOP = 'stop'
+    ST_PAUSED = 'paused'
+    ST_STOPPED = 'stopped'
     CH_STATUS = (
         (ST_DRAFT, 'Draft'),
         (ST_PUBLISHED, 'Published'),
-        (ST_PAUSE, 'Paused'),
-        (ST_STOP, 'Stop')
+        (ST_PAUSED, 'Paused'),
+        (ST_STOPPED, 'Stopped')
     )
 
     # --- Fields ---
@@ -210,7 +215,7 @@ class Survey(models.Model):
         pass
 
     @fsm_log_by
-    @transition(field=status, source=ST_PUBLISHED, target=ST_PAUSE)
+    @transition(field=status, source=ST_PUBLISHED, target=ST_PAUSED)
     def trans_pause(self):
         """
         Transition edge to pause a survey after it has been published. Puases survey are not executable.
@@ -221,7 +226,7 @@ class Survey(models.Model):
         pass
 
     @fsm_log_by
-    @transition(field=status, source=ST_PAUSE, target=ST_PUBLISHED)
+    @transition(field=status, source=ST_PAUSED, target=ST_PUBLISHED)
     def trans_resume(self):
         """
         Transition edge to resume a paused survey. After resuming, it will be visible to public.
@@ -231,7 +236,7 @@ class Survey(models.Model):
         pass
 
     @fsm_log_by
-    @transition(field=status, source=[ST_PUBLISHED,ST_PAUSE], target=ST_STOP)
+    @transition(field=status, source=[ST_PUBLISHED,ST_PAUSED], target=ST_STOPPED)
     def trans_stop(self):
         """
         Transition edge to stop a survey. A survey after stop cannot be restarted.

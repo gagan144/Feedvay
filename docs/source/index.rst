@@ -17,6 +17,7 @@ Apps and modules
    modules/brands/index
    modules/management_commands/index
    modules/console/index
+   modules/surveys/index
 
 
 Indices and tables

@@ -39,7 +39,7 @@
 {% endblock %}
 
 {% block content %}
-    {{ request.curr_brand }}
+    {{ perms.brands }}
     <div ng-cloak>
         <div ng-controller="MainCtrl">
             {$ msg $}

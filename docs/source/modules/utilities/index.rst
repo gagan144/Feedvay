@@ -16,5 +16,6 @@ Contents
        theme
        tastypi_utils
        validators
+       templatetags
 
 

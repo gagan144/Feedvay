@@ -71,6 +71,7 @@ Contents
        :titlesonly:
 
        models
+       views
        forms
        operations
        api

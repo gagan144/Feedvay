@@ -11,6 +11,7 @@ register = template.Library()
 def get_translation_text(translation, lang_code=None):
     """
     Django templatetags to retrieve translation text for a language code from a given translation.
+
     :param translation: Instance of :class:`languages.models.Translation`
     :param lang_code: Language code
     :return: Unicode language text
@@ -26,6 +27,7 @@ def get_translation_text(translation, lang_code=None):
 def to_js_json_unicode(trans_json):
     """
     Django template tag to obtain javascript json for a :class:`languages.models.Translation` instance.
+
     :param trans_json: Translation python JSON object
     :return: Javascript JSON object.
 

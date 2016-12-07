@@ -10,14 +10,15 @@ Apps and modules
    :maxdepth: 3
 
    modules/main/index
-   modules/accounts/index
-   modules/watchdog/index
-   modules/owlery/index
-   modules/utilities/index
-   modules/brands/index
    modules/management_commands/index
+   modules/accounts/index
+   modules/brands/index
    modules/console/index
+   modules/languages/index
+   modules/owlery/index
    modules/surveys/index
+   modules/utilities/index
+   modules/watchdog/index
 
 
 Indices and tables

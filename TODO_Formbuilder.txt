@@ -1,0 +1,27 @@
+* FormBuilder
+    - Multi Choice Editor: Choice uniqueness, atleast one choice
+    - Correct unique label logic
+    - Remove constant: Check for references in conditions & calcl fields befor delete
+    - TouchSpin to start at 30 instead of 5
+    - FormDesigner: Use wizard instead of tab
+    - What if constant translation is removed, how to remove translation from backend
+* Console
+    - Standardize all date formats
+
+* Form:
+    * MCMS: Please select atleast choices. count missing
+    * Form translations: layout headings
+    * Widgets:
+        * html_checkbox.html
+        * Datepicker
+        * switcher
+    * Loader is not in center in Mobile web view: Mobile WebView issue; working fine in chrome
+
+
+# ----- Decision Pending -----
+* Multiple choice : data sources
+* Translations for choice options & other choice options
+* Request field response
+* Maximum min time to fill the form
+* Take care of special chars in choice label: may conflict with hierarchy framework
+* Add Photo field type: If embedded, Cannot run on web

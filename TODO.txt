@@ -28,6 +28,10 @@
 - Logo
 - SMS Gateway service classes
 
+- Form marriage
+    - languages
+        - System init command
+
 ------------- Low priority --------------
 
 - Brands

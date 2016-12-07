@@ -28,6 +28,8 @@ urlpatterns = [
     url(r'^watchdog/', include('watchdog.urls')),
     url(r'^brands/', include('brands.urls')),
 
+    url(r'^languages/', include('languages.urls')),
+
     # Admin and staff
     url(r'^admin/', admin.site.urls),
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),    # Django admindocs

@@ -1,0 +1,23 @@
+[
+  {
+    "code": "hin",
+    "name": "Hindi",
+    "name_native": "हिंदी",
+    "description": null,
+    "active": true
+  },
+  {
+    "code": "guj",
+    "name": "Gujarati",
+    "name_native": "ગુજરાતી",
+    "description": null,
+    "active": false
+  },
+  {
+    "code": "pan",
+    "name": "Punjabi",
+    "name_native": "ਪੰਜਾਬੀ",
+    "description": null,
+    "active": false
+  }
+]

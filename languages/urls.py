@@ -6,7 +6,7 @@ from django.conf.urls import url, include
 from languages import views
 from languages import api
 
-api_translations = api.TranslationsAPI()
+# api_translations = api.TranslationsAPI()
 api_translation_search = api.TranslationSearchAPI()
 
 urlpatterns = [

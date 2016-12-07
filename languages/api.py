@@ -5,17 +5,21 @@ from tastypie.resources import ModelResource, Resource, ALL, ALL_WITH_RELATIONS
 from tastypie import fields
 from tastypie.authentication import SessionAuthentication
 from tastypie_mongoengine import resources
-
 from django.template.defaultfilters import striptags
+
 from languages.models import Translation
+from utilities.tastypie_utils import StaffSessionAuthentication
 
 # class TranslationsAPI(resources.MongoEngineResource):
 #     """
 #     API for admin user to list all translations in the database.
 #
+#     **Points**:
+#
+#         - Only **staff user** or **superuser** is allowed to access this resource.
+#
 #     **Authors**: Gagandeep Singh
 #     """
-#     # TODO: Only Admin user to be allowed
 #     class Meta:
 #         queryset = Translation.objects.all()
 #         resource_name = 'translations'
@@ -27,7 +31,7 @@ from languages.models import Translation
 #             'created_on' : ALL,
 #         }
 #         excludes = ('translations',)
-#         authentication = SessionAuthentication()
+#         authentication = StaffSessionAuthentication() #SessionAuthentication()
 #
 #     def dehydrate(self, bundle):
 #         if bundle.obj.is_paragraph:
@@ -38,6 +42,11 @@ class TranslationSearchAPI(resources.MongoEngineResource):
     """
     An API for user to search for publicly available translations and use them in the form.
     Only those translations which are publicly allowed and are not paragraph are accessible.
+
+    **Points**:
+
+        - Any logged user can access this resource.
+
 
     **Authors**: Gagandeep Singh
     """

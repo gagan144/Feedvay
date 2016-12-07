@@ -29,6 +29,25 @@ class BrandConsoleSessionAuthentication(SessionAuthentication):
         else:
             return False
 
+class StaffSessionAuthentication(SessionAuthentication):
+    """
+    Django tastypie session authentication for resources to allow access only to staff user.
+    This class extends :class:`tastypie.authentication.SessionAuthentication`. It first authenticates
+    user session and then checks staff privilages.
+
+    **Authors**: Gagandeep Singh
+    """
+    def is_authenticated(self, request, **kwargs):
+        """
+        Authenticates staff user session.
+        :return: Returns True if user is staff else False
+        """
+        session_ok = super(StaffSessionAuthentication, self).is_authenticated(request, **kwargs)
+
+        if session_ok and (request.user.is_staff or request.user.is_superuser):
+            return True
+        else:
+            return False
 
 class NoPaginator(Paginator):
     """

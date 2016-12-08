@@ -1,0 +1,42 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+<div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <div class="checkbox checkbox-primary">
+                <input id="fld_highlight_layout" type="checkbox" ng-model="layout.highlight_layout">
+                <label for="fld_highlight_layout">
+                    Highlight layout?<br/>
+                    <small>Select if you want add border to this layout.</small>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="hr-line-dashed hr-line-dashed_sm" ng-if="layout.highlight_layout"></div>
+
+    <div class="form-group" ng-if="layout.highlight_layout">
+        <label class="col-sm-3 control-label">
+            Title <small style="font-weight: normal;font-style: italic;">(Optional)</small>:
+        </label>
+        <div class="col-sm-9">
+            <input type="text" name="label" ng-model="layout.title" class="form-control input-sm">
+            <p class="help-block m-b-none">
+                Enter title if you want to display title for this section.
+            </p>
+        </div>
+    </div>
+
+    <div class="alert " ng-class="{'alert-info': layout.children.length, 'alert-warning': !layout.children.length}" style="margin-top: 30px;">
+        <h4 ng-if="layout.children.length" style="margin-top: 0px;">
+            <i class="fa fa-check"></i>&nbsp;
+            You have {$ layout.children.length $} component(s) added to this layout.
+        </h4>
+        <h4 ng-if="!layout.children.length" style="margin-top: 0px;">
+            <i class="fa fa-exclamation-triangle"></i>&nbsp;
+            You have not added any components to this layout.
+        </h4>
+        To add new component, save this layout and simply add a new component from 'Form Components'.
+        Then drag this newly added component into this layout.
+    </div>
+</div>

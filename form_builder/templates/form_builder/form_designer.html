@@ -1,0 +1,2107 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'console/base.html' %}
+{% load static commontags %}
+
+{% block head %}
+    <title>{% if form %}Edit{% else %}New{% endif %} Form | FormPOC</title>
+
+    <link rel="stylesheet" href="{% get_static_prefix %}lib/summernote/summernote.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}ui/css/plugins/touchspin/jquery.bootstrap-touchspin.min.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}ui/css/plugins/uiTree/angular-ui-tree.min.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}lib/select2/css/select2-bootstrap.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}lib/highlightjs/default.min.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}lib/highlightjs/themes/github-gist.css">
+
+    <style>
+        .checkbox-inline{
+            margin-right: 10px;
+        }
+
+        .translation_sentence{
+            font-size: 13px;
+            height: inherit !important;
+            min-height: 34px;
+        }
+
+        .translation_controls{
+            padding-left: 10px;margin-bottom: 10px;
+        }
+
+        .user_notes{
+            font-size: 11px;
+            background: #FAFAFB;
+            border: 1px solid #e7eaec;
+            margin: 0 0 10px 0;
+            padding: 10px;
+            border-radius: 2px;
+            border-left: 3px solid gray;/*#1ab394;*/
+        }
+
+        .user_notes > .heading {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .user_notes_brief{
+            border-left: 5px solid #eee;
+            font-size: 10px;
+            font-style: italic;
+            color: #888888;
+            margin-left: 10px;
+            padding: 5px 5px 5px 10px;
+            line-height: 1.2;
+        }
+
+        label.error{
+            margin: 5px 0px 0px 5px;
+        }
+
+        input.loading {
+            background: url(/static/images/loading/spinner_1.gif) no-repeat right center;
+            background-size: 15px 15px;
+        }
+
+        .btn_answer_type{
+            width: 100%;
+            -webkit-align-content: center;
+            align-content: center;
+            font-size: 12px;
+        }
+
+        .btn_answer_type > .btn_icon{
+            font-size: 30px;
+        }
+
+        .modal_win_editor {
+          z-index: 2042 !important;
+        }
+
+        /* ----- Custom modal ----- */
+        .custom_modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.70);
+            z-index: 9999;
+
+            text-align: center;
+        }
+
+        .custom_modal_content {
+            display: inline-block;
+            vertical-align: middle;
+            padding: 20px;
+            position: relative;
+            font-weight: bold;
+            text-align: left;
+        }
+
+
+        /* ----- Component Look-n-feel -----*/
+        .other_answer_field{
+            font-size: 13px;
+        }
+
+        .rating_star{
+            font-size: 1.9em;
+        }
+
+        .rating_star_selected{
+            color: #f0ad4e;
+        }
+
+        .rating_star_empty{
+            color: #ccc;
+        }
+
+        .panel_body_preview{
+            margin-left: 0px !important;
+            width: 100% !important;
+            padding: 11px !important;
+            border: none !important;
+        }
+        /* ----- Component Look-n-feel -----*/
+
+
+        /* ----- uiTree ----- */
+        .form_component_content {
+{#            background: none repeat scroll 0 0 #f3f3f4;#}
+            border: 1px dashed #c7c7c7;
+            color: inherit;
+            padding: 10px;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+        .form_component_content:hover {
+            cursor: pointer;
+            border: 1px solid #bed2db;
+            -webkit-border-radius:3px;
+            -moz-border-radius:3px;
+            border-radius:3px;
+        }
+
+        .component_controls{
+            display: none;
+            min-width: 22px;
+            margin-right: 4px;
+        }
+        .form_component_content:hover .component_controls{
+            display: block;
+        }
+
+        .angular-ui-tree-placeholder {
+            background: #f0f9ff;
+            border: 1px dashed #bed2db;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+        .group-title {
+            background-color: #687074 !important;
+            color: #FFF !important;
+        }
+        .tree-node {
+            background: none repeat scroll 0 0 #f3f3f4;
+            border: 1px dashed #e7eaec;
+            color: inherit;
+            padding: 10px;
+            border-radius: 3px;
+        }
+
+
+
+        .tree-node-content {
+            margin: 5px 5px 5px 0;
+        }
+
+        .tree-handle {
+            background: none repeat scroll 0 0 #f3f3f4;
+            border: 1px dashed #e7eaec;
+            color: inherit;
+            padding: 10px;
+        }
+
+        /* ----- uiTree ----- */
+
+        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+            display: none;
+        }
+
+    </style>
+{% endblock %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-12">
+            <h2>Design Form</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{% url 'console_home' %}">Home</a>
+                </li>
+                <li>Forms</li>
+                <li class="active">
+                    Design
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div ng-app="app" ng-cloak>
+        <!-- Modals Templates -->
+        <script type="text/ng-template" id="tmpl_modal_form_constant">
+            <form role="form" name="form_edit_constant" class="form-horizontal" novalidate>
+                <div class="inmodal">
+                    <div class="modal-header" style="padding: 20px 15px;">
+                        <button type="button" class="close" ng-click="close()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">
+                            <i class="fa fa-puzzle-piece"></i>&nbsp;
+                            Constant
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">
+                                Label<span class="required">*</span>:
+                            </label>
+                            <div class="col-sm-8">
+                                <input type="text" name="label" ng-model="constant.label" class="form-control" required val-variable-name val-unique-label="constants:{$ idx $}">
+                                <p class="help-block m-b-none">
+                                    A name that uniquely identifies this constant.
+                                </p>
+                                <div ng-messages="form_edit_constant.label.$dirty && form_edit_constant.label.$error" role="alert" class="error_messages">
+                                    <label ng-message="required" class="error">Please enter an label.</label>
+                                    <label ng-message="val-variable-name" class="error">Invalid label. The label must start with an alphabet or underscore followed by any number of alphabets, digits or underscore only.</label>
+                                    <label ng-message="val-unique-label" class="error">Label '{$ constant.label $}' is already in use, please enter an unique label.</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">
+                                Value<span class="required">*</span>:
+                            </label>
+                            <div class="col-sm-8">
+                                <input type="text" name="value" ng-model="constant.value" class="form-control" required auto-type-cast>
+                                <p class="help-block m-b-none">
+                                    Value for this constant. This can be a number, decimal or simply an alphanumeric text.
+                                </p>
+                                <div ng-messages="form_edit_constant.value.$dirty && form_edit_constant.value.$error" role="alert" class="error_messages">
+                                    <label ng-message="required" class="error">Please enter a value for this constant.</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <div class="checkbox checkbox-primary">
+                                    <input id="fld_show_on_form" type="checkbox" ng-model="constant.show_on_form">
+                                    <label for="fld_show_on_form">
+                                        Show this constant in the form?
+                                        <p class="help-block m-b-none">
+                                            This will be displayed in the beginning of the form.
+                                        </p>
+                                    </label>
+                                </div>
+
+                                <div class="panel panel-default" ng-if="constant.show_on_form" style="margin-top:20px;">
+                                    <div class="panel-body">
+                                        <p style="margin-bottom: 20px;">
+                                            If you wish to show this constant in the form, you must provide text
+                                            that will be displayed for this constant along with the translations:
+                                        </p>
+
+                                        <div ng-include="'{% get_static_prefix %}templates/translations/edit_translation.html'" ng-if="true"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-8">
+                                <div class="checkbox checkbox-primary">
+                                    <input id="fld_include_in_answers" type="checkbox" ng-model="constant.include_in_answers">
+                                    <label for="fld_include_in_answers">
+                                        Include this constant in the answers?
+                                        <p class="help-block m-b-none">
+                                            If selected, this constant will be included in the answers of the response.
+                                        </p>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+{#                        <div class="hr-line-dashed"></div>#}
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-white" ng-click="close()">Close</button>
+                        <button type="button" class="btn btn-primary" ng-disabled="form_edit_constant.$invalid" ng-click="save(form_edit_constant)">Ok</button>
+                    </div>
+                </div>
+            </form>
+        </script>
+
+        <script type="text/ng-template" id="tmpl_modal_form_question">
+            <form role="form" name="form_edit_question" class="form-horizontal" novalidate>
+                <div class="inmodal">
+                    <div class="modal-header" style="padding: 20px 15px;">
+                        <button type="button" class="close" ng-click="close()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">
+                            <i class="fa fa-question-circle"></i>&nbsp;
+                            Question
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="well">
+                            {$ question $}
+                        </div>
+
+                        <div ng-include="'/forms/partials/form-field/' + answer_type + '.html'" ng-if="true"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-white" ng-click="close()">Close</button>
+                        <button type="button" class="btn btn-primary" ng-disabled="form_edit_question.$invalid" ng-click="save(form_edit_question)">Ok</button>
+                    </div>
+                </div>
+            </form>
+        </script>
+        <script type="text/ng-template" id="tmpl_modal_form_layout">
+            <form role="form" name="form_edit_layout" class="form-horizontal" novalidate>
+                <div class="inmodal">
+                    <div class="modal-header" style="padding: 20px 15px;">
+                        <button type="button" class="close" ng-click="close()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">
+                            <i class="fa fa-th-large"></i>&nbsp;
+                            Layout
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+{#                        <div class="well">#}
+{#                            {$ layout $}#}
+{#                        </div>#}
+
+                        <div ng-include="'/forms/partials/form-layout/' + layout_class + '.html'" ng-if="true"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-white" ng-click="close()">Close</button>
+                        <button type="button" class="btn btn-primary" ng-disabled="form_edit_layout.$invalid" ng-click="save(form_edit_layout)">Ok</button>
+                    </div>
+                </div>
+            </form>
+        </script>
+        <script type="text/ng-template" id="tmpl_modal_form_condition">
+            <form role="form" name="form_edit_condition" class="form-horizontal" novalidate>
+                <div class="inmodal">
+                    <div class="modal-header" style="padding: 20px 15px;">
+                        <button type="button" class="close" ng-click="close()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">
+                            <i class="fa fa-sitemap"></i>&nbsp;
+                            Condition
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="well">
+                            {$ condition $}
+                        </div>
+
+                        <div ng-include="'/forms/partials/form-condition/' + condition_class + '.html'" ng-if="true"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-white" ng-click="close()">Close</button>
+                        <button type="button" class="btn btn-primary" ng-disabled="form_edit_condition.$invalid" ng-click="save(form_edit_condition)">Ok</button>
+                    </div>
+                </div>
+            </form>
+        </script>
+        <!-- /Modals Templates -->
+
+        <div class="tabs-container animated fadeInRight">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a data-toggle="tab" data-target="#tab_general">
+                        <i class="fa fa-info-circle"></i>
+                        General
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="tab" data-target="#tab_settings">
+                        <i class="fa fa-cog"></i>
+                        Settings
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="tab" data-target="#tab_questions">
+                        <i class="fa fa-question-circle"></i>
+                        Questions
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div id="tab_general" class="tab-pane active" ng-controller="GeneralController">
+                    <div class="panel-body">
+                        <p align="center" style="margin-bottom: 30px">
+                            Thousand unknown plants are noticed by me: when I hear the buzz of the little world among the stalks, and grow familiar with the countless indescribable forms of the insects
+                            and flies, then I feel the presence of the Almighty, who formed us in his own image, and the breath
+                        </p>
+                        <form name="form_general" role="form" class="form-horizontal" novalidate>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">
+                                    Languages:
+                                </label>
+                                <div class="col-sm-8">
+                                    <p style="padding-top: 7px;">
+                                        Select languages that you want to enable for this form <i>(English is selected as default)</i>:
+                                    </p>
+
+                                    <div class="checkbox checkbox-primary checkbox-inline">
+                                        <input id="chk_lang_0" type="checkbox" checked="checked" disabled>
+                                        <label for="chk_lang_0">
+                                            English
+                                            <br/><small>(Standard)</small>
+                                        </label>
+                                    </div>
+                                    <div class="checkbox checkbox-primary checkbox-inline" ng-repeat="lang in LIST_LANGUAGES">
+                                        <input id="chk_lang_{$ lang.id $}" type="checkbox" checklist-model="FormData.language_codes" checklist-value="lang.code" >
+                                        <label for="chk_lang_{$ lang.id $}">
+                                            {$ lang.name $}
+                                            <br/><small>{$ lang.name_native $}</small>
+                                        </label>
+                                    </div>
+
+
+{#                                    <p class="help-block m-b-none">#}
+{#                                        Title of the form that will be display on the top.#}
+{#                                    </p>#}
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">
+                                    Title<span class="required">*</span> :
+                                </label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" ng-model="FormData.title" name="title" required>
+                                    <p class="help-block m-b-none">
+                                        Title of the form that will be display on the top.
+                                    </p>
+                                    <div ng-messages="form_general.title.$dirty && form_general.title.$error" role="alert">
+                                        <label ng-message="required" class="error">Please enter a title for this form.</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">
+                                    Description:
+                                </label>
+                                <div class="col-sm-8">
+                                    <div ng-init="trans_description = Translations[FormData.description]">
+{#                                        {$ trans_description $}#}
+                                        <div class="form-control translation_sentence" ng-bind-html="trans_description.sentence"></div>
+                                        <div class="translation_controls">
+                                            <a class="small" href="javascript: void(0);" ng-click="edit_description();">
+                                                <i class="fa fa-pencil"></i>
+                                                {$ trans_description?'Edit':'Add' $}
+                                            </a>
+                                            <small class="text-muted" style="margin-left: 5px;" ng-if="trans_description">
+                                                − {$ 1+(trans_description.translations|dictlength) $} Translation{$ trans_description.translations.length?'s':'' $}
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <p class="help-block m-b-none">
+                                        Some description about this form.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">
+                                    Instructions:
+                                </label>
+                                <div class="col-sm-8">
+                                    <div ng-init="trans_instructions = Translations[FormData.instructions]">
+                                        <div class="form-control translation_sentence" ng-bind-html="trans_instructions.sentence"></div>
+                                        <div class="translation_controls">
+                                            <a class="small" href="javascript: void(0);" ng-click="edit_instructions();">
+                                                <i class="fa fa-pencil"></i>
+                                                {$ trans_instructions?'Edit':'Add' $}
+                                            </a>
+                                            <small class="text-muted" style="margin-left: 5px;" ng-if="trans_instructions">
+                                                − {$ 1+(trans_instructions.translations|dictlength) $} Translation{$ trans_instructions.translations.length?'s':'' $}
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <p class="help-block m-b-none">
+                                        Any relevant instructions to fill this form.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+
+                            <div class="form-group">
+                                <div class="col-sm-8 col-md-offset-2">
+                                    <div class="user_notes">
+                                        <div class="heading">Notes:</div>
+                                        <div summernote ng-model="FormData.user_notes" config="summernote_config_notes" on-focus="console.log('Editable area is focused');"></div>
+                                        <small class="help-block m-b-none" style="font-style: italic">(This will not be displayed in the form)</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+
+                            <div align="right">
+                                <button type="button" class="btn btn-primary" ng-disabled="form_general.$invalid">
+                                    Next&nbsp;
+                                    <i class="fa fa-angle-right"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div id="tab_settings" class="tab-pane" ng-controller="SettingsController">
+                    <div class="panel-body">
+                        <p align="center" style="margin-bottom: 30px">
+                            Thousand unknown plants are noticed by me: when I hear the buzz of the little world among the stalks, and grow familiar with the countless indescribable forms of the insects
+                            and flies, then I feel the presence of the Almighty, who formed us in his own image, and the breath
+                        </p>
+
+                        <style>
+                            .widget_settings{
+
+                            }
+
+                            .widget_settings > h3{
+                                margin: 0px 0px 5px 0px;
+                            }
+
+                            .widget_settings > h3{
+                                margin: 0px 0px 5px 0px;
+                            }
+
+                            .widget_settings > hr{
+                                margin: 10px 0px;
+                            }
+
+                            .widget_settings > .description{
+                                font-size: smaller;
+                                text-align: justify;
+                            }
+
+                            .widget_settings > table {
+{#                                width: 100%;#}
+                            }
+
+                            .icon_widget{
+                                font-size: 90px;
+                                color: #d2d2d2;
+                            }
+                        </style>
+                        <div class="grid">
+                            <div class="grid-item">
+                                <div class="panel panel-default">
+                                    <div class="panel-body widget_settings">
+                                        <h3>Basic</h3>
+                                        <hr/>
+                                        <p class="description">
+                                            Basic settings to customize your form.
+                                        </p>
+                                        <table>
+                                            <tr>
+                                                <td style="padding-right: 10px;width: 100px;">
+                                                    <i class="fa fa-cog icon_widget"></i>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group" >
+                                                        <div class="checkbox checkbox-primary checkbox-inline">
+                                                            <input id="fld_randomize" type="checkbox" ng-model="FormData.randomize">
+                                                            <label for="fld_randomize">
+                                                                Randomly order questions
+                                                                <br/>
+                                                                <small>
+                                                                    This is applicable only if forms does not contain any conditions.
+                                                                    Select this option to randomly order questions each time the form is viewed.
+                                                                </small>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid-item">
+                                <div class="panel panel-default">
+                                    <div class="panel-body widget_settings">
+                                        <h3>Timmer</h3>
+                                        <hr/>
+                                        <p class="description">
+                                            Add timmer to your form by specifying maximum time before which user must
+                                            complete the form. On exceeding the time, form is suspended by displaying an appropriate
+                                            message and option to exit.
+                                        </p>
+                                        <table>
+                                            <tr>
+                                                <td style="padding-right: 10px;width: 100px;">
+                                                    <i class="fa fa-clock-o icon_widget"></i>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group">
+                                                        <label>
+                                                            Timeout time <small>(In seconds)</small>:
+                                                        </label>
+                                                        <input type="text" class="form-control" name="timeout" touch-spin spin-options="options_spin" ng-model="FormData.timeout">
+                                                    </div>
+                                                    <div class="form-group" >
+                                                        <div class="checkbox checkbox-primary checkbox-inline">
+                                                            <input id="fld_show_timer" type="checkbox" ng-model="FormData.show_timer" ng-disabled="!FormData.timeout">
+                                                            <label for="fld_show_timer">
+                                                                Show timer in the form
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid-item">
+                                <div class="panel panel-default">
+                                    <div class="panel-body widget_settings">
+                                        <h3>GPS Location</h3>
+                                        <hr/>
+                                        <p class="description">
+                                            Capture user location along with questions answer.
+                                        </p>
+                                        <table>
+                                            <tr>
+                                                <td style="padding-right: 10px;width: 100px;vertical-align: top;">
+                                                    <i class="fa fa-map-marker icon_widget"></i>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group" >
+                                                        <div class="checkbox checkbox-primary checkbox-inline">
+                                                            <input id="fld_gps_enabled" type="checkbox" ng-model="FormData.gps_enabled">
+                                                            <label for="fld_gps_enabled">
+                                                                Enable location
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="checkbox checkbox-primary checkbox-inline">
+                                                            <input id="fld_gps_required" type="checkbox" ng-model="FormData.gps_required" ng-disabled="!FormData.gps_enabled">
+                                                            <label for="fld_gps_required">
+                                                                Make location mandatory.
+                                                                <br/>
+                                                                <small>
+                                                                    If location is set mandatory, use must capture location before opening the form.
+                                                                    In case user fails to get valid gps location, he must try again until location is
+                                                                    retrieved by the device.
+                                                                </small>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label ng-class="{'disabled_text': !FormData.gps_enabled }">Precision:</label>
+                                                        <div style="margin-left: 20px;">
+                                                            <div class="radio radio-primary radio-inline" ng-repeat="choice in gps_choices">
+                                                                <input type="radio" id="rd_gps_{$ choice.id $}" name="gps_choice" ng-value="choice.id" ng-disabled="!FormData.gps_enabled" ng-model="FormData.gps_choice">
+                                                                <label for="rd_gps_{$ choice.id $}">
+                                                                    {$ choice.name $}
+                                                                    <br><small>{$ choice.description $}</small>
+                                                                </label>
+                                                            </div>
+
+                                                            <div ng-if="FormData.gps_choice" class="well" style="margin: 20px 0px 0px 0px;width: auto !important;" >
+                                                                <div style="font-weight: 600;font-size: large;">
+                                                                    {$ selected_gps_choice.name $}
+                                                                </div>
+                                                                <small>{$ selected_gps_choice.remarks $}</small>
+                                                                <hr style="margin: 5px 0px;"/>
+                                                                <div style="padding-left: 15px;">
+                                                                    <p style="margin-bottom: 5px;">
+                                                                        <i class="fa  text-navy" ng-class="{'fa-location-arrow': selected_gps_choice.high_accuracy, 'fa-signal':!selected_gps_choice.high_accuracy }"></i>&nbsp;&nbsp;
+                                                                        Use <b>{$ selected_gps_choice.high_accuracy?'Satellite based methods':'Network based methods' $}</b> to retrieve location.
+                                                                    </p>
+                                                                    <p style="margin-bottom: 5px;" ng-if="selected_gps_choice.max_radius">
+                                                                        <i class="fa fa-street-view text-navy"></i>&nbsp;&nbsp;
+                                                                        Location must be within <b>{$ selected_gps_choice.max_radius $} meters</b> of radius.
+                                                                    </p>
+                                                                    <p style="margin-bottom: 5px;">
+                                                                        <i class="fa fa-history text-navy"></i>&nbsp;&nbsp;
+                                                                        Location must not be older than <b>{$ selected_gps_choice.max_age/1000 $} seconds</b>.
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="tab_questions" class="tab-pane">
+                    <div class="panel-body">
+                        <p align="center" style="margin-bottom: 30px;text-align: justify;">
+                            Thousand unknown plants are noticed by me: when I hear the buzz of the little world among the stalks, and grow familiar with the countless indescribable forms of the insects
+                            and flies, then I feel the presence of the Almighty, who formed us in his own image, and the breath
+                        </p>
+                        <div class="tabs-left">
+                            <ul class="nav nav-tabs">
+                                <li class="active">
+                                    <a data-toggle="tab" data-target="#tab_constants">
+                                        <i class="fa fa-puzzle-piece"></i>
+                                        Constants
+                                    </a>
+                                </li>
+                                <li class="">
+                                    <a data-toggle="tab" data-target="#tab_schema">
+                                        <i class="fa fa-question-circle"></i>
+                                        Questions
+                                    </a>
+                                </li>
+                                <li class="">
+                                    <a data-toggle="tab" data-target="#tab_calculated_fields">
+                                        <i class="fa fa-calculator"></i>
+                                        Calculated Fields
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div id="tab_constants" class="tab-pane active">
+                                    <div class="panel-body" ng-controller="ConstantsController">
+                                        <h3>
+                                            <i class="fa fa-puzzle-piece"></i>
+                                            Constants
+                                        </h3>
+                                        <hr style="margin: 5px 0px 10px 0px;"/>
+                                        <p>
+                                            A constant is a identifier with an associated value which does not alter during the form.
+                                            You can introduce a set of constants into your form which can be used to display a question
+                                            conditionally or can be used to evalute caluclated fields.
+                                        </p>
+
+                                        <div class="alert alert-info" ng-if="!FormData.constants.length">
+                                            You have no constants defined for your form. Click below button to add one:
+                                            <br/><br/>
+                                            <button class="btn btn-primary btn-sm" ng-click="edit_constant(null, null);">
+                                                <i class="fa fa-plus"></i>&nbsp;
+                                                Add Constant
+                                            </button>
+                                        </div>
+
+                                        <div ng-if="FormData.constants.length">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width: 20px;">&nbsp;</th>
+                                                        <th style="min-width: 200px;">Name</th>
+                                                        <th style="min-width: 100px;">Value</th>
+                                                        <th style="width: 60px;">Show</th>
+                                                        <th>Include in answers</th>
+                                                        <th style="width: 70px;">&nbsp;</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody ui-sortable ng-model="FormData.constants">
+                                                    <tr ng-repeat="constant in FormData.constants" >
+                                                        <td>
+                                                            <i class="fa fa-arrows"></i>
+                                                        </td>
+                                                        <td>
+                                                            <div ng-if="constant.text_translation_id">
+                                                                <span class="semi_bold">{$ Translations[constant.text_translation_id].sentence $}</span>
+                                                                <br><small>ID: {$ constant.label $}</small>
+                                                            </div>
+                                                            <div ng-if="!constant.text_translation_id">
+                                                                ID: {$ constant.label $}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            {$ constant.value $}
+                                                        </td>
+                                                        <td>
+                                                            <i class="fa fa-check-circle text-success" ng-if="constant.show_on_form"></i>
+                                                        </td>
+                                                        <td>
+                                                            <i class="fa fa-check-circle text-success" ng-if="constant.include_in_answers"></i>
+                                                        </td>
+
+                                                        <td>
+                                                            <button type="button" class="btn btn-outline btn-xs btn-primary" ng-click="edit_constant(constant, $index);">
+                                                                <i class="fa fa-pencil"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline btn-xs btn-primary" ng-click="remove_constant($index);">
+                                                                <i class="fa fa-remove"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <button class="btn btn-primary btn-sm" ng-click="edit_constant(null, null);">
+                                                <i class="fa fa-plus"></i>&nbsp;
+                                                Add Constant
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div id="tab_schema" class="tab-pane">
+                                    <div class="panel-body" ng-controller="QuestionSchemaController">
+                                        <h3>
+                                            <i class="fa fa-question-circle"></i>
+                                            Questions
+                                        </h3>
+                                        <hr style="margin: 5px 0px 10px 0px;"/>
+                                        <p style="text-align: justify;">
+                                            A question is an information that you collect from the user through this form. It is here,
+                                            where you build the main structure of your form by defining set of questions using various
+                                            answer types, their properties and define branching logic based on the answer to previous
+                                            question.
+                                        </p>
+
+                                        <p ng-if="FormData.schema.length" style="font-size:11px;text-align: justify;">
+                                            <span><i class="fa fa-info"></i> <b>Note:</b></span> The below view just gives a rough look-n-feel of the form.
+                                            The actual look and the behavior of the form will differ greatly as compared to final form.
+                                            Kindly preview before concluding.
+                                        </p>
+
+                                        <table style="width: 100%;">
+                                            <tbody>
+                                                <tr>
+                                                    <td style="padding-right: 10px;" valign="top">
+                                                        <!-- QuestionSchema -->
+                                                        <div class="alert alert-info" ng-if="!FormData.schema.length">
+                                                            You have no questions defined for your form. Click below button to add one:
+                                                        </div>
+
+                                                        <div ng-if="FormData.schema.length">
+                                                            <div ui-tree>
+                                                                <ol ui-tree-nodes ng-model="FormData.schema">
+{#                                                                    <li ng-repeat="node in FormData.schema" ui-tree-node ng-include="'nodes_renderer.html'"></li>#}
+                                                                    <li ng-repeat="component in FormData.schema" ui-tree-node ng-include="'{% get_static_prefix %}templates/form_builder/look-n-feel/' + (component.widget||component._cls) + '.html'"></li>
+                                                                </ol>
+                                                            </div>
+                                                        </div>
+                                                        <!-- /QuestionSchema -->
+                                                    </td>
+                                                    <td style="width: 260px;" valign="top">
+
+                                                        <!-- AnswerTypes -->
+                                                        <div class="panel panel-default">
+                                                            <div class="panel-heading" style="font-size: 16px;">
+                                                                <i class="fa fa-sitemap"></i>&nbsp;
+                                                                Form Components
+                                                            </div>
+                                                            <div class="panel-body" style="padding: 15px;width: 100%;margin: 0px;border: none;">
+                                                                <div {# slim-scroll="" #}>
+                                                                    <h3 style="font-weight: 600;">Basic Answer Types</h3>
+                                                                    <hr style="margin: 10px 0px;"/>
+
+                                                                    <style>
+                                                                        table.tbl_components{
+                                                                            width: 100%;
+                                                                        }
+
+                                                                        table.tbl_components > tbody > tr > td {
+                                                                            padding: 7px;
+                                                                        }
+                                                                    </style>
+
+                                                                    <table class="tbl_components">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'TextFormField')">
+                                                                                        <div class="btn_icon">
+                                                                                            <i class="fa fa-text-width"></i>
+                                                                                        </div>
+                                                                                        Text
+                                                                                    </button>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'EmailFormField')">
+                                                                                        <div class="btn_icon">
+                                                                                            <i class="fa fa-envelope"></i>
+                                                                                        </div>
+                                                                                        Email
+                                                                                    </button>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'PasswordFormField')">
+                                                                                        <div class="btn_icon">
+                                                                                            <i class="fa fa-key"></i>
+                                                                                        </div>
+                                                                                        Password
+                                                                                    </button>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'TextAreaFormField')">
+                                                                                        <div class="btn_icon">
+                                                                                            <i class="fa fa-font"></i>
+                                                                                        </div>
+                                                                                        Paragraph
+                                                                                    </button>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'NumberFormField')">
+                                                                                        <div class="btn_icon">
+                                                                                            <i class="fa fa-sort-numeric-asc"></i>
+                                                                                        </div>
+                                                                                        Numeric
+                                                                                    </button>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'DecimalFormField')">
+                                                                                        <div class="btn_icon">
+                                                                                            <i class="fa fa-circle"></i>
+                                                                                        </div>
+                                                                                        Decimal
+                                                                                    </button>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'DateFormField')">
+                                                                                        <div class="btn_icon">
+                                                                                            <i class="fa fa-calendar"></i>
+                                                                                        </div>
+                                                                                        Date
+                                                                                    </button>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'TimeFormField')">
+                                                                                        <div class="btn_icon">
+                                                                                            <i class="fa fa-clock-o"></i>
+                                                                                        </div>
+                                                                                        Time
+                                                                                    </button>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'DateTimeFormField')">
+                                                                                        <div class="btn_icon">
+                                                                                            <i class="fa fa-calendar-o"></i>
+                                                                                        </div>
+                                                                                        Date and time
+                                                                                    </button>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'RatingFormField')">
+                                                                                        <div class="btn_icon">
+                                                                                            <i class="fa fa-star"></i>
+                                                                                        </div>
+                                                                                        Rating
+                                                                                    </button>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+
+
+                                                                    <h3 style="font-weight: 600;margin-top:20px;">Choice Answer Types</h3>
+                                                                    <hr style="margin: 10px 0px;"/>
+                                                                    <table class="tbl_components">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td valign="top">
+                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'BinaryFormField')">
+                                                                                        <div class="btn_icon">
+                                                                                            <i class="fa fa-random"></i>
+                                                                                        </div>
+                                                                                        Binary choice
+                                                                                    </button>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'MCSSFormField')">
+                                                                                        <div class="btn_icon">
+                                                                                            <i class="fa fa-list-ul"></i>
+                                                                                        </div>
+                                                                                        Multiple choice <br/> Single select
+                                                                                    </button>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+
+                                                                    <h3 style="font-weight: 600;margin-top:20px;">Layouts</h3>
+                                                                    <hr style="margin: 10px 0px;"/>
+                                                                    <table class="tbl_components">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td valign="top" style="width: 50%;">
+                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_layout(null, null, 'SectionLayout')">
+                                                                                        <div class="btn_icon">
+                                                                                            <i class="fa fa-list-alt"></i>
+                                                                                        </div>
+                                                                                        Section
+                                                                                    </button>
+                                                                                </td>
+                                                                                <td>
+                                                                                    &nbsp;
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+
+                                                                    <h3 style="font-weight: 600;margin-top:20px;">Conditions</h3>
+                                                                    <hr style="margin: 10px 0px;"/>
+                                                                    <table class="tbl_components">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td valign="top" style="width: 50%;">
+                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_condition(null, null, 'SwitchCondition')">
+                                                                                        <div class="btn_icon">
+                                                                                            <i class="fa fa-sitemap"></i>
+                                                                                        </div>
+                                                                                        Switch
+                                                                                    </button>
+                                                                                </td>
+                                                                                <td>
+                                                                                    &nbsp;
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <!-- /AnswerTypes -->
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+
+
+                                    </div>
+                                </div>
+                                <div id="tab_calculated_fields" class="tab-pane">
+                                    <div class="panel-body">
+                                        <h3>
+                                            <i class="fa fa-calculator"></i>
+                                            Calculated Fields
+                                        </h3>
+                                        <hr style="margin: 5px 0px 10px 0px;"/>
+                                        <p>
+                                            ...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- delete -->
+        <div class="well">
+            <p>
+                <label>FormData:</label><br>
+                {$ FormData $}
+            </p>
+            <p>
+                <label>Translations:</label><br>
+                {$ Translations $}
+            </p>
+
+            <p>
+                <label>META_QUESTIONS:</label><br/>
+                {$ META_QUESTIONS $}
+            </p>
+        </div>
+        <!-- delete -->
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% get_static_prefix %}ui/js/plugins/jquery-ui/jquery-ui.min.js"></script>
+    <script src="{% get_static_prefix %}lib/summernote/summernote.min.js"></script>
+    <script src="{% get_static_prefix %}lib/bootstrap_compenents/bootstrap-rating.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/select2/select2.full.min.js"></script>
+    <script src="{% get_static_prefix %}lib/lexer/lex.js"></script>
+    <script src="{% get_static_prefix %}lib/lexer/lexjs.js"></script>
+    <script src="{% get_static_prefix %}lib/highlightjs/highlight.min.js"></script>
+
+{#    <script src="{% get_static_prefix %}lib/angular/angular.min.js"></script>#}
+    <script src="{% get_static_prefix %}lib/angular/angular.min.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/angular-cookies.min.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/angular-sanitize.min.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/angular-slugify/angular-slugify.js"></script>
+    <script src="{% get_static_prefix %}lib/summernote/angular/angular-summernote.min.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/checklist-model.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/angular-messages.min.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/angular-animate.min.js"></script>
+    <script src="{% get_static_prefix %}lib/highlightjs/angular/angular-highlightjs.min.js"></script>
+
+    <script src="{% get_static_prefix %}ui/js/bootstrap/ui-bootstrap-tpls-1.1.2.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/touchspin/jquery.bootstrap-touchspin.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/ui-sortable/sortable.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/uiTree/angular-ui-tree.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
+
+    <script src="{% get_static_prefix %}apps/common_app.js"></script>
+    <script src="{% get_static_prefix %}apps/common_directives.js"></script>
+    <script src="{% get_static_prefix %}apps/languages.js"></script>
+
+    <script>
+        'use strict';
+
+        function generate_id(){
+            return "NEW" + (new Date()).getTime();
+
+        }
+
+        var app = angular.module('app', [
+            'commonApp',
+            'mod.languages',
+
+            'ngCookies',
+            'ngSanitize',
+            'slugifier',
+            'summernote',
+            'checklist-model',
+            'ngMessages',
+            'ngAnimate',
+            'ui.bootstrap',
+            'ui.sortable',
+            'ui.tree',
+            'hljs',
+            'oitozero.ngSweetAlert'
+        ]).config(function($interpolateProvider, $httpProvider, hljsServiceProvider) {
+                $interpolateProvider.startSymbol('{$');
+                $interpolateProvider.endSymbol('$}');
+
+                $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+                $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+
+                hljsServiceProvider.setOptions({
+                    tabReplace: '    '
+                });
+{#                hljs.initHighlighting();#}
+            })
+            .run(function($rootScope, $http, $cookies, $window, $uibModal, $q) {
+                $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+                $http.defaults.xsrfCookieName = 'csrftoken';
+                $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+{#                $window.onbeforeunload = function(){#}
+{#                    return "Are you sure you want to leave?";#}
+{#                };#}
+
+                // ---------- RootScope Variables ----------
+                $rootScope.LIST_LANGUAGES = [
+                    {% for lang in list_languages %}
+                        { "id": "{{ lang.id }}", "code": "{{ lang.code }}", "name":"{{ lang.name }}", "name_native": "{{ lang.name_native }}" }{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ];
+
+                // ----- Summernote -----
+                $rootScope.summernote_config_notes = {
+                    placeholder: 'Write here...',
+                    airMode: true,
+                    popover: {
+                        air: [
+                            ['style', ['bold', 'italic', 'underline']],
+                            ['font', ['superscript', 'subscript', 'strikethrough']],
+                            ['textsize', ['fontsize']],
+                            ['color', ['color']],
+                            ['alignment', ['ul', 'ol', 'paragraph', 'lineheight']],
+                            ['imsert', ['table', 'hr']],
+                            ['media', ['link', 'video']],
+                            ['help', ['help']]
+                        ]
+                    }
+                };
+
+                $rootScope.summernote_config = {
+                    height: 150,
+{#                    airMode: true,#}
+                    toolbar: [
+                            ['edit',['undo','redo']],
+                            ['headline', ['style']],
+                            ['style', ['bold', 'italic', 'underline']],
+                            ['font', ['superscript', 'subscript', 'strikethrough', 'clear']],
+    {#                        ['fontface', ['fontname']],#}
+                            ['textsize', ['fontsize']],
+                            ['fontclr', ['color']],
+                            ['alignment', ['ul', 'ol', 'paragraph', 'lineheight']],
+                            ['height', ['height']],
+                            ['table', ['table']],
+                            ['insert', ['link' {# ,'picture' #} ,'video', 'hr']],
+                            ['view', ['fullscreen', 'codeview']],
+                            ['help', ['help']]
+                        ]
+                };
+
+
+                // ----- Data Variables -----
+                $rootScope.Translations = {% if form %}{
+                    {% for trans in form.get_translations %}
+                        "{{ trans.unique_id }}": {{ trans.to_js_json|safe }}{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                }
+                {% else %}{}{% endif %};
+                $rootScope.FormData = {% if form %}{{ form.to_json|jsonify|safe }}{% else %}{schema:[]}{% endif %};
+
+                $rootScope.META_QUESTIONS = [];
+
+                $rootScope.touch_FormData_schema = function(schema){
+                    if(schema==null){ throw "Error! schema cannot be null."; }
+                    $rootScope.META_QUESTIONS = get_all_variables(schema);
+                }
+                $rootScope.$watch('FormData.schema', function(newValue, oldValue) {
+                    $rootScope.touch_FormData_schema(newValue);
+{#                    $rootScope.META_QUESTIONS = get_all_variables(newValue);#}
+                });
+
+
+                // --------- Global Function ----------
+                function get_all_variables(schema){
+                    // Recursively loops and get all variable list.
+                    var list_variables = [];
+
+                    for(var i in schema){
+                        var node = schema[i];
+
+                        if(node["_cls"].includes("Condition")){
+                            switch(node["_cls"]){
+                                case 'BinaryCondition': {
+                                    var more_variables = get_all_variables(node["true_branch"]["children"]);
+                                    list_variables = list_variables.concat(more_variables);
+
+                                    if(node["false_branch"]) {
+                                        more_variables = get_all_variables(node["false_branch"]["children"]);
+                                        list_variables = list_variables.concat(more_variables);
+                                    }
+                                }break;
+                                case 'SwitchCondition': {
+                                    var more_variables = null;
+                                    for(var b in node["list_branches"]){
+                                        var branch = node["list_branches"][b]["children"];
+
+                                        more_variables = get_all_variables(branch);
+                                        list_variables = list_variables.concat(more_variables);
+                                    }
+
+                                    if(node['use_default']){
+                                        more_variables = get_all_variables(node["default_branch"]["children"]);
+                                        list_variables = list_variables.concat(more_variables);
+                                    }
+                                }break;
+                            }
+                        }
+                        else if(node["_cls"].includes("Layout")){
+                            switch(node["_cls"]){
+                                case 'SectionLayout': {
+                                    var more_variables = get_all_variables(node["children"]);
+                                    list_variables = list_variables.concat(more_variables);
+                                }break;
+                            }
+                        }
+                        else{
+                            list_variables.push(node);
+                        }
+                    }
+
+                    return list_variables;
+                }
+
+                $rootScope.lookup_variable_with_id = function(label, data_scope){
+                    // Function to lookup variable node from FormData with given label and data_scope.
+                    // label: is does NOT contain variable scope.
+                    // data_scope: is the scope of variable in FormData; contsants, data, calculated_fields.
+                    // If data_scope is null, whole FormData is searched.
+
+                    var list_components = [];
+
+                    // Constants
+                    if(data_scope == 'constants' || data_scope == null){
+                        list_components = $rootScope.FormData.constants;
+                        for (var i in list_components) {
+                            if (list_components[i].label == label) {
+                                return list_components[i];
+                            }
+                        }
+                    }
+
+                    // Data
+                    if(data_scope == 'data' || data_scope == null){
+                        list_components = $rootScope.META_QUESTIONS;
+                        for (var i in list_components) {
+                            if (list_components[i].label == label) {
+                                return list_components[i];
+                            }
+                        }
+                    }
+
+                    // Calculated fields
+                    if(data_scope == 'calculated_fields' || data_scope == null){
+                        list_components = $rootScope.FormData.calculated_fields;
+                        for (var i in list_components) {
+                            if (list_components[i].label == label) {
+                                return list_components[i];
+                            }
+                        }
+                    }
+
+                    // Not found
+                    return null;
+                }
+
+                $rootScope.lookup_variable_with_fullid = function(full_id){
+                    // Function to lookup variable node from FormData with given full_id.
+                    // full_id: is of form '<data_scope>.<var_id>'
+
+                    var data_scope = null;
+                    var label = null;
+
+                    if(full_id.startsWith('constants.')){
+                        data_scope = 'constants';
+                        label = full_id.replace('constants.','');
+                    }
+                    else if(full_id.startsWith('data.')){
+                        data_scope = 'data';
+                        label = full_id.replace('data.','');
+                    }
+                    else if(full_id.startsWith('calculated_fields.')){
+                        data_scope = 'calculated_fields';
+                        label = full_id.replace('calculated_fields.','');
+                    }else{
+                        throw "Invalid variable with full id: "+full_id;
+                    }
+
+                    return $rootScope.lookup_variable_with_id(label, data_scope);
+                }
+
+
+
+                $rootScope.sentencify_expression = function(code){
+                    var result = sentencify(code);
+                    var sentence_html = result["html"];
+                    var list_tokens = result["tokens"];
+
+                    for(var i in list_tokens){
+                        var token = list_tokens[i];
+                        var node = $rootScope.lookup_variable_with_id(token.text, null);
+                        if(token.type_name == 'IDENTIFIER'){
+                            var re = new RegExp(token.text,"g");
+                            sentence_html = sentence_html.replace(re, '<a scroll-to-item="fast" scroll-to="#component_' + token.text + '">' + $rootScope.Translations[node.text_translation_id].sentence + '</a>');
+                        }
+                    }
+
+                    return sentence_html;
+                }
+
+            });
+
+        // ---------- Directives ----------
+        app.directive('valUniqueLabel', function ($rootScope) {
+            // DOM usage: val-unique-label
+            console.warn("Directive 'valUniqueLabel' is not Implemented!");
+
+            return {
+                require: 'ngModel',
+                link: function ($scope, elem, attr, ngModel) {
+                    var ref = attr.valUniqueLabel.split(":");
+
+                    var elem_type = ref[0];  // Type of element: constants, data, calculated_fields
+                    var idx = (ref[1] && ref[1]!="")?parseInt(ref[1]):null; // Self index value to avoid check for that index in that element type
+
+                    function validate_variable_name(value){
+                        ngModel.$setValidity('val-unique-label', true);
+                        return value; //TODO: Remove & correct below 'valUniqueLabel' logic
+
+{#                        if(value != null){#}
+{#                            var valid = true;#}
+{##}
+{#                            // Correct idx in case of data since idx will be unknown#}
+{#                            if(elem_type=='data'){#}
+{#                                idx=null;#}
+{#                                //Loop over META_QUESTION to get question index#}
+{#                                for(var q in $scope.META_QUESTIONS){#}
+{#                                    if($scope.META_QUESTIONS[q]['label'] == value){#}
+{#                                        idx = q;#}
+{#                                        alert("$$$$:"+idx);#}
+{#                                        break;#}
+{#                                    }#}
+{#                                }#}
+{#                            }#}
+{##}
+{#                            // Check in constants#}
+{#                            for(var c in $scope.FormData.constants){#}
+{#                                if( elem_type == 'constants' && idx != c ) {#}
+{#                                    if ($scope.FormData.constants[c]["label"] == value) {#}
+{#                                        valid = false;#}
+{#                                        break;#}
+{#                                    }#}
+{#                                }#}
+{#                            }#}
+{##}
+{#                            if(valid){#}
+{#                                // Check in questions#}
+{#                                for(var i in $scope.META_QUESTIONS){#}
+{#                                    if( elem_type == 'data' && idx != i ) {#}
+{#                                        if ($scope.META_QUESTIONS[i]["label"] == value) {#}
+{#                                            valid = false;#}
+{#                                            break;#}
+{#                                        }#}
+{#                                    }#}
+{#                                }#}
+{#                            }#}
+{##}
+{#                            if(valid){#}
+{#                                // Check in calculated fields#}
+{#                                for(var cf in $scope.FormData.calculated_fields){#}
+{#                                    if( elem_type == 'calculated_fields' && idx != cf ) {#}
+{#                                        if ($scope.FormData.calculated_fields[cf]["label"] == value) {#}
+{#                                            valid = false;#}
+{#                                            break;#}
+{#                                        }#}
+{#                                    }#}
+{#                                }#}
+{#                            }#}
+{##}
+{#                            ngModel.$setValidity('val-unique-label', valid);#}
+{#                        }#}
+{##}
+{#                        return value;#}
+                    }
+
+                    ngModel.$parsers.push(validate_variable_name);      // For DOM -> model validation
+                    ngModel.$formatters.push(validate_variable_name);   // For model -> DOM validation
+                }
+            };
+        });
+
+        app.directive('valMcqChoice', function () {
+            // DOM usage: val-mcq-choice
+            return {
+                require: 'ngModel',
+                scope: {
+                    curr_idx: "=curridx"
+                },
+                link: function ($scope, elem, attr, ngModel) {
+                    var list_choices = JSON.parse(attr.valMcqChoice);
+                    var curr_idx = $scope.curr_idx;
+
+                    function validate_func(value){
+                        if(value != null){
+                            var valid = true;
+                            for(var i=0;i<list_choices.length;i++){
+                                if(i!=curr_idx && list_choices[i]["value"]==value ){
+                                    valid = false;
+                                    break;
+                                }
+                            }
+
+                            ngModel.$setValidity('val-mcq-choice', valid);
+                        }
+
+                        return value;
+                    }
+
+                    ngModel.$parsers.push(validate_func);      // For DOM -> model validation
+                    ngModel.$formatters.push(validate_func);   // For model -> DOM validation
+                }
+            };
+        });
+
+        app.directive('valOtherChoice', function () {
+            // DOM usage: val-other-choice
+            return {
+                require: 'ngModel',
+                link: function ($scope, elem, attr, ngModel) {
+                    var list_choices = JSON.parse(attr.valOtherChoice);
+
+                    function validate_func(value){
+                        if(value != null){
+                            var valid = true;
+                            for(var i=0;i<list_choices.length;i++){
+                                if(list_choices[i]["value"]==value ){
+                                    valid = false;
+                                    break;
+                                }
+                            }
+
+                            ngModel.$setValidity('val-other-choice', valid);
+                        }
+
+                        return value;
+                    }
+
+                    ngModel.$parsers.push(validate_func);      // For DOM -> model validation
+                    ngModel.$formatters.push(validate_func);   // For model -> DOM validation
+                }
+            };
+        });
+
+        // ---------- GeneralController ----------
+        app.controller('GeneralController',function($scope, $rootScope){
+            $scope.edit_description = function(){
+                var id = $rootScope.FormData.description;
+                var translation = id?$rootScope.Translations[id]:null;
+
+                $rootScope.ModLanguage.edit_translation(translation, 'paragraph', $rootScope.FormData.language_codes)
+                    .then(
+                        function(new_trans){
+                            // success
+                            var new_id = new_trans["id"];
+                            $rootScope.Translations[new_id] = new_trans;
+
+                            $rootScope.FormData.description = new_id;
+                            $scope.trans_description = $rootScope.Translations[new_id];
+{#                            $scope.$applyAsync(function () {#}
+{#                                $scope.trans_description = $rootScope.Translations[new_id];#}
+{#                            });#}
+                        },
+                        function(){
+                            // dismissed
+                        }
+                    )
+            }
+
+            $scope.edit_instructions = function(){
+                var id = $rootScope.FormData.instructions;
+                var translation = id?$rootScope.Translations[id]:null;
+
+                $rootScope.ModLanguage.edit_translation(translation, 'paragraph', $rootScope.FormData.language_codes)
+                    .then(
+                        function(new_trans){
+                            // success
+                            var new_id = new_trans["id"];
+                            $rootScope.Translations[new_id] = new_trans;
+
+                            $rootScope.FormData.instructions = new_id;
+                            $scope.trans_instructions = $rootScope.Translations[new_id];
+                        },
+                        function(){
+                            // dismissed
+                        }
+                    )
+            }
+
+        });
+
+        // ---------- SettingsController ----------
+        app.controller('SettingsController',function($scope, $rootScope){
+            $scope.options_spin = {
+                initval: null,
+                min: 30,
+                max: 10000000,
+                step: 5,
+                mousewheel: false,
+            };
+
+            $scope.gps_choices = {{ GeoLocation.get_choices|jsonify|safe }};
+            $scope.selected_gps_choice = null;
+
+            $rootScope.$watch('FormData.gps_choice', function(newValue, oldValue) {
+                for(var i in $scope.gps_choices){
+                    if($scope.gps_choices[i]["id"]==newValue){
+                        $scope.selected_gps_choice = $scope.gps_choices[i];
+                    }
+                }
+            });
+
+        });
+
+        // ----- Constants -----
+        app.controller('ConstantsController', function($scope, $rootScope, $uibModal, SweetAlert){
+            $scope.edit_constant = function (constant, idx){
+
+                var modalInstance = $uibModal.open({
+                    animation: true,
+                    templateUrl: 'tmpl_modal_form_constant',
+                    controller: 'EditConstantCtrl',
+                    size: 'lg',
+                    backdrop: 'static',
+                    resolve: {
+                        constant: function() {
+                            return angular.copy(constant);
+                        },
+                        idx: function(){
+                            return idx;
+                        }
+                    }
+                });
+            };
+
+            $scope.remove_constant = function(idx){
+                var constant = $rootScope.FormData.constants[idx];
+
+                alert("TODO: Check for references in conditions & calcl fields befor delete"); // TODO: Check for references in conditions & calcl fields befor delete
+
+                SweetAlert.swal({
+                    title: "Are you sure?",
+                    text: "You will not be able to recover this constant!",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes, delete it!",
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                },
+                function (isConfirm) {
+                    if(isConfirm){
+                        if(constant["text_translation_id"]) {
+                            delete $rootScope.Translations[constant["text_translation_id"]];
+                        }
+                        $rootScope.FormData.constants.splice(idx,1);
+                    }
+                });
+            };
+        });
+        app.controller('EditConstantCtrl', function($scope, $rootScope, $uibModalInstance, ServiceTranslations, constant, idx){
+            $scope.ServiceTranslations = ServiceTranslations;
+            $scope.constant = constant;
+            $scope.idx = idx;
+            $scope.options = {
+                "type": "sentence",
+                "languages": $rootScope.FormData.language_codes
+            };
+
+            if(constant){
+                var trans_id = constant.text_translation_id;
+                var translation = trans_id?$rootScope.Translations[trans_id]:{};
+                $scope.translation = angular.copy(translation);
+            }else{
+                $scope.translation = {};
+            }
+
+            $scope.$watch('translation.sentence', function (newValue, oldValue) {
+                if(typeof newValue == "object"){
+                    $scope.translation.sentence = newValue.sentence;
+
+                    // Set translations
+                    for(var i in $scope.options.languages){
+                        var lang_code = $scope.options.languages[i];
+                        var trans_text = newValue.translations[lang_code];
+
+                        if(trans_text){
+                            if($scope.translation.translations == null){
+                                $scope.translation.translations = {};
+                            }
+                            $scope.translation.translations[lang_code] = trans_text;
+                        }
+                    }
+                }
+            });
+
+
+            $scope.save = function (form_obj) {
+                if(form_obj.$invalid){
+                    return false;
+                }
+
+                // --- Process translation ---
+                // Check if $scope.translation is not {}
+                var save_trans = Object.keys($scope.translation).length?true:false;
+
+                if(save_trans && $scope.constant.show_on_form) {
+                    var final_trans = angular.copy($scope.translation);
+
+                    // Check for empty translations
+                    for (var key in  final_trans.translations) {
+                        var val = final_trans.translations[key];
+                        if (val == null || val == '') {
+                            delete final_trans.translations[key];
+                        }
+                    }
+
+                    if(final_trans.translations) {
+                        final_trans["list_language_codes"] = Object.keys(final_trans.translations);
+                    }
+
+                    // Set Id
+                    if (final_trans["id"] == null) {
+                        final_trans["id"] = generate_id();
+                    }
+                    var trans_id = final_trans["id"];
+
+                    // --- Constant ---
+                    $scope.constant["text_translation_id"] = trans_id;
+                }
+
+
+                // --- Update all ---
+                if(save_trans) {
+                    if($scope.constant.show_on_form){
+                        // Update translation
+                        $rootScope.Translations[trans_id] = final_trans;
+                    }else{
+                        // Delete translation
+                        $scope.constant.text_translation_id = null;
+                        delete $rootScope.Translations[$scope.translation.id];
+                    }
+                }
+
+                if(!$rootScope.FormData.constants){
+                    $rootScope.FormData.constants = [];
+                }
+                if(idx==null){
+                    // New
+                    $rootScope.FormData.constants.push(angular.copy($scope.constant));
+                }else{
+                    $rootScope.FormData.constants[idx] = angular.copy($scope.constant);
+                }
+
+                // close modal
+                $uibModalInstance.close();
+            };
+
+            $scope.close = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+        });
+
+        // ----- Question Schema -----
+        app.controller('QuestionSchemaController', function($scope, $rootScope, $uibModal, SweetAlert, $timeout){
+            // --- delete ---
+            $scope.remove = function (scope) {
+                scope.remove();
+            };
+            $scope.toggle = function (scope) {
+                scope.toggle();
+            };
+            // --- delete ---
+
+            // --- Questions ---
+            $scope.edit_question = function (scope_node, question, answer_type){
+                if(question){
+                    answer_type = question._cls;
+                }
+
+                var modalInstance = $uibModal.open({
+                    animation: true,
+                    templateUrl: 'tmpl_modal_form_question',
+                    controller: 'EditQuestionCtrl',
+                    size: 'xlg',
+                    backdrop: 'static',
+                    windowClass: 'modal_win_editor',
+                    resolve: {
+                        question: function() {
+                            return angular.copy(question);
+                        },
+                        answer_type: function() {
+                            return answer_type;
+                        }
+                    }
+                });
+
+                modalInstance.result.then(function (result) {
+                    var new_question = result["question"];
+                    var ques_trans = result["ques_translations"];
+
+                    // Update all questions translations
+                    for(var key in ques_trans){
+                        var trans = ques_trans[key];
+                        if(trans){
+                            var trans_id = trans["id"];
+                            $rootScope.Translations[trans_id] = angular.copy(trans);
+                        }
+                    }
+
+                    // set question
+                    if(question){
+                        // Replace previous one
+                        angular.copy(new_question, question);
+
+                        // Touch form schema
+                        $rootScope.touch_FormData_schema($rootScope.FormData.schema);
+
+                        // Update question ui-tree
+                        scope_node.trans_text = $rootScope.Translations[new_question.text_translation_id];
+                        scope_node.trans_description = $rootScope.Translations[new_question.description];
+
+                    }else{
+                        // New question
+                        $rootScope.FormData.schema.push(new_question);
+                        $timeout(function () {
+                            $('html,body').animate({scrollTop: $('#component_'+new_question.label).offset().top-20 }, 'fast');
+                        }, 300);
+                    }
+
+                }, function () {
+                    // Modal Closed
+                });
+            };
+
+            $scope.remove_question = function(scope_node, question){
+                alert("TODO! check usage in conditions!"); //TODO: check usage in conditions
+
+                SweetAlert.swal({
+                    title: "Are you sure?",
+                    text: "You will not be able to recover this question!",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes, delete it!",
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                },
+                function (isConfirm) {
+                    if(isConfirm){
+                        // Delete all translations
+                        delete $rootScope.Translations[question["text_translation_id"]];
+
+                        if(question["description"]) {
+                            delete $rootScope.Translations[question["description"]];
+                        }
+
+                        if(question["default_error_message"]) {
+                            delete $rootScope.Translations[question["default_error_message"]];
+                        }
+
+                        // Add custom checks for various type if necessary
+
+                        // delete node
+                        scope_node.remove();
+
+                        // Touch 'FormData.schema'
+                        $rootScope.touch_FormData_schema($rootScope.FormData.schema);
+{#                        $rootScope.META_QUESTIONS = get_all_variables(newValue);#}
+                    }
+                });
+            }
+
+
+            // --- Conditions ---
+            $scope.edit_condition = function (scope_node, condition, condition_class){
+                if(condition){
+                    condition_class = condition._cls;
+                }
+
+                var modalInstance = $uibModal.open({
+                    animation: true,
+                    templateUrl: 'tmpl_modal_form_condition',
+                    controller: 'EditConditionCtrl',
+{#                    size: 'xlg',#}
+                    backdrop: 'static',
+                    windowClass: 'modal_win_editor',
+                    resolve: {
+                        condition: function() {
+                            return angular.copy(condition);
+                        },
+                        condition_class: function() {
+                            return condition_class;
+                        }
+                    }
+                });
+
+                modalInstance.result.then(function (result) {
+                    var new_condition = result["condition"];
+
+                    // set new_condition
+                    if(condition){
+                        // Replace previous one
+                        angular.copy(new_condition, condition);
+
+                        // Touch form schema
+                        $rootScope.touch_FormData_schema($rootScope.FormData.schema);
+
+                    }else{
+                        // New condition
+                        $rootScope.FormData.schema.push(new_condition);
+                        $timeout(function () {
+                            $('html,body').animate({scrollTop: $('#component_'+new_condition._id).offset().top-20 }, 'fast');
+                        }, 300);
+                    }
+
+                }, function () {
+                    // Modal Closed
+                });
+            };
+
+            $scope.remove_condition = function(scope_node, condition){
+                SweetAlert.swal({
+                    title: "Are you sure?",
+                    text: "You will not be able to recover this condition!",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes, delete it!",
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                },
+                function (isConfirm) {
+                    if(isConfirm){
+                        alert("TODO: delete all tranlations of question under it."); //TODO: delete all tranlations of question under it.
+
+                        // Add custom checks for various type if necessary
+
+                        // delete node
+                        scope_node.remove();
+
+                        // Touch 'FormData.schema'
+                        $rootScope.touch_FormData_schema($rootScope.FormData.schema);
+                    }
+                });
+            }
+
+            // --- Layouts ---
+            $scope.edit_layout = function (scope_node, layout, layout_class){
+                if(layout){
+                    layout_class = layout._cls;
+                }
+
+                var modalInstance = $uibModal.open({
+                    animation: true,
+                    templateUrl: 'tmpl_modal_form_layout',
+                    controller: 'EditLayoutCtrl',
+{#                    size: 'xlg',#}
+                    backdrop: 'static',
+                    windowClass: 'modal_win_editor',
+                    resolve: {
+                        layout: function() {
+                            return angular.copy(layout);
+                        },
+                        layout_class: function() {
+                            return layout_class;
+                        }
+                    }
+                });
+
+                modalInstance.result.then(function (result) {
+                    var new_layout = result["layout"];
+
+                    // set new_layout
+                    if(layout){
+                        // Replace previous one
+                        angular.copy(new_layout, layout);
+
+                        // Touch form schema
+                        $rootScope.touch_FormData_schema($rootScope.FormData.schema);
+
+                    }else{
+                        // New layout
+                        $rootScope.FormData.schema.push(new_layout);
+                        $timeout(function () {
+                            $('html,body').animate({scrollTop: $('#component_'+new_layout._id).offset().top-20 }, 'fast');
+                        }, 300);
+                    }
+
+                }, function () {
+                    // Modal Closed
+                });
+            };
+
+            $scope.remove_layout = function(scope_node, layout){
+                SweetAlert.swal({
+                    title: "Are you sure?",
+                    text: "You will not be able to recover this layout & its components!",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes, delete it!",
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                },
+                function (isConfirm) {
+                    if(isConfirm){
+                        alert("TODO: delete all tranlations of question under it."); //TODO: delete all tranlations of question under it.
+
+                        // Add custom checks for various type if necessary
+
+                        // delete node
+                        scope_node.remove();
+
+                        // Touch 'FormData.schema'
+                        $rootScope.touch_FormData_schema($rootScope.FormData.schema);
+                    }
+                });
+            }
+
+
+        });
+        app.controller('EditQuestionCtrl', function($scope, $rootScope, $uibModalInstance, ServiceTranslations, question, answer_type){
+            // If question is null, it means create new question
+
+            $scope.ServiceTranslations = ServiceTranslations;
+            $scope.question = question?question:{ "_cls": angular.copy(answer_type), "_cls_base":"BasicFormField"};
+            $scope.answer_type = answer_type;
+            $scope.ques_translations = {}; // {"<trans_id>":<trans_objec>}
+
+            $scope.edit_ques_translation = function(id, property_name){
+                var translation = id?$rootScope.Translations[id]:null;
+
+                $rootScope.ModLanguage.edit_translation(translation, 'sentence', $rootScope.FormData.language_codes)
+                    .then(
+                        function(new_trans){
+                            $scope.ques_translations[property_name] = new_trans;
+                            $scope.question[property_name] = new_trans.id;
+                        },
+                        function(){
+                            // dismissed
+                        }
+                    )
+            }
+
+
+            $scope.save = function (form_obj) {
+                if(form_obj.$invalid){
+                    return false;
+                }
+
+
+
+                // close modal
+{#                $uibModalInstance.close();#}
+                $uibModalInstance.close({
+                    "question": angular.copy($scope.question),
+                    "ques_translations": angular.copy($scope.ques_translations)
+                });
+            };
+
+            $scope.close = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+        });
+
+        app.controller('EditLayoutCtrl', function($scope, $rootScope, $uibModalInstance, ServiceTranslations, layout, layout_class){
+            // If layout is null, it means create new layout
+
+            $scope.ServiceTranslations = ServiceTranslations;
+            $scope.layout = layout?layout:{ "_cls": angular.copy(layout_class), "_cls_base":"BaseLayout", "_id": generate_id(), "children":[]};
+            $scope.layout_class = layout_class;
+
+
+            $scope.save = function (form_obj) {
+                if(form_obj.$invalid){
+                    return false;
+                }
+
+                // close modal
+{#                $uibModalInstance.close();#}
+                $uibModalInstance.close({
+                    "layout": angular.copy($scope.layout)
+                });
+            };
+
+            $scope.close = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+        });
+
+        app.controller('EditConditionCtrl', function($scope, $rootScope, $uibModalInstance, ServiceTranslations, condition, condition_class){
+            // If condition is null, it means create new condition
+
+            $scope.ServiceTranslations = ServiceTranslations;
+            $scope.condition = condition?condition:{ "_cls": angular.copy(condition_class), "_cls_base":"BaseCondition", "_id": generate_id()};
+            $scope.condition_class = condition_class;
+
+            $scope.save = function (form_obj) {
+                if(form_obj.$invalid){
+                    return false;
+                }
+
+                // close modal
+{#                $uibModalInstance.close();#}
+                $uibModalInstance.close({
+                    "condition": angular.copy($scope.condition)
+                });
+            };
+
+            $scope.close = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+        });
+
+        // ---------- Ready ----------
+        $(document).ready(function() {
+            $("#li_forms_nav").addClass('active');
+            $("#li_forms_new").addClass('active');
+        });
+    </script>
+{% endblock %}
+

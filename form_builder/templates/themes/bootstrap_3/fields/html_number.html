@@ -1,0 +1,35 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% load formbuilder language_tags %}
+
+<div class="form-group" ng-class="{ 'has-error': (({{ form_name }}.$submitted || {{ form_name }}.{{ node.label }}.$dirty) && {{ form_name }}.{{ node.label }}.$invalid) }">
+    <label for="{{ node.label }}" class="control-label">
+{#        {{ node.text }}#}
+        <span translate="{{ node.text_translation_id }}" translate-default="{{ lookup_translations|get_trans_from_lookup:node.text_translation_id|get_translation_text }}"></span>
+        {% if node.required %}<span class="required_indicator">*</span>{% endif %}
+
+        {% if node.description %}
+            <br/>
+            <span class="question_description" translate="{{ node.description }}"></span>
+        {% endif %}
+    </label>
+
+    <input type="number" id="fld_{{ node.label }}" name="{{ node.label }}" ng-model="data.{{ node.label }}"
+           class="form-control answerfield"
+           {% if node.required %}required{% endif %}
+
+           {% if node.min_length %}minlength="{{ node.min_length }}"{% endif %}
+           {% if node.max_length %}maxlength="{{ node.max_length }}"{% endif %}
+
+           {% with min_val=node.get_min_value %}
+               {% if min_val != None %}min="{{ min_val }}"{% endif %}
+           {% endwith %}
+           {% if node.min_value %}max="{{ node.max_value }}"{% endif %}
+
+           {% if node.placeholder %}placeholder="{{ node.placeholder }}"{% endif %}
+            ng-pattern="/^[0-9]+$/"
+    >
+
+    {% include 'themes/bootstrap_3/fields/error_messages.html' with node=node form_name=form_name pattern_err='Please enter a number.' %}
+</div>

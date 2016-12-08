@@ -1,0 +1,161 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+<div class="row row-eq-height"
+     ng-init="question.required=(question.required!=null)?question.required:false;question.widget=question.widget||'html_date';"
+    >
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                General
+            </div>
+            <div class="panel-body">
+                <!--- General -->
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                        Label<span class="required">*</span>:
+                    </label>
+                    <div class="col-sm-9">
+                        <input type="text" name="label" ng-model="question.label" ng-model-options="{ updateOn: 'blur' }" class="form-control input-sm" required val-variable-name val-unique-label="data:{$ idx $}">
+                        <p class="help-block m-b-none">
+                            A name that uniquely identifies this question.
+                        </p>
+                        <div ng-messages="form_edit_question.label.$dirty && form_edit_question.label.$error" role="alert" class="error_messages">
+                            <label ng-message="required" class="error">Please enter an label.</label>
+                            <label ng-message="val-variable-name" class="error">Invalid label. The label must start with an alphabet or underscore followed by any number of alphabets, digits or underscore only.</label>
+                            <label ng-message="val-unique-label" class="error">Label '{$ question.label $}' is already in use, please enter an unique label.</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="hr-line-dashed hr-line-dashed_sm"></div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                        Question Text<span class="required">*</span>:
+                    </label>
+                    <div class="col-sm-9">
+                        <input type="hidden" name="text_translation_id" ng-model="question.text_translation_id" required>
+                        <div ng-init="ques_translations.text_translation_id = Translations[question.text_translation_id]">
+                            <div class="form-control translation_sentence" ng-bind-html="ques_translations.text_translation_id.sentence"></div>
+                            <div class="translation_controls">
+                                <a class="small" href="javascript: void(0);" ng-click="edit_ques_translation(question.text_translation_id, 'text_translation_id');">
+                                    <i class="fa fa-pencil"></i>
+                                    {$ ques_translations.text_translation_id?'Edit':'Add' $}
+                                </a>
+                                <small class="text-muted" style="margin-left: 5px;" ng-if="ques_translations.text_translation_id">
+                                    − {$ 1+(ques_translations.text_translation_id.translations|dictlength) $} Translation{$ ques_translations.text_translation_id.translations.length?'s':'' $}
+                                </small>
+                            </div>
+                        </div>
+                        <div ng-messages="form_edit_question.text_translation_id.$dirty && form_edit_question.text_translation_id.$error" role="alert" class="error_messages">
+                            <label ng-message="required" class="error">Please add question text.</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="hr-line-dashed hr-line-dashed_sm"></div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                        Description:
+                    </label>
+                    <div class="col-sm-9 form_col_text">
+                        <div ng-init="ques_translations.description = Translations[question.description]">
+                            <div class="form-control translation_sentence" ng-bind-html="ques_translations.description.sentence"></div>
+                            <div class="translation_controls">
+                                <a class="small" href="javascript: void(0);" ng-click="edit_ques_translation(question.description, 'description');">
+                                    <i class="fa fa-pencil"></i>
+                                    {$ ques_translations.description?'Edit':'Add' $}
+                                </a>
+                                <small class="text-muted" style="margin-left: 5px;" ng-if="ques_translations.description">
+                                    − {$ 1+(ques_translations.description.translations|dictlength) $} Translation{$ ques_translations.description.translations.length?'s':'' $}
+                                </small>
+                            </div>
+                        </div>
+                        <p class="help-block m-b-none">
+                            Use this to elaborate your question. This will be displayed under your main question.
+                        </p>
+                    </div>
+                </div>
+                <div class="hr-line-dashed hr-line-dashed_sm"></div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-9">
+                        <div class="checkbox checkbox-primary">
+                            <input id="fld_required" type="checkbox" ng-model="question.required">
+                            <label for="fld_required">
+                                Mark question mandatory?<br/>
+                                <small>If select, user must answer answer this question.</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="hr-line-dashed hr-line-dashed_sm"></div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                        Widget<span class="required">*</span>:
+                    </label>
+                    <div class="col-sm-9">
+                        <select class="form-control input-sm" name="widget" ng-model="question.widget" required>
+                            <option value="">Please select</option>
+                            {% for w in widgets %}
+                                <option value="{{ w.0 }}" {% if fieldclass.widget.default == w.0 %}selected{% endif %}>{{ w.1 }}</option>
+                            {% endfor %}
+                        </select>
+                        <p class="help-block m-b-none">
+                            Select widget that will define look and feel of this question.
+                        </p>
+                        <div ng-messages="form_edit_question.widget.$dirty && form_edit_question.widget.$error" role="alert" class="error_messages">
+                            <label ng-message="required" class="error">Please select a widget.</label>
+                        </div>
+                    </div>
+                </div>
+                <!--- /General -->
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Question Customization
+            </div>
+            <div class="panel-body">
+                <!--- Question customization -->
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                        Default error message:
+                    </label>
+                    <div class="col-sm-9 form_col_text">
+                        <div ng-init="ques_translations.default_error_message = Translations[question.default_error_message]">
+                            <div class="form-control translation_sentence" ng-bind-html="ques_translations.default_error_message.sentence"></div>
+                            <div class="translation_controls">
+                                <a class="small" href="javascript: void(0);" ng-click="edit_ques_translation(question.default_error_message, 'default_error_message');">
+                                    <i class="fa fa-pencil"></i>
+                                    {$ ques_translations.default_error_message?'Edit':'Add' $}
+                                </a>
+                                <small class="text-muted" style="margin-left: 5px;" ng-if="ques_translations.default_error_message">
+                                    − {$ 1+(ques_translations.default_error_message.translations|dictlength) $} Translation{$ ques_translations.default_error_message.translations.length?'s':'' $}
+                                </small>
+                            </div>
+                        </div>
+                        <p class="help-block m-b-none">
+                            Error message to be displayed with this question is mandatory and user fails to answer it.
+                        </p>
+                    </div>
+                </div>
+{#                <div class="hr-line-dashed hr-line-dashed_sm"></div>#}
+                <!--- /Question customization -->
+            </div>
+        </div>
+
+        <div class="user_notes" style="margin-bottom: 0px;">
+            <div class="heading">Notes:</div>
+            <div summernote ng-model="question.user_notes" config="summernote_config_notes" on-focus="console.log('Editable area is focused');"></div>
+            <small class="help-block m-b-none" style="font-style: italic">(This will not be displayed in the form)</small>
+        </div>
+
+    </div>
+</div>
+
+

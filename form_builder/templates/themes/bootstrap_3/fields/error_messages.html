@@ -1,0 +1,38 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+<p>
+    <ul ng-messages="({{ form_name }}.$submitted || {{ form_name }}.{{ node.label }}.$dirty) && {{ form_name }}.{{ node.label }}.$error" class="text-danger list_error" role="alert">
+        <li ng-message="required" translate="{% if node.default_error_message %}{{ node.default_error_message }}{% else %}IMPLICIT.error-required{% endif %}" translate-default="Please provide an answer."></li>
+        <li ng-message="minlength" translate="IMPLICIT.error-min-length" translate-values='{ min_length: {{ node.min_length }}}' translate-default="Please enter more characters."></li>
+        <li ng-message="maxlength" translate="IMPLICIT.error-max-length" translate-values='{ max_length: {% if node.get_max_length %}{{ node.get_max_length }}{% else %}{{ node.max_length }}{% endif %}}'>Please use less characters..</li>
+
+        <li ng-message="pattern">
+            {% if pattern_err %}
+                {{ pattern_err }}
+            {% else %}
+                <span translate="IMPLICIT.error-incorrect-pattern" translate-default="Incorrect pattern."></span>
+            {% endif %}
+        </li>
+
+        <li ng-message="date" translate="IMPLICIT.error-invalid-date" translate-default="Please enter a valid date."></li>
+        <li ng-message="datetimelocal" translate="IMPLICIT.error-invalid-datetime" translate-default="Please enter a valid date and time."></li>
+        <li ng-message="time" translate="IMPLICIT.error-invalid-time" translate-default="Please enter a valid time."></li>
+        <li ng-message="email" translate="IMPLICIT.error-invalid-email" translate-default="Please enter a valid email address."></li>
+        <li ng-message="number" translate="IMPLICIT.error-invalid-number" translate-default="Please enter a valid number."></li>
+
+        {% if node.max_value %}
+            <li ng-message="max" translate="IMPLICIT.error-max-value" translate-values='{ max_value: {{ node.max_value }}}' translate-default="Please enter number less than or equal to {{ node.max_value }}."></li>
+        {% endif %}
+        {% if node.min_value %}
+            <li ng-message="min" translate="IMPLICIT.error-min-value" translate-values='{ min_value: {% if node.get_min_value %}{{ node.get_min_value }}{% else %}{{ node.min_value }}{% endif %}}' translate-default="Please enter a number greater than or equal to {% if node.get_min_value %}{{ node.get_min_value }}{% else %}{{ node.min_value }}{% endif %}."></li></li>
+        {% endif %}
+
+        {% if node.min_selection %}
+            <li ng-message="minselection" translate="IMPLICIT.error-min-selection" translate-values='{ min_selection: {{ node.min_selection }}}' translate-default="Please select atleast {{ node.min_selection }} choices."></li>
+        {% endif %}
+
+        <li ng-message="url" translate="IMPLICIT.error-invalid-url" translate-default="Please enter a URL."></li>
+    </ul>
+</p>
+

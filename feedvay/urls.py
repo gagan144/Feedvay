@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^brands/', include('brands.urls')),
 
     url(r'^languages/', include('languages.urls')),
+    url(r'^forms/', include('form_builder.urls')),  #TODO: remove url
 
     # Admin and staff
     url(r'^admin/', admin.site.urls),

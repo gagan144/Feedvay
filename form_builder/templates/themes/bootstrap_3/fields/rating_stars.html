@@ -1,0 +1,48 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% load formbuilder language_tags %}
+
+<div class="form-group" ng-class="{ 'has-error': (({{ form_name }}.$submitted || {{ form_name }}.{{ node.label }}.$dirty) && {{ form_name }}.{{ node.label }}.$invalid) }">
+    <label for="{{ node.label }}" class="control-label">
+{#        {{ node.text }}#}
+        <span translate="{{ node.text_translation_id }}" translate-default="{{ lookup_translations|get_trans_from_lookup:node.text_translation_id|get_translation_text }}"></span>
+        {% if node.required %}<span class="required_indicator">*</span>{% endif %}
+
+        {% if node.description %}
+            <br/>
+            <span class="question_description" translate="{{ node.description }}"></span>
+        {% endif %}
+    </label>
+
+    <script type="text/javascript">
+        init.push(function () {
+            $('#fld_{{ node.label }}').rating();
+        });
+    </script>
+    <div>
+        <input type="number" id="fld_{{ node.label }}" name="{{ node.label }}" ng-model="data.{{ node.label }}"
+               style="display: none;"
+               class="rating answerfield"
+               {% if node.required %}required{% endif %}
+
+               data-filled="glyphicon glyphicon-star rating_star rating_star_selected"
+               data-empty="glyphicon glyphicon-star-empty rating_star rating_star_empty"
+               data-start="0"
+               data-stop="{{ node.max_score }}"
+        />
+
+        <span class="rating_score">{$ data.{{ node.label }} $}</span>
+    </div>
+
+    {% if node.required == False %}
+{#    <div style="margin-top: 5px;">#}
+        <button type="button" class="btn btn-default btn-xs" ng-click="data.{{ node.label }} = null;" onclick="$('#fld_{{ node.label }}').rating('rate',0);" ng-show="data.{{ node.label }}">
+            <i class="fa fa-remove"></i>&nbsp;
+            <span translate="IMPLICIT.clear" translate-default="Clear"></span>
+        </button>
+{#    </div>#}
+    {% endif %}
+
+    {% include 'themes/bootstrap_3/fields/error_messages.html' with node=node form_name=form_name %}
+</div>

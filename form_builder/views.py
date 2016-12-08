@@ -2,9 +2,8 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.http import HttpResponse
-from django.template.context import RequestContext
 from django.contrib.auth.decorators import login_required
 
 from form_builder.models import *
@@ -41,7 +40,7 @@ def open_form(request, id):
         'DEFAULT_LANGUAGE_CODE': Language.DEFAULT_LANGUAGE_CODE,    # Fallback language incase translation not found
         'USER_DEFAULT_LANG_CODE': 'hin' #Language.DEFAULT_LANGUAGE_CODE  # Use preferred language
     }
-    return render_to_response(template, data, context_instance=RequestContext(request))
+    return render(request, template, data)
 
 # ----- Form Designer -----
 @login_required
@@ -54,7 +53,7 @@ def form_designer(request, id=None):
     if id:
         form = Form.objects.get(id=id)
         data['form'] = form
-    return render_to_response('form_builder/form_designer.html', data, context_instance=RequestContext(request))
+    return render(request, 'form_builder/form_designer.html', data)
 # ----- /Form Designer -----
 
 
@@ -69,7 +68,7 @@ def partials_form_field(request, class_name):
         'ChoiceOrder': fields.ChoiceOrder,
         'OtherOptionType': fields.OtherOptionType
     }
-    return render_to_response('form_builder/partials/editor/'+class_name+'.html', data, context_instance=RequestContext(request))
+    return render(request, 'form_builder/partials/editor/'+class_name+'.html', data)
 
 def partials_form_layout(request, class_name):
     layoutclass = getattr(layouts, class_name)
@@ -77,7 +76,7 @@ def partials_form_layout(request, class_name):
     data = {
         'layoutclass': layoutclass._properties_by_key,
     }
-    return render_to_response('form_builder/partials/editor/'+class_name+'.html', data, context_instance=RequestContext(request))
+    return render(request, 'form_builder/partials/editor/'+class_name+'.html', data)
 
 def partials_form_condition(request, class_name):
     conditionclass = getattr(conditions, class_name)
@@ -85,6 +84,6 @@ def partials_form_condition(request, class_name):
     data = {
         'conditionclass': conditionclass._properties_by_key,
     }
-    return render_to_response('form_builder/partials/editor/'+class_name+'.html', data, context_instance=RequestContext(request))
+    return render(request, 'form_builder/partials/editor/'+class_name+'.html', data)
 # ----- /Partials -----
 

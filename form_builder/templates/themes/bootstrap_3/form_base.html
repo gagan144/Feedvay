@@ -1,0 +1,945 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% load static %}
+{% load formbuilder %}
+{% load treetag %}
+{% load humanize %}
+{% load language_tags %}
+
+<!DOCTYPE html>
+<html lang="en" ng-app="formApp">
+<head>
+    <!-- meta tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="{% if form.description %}{{ lookup_translations|get_trans_from_lookup:form.description|get_translation_text|striptags|truncatechars:"140" }}{% else %}Form Builder{% endif %}">
+
+    <!-- ==== Browser Customization ==== -->
+    <!-- Chrome, Firefox OS and Opera -->
+    <meta name="theme-color" content="#337ab7"> {# 337ab7 2A2A2A #}
+    <!-- Windows Phone -->
+    <meta name="msapplication-navbutton-color" content="#337ab7">
+    <!-- iOS Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#337ab7">
+    {# <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> #}
+    <!-- ==== /Browser Customization ==== -->
+
+    <title>{{ form.title }}</title>
+
+    <!-- CSS -->
+    <link href="{% get_static_prefix %}lib/bootstrap_3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}lib/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}lib/bootstrap_compenents/awesome-bootstrap-checkbox.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}lib/select2/css/select2.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}lib/select2/css/select2-bootstrap.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}themes/bootstrap_v3/style.css" rel="stylesheet">
+
+</head>
+<body >
+    <script>var init = [];</script>
+
+    <div ng-show="::false" class="overlay" align="center">
+        <div class="context text-primary" >
+            <img src="{% get_static_prefix %}images/loading/spinner_1.gif" style="height: 64px;">
+        </div>
+    </div>
+
+    <div ng-controller="FormController" ng-cloak>
+        {% if form.gps_enabled and form.gps_required %}
+            <div ng-if="!form_started" class="overlay" align="center" >
+                <div class="context" >
+                    <i class="fa fa-map-marker text-primary" style="font-size: 90px;"></i>
+                    <h2 class="text-primary">
+                        <span translate="IMPLICIT.tell-us-where-you-are" translate-default="Tell us where you are"></span>?
+                    </h2>
+                    <h4 style="margin: 20px 0px 20px 0px;">
+                        <span ng-if="finding_gps" class="text-warning">
+                            <span translate="IMPLICIT.finding-your-location" translate-default="Finding your location"></span>!
+                            <br/>
+                            <small>
+                                <span translate="IMPLICIT.please-wait" translate-default="Please wait"></span>...
+                            </small>
+                        </span>
+                        <span ng-if="!finding_gps" class="text-warning">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            <span translate="IMPLICIT.unable-to-find-your-location" translate-default="Unable to find your location"></span>!
+                        </span>
+                    </h4>
+                    <p ng-if="!finding_gps">
+                        <button class="btn btn-warning btn-lg" ng-click="SERVICES.GpsService.capture_initial_location(10);">
+                            <i class="fa fa-location-arrow"></i>&nbsp;
+                            <span translate="IMPLICIT.retry" translate-default="Retry"></span>
+                        </button>
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+
+        <div ng-show="form_started" class="container" style="margin-bottom: 30px;">
+
+            {% if form.timeout %}
+                <div id="div_times_up" class="overlay" align="center" style="display: none;">
+                    <div class="context">
+                        <i class="fa fa-clock-o" style="font-size: 90px;"></i>
+                        <h1 class="text-warning" style="margin: 10px 0px 20px 0px;">
+                            <span translate="IMPLICIT.sorry-times-up" translate-default="Sorry, time's up!"></span>
+                        </h1>
+                        <p style="margin-bottom: 20px;font-size: large;">
+                            <span translate="IMPLICIT.you-must-complete-the-questionnaire-in-less-than"
+                                translate-default="You must complete the questionnaire in less than">
+                            </span>
+                            <br/>
+                            <strong>{{ form.humanize_timeout }}</strong>
+                        </p>
+                        <button class="btn btn-primary btn-lg" onclick="MobileAPI.end_form();">
+                            <i class="fa fa-arrow-circle-left "></i>&nbsp;
+                            <span translate="IMPLICIT.go-back" translate-default="Go back"></span>
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div id="div_main_content">
+                <nav class="navbar navbar-default navbar-fixed-top">
+                    <div class="container">
+                        <div class="navbar-header" style="width: 100% !important;">
+                            <a class="navbar-brand" href="#">{{ form.title }}</a>
+
+                            <div class="navbar-text pull-right" >
+                                <div class="dropdown">
+                                    <a href="javascript: void(0);" class="dropdown-toggle custom_nav_btn" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                        <span class="fa fa-ellipsis-v"></span>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        {% if form.description %}
+                                        <li>
+                                            <a href="#" data-toggle="modal" data-target="#modal_description" ng-click="flags.description_read = true;">
+                                                <span class="fa fa-book"></span>&nbsp;&nbsp;
+                                                <span translate="IMPLICIT.about" translate-default="About"></span>
+                                            </a>
+                                        </li>
+                                        {% endif %}
+
+                                        {% if form.instructions %}
+                                        <li>
+                                            <a href="#" data-toggle="modal" data-target="#modal_instructions" ng-click="flags.instructions_read = true;">
+                                                <i class="fa fa-info-circle"></i>&nbsp;&nbsp;
+                                                <span translate="IMPLICIT.instructions" translate-default="Instructions"></span>
+                                            </a>
+                                        </li>
+                                        {% endif %}
+
+                                        {% if form.description or form.instructions %}<li role="separator" class="divider"></li>{% endif %}
+
+                                        <li>
+                                            <a href="#" data-toggle="modal" data-target="#modal_option_language">
+                                                <span class="fa fa-language"></span>&nbsp;&nbsp;
+                                                <span translate="IMPLICIT.change-language" translate-default="Change language"></span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {% if form.timeout %}
+                                <p class="navbar-text pull-right" style="margin-right: 5px;{% if not form.show_timer %}display: none;{% endif %}">
+                                    <timer countdown="{{ form.timeout }}" interval="1000" finish-callback="form_timeout();">{$ hhours $}:{$ mminutes $}:{$ sseconds$}</timer>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </nav>
+                <!-- Options -->
+                <div class="modal fade" id="modal_option_language" tabindex="-1" role="dialog" >
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title" >
+                                    <i class="fa fa-language"></i>&nbsp;
+                                    <span translate="IMPLICIT.change-anguage" translate-default="Change language"></span>
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="list-group" style="margin-bottom: 0px;">
+                                    <a href="javascipt: void(0);" class="list-group-item" ng-click="change_language('{{ DEFAULT_LANGUAGE_CODE }}')" data-dismiss="modal">
+                                        <i class="fa fa-check text-primary" style="margin-right: 5px;" ng-if="CURRENT_LANGUAGE == '{{ DEFAULT_LANGUAGE_CODE }}';"></i>
+                                        English
+                                    </a>
+                                    {% for lang in form.languages.all %}
+                                        <a href="javascipt: void(0);" class="list-group-item" ng-click="change_language('{{ lang.code }}')" data-dismiss="modal">
+                                            <i class="fa fa-check text-primary" style="margin-right: 5px;" ng-if="CURRENT_LANGUAGE == '{{ lang.code }}';"></i>
+                                            {{ lang.name }} <small style="margin-left: 5px;">({{ lang.name_native }})</small>
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+{#                            <div class="modal-footer">#}
+{#                                <button type="button" class="btn btn-default" data-dismiss="modal">#}
+{#                                    <span translate="IMPLICIT.close" translate-default="Close"></span>#}
+{#                                </button>#}
+{#                            </div>#}
+                        </div>
+                    </div>
+                </div>
+                <!-- /Options -->
+
+                {% if form.description %}
+                <div class="panel panel-default">
+                    <div class="panel-body form_description">
+                        <div>
+                            {$ '{{ form.description }}' | translate | unhtml | characters:255 $}
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <button class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal_description" ng-click="flags.description_read = true;">
+                                <i class="fa fa-book"></i>&nbsp;
+                                <span translate="IMPLICIT.read-more" translate-default="Read more"></span>
+                            </button>
+
+                            {% if form.instructions %}
+                            &nbsp;
+                            <button class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal_instructions" ng-click="flags.instructions_read = true;">
+                                <i class="fa fa-info-circle"></i>&nbsp;
+                                <span translate="IMPLICIT.instructions" translate-default="Instructions"></span>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                {% endif %}
+
+                {% if form.description %}
+                <!-- Modal: Description -->
+                <div class="modal fade" id="modal_description" tabindex="-1" role="dialog" aria-labelledby="modal_desc_label">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title" id="modal_desc_label">
+                                    <i class="fa fa-book"></i>&nbsp;
+                                    <span translate="IMPLICIT.about" translate-default="About"></span>
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div translate="{{ form.description }}"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">
+                                    <span translate="IMPLICIT.close" translate-default="Close"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Modal: Description -->
+                {% endif %}
+
+                {% if form.instructions %}
+                <!-- Modal: Instructions -->
+                <div class="modal fade" id="modal_instructions" tabindex="-1" role="dialog" aria-labelledby="modal_inst_label">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title" id="modal_inst_label">
+                                    <i class="fa fa-info-circle"></i>&nbsp;
+                                    <span translate="IMPLICIT.instructions" translate-default="Instructions"></span>
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div translate="{{ form.instructions }}"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">
+                                    <span translate="IMPLICIT.close" translate-default="Close"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Modal: Instructions -->
+                {% endif %}
+
+
+                <h4 align="center" style="margin-bottom: 20px;" class="text-primary">
+                    <span translate="IMPLICIT.please-fill-the-following-form" translate-default="Please fill the following form"></span>
+                </h4>
+
+                {% with constants=form.get_constants_displayable %}
+                {% if constants %}
+                <!-- ========= Constants ========= -->
+                <div class="well" style="font-size: 13px;padding: 15px;">
+                    {% for c in constants %}
+                        <div class="form-group" style="{% if forloop.last %}margin-bottom: 0px;{% endif %}">
+                            <label for="constant_{{ c.label }}">
+{#                                {{ c.text }}#}
+                                <span translate="{{ c.text_translation_id }}" translate-default="{{ lookup_translations|get_trans_from_lookup:c.text_translation_id|get_translation_text }}"></span>
+                            </label><br/>
+                            <span>{{ c.value }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+                <!-- ========= /Constants ========= -->
+                {% endif %}
+                {% endwith %}
+
+                <!-- ========= Form ========= -->
+                <div>
+                    <style>
+                        #form_test > .form-group{
+                            margin-bottom: 20px !important;
+                        }
+
+                        .required_indicator{
+                            color:red;
+                            font-weight: bold !important;
+                        }
+
+                        .multi_choice_btn_group > .btn-default.active, .btn-default:active {
+                            color: #fff !important;
+                            background-color: #286090 !important;
+                            border-color: #204d74 !important;
+                        }
+
+                        .rating_star{
+                            font-size: 1.9em;
+                        }
+
+                        .rating_star_selected{
+                            color: #f0ad4e;
+                        }
+
+                        .rating_star_empty{
+                            color: #ccc;
+                        }
+
+                        .rating_score{
+                            margin-left: 10px;
+                            font-size: 28px;
+                        }
+
+        {#                .list_error{#}
+        {#                    padding-left: 15px;#}
+        {#                }#}
+                    </style>
+
+                    <form id="form_test" name="form_test" method="post" novalidate>{% csrf_token %}
+                        {% tree form.schema_obj %}
+                            {% for node in tree %}
+                                {% if node|is_instance:"fields.BasicFormField" %}
+                                    {# Fields #}
+                                    {% with template_name=node.widget|stringformat:"s"|add:".html" %}
+                                        {% include "themes/bootstrap_3/fields/"|add:template_name with node=node form_name="form_test" %}
+                                    {% endwith %}
+                                {% elif node|is_instance:"conditions.BaseCondition" %}
+                                    {# Conditions #}
+                                    {% if node|is_instance:"conditions.BinaryCondition" %}
+                                        <div {% if node.validate_expr_var %}ng-if="{{ node.expression_validate_var }}" class="animate-if"{% endif %}>
+                                            <div ng-if="{{ node.expression }}" class="animate-if">
+                                                {# True Branch #}
+                                                {% subtree node.true_branch.children_obj %}
+                                            </div>
+
+                                            {% if node.false_branch %}
+                                                <div ng-if="!({{ node.expression }})" class="animate-if">
+                                                    {# False Branch #}
+                                                    {% subtree node.false_branch.children_obj %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                    {% elif node|is_instance:"conditions.SwitchCondition" %}
+                                        <div ng-switch on="{{ node.expression }}">
+                                            {% for case, branch in node.iterate_branch %}
+                                                <div ng-switch-when="{{ case }}">
+                                                    <!-- Case: {{ case }} -->
+                                                    {% subtree branch.children_obj %}
+                                                </div>
+                                            {% endfor %}
+                                            {% if node.use_default %}
+                                                <div ng-if="{{ node.expression }} != null" ng-switch-default >
+                                                    <!-- Default Case -->
+                                                    {% subtree node.default_branch.children_obj %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                {% elif node|is_instance:"layouts.BaseLayout" %}
+                                    {# Layouts #}
+                                    {% if node|is_instance:"layouts.SectionLayout" %}
+                                        {% if node.highlight_layout %}
+                                        <div class="panel panel-default" style="margin-top: 30px;">
+                                            {% if node.title %}
+                                                <div class="panel-heading">
+                                                    <h3 class="panel-title">{{ node.title }}</h3>
+                                                </div>
+                                            {% endif %}
+                                            <div class="panel-body">
+                                                {% subtree node.children_obj %}
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                            {% subtree node.children_obj %}
+                                        {% endif %}
+
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endtree %}
+
+                        <div ng-if="!form_submitted">
+                            <hr/>
+                            <div class="alert alert-danger" style="padding: 10px;" ng-show="form_test.$submitted && form_test.$invalid">
+                                <i class="fa fa-exclamation-triangle"></i>&nbsp;
+                                <span translate="IMPLICIT.please-complete-the-form" translate-default="Please complete the form"></span>!
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" ng-click="submit_form(data,form_test);">
+                                <span ng-hide="form_test.$invalid"><i class="fa fa-check"></i>&nbsp;</span>
+                                <span translate="IMPLICIT.submit" translate-default="Submit"></span>
+                            </button>
+                            <button type="submit" class="btn btn-default" ng-click="reset_form();">
+                                <i class="fa fa-repeat"></i>&nbsp;
+                                <span translate="IMPLICIT.reset" translate-default="Reset"></span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Modal: Submit -->
+                    <div class="modal fade" id="modal_submit" tabindex="-1" role="dialog" data-backdrop="static">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-body" style="margin: 20px 15px;">
+                                    <div align="center">
+                                        <div class="text-success">
+                                            <i class="fa fa-check-circle" style="font-size: 60px;"></i><br/>
+                                            <h2 style="margin-top: 10px;">
+                                                &nbsp;
+                                                <span translate="IMPLICIT.thank-you-for-your-response" translate-default="Thank you for your response"></span>!
+                                            </h2>
+                                        </div>
+                                        <hr/>
+                                        {% if form.calculated_fields %}
+                                        <style>
+                                            .calculated_field_section{
+                                                margin-bottom: 20px;
+                                            }
+                                        </style>
+                                        <div>
+                                            {% for cal_fld in form.get_calc_fields_displayable %}
+                                                <div class="calculated_field_section">
+                                                    <label>
+{#                                                        {{ cal_fld.text }}#}
+                                                        <span translate="{{ cal_fld.text_translation_id }}" translate-default="{{ lookup_translations|get_trans_from_lookup:cal_fld.text_translation_id|get_translation_text }}"></span>
+                                                    </label><br/>
+                                                    {$ calculated_fields.{{ cal_fld.label }} $}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+
+                                        <div style="margin-top: 10px;">
+                                            <button class="btn btn-primary btn-lg" onclick="MobileAPI.end_form();">
+                                                <span translate="IMPLICIT.done" translate-default="Done"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /Modal: Submit -->
+                </div>
+                <!-- ========= /Form ========= -->
+            </div>
+        </div>
+    </div>
+    <!-- -------- Scripts -------- -->
+    <script src="{% url 'languages_form_translations' form_id=form.id %}"></script>
+    <script src="{% get_static_prefix %}lib/jquery/jquery.min.js"></script>
+    <script src="{% get_static_prefix %}lib/moment.min.js"></script>
+    <script src="{% get_static_prefix %}lib/humanize-duration/humanize-duration.js"></script>
+
+    <!-- Dummy Mobile API -->
+    <script src="{% get_static_prefix %}js/dummy_mobile_api.js"></script>
+
+    <script src="{% get_static_prefix %}lib/bootstrap_3/js/bootstrap.min.js"></script>
+
+    <script src="{% get_static_prefix %}lib/angular/angular.min.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/angular-messages.min.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/ui-bootstrap-1.3.3.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/angular-timer/angular-timer.min.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/angular-animate.min.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/angular-translate-2.9.0.1/angular-translate.min.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/angular-truncate/truncate.js"></script>
+
+    <script src="{% get_static_prefix %}lib/select2/js/select2.js"></script>
+    <script src="{% get_static_prefix %}lib/bootstrap_compenents/bootstrap-rating.js"></script>
+
+
+    <script type="text/javascript">
+        'use strict';
+
+        $(function(){
+            for(var i=0; i<init.length; i++){
+                init[i]();
+            }
+        });
+
+        <!-- Angular: App -->
+        var formApp = angular.module(
+                'formApp',
+                ['ngMessages', 'ui.bootstrap', 'ngAnimate', 'timer', 'pascalprecht.translate', 'truncate']
+        ).config(function($interpolateProvider, $translateProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+
+            // Locale Translations
+            for(var lang_code in TRANSLATIONS) {
+                $translateProvider.translations(lang_code, TRANSLATIONS[lang_code]);
+            }
+            $translateProvider.preferredLanguage('{{ USER_DEFAULT_LANG_CODE }}');
+            $translateProvider.fallbackLanguage('{{ DEFAULT_LANGUAGE_CODE }}');
+
+        });
+
+        <!-- Angular: Directives -->
+        formApp.directive('minselection', function () {
+            return {
+                require: 'ngModel',
+                link: function (scope, elem, attr, ngModel) {
+                    var min_selection = parseInt(attr.minselection);
+                    //console.log("Min Choice :",min_selection);
+
+                    function validate_min_selection(value){
+                        // At initial stage, value is undefined
+                        value = value ? value: [];
+
+                        var valid = value.length >= min_selection;
+                        //console.log(value, valid);
+                        ngModel.$setValidity('minselection', valid);
+
+                        return value;
+                    }
+
+                    ngModel.$parsers.push(validate_min_selection);      // For DOM -> model validation
+                    ngModel.$formatters.push(validate_min_selection);   // For model -> DOM validation
+                }
+            };
+        });
+
+        formApp.directive('invalidvalues', function () {
+            return {
+                require: 'ngModel',
+                link: function (scope, elem, attr, ngModel) {
+                    var list_invalid_values = attr.invalidvalues.split(',');  // all elements will be string even if it is int or decimal
+
+                    // to lower all elements
+                    for(var i=0;i<list_invalid_values.length;i++){
+                        list_invalid_values[i] = list_invalid_values[i].toLowerCase();
+                    }
+
+                    function validate_invalids(value){
+                        // convert to string & lower case irrespective of string, int, decimal
+                        if(value){
+                            value = value.toString().toLowerCase();
+                        }
+
+                        var valid = (list_invalid_values.indexOf(value)==-1)?true:false;
+                        ngModel.$setValidity('invalidvalues', valid);
+
+                        return value;
+                    }
+
+                    ngModel.$parsers.push(validate_invalids);      // For DOM -> model validation
+                    ngModel.$formatters.push(validate_invalids);   // For model -> DOM validation
+                }
+            };
+        });
+
+        formApp.directive('remodelPrefix', function () {
+            // DOM usage: remodel-prefix="<prefix>"
+            return {
+                require: 'ngModel',
+                link: function (scope, elem, attr, ngModel) {
+                    var PREFIX = attr.remodelPrefix;
+
+                    function dom_to_model(value){
+                        if(value){
+                            value = PREFIX + value;
+                        }
+                        return value;
+                    }
+
+                    function model_to_dom(value){
+                        if(value){
+                            var idx = value.indexOf(PREFIX);
+                            if(idx==0) {
+                                value = value.substr(PREFIX.length);
+                            }
+                        }
+                        return value;
+                    }
+
+                    ngModel.$parsers.push(dom_to_model);      // For DOM -> model validation
+                    ngModel.$formatters.push(model_to_dom);   // For model -> DOM validation
+                }
+            };
+        });
+
+        formApp.directive('remodelDatetime', function ($filter) {
+            // DOM usage: remodel-datetime="[date|time|datetime]"
+            return {
+                require: 'ngModel',
+                link: function (scope, elem, attr, ngModel) {
+                    var TYPE = attr.remodelDatetime;
+                    var FORMAT = null;
+                    switch (TYPE){
+                        case 'date': FORMAT="yyyy-MM-dd"; break;
+                        case 'time': FORMAT="HH:mm:ss"; break;
+                        case 'datetime': FORMAT="yyyy-MM-ddTHH:mm:ss"; break;
+                        default: throw "Invalid remodel-datetime option '" + TYPE +"'.";
+                    }
+
+                    function dom_to_model(value){
+                        if(value){
+                            value = $filter('date')(value, FORMAT);
+                        }
+                        return value;
+                    }
+
+                    function model_to_dom(value){
+                        if(value){
+                            var FORMAT_MOMENT = FORMAT.replace('yyyy','YYYY').replace('dd','DD');
+                            value = moment(value, FORMAT_MOMENT).toDate();
+                        }
+                        return value;
+                    }
+
+                    ngModel.$parsers.push(dom_to_model);      // For DOM -> model validation
+                    ngModel.$formatters.push(model_to_dom);   // For model -> DOM validation
+                }
+            };
+        });
+        <!-- /Angular: Directives -->
+
+        <!-- Angular: Filters -->
+        formApp.filter('unhtml', function() {
+            return function(html) {
+                var content_text = html.replace(/(<([^>]+)>)/ig,"");
+                return content_text;
+            };
+        });
+        <!-- /Angular: Filters -->
+
+        <!-- Angular: Services -->
+        formApp.service('GpsService', function(){
+            var _location = null;
+
+            this.location = function(){
+                return _location;
+            }
+
+            this.capture_location = function (max_age_sec) {
+{#                console.log("Finding location ..."); #}
+                MobileAPI.getGPS(
+                    max_age_sec,
+                    "window.SERVICES.GpsService.success",
+                    "window.SERVICES.GpsService.error"
+                );
+            };
+
+            this.success = function(provider, lat, lng, accuracy, timestamp){
+{#                console.log('Location found ',lat, lng);#}
+                _location = {
+                    "provider": provider,
+                    "coordinates": [lng, lat],  // Longitude, Latitude
+                    "accuracy": accuracy,
+                    "timestamp": timestamp
+                }
+            };
+
+            this.error = function(message){
+                console.log("GPS Error:", message);
+            }
+
+        });
+        <!-- /Angular: Services -->
+
+        <!-- Angular: Controllers -->
+        formApp.controller('FormController',
+            function FormController($scope, $window, $translate, GpsService){
+                var START_TIME = moment();
+                var TIMEZONE = moment().format("ZZ");
+                var END_POINT_INFO = JSON.parse(MobileAPI.device_information());
+
+                // ---------- $scope variables ----------
+                $scope.form_started = {% if form.gps_enabled and form.gps_required %}false{% else %}true{% endif %};
+
+                {% if form.gps_enabled and form.gps_required %}
+                    $scope.finding_gps = true;
+                {% endif %}
+
+                $scope.flags = {
+                    description_read : false,
+                    instructions_read : false,
+                    suspect : false,
+                    suspect_reasons : []
+                };
+
+                $scope.CURRENT_LANGUAGE = '{{ USER_DEFAULT_LANG_CODE }}';
+
+
+                {% if form.constants %}
+                $scope.constants = {
+                    {% for constant in form.constants_obj %}
+                    {{ constant.label }}: {{ constant.value|as_js_variable_auto|safe }}{% if forloop.last %}{% else %},{% endif %}
+                    {% endfor %}
+                };
+                {% endif %}
+
+                $scope.data = {
+{#                    fld_mcss_3 : 'no'#}
+{#                    fld_MCMS_7: ['cricket','football','Other_Sports']#}
+                };
+                $scope.answers_other = {};
+
+                $scope.calculated_fields = {};
+                // ---------- /$scope variables ----------
+
+                // ---------- Register Services to $scope ----------
+                {# Register only those services which are meant to be used by DOM objects in the form  #}
+                $scope.SERVICES = {
+                    GpsService : {
+                        capture_initial_location: function(max_age_sec){
+                            $scope.finding_gps = true;
+                            $scope.form_started = false;
+                            GpsService.capture_location(max_age_sec);
+                        }
+                    }
+                };
+                // ---------- /Register Services to $scope ----------
+
+                // ---------- Register Javascript Interface to $windows ----------
+                {# Register only those services which are meant to be accessed by javascript or #}
+                {# their callbacks from app web view. #}
+                $window.SERVICES = {
+                    GpsService : {
+                        capture_location: function (max_age_sec) {
+                            GpsService.capture_location(max_age_sec);
+                        },
+                        success: function (provider, lat, lng, accuracy, timestamp) {
+                            GpsService.success(provider, lat, lng, accuracy, timestamp);
+
+                            $scope.$apply(function () {
+                                $scope.finding_gps = false;
+                                $scope.form_started = true;
+                            });
+                        },
+                        error: function (message) {
+                            GpsService.error(message);
+                            $scope.$apply(function () {
+                                $scope.finding_gps = false;
+                            });
+                        }
+                    }
+                };
+                // ---------- /Register Javascript Interface to $windows ----------
+
+                // ---------- Call necessary initial services ----------
+                {% if form.gps_enabled %}
+                    GpsService.capture_location(10);
+                {% endif %}
+                // ---------- Call necessary initial services ----------
+
+                // ---------- Classic functions ----------
+                function format_datetime(moment_date){
+{#                    return moment_date.format('YYYY-MM-DDTHH:mm:ssZ');#}
+                    return moment_date.format('YYYY-MM-DDTHH:mm:ss');
+                }
+
+                function add_constants_to_answers(answers_dict){
+                    {% for constant in form.get_constants_to_include %}
+                    answers_dict['{{ constant.label }}'] = {{ constant.value|as_js_variable_auto|safe }};
+                    {% endfor %}
+                }
+
+                function get_answer_set(key, prefix_replace){
+                    var set = new Set();
+                    $('.'+key).each(function(){
+                        if(!$(this).hasClass('select2-container')){
+                            var label = $(this).attr('ng-model').replace(prefix_replace+'.','');
+                            set.add(label);
+                        }
+                    });
+                    return set;
+                }
+
+                {% if form.calculated_fields %}
+                function evaluate_fields(answers_dict){
+                    // Evaluate
+                    {% for calc_fld in form.calculated_fields_obj %}
+                    var fld_{{ calc_fld.label }} = ({{ calc_fld.expression }});
+                    {% endfor %}
+
+                    // Set to scope's calculated_fields
+                    $scope.calculated_fields = {
+                        {% for calc_fld in form.calculated_fields_obj %}
+                        {{ calc_fld.label }}: fld_{{ calc_fld.label }}{% if forloop.last %}{% else %},{% endif %}
+                        {% endfor %}
+                    };
+
+                    // Push fields to answers that must be included
+                    {% for calc_fld in form.get_calc_fields_to_include %}
+                    answers_dict['{{ calc_fld.label }}'] = fld_{{ calc_fld.label }};
+                    {% endfor %}
+                }
+                {% endif %}
+                // ---------- /Classic functions ----------
+
+                // ---------- $scope functions ----------
+                {% if form.timeout %}
+                $scope.form_timeout = function(){
+                    $('.modal-backdrop').hide();
+                    $('.modal').modal('hide');
+                    var div_main_content = angular.element( document.querySelector('#div_main_content') );
+                    div_main_content.remove();
+                    $('#div_times_up').show();
+                }
+                {% endif %}
+
+                $scope.change_language = function(lang_code){
+                    $translate.use(lang_code);
+                    $scope.CURRENT_LANGUAGE = $translate.use();
+                }
+
+
+                $scope.update_mcms = function(field_label, value){
+                    if($scope.data[field_label]==undefined){
+                        $scope.data[field_label] = []
+                    }
+
+                    var idx = $scope.data[field_label].indexOf(value);
+                    if(idx == -1){
+                        // Add value
+                        $scope.data[field_label].push(value);
+                    }else{
+                        $scope.data[field_label].splice(idx, 1);
+                    }
+
+{#                    console.log($scope.data[field_label]);#}
+                }
+
+                $scope.reset_form = function (){
+                    $('.select2').select2("val", "");
+                    $('.rating').rating('rate', 0);
+                    $scope.data = {};
+                    $scope.answers_other = {};
+                }
+
+                $scope.submit_form = function(data, form_test){
+{#                    console.log("$scope.data: ", $scope.data);#}
+{#                    console.log("$scope.answers_other: ", $scope.answers_other);#}
+{#                    console.log("data: ", data);#}
+{#                    console.log("form_test: ", form_test);#}
+
+                    if(form_test.$valid) {
+                        var final_answers = {};
+
+                        {% if form.constants %}
+                            // add constants to data
+                            add_constants_to_answers(final_answers);
+                        {% endif %}
+
+                        // Process answers data: Remove all null values & unwanted answers
+                        // Answers
+                        var set_answerfields = get_answer_set('answerfield', 'data');
+
+                        for(var key in $scope.data){
+                            if(!($scope.data[key] === null || $scope.data[key] === undefined)){
+{#                                delete $scope.data[key];#}
+                                if(set_answerfields.has(key)){
+                                    final_answers[key] = $scope.data[key];
+                                }
+                            }
+                        }
+
+                        // Other answers
+                        var set_otheranswerfield = get_answer_set('otheranswerfield', 'answers_other');
+                        var final_other_answers = {};
+                        for(var key in $scope.answers_other){
+                            if(!($scope.answers_other[key] === null || $scope.answers_other[key] === undefined)){
+{#                                delete $scope.answers_other[key];#}
+                                if(set_otheranswerfield.has(key)){
+                                    final_other_answers[key] = $scope.answers_other[key];
+                                }
+                            }
+                        }
+{#                        console.log('Answers:', final_answers);#}
+{#                        console.log('Other Answers:', final_other_answers);#}
+
+                        {% if form.calculated_fields %}
+                            // evaluate 'Calculate fields
+                            evaluate_fields(final_answers);
+                        {% endif %}
+
+                        $scope.form_submitted = true;
+                        $scope.$broadcast('timer-stop');
+
+                        $("#modal_submit").modal('show');
+
+                        var END_TIME = moment();
+                        var DURATION_SEC = (END_TIME - START_TIME) / 1000;
+                        var RESPONSE = {
+                            form_id : '{{ form.id }}',
+                            form_version : '{{ form.version }}',
+
+                            app_version: MobileAPI.app_version(),
+                            user : null,
+                            end_point_info: END_POINT_INFO,
+                            language_code: $scope.CURRENT_LANGUAGE,
+
+                            response_uid : MobileAPI.generateUUID(),
+                            constants : $scope.constants,
+                            answers : final_answers, //$scope.data,
+                            answers_other : final_other_answers, //$scope.answers_other,
+                            calculated_fields : $scope.calculated_fields,
+
+                            timezone : TIMEZONE,
+                            response_date : format_datetime(START_TIME),
+                            start_time : format_datetime(START_TIME),
+                            end_time : format_datetime(END_TIME),
+                            duration : DURATION_SEC,
+
+                            location : GpsService.location(),
+
+                            flags : $scope.flags,
+                        }
+
+{#                        console.log("RESPONSE: ",RESPONSE);#}
+
+                        MobileAPI.submit_response(JSON.stringify(RESPONSE));
+
+                    }else{
+                        alert("Please complete the form!");
+                    }
+
+                }
+                // ---------- $scope functions ----------
+
+            }
+        );
+    </script>
+</body>
+</html>

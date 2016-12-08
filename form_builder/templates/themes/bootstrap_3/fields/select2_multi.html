@@ -1,0 +1,55 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% load formbuilder language_tags %}
+
+<div class="form-group" ng-class="{ 'has-error': (({{ form_name }}.$submitted || {{ form_name }}.{{ node.label }}.$dirty) && {{ form_name }}.{{ node.label }}.$invalid) }">
+    <label for="{{ node.label }}" class="control-label">
+{#        {{ node.text }}#}
+        <span translate="{{ node.text_translation_id }}" translate-default="{{ lookup_translations|get_trans_from_lookup:node.text_translation_id|get_translation_text }}"></span>
+        {% if node.required %}<span class="required_indicator">*</span>{% endif %}
+
+        {% if node.description %}
+            <br/>
+            <span class="question_description" translate="{{ node.description }}"></span>
+        {% endif %}
+    </label>
+
+    <script type="text/javascript">
+        init.push(function () {
+            $("#fld_{{ node.label }}").select2({
+                placeholder: "Please select your options",
+                allowClear: true,
+                maximumSelectionSize: {{ node.max_selection }}
+            });
+        });
+    </script>
+    <select id="fld_{{ node.label }}" name="{{ node.label }}" multiple="multiple" ng-model="data.{{ node.label }}"
+        class="form-control select2 answerfield"
+        {% if node.required %}required{% endif %}
+        minselection = "{{ node.min_selection }}"
+    >
+        <option></option>
+        {% for ch in node.iterate_choices %}
+            <option value="{{ ch.value }}">{{ ch.text }}</option>
+        {% endfor %}
+
+        {% if node.allow_other %}
+            <option value="{{ node.other_value }}">{{ node.other_text }}</option>
+        {% endif %}
+    </select>
+
+    {% if node.allow_other %}
+        <div class="row" style="margin-top: 10px;">
+            <div class="col-md-3 animate-if" ng-if="data.{{ node.label }} != null && data.{{ node.label }}.indexOf({{ node.other_value|as_js_variable:node.choice_type }}) != -1" style="margin-left: 25px;">
+                <label for="{{ node.label }}" class="control-label">
+                    {{ node.other_question }}
+                    <span class="required_indicator">*</span>
+                </label>
+                {% include 'themes/bootstrap_3/fields/choice_other.html' with node=node form_name=form_name use_placeholder=False %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% include 'themes/bootstrap_3/fields/error_messages.html' with node=node form_name=form_name %}
+</div>

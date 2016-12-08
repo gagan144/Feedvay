@@ -1,0 +1,28 @@
+/*
+ * Add-ons for Bootstrap v3
+ * --------------------------------------------------
+ */
+
+/* ---------- Miscellaneous ---------- */
+.semi_bold{
+    font-weight: 600 !important;
+}
+
+@media (min-width: 992px) {
+    .modal-xlg {
+        width: 95%;
+    }
+}
+
+.form_col_text{
+    padding-top: 7px;
+}
+
+
+/* ----------  Row with equal height columns ---------- */
+.row-eq-height {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+}

@@ -1,0 +1,31 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% if node.choice_type == 'int' %}
+    <input type="number" name="{{ node.label }}__{{ node.other_value }}" ng-model="answers_other.{{ node.label }}"
+           class="form-control otheranswerfield"
+           required="required"
+           invalidvalues="{{ node.get_all_choice_values|join:"," }}"
+           {% if use_placeholder %}placeholder="{{ node.other_question }}"{% endif %}
+    >
+{% elif node.choice_type == 'float' %}
+    <input type="number" name="{{ node.label }}__{{ node.other_value }}" ng-model="answers_other.{{ node.label }}"
+           class="form-control otheranswerfield"
+           step="0.01"
+           required="required"
+           invalidvalues="{{ node.get_all_choice_values|join:"," }}"
+           {% if use_placeholder %}placeholder="{{ node.other_question }}"{% endif %}
+    >
+{% else %}
+    <input type="text" name="{{ node.label }}__{{ node.other_value }}" ng-model="answers_other.{{ node.label }}"
+           class="form-control otheranswerfield"
+           required="required"
+           invalidvalues="{{ node.get_all_choice_values|join:"," }}"
+           {% if use_placeholder %}placeholder="{{ node.other_question }}"{% endif %}
+    >
+{% endif %}
+
+<ul ng-messages="({{ form_name }}.$submitted || {{ form_name }}.{{ node.label }}__{{ node.other_value }}.$dirty) && {{ form_name }}.{{ node.label }}__{{ node.other_value }}.$error" class="text-danger list_error" role="alert" style="padding-left: 20px;">
+    <li ng-message="required" translate="IMPLICIT.error-required" translate-default="Please provide an answer."></li>
+    <li ng-message="invalidvalues" translate="IMPLICIT.error-invalid-values" translate-default="Please enter an answer other than the given options."></li>
+</ul>

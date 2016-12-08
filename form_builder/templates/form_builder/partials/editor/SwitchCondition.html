@@ -1,0 +1,91 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+<div
+    ng-init="condition.lock_expression=(condition.lock_expression!=null)?condition.lock_expression:false;condition.list_cases=(condition.list_cases!=null)?condition.list_cases:[];condition.use_default=(condition.use_default!=null)?condition.use_default:false;"
+>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">
+            Name:<br/><small style="font-weight: normal;font-style: italic;">(For personal reference)</small>
+        </label>
+        <div class="col-sm-9">
+            <input type="text" name="label" ng-model="condition.name" class="form-control input-sm">
+            <p class="help-block m-b-none">
+                Name for referencing this condition.
+            </p>
+        </div>
+    </div>
+{#    <div class="hr-line-dashed hr-line-dashed_sm"></div>#}
+
+    <div class="panel panel-default" style="margin-top: 20px;">
+        <div class="panel-heading">
+            Condition Definition
+
+            <div class="pull-right">
+                <button class="btn btn-default btn-xs" tooltip-placement="left" uib-tooltip="Lock expression editing" ng-if="!condition.lock_expression" ng-click="condition.lock_expression=true;">
+                    <i class="fa fa-unlock"></i>
+                </button>
+                <button class="btn btn-danger btn-xs" tooltip-placement="left" uib-tooltip="Unlock expression editing" ng-if="condition.lock_expression" ng-click="condition.lock_expression=false;">
+                    <i class="fa fa-lock"></i>
+                </button>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div>
+                <label class="semi_bold">Evaluating question<span class="required">*</span>:</label>
+                <p class="help-block" style="margin-top: 0px;">
+                    Select a question or a constant that will be evaluated and matched to the below specified branch case values.
+                </p>
+
+                <select class="form-control input-sm"  name="expression" ng-model="condition.expression" ng-disabled="condition.lock_expression" select2="{ placeholder: 'Please select', allowClear: true }" required>
+                    <option value=""></option>
+                    <option value="constants.{$ constant.label $}" ng-repeat="constant in FormData.constants">Constant: {$ Translations[constant.text_translation_id].sentence $}</option>
+                    <option value="data.{$ ques.label $}" ng-repeat="ques in META_QUESTIONS">Question: {$ Translations[ques.text_translation_id].sentence $}</option>
+                </select>
+                <div ng-messages="form_edit_condition.expression.$dirty && form_edit_condition.expression.$error" role="alert" class="error_messages">
+                    <label ng-message="required" class="error">Please select a question or a constant.</label>
+                </div>
+            </div>
+            <div class="hr-line-dashed hr-line-dashed_sm"></div>
+
+            <div>
+                <label class="semi_bold">Branch cases<span class="required">*</span>:</label>
+                <p class="help-block" style="margin-top: 0px;">
+                    Add branches who's values when matched with above selected question, will direct the form inti that branch.
+                </p>
+
+                <input type="text" class="form-control" name="list_cases" ng-model="condition.list_cases" tolist select2="{ placeholder: 'Use comma or space to separate case values.', tags: [], tokenSeparators: [',', ' ']}" ng-disabled="condition.lock_expression" required>
+                <div ng-messages="form_edit_condition.list_cases.$dirty && form_edit_condition.list_cases.$error" role="alert" class="error_messages">
+                    <label ng-message="required" class="error">Please add atleast one branch case.</label>
+                </div>
+            </div>
+            <div class="hr-line-dashed hr-line-dashed_sm"></div>
+
+            <div>
+                <div class="checkbox checkbox-primary">
+                    <input id="fld_use_default" type="checkbox" ng-model="condition.use_default" ng-disabled="condition.lock_expression">
+                    <label for="fld_use_default">
+                        Use default branch?<br/>
+                        <small>Select if you want to define a branch that is executed when none of the cases matches.</small>
+                    </label>
+                </div>
+            </div>
+
+            <br/><br/>
+            <div class="alert alert-warning" ng-if="(condition.list_cases.length!=condition.list_branches.length) || (condition.use_default && !condition.default_branch)">
+                <h4 style="margin-top: 0px;">
+                    <i class="fa fa-exclamation-triangle"></i>&nbsp;
+                    Some of the branches do not have components defined inside them.
+                </h4>
+                To add new component, save this condition and simply add a new component from 'Form Components'.
+                Then drag this newly added component into the case branch.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="user_notes" style="margin-bottom: 0px;">
+    <div class="heading">Notes:</div>
+    <div summernote ng-model="condition.user_notes" config="summernote_config_notes" on-focus="console.log('Editable area is focused');"></div>
+    <small class="help-block m-b-none" style="font-style: italic">(This will not be displayed in the form)</small>
+</div>

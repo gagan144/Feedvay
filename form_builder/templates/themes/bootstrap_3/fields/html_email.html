@@ -1,0 +1,30 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% load formbuilder language_tags %}
+
+<div class="form-group" ng-class="{ 'has-error': (({{ form_name }}.$submitted || {{ form_name }}.{{ node.label }}.$dirty) && {{ form_name }}.{{ node.label }}.$invalid) }">
+    <label for="{{ node.label }}" class="control-label">
+{#        {{ node.text }}#}
+        <span translate="{{ node.text_translation_id }}" translate-default="{{ lookup_translations|get_trans_from_lookup:node.text_translation_id|get_translation_text }}"></span>
+        {% if node.required %}<span class="required_indicator">*</span>{% endif %}
+
+        {% if node.description %}
+            <br/>
+            <span class="question_description" translate="{{ node.description }}"></span>
+        {% endif %}
+    </label>
+
+    <input type="email" id="fld_{{ node.label }}" name="{{ node.label }}" ng-model="data.{{ node.label }}"
+       class="form-control answerfield"
+       {% if node.required %}required{% endif %}
+
+       {% if node.max_length %}maxlength="{{ node.max_length }}" ng-maxlength="{{ node.max_length }}" {% endif %}
+
+       pattern="/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/" ng-pattern="/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/"
+
+       {% if node.placeholder %}placeholder="{{ node.placeholder }}"{% endif %}
+    >
+
+    {% include 'themes/bootstrap_3/fields/error_messages.html' with node=node form_name=form_name pattern_err='Please enter a valid email address. (Use lowercase)' %}
+</div>

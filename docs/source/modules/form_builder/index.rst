@@ -29,4 +29,5 @@ Contents
        models
        form_exceptions
        utils
+       templatetags
 

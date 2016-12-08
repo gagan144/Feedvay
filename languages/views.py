@@ -12,6 +12,8 @@ from utilities.api_utils import ApiResponse
 
 import ujson
 
+from form_builder.models import Form
+
 @minified_response
 def form_translations(request, form_id):
     """

@@ -468,6 +468,8 @@ def iterate_form_fields(schema):
 
     :param schema: Form schema
     :return: Field
+
+    **Authors**: Gagandeep Singh
     """
     from form_builder import fields
     from form_builder import conditions

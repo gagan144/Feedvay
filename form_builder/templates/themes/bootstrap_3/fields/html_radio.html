@@ -1,0 +1,54 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% load formbuilder language_tags%}
+
+<div class="form-group" ng-class="{ 'has-error': (({{ form_name }}.$submitted || {{ form_name }}.{{ node.label }}.$dirty) && {{ form_name }}.{{ node.label }}.$invalid) }">
+    <label for="{{ node.label }}" class="control-label">
+{#        {{ node.text }}#}
+        <span translate="{{ node.text_translation_id }}" translate-default="{{ lookup_translations|get_trans_from_lookup:node.text_translation_id|get_translation_text }}"></span>
+        {% if node.required %}<span class="required_indicator">*</span>{% endif %}
+
+        {% if node.description %}
+            <br/>
+            <span class="question_description" translate="{{ node.description }}"></span>
+        {% endif %}
+    </label>
+
+    <div style="margin-left: 20px;">
+        {% for ch in node.iterate_choices %}
+        <div class="radio radio-primary">
+            <input type="radio" class="answerfield" id="rd_{{ node.label }}_{{ ch.value }}" name="{{ node.label }}" ng-model="data.{{ node.label }}" value="{{ ch.value }}" {% if node.required %}required{% endif %}>
+            <label for="rd_{{ node.label }}_{{ ch.value }}">
+                {{ ch.text }}
+            </label>
+        </div>
+        {% endfor %}
+
+        {% if node.allow_other %}
+            <div class="radio radio-primary">
+                <input type="radio" class="answerfield" id="rd_{{ node.label }}_{{ node.other_value }}" name="{{ node.label }}" ng-model="data.{{ node.label }}" value="{{ node.other_value }}" {% if node.required %}required{% endif %}>
+                <label for="rd_{{ node.label }}_{{ node.other_value }}">
+                    {{ node.other_text }}
+                </label>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3 animate-if" ng-if="data.{{ node.label }} == {{ node.other_value|as_js_variable:node.choice_type }}" style="margin-left: 25px;">
+                    {% include 'themes/bootstrap_3/fields/choice_other.html' with node=node form_name=form_name use_placeholder=True %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if node.required == False %}
+        <div style="margin-left: 20px;">
+            <button type="button" class="btn btn-default btn-xs" ng-click="data.{{ node.label }} = null;" ng-show="data.{{ node.label }}">
+                <i class="fa fa-remove"></i>&nbsp;
+                <span translate="IMPLICIT.clear" translate-default="Clear"></span>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+
+    {% include 'themes/bootstrap_3/fields/error_messages.html' with node=node form_name=form_name %}
+</div>

@@ -3,10 +3,15 @@
 # permission of Gagandeep Singh.
 
 class FieldWidgets(object):
-    # ---------- Widget enums ----------
-    # For widget enum create corresponding field rendering html
-    # in theme template
+    """
+    Enum class for widgets for various form fields.
 
+    .. note::
+        For widget enum create corresponding field rendering html in theme template
+
+    **Authors**: Gagandeep Singh
+    """
+    # ---------- Widget enums ----------
     HTML_TEXT = 'html_text'
     HTML_EMAIL = 'html_email'
     HTML_PASSWORD = 'html_password'

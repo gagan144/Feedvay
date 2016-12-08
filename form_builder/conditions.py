@@ -33,6 +33,8 @@ class BaseCondition(JsonObject):
     A condition describes a control flow depending upon an expression evaluation. This implements a branching mechanism, determining
     which path to flow when expressions evaluates a result.
     Use this class to inherit and define specific flow controls.
+
+    **Authors**: Gagandeep Singh
     """
     _allow_dynamic_properties = False
 
@@ -52,7 +54,10 @@ class BaseCondition(JsonObject):
         Returns a javascript expression that checks all variables in the expression to be not null.
         This is used when 'validate_expr_var' is set true. In this case true/false branch is shown in the form
         only if and only if this expression evaluates to true. Otherwise nothing happens.
-        :return:
+
+        :return: Javascript expression
+
+        **Authors**: Gagandeep Singh
         """
 
         jscompiler = JsCompilerTool(self.expression)
@@ -98,8 +103,6 @@ class BaseCondition(JsonObject):
         })
         super(BaseCondition, self).__init__(_obj=_obj, **kwargs)
 
-
-
     def __str__(self):
         return "<{}: {}>".format(self.__class__.__name__, self._id)
 
@@ -112,6 +115,8 @@ class BinaryCondition(BaseCondition):
     """
     Defines a binary branch with two possible paths (or just one), one for expression is 'true' and other for 'false'.
     A false branch can be skipped.
+
+    **Authors**: Gagandeep Singh
     """
     true_branch = ObjectProperty(layouts.SectionLayout,required=True)
     false_branch = ObjectProperty(layouts.SectionLayout, default=None)
@@ -121,6 +126,8 @@ class SwitchCondition(BaseCondition):
     Defines a 1xN Multiplier that selects one of the seleveral branches depending upon the expression.
     Here expression is usually a value of the field having many possible results/cases. Depending upon the
     value, corresponding branch is selected.
+
+    **Authors**: Gagandeep Singh
     """
 
     list_cases = ListProperty(required=True)        # List of possible values
@@ -146,11 +153,13 @@ class SwitchCondition(BaseCondition):
 
 # ---------- Methods ----------
 def create_condition_obj(condition_dict):
-    '''
+    """
     Converts a condition dictionary into condition object.
     :param condition_dict: dict
     :return: Condition Object
-    '''
+
+    **Authors**: Gagandeep Singh
+    """
     class_name = condition_dict['_cls']
     try:
         condition_obj = globals()[class_name](condition_dict)

@@ -38,23 +38,27 @@ class Theme(models.Model):
     such as base html, various field rendering htmls etc.
 
     All template html files related to this theme must be kept under the directory
-    '/form_builder/templates/themes/[code]/'
+    ``/form_builder/templates/themes/[code]/``
 
-    The structure of this directory is as follows:
-    /form_builder/templates/themes/[code]/
-        |-- form_base.html
-        |-- fields
-              |-- html_text.html
-              |-- html_numeric.html
-              |-- html_<widget_name>.html   # Refer 'form_builder.widgets.py'
-                    |
-                    |
-              |-- error_messages.html
+
+    **The structure of this directory is as follows:**
+
+        - /form_builder/templates/themes/[code]/
+
+            - form_base.html
+            - fields
+
+                  - html_text.html
+                  - html_numeric.html
+                  - html_<widget_name>.html   # Refer 'form_builder.widgets.py'
+                  - error_messages.html
 
     All files under 'fields' directory must essentially define templates for every
     widget variable in form_builder.widgets.FieldWidgets
 
     A Theme always has a skin with code 'default' which is created by this theme model post save in case it iss absent.
+
+    **Authors**: Gagandeep Singh
     """
     code        = models.SlugField(max_length=64, unique=True, db_index=True, help_text='Theme code used to lookup templates in themes template directory.')
     name        = models.CharField(max_length=256, db_index=True, help_text='Name of the theme as displayed to user.')
@@ -109,10 +113,12 @@ class ThemeSkin(models.Model):
     look and feel of the page and is mostly defined by css & images.
 
     All css, js or image files must be kept under the directory
-    '/static/themes/[code]/'
-    and must be implemented by 'form_base.html' of that theme
+    ``/static/themes/[code]/``
+    and must be implemented by ``form_base.html`` of that theme
 
-    By Default, a skin with code 'default' is created for evert theme by 'Theme' model.
+    By Default, a skin with code ``default`` is created for evert theme by 'Theme' model.
+
+    **Authors**: Gagandeep Singh
     """
     theme       = models.ForeignKey(Theme, db_index=True)
     code        = models.SlugField(max_length=64, db_index=True, help_text='Skin code used as keyword in the form & to loopkup files in theme static directory.')
@@ -155,6 +161,11 @@ class ThemeSkin(models.Model):
 # ---------- Form ----------
 
 class Form(Model):
+    """
+    Model to define a form.
+
+    **Authors**: Gagandeep Singh
+    """
     title           = models.CharField(max_length=255, db_index=True, help_text='Title of the form which is displayed on the top.')
     description     = models.CharField(max_length=512, null=True, blank=True, help_text='(TranslationID) Description about this form.') # tinymce_models.HTMLField(null=True, blank=True, help_text='Description about this form.')
     instructions    = models.CharField(max_length=512, null=True, blank=True, help_text='(TranslationID) Any relevant instructions to fill this form.') # tinymce_models.HTMLField(null=True, blank=True, help_text='Any relevant instructions to fill this form.')
@@ -193,14 +204,14 @@ class Form(Model):
 
     @property
     def constants_obj(self):
-        if self.constants is None:
+        if self.constants is None or self.constants == {}:
             return None
         else:
             return form_schema.load_constant_schema(self.constants)
 
     @property
     def calculated_fields_obj(self):
-        if self.calculated_fields is None:
+        if self.calculated_fields is None or self.calculated_fields == {}:
             return None
         else:
             return form_schema.load_calculated_fields_schema(self.calculated_fields)
@@ -271,9 +282,10 @@ class Form(Model):
 
         # (1) Parse constants JSON & obtain object form.
         constants = self.constants_obj
-        for const in constants:
-            push_list_varnames(str(const.label))
-            set_translation_ids.add(const.text_translation_id)
+        if constants:
+            for const in constants:
+                push_list_varnames(str(const.label))
+                set_translation_ids.add(const.text_translation_id)
 
         # (2) Parse schema JSON & obtain schema obj. This will check any schema errors.
         schema_obj = self.schema_obj
@@ -295,22 +307,23 @@ class Form(Model):
         # (3) Parse calculated fields & obtains object form.
         # Check that all calculated fields are using only constants or mandatory form variables.
         calc_flds = self.calculated_fields_obj
-        for calcfld in calc_flds:
-            push_list_varnames(str(calcfld.label))
-            list_vars_in_expr = calcfld.get_expression_variables()
-            set_translation_ids.add(calcfld.text_translation_id)
+        if calc_flds:
+            for calcfld in calc_flds:
+                push_list_varnames(str(calcfld.label))
+                list_vars_in_expr = calcfld.get_expression_variables()
+                set_translation_ids.add(calcfld.text_translation_id)
 
-            for absolute_var in list_vars_in_expr:
-                varname = absolute_var.replace("$scope.", "").replace("data.", "").replace("constants.", "")
-                if not list_varnames.__contains__(varname):
-                    # Check variable was declared or not
-                    raise ExpressionCompileError("Undefined variable '{}' in the expression for calculated field '{}'.".format(varname, calcfld.label))
-                else:
-                    # Chech if this variable is data field
-                    if absolute_var.__contains__("data."):
-                        # check if this field is mandatory
-                        if lookupDict_fields[varname].required == False:
-                            raise ExpressionCompileError("Field '{}' must be mandatory in order to be used in the expression for calculated field '{}'.".format(varname, calcfld.label))
+                for absolute_var in list_vars_in_expr:
+                    varname = absolute_var.replace("$scope.", "").replace("data.", "").replace("constants.", "")
+                    if not list_varnames.__contains__(varname):
+                        # Check variable was declared or not
+                        raise ExpressionCompileError("Undefined variable '{}' in the expression for calculated field '{}'.".format(varname, calcfld.label))
+                    else:
+                        # Chech if this variable is data field
+                        if absolute_var.__contains__("data."):
+                            # check if this field is mandatory
+                            if lookupDict_fields[varname].required == False:
+                                raise ExpressionCompileError("Field '{}' must be mandatory in order to be used in the expression for calculated field '{}'.".format(varname, calcfld.label))
 
         return list(set_translation_ids)
 
@@ -401,14 +414,18 @@ class FormFieldMetaData(Document):
 
     Uniqueness: form_id, label, field_class
 
-    Logic:
-        Before inserting new record, collection it looked up form any previous record with
-        key consisting of (form_id, label, field_class).
+    **Logic**:
+
+        - Before inserting new record, collection it looked up form any previous record with
+          key consisting of (form_id, label, field_class).
         - If found, this record is updated with remaining information.
         - If not found, new entry is made. Old one automatically get obselete as there is new
           is new record with latest form_version.
 
-        CURRENT list of field is obtained by querying collection on the key (form_id, form_version)
+    .. note::
+        Current list of field is obtained by querying collection on the key (form_id, form_version)
+
+    **Authors**: Gagandeep Singh
     """
 
     form_id         = StringField(required=True, unique_with=["label", "field_class"], help_text="Raw ID link to 'Form' model.")
@@ -446,6 +463,12 @@ class FormFieldMetaData(Document):
 
 # ---------- Global methods ----------
 def iterate_form_fields(schema):
+    """
+    Global method to recursively iterate over fields in form schema.
+
+    :param schema: Form schema
+    :return: Field
+    """
     from form_builder import fields
     from form_builder import conditions
     from form_builder import layouts

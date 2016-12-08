@@ -3,38 +3,41 @@
 # permission of Gagandeep Singh.
 
 from tastypie.resources import ModelResource, Resource, ALL, ALL_WITH_RELATIONS
-from tastypie import fields
-from tastypie.authentication import SessionAuthentication
-from tastypie_mongoengine import resources
 
-from django.template.defaultfilters import striptags
+from utilities.tastypie_utils import StaffSessionAuthentication
+
 from form_builder.models import Form
 
-class FormsAPI(ModelResource):
-    class Meta:
-        queryset = Form.objects.all()
-        resource_name = 'forms'
-        limit = 0
-        max_limit = None
-        filtering = {
-            'title': ALL,
-            'created_on' : ALL,
-        }
-        fields = ('id', 'title', 'theme_skin', 'languages', 'version', 'created_on', 'updated_on')
-        authentication = SessionAuthentication()
-
-    def dehydrate(self, bundle):
-        obj = bundle.obj
-
-        # Theme
-        skin = obj.theme_skin
-        bundle.data['theme'] = {
-            "full_name": str(skin),
-            "skin_name": skin.name,
-            "theme_name": skin.theme.name
-        }
-
-        # Languages
-        bundle.data['languages'] = list(obj.languages.all().values_list('name', flat=True))
-
-        return bundle
+# class FormsAPI(ModelResource):
+#     """
+#     API resource to list all forms. For staff admin only.
+#
+#     **Authors**: Gagandeep Singh
+#     """
+#     class Meta:
+#         queryset = Form.objects.all()
+#         resource_name = 'forms'
+#         limit = 0
+#         max_limit = None
+#         filtering = {
+#             'title': ALL,
+#             'created_on' : ALL,
+#         }
+#         fields = ('id', 'title', 'theme_skin', 'languages', 'version', 'created_on', 'updated_on')
+#         authentication = StaffSessionAuthentication() #SessionAuthentication()
+#
+#     def dehydrate(self, bundle):
+#         obj = bundle.obj
+#
+#         # Theme
+#         skin = obj.theme_skin
+#         bundle.data['theme'] = {
+#             "full_name": str(skin),
+#             "skin_name": skin.name,
+#             "theme_name": skin.theme.name
+#         }
+#
+#         # Languages
+#         bundle.data['languages'] = list(obj.languages.all().values_list('name', flat=True))
+#
+#         return bundle

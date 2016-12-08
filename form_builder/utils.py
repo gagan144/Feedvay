@@ -6,6 +6,8 @@ import re
 class JsCompilerTool(object):
     """
     Class for compiler analysis of javascript code.
+
+    **Authors**: Gagandeep Singh
     """
 
     def __init__(self, code):
@@ -19,6 +21,8 @@ class JsCompilerTool(object):
 class GeoLocation:
     """
     A class to define gps options available in the form.
+
+    **Authors**: Gagandeep Singh
     """
 
     # GPS options enums

@@ -7,7 +7,7 @@ from django.conf.urls import url, include
 from form_builder import views
 from form_builder import api
 
-api_forms = api.FormsAPI()
+# api_forms = api.FormsAPI()
 
 partial_patterns = [
     url(r'^form-field/(?P<class_name>.*).html', views.partials_form_field, name='form_builder_partials_formfield'),
@@ -26,5 +26,5 @@ urlpatterns = [
     url(r'^testing/$', views.testing, name='testing'),
 
     # Api
-    url(r'^api/', include(api_forms.urls)),
+    # url(r'^api/', include(api_forms.urls)),
 ]

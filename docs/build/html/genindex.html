@@ -89,6 +89,7 @@
 <li class="toctree-l1"><a class="reference internal" href="modules/accounts/index.html">Accounts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/brands/index.html">Brands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/console/index.html">Console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/form_builder/index.html">Form builder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/languages/index.html">Languages</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/owlery/index.html">Owlery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/surveys/index.html">Survey</a></li>
@@ -206,7 +207,27 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
+  <dt><a href="modules/form_builder/conditions.html#form_builder.conditions.BaseCondition">BaseCondition (class in form_builder.conditions)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/layouts.html#form_builder.layouts.BaseLayout">BaseLayout (class in form_builder.layouts)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.BasicFormField">BasicFormField (class in form_builder.fields)</a>
+  </dt>
+
+      
   <dt><a href="modules/accounts/forms.html#accounts.forms.BasicInfoForm">BasicInfoForm (class in accounts.forms)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/conditions.html#form_builder.conditions.BinaryCondition">BinaryCondition (class in form_builder.conditions)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.BinaryFormField">BinaryFormField (class in form_builder.fields)</a>
   </dt>
 
       
@@ -225,6 +246,8 @@
   <dt><a href="modules/utilities/decorators.html#utilities.decorators.brand_console">brand_console() (in module utilities.decorators)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/brands/models.html#brands.models.BrandChangeRequest">BrandChangeRequest (class in brands.models)</a>
   </dt>
@@ -237,8 +260,6 @@
   <dt><a href="modules/utilities/tastypi_utils.html#utilities.tastypie_utils.BrandConsoleSessionAuthentication">BrandConsoleSessionAuthentication (class in utilities.tastypie_utils)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/brands/forms.html#brands.forms.BrandCreateEditForm">BrandCreateEditForm (class in brands.forms)</a>
   </dt>
@@ -278,7 +299,19 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
+  <dt><a href="modules/form_builder/form_variables.html#form_builder.form_variables.CalculatedField">CalculatedField (class in form_builder.form_variables)</a>
+  </dt>
+
+      
   <dt><a href="modules/utilities/api_utils.html#utilities.api_utils.ApiResponse.change_status">change_status() (utilities.api_utils.ApiResponse method)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.Choice">Choice (class in form_builder.fields)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.ChoiceOrder">ChoiceOrder (class in form_builder.fields)</a>
   </dt>
 
       
@@ -380,6 +413,10 @@
 
       </dl></dd>
       
+  <dt><a href="modules/form_builder/form_exceptions.html#form_builder.form_exceptions.ConditionDefinitionError">ConditionDefinitionError</a>
+  </dt>
+
+      
   <dt><a href="modules/console/context_processors.html#console.context_processors.console">console() (in module console.context_processors)</a>
   </dt>
 
@@ -400,6 +437,10 @@
   </dt>
 
       
+  <dt><a href="modules/form_builder/form_variables.html#form_builder.form_variables.Constant">Constant (class in form_builder.form_variables)</a>
+  </dt>
+
+      
   <dt><a href="modules/watchdog/models.html#watchdog.models.ErrorLog.construct_checksum">construct_checksum() (watchdog.models.ErrorLog static method)</a>
   </dt>
 
@@ -409,6 +450,26 @@
 
       
   <dt><a href="modules/brands/operations.html#brands.operations.create_brand_change_log">create_brand_change_log() (in module brands.operations)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/form_variables.html#form_builder.form_variables.create_calculated_field_obj">create_calculated_field_obj() (in module form_builder.form_variables)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/conditions.html#form_builder.conditions.create_condition_obj">create_condition_obj() (in module form_builder.conditions)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/form_variables.html#form_builder.form_variables.create_constant_obj">create_constant_obj() (in module form_builder.form_variables)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.create_field_obj">create_field_obj() (in module form_builder.fields)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/layouts.html#form_builder.layouts.create_layout_obj">create_layout_obj() (in module form_builder.layouts)</a>
   </dt>
 
       
@@ -430,15 +491,31 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="modules/accounts/models.html#accounts.models.RegisteredUser.deconstruct_username">deconstruct_username() (accounts.models.RegisteredUser static method)</a>
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.DataType">DataType (class in form_builder.fields)</a>
   </dt>
 
       
-  <dt><a href="modules/accounts/models.html#accounts.models.UserProfile.delete_attribute">delete_attribute() (accounts.models.UserProfile method)</a>
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.DateFormField">DateFormField (class in form_builder.fields)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.DateTimeFormField">DateTimeFormField (class in form_builder.fields)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.DecimalFormField">DecimalFormField (class in form_builder.fields)</a>
+  </dt>
+
+      
+  <dt><a href="modules/accounts/models.html#accounts.models.RegisteredUser.deconstruct_username">deconstruct_username() (accounts.models.RegisteredUser static method)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="modules/accounts/models.html#accounts.models.UserProfile.delete_attribute">delete_attribute() (accounts.models.UserProfile method)</a>
+  </dt>
+
       
   <dt><a href="modules/brands/models.html#brands.models.Brand.delete_owner">delete_owner() (brands.models.Brand method)</a>
   </dt>
@@ -451,12 +528,20 @@
   <dt><a href="modules/brands/models.html#brands.models.Brand.does_exists">does_exists() (brands.models.Brand static method)</a>
   </dt>
 
+      
+  <dt><a href="modules/form_builder/form_exceptions.html#form_builder.form_exceptions.DuplicateVariableName">DuplicateVariableName</a>
+  </dt>
+
   </dl></td>
 </tr></table>
 
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.EmailFormField">EmailFormField (class in form_builder.fields)</a>
+  </dt>
+
       
   <dt><a href="modules/owlery/models.html#owlery.models.EmailMessage">EmailMessage (class in owlery.models)</a>
   </dt>
@@ -475,6 +560,14 @@
   <dt><a href="modules/watchdog/middleware.html#watchdog.middleware.ErrorLogMiddleware">ErrorLogMiddleware (class in watchdog.middleware)</a>
   </dt>
 
+      
+  <dt><a href="modules/form_builder/conditions.html#form_builder.conditions.BaseCondition.expression_validate_var">expression_validate_var (form_builder.conditions.BaseCondition attribute)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/form_exceptions.html#form_builder.form_exceptions.ExpressionCompileError">ExpressionCompileError</a>
+  </dt>
+
   </dl></td>
 </tr></table>
 
@@ -490,11 +583,25 @@
   </dt>
 
       
+  <dt><a href="modules/form_builder/form_exceptions.html#form_builder.form_exceptions.FieldDefinitionError">FieldDefinitionError</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/form_exceptions.html#form_builder.form_exceptions.FieldValueError">FieldValueError</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/widgets.html#form_builder.widgets.FieldWidgets">FieldWidgets (class in form_builder.widgets)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/validators.html#form_builder.validators.float_choices">float_choices() (in module form_builder.validators)</a>
+  </dt>
+
+      
   <dt><a href="modules/accounts/models.html#accounts.models.force_logout_user">force_logout_user() (in module accounts.models)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/owlery/models.html#owlery.models.EmailMessage.force_send">force_send() (owlery.models.EmailMessage method)</a>
   </dt>
@@ -506,7 +613,57 @@
 
       </dl></dd>
       
+  <dt><a href="modules/form_builder/models.html#form_builder.models.Form">Form (class in form_builder.models)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/conditions.html#module-form_builder.conditions">form_builder.conditions (module)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="modules/form_builder/fields.html#module-form_builder.fields">form_builder.fields (module)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/form_exceptions.html#module-form_builder.form_exceptions">form_builder.form_exceptions (module)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/form_schema.html#module-form_builder.form_schema">form_builder.form_schema (module)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/form_variables.html#module-form_builder.form_variables">form_builder.form_variables (module)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/layouts.html#module-form_builder.layouts">form_builder.layouts (module)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/models.html#module-form_builder.models">form_builder.models (module)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/utils.html#module-form_builder.utils">form_builder.utils (module)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/validators.html#module-form_builder.validators">form_builder.validators (module)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/widgets.html#module-form_builder.widgets">form_builder.widgets (module)</a>
+  </dt>
+
+      
   <dt><a href="modules/languages/views.html#languages.views.form_translations">form_translations() (in module languages.views)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/models.html#form_builder.models.FormFieldMetaData">FormFieldMetaData (class in form_builder.models)</a>
   </dt>
 
   </dl></td>
@@ -527,8 +684,10 @@
   <dt><a href="modules/brands/models.html#brands.models.Brand.generate_uitheme">generate_uitheme() (brands.models.Brand static method)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="modules/form_builder/utils.html#form_builder.utils.GeoLocation">GeoLocation (class in form_builder.utils)</a>
+  </dt>
+
       
   <dt><a href="modules/accounts/forms.html#accounts.forms.RegistrationForm.get_date_of_birth">get_date_of_birth() (accounts.forms.RegistrationForm method)</a>
   </dt>
@@ -537,8 +696,32 @@
   <dt><a href="modules/utilities/templatetags.html#utilities.templatetags.commontags.get_item">get_item() (in module utilities.templatetags.commontags)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.DecimalFormField.get_max_length">get_max_length() (form_builder.fields.DecimalFormField method)</a>
+  </dt>
+
       
   <dt><a href="modules/accounts/models.html#accounts.models.UserProfile.get_meta_dict">get_meta_dict() (accounts.models.UserProfile method)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.DecimalFormField.get_min_value">get_min_value() (form_builder.fields.DecimalFormField method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.NumberFormField.get_min_value">(form_builder.fields.NumberFormField method)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.DataType.get_python_class">get_python_class() (form_builder.fields.DataType static method)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.BasicFormField.get_translation_ids">get_translation_ids() (form_builder.fields.BasicFormField method)</a>
   </dt>
 
       
@@ -552,11 +735,39 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="modules/accounts/exceptions.html#accounts.exceptions.InvalidRegisteredUser">InvalidRegisteredUser</a>
+  <dt><a href="modules/form_builder/validators.html#form_builder.validators.int_choices">int_choices() (in module form_builder.validators)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/form_exceptions.html#form_builder.form_exceptions.InvalidCalculatedFieldExpression">InvalidCalculatedFieldExpression</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/form_exceptions.html#form_builder.form_exceptions.InvalidCalculatedFieldSchema">InvalidCalculatedFieldSchema</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/form_exceptions.html#form_builder.form_exceptions.InvalidConstantSchema">InvalidConstantSchema</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/form_exceptions.html#form_builder.form_exceptions.InvalidFormClass">InvalidFormClass</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="modules/form_builder/form_exceptions.html#form_builder.form_exceptions.InvalidFormSchemaError">InvalidFormSchemaError</a>
+  </dt>
+
+      
+  <dt><a href="modules/accounts/exceptions.html#accounts.exceptions.InvalidRegisteredUser">InvalidRegisteredUser</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/form_exceptions.html#form_builder.form_exceptions.InvalidWidgetError">InvalidWidgetError</a>
+  </dt>
+
       
   <dt><a href="modules/utilities/tastypi_utils.html#utilities.tastypie_utils.BrandConsoleSessionAuthentication.is_authenticated">is_authenticated() (utilities.tastypie_utils.BrandConsoleSessionAuthentication method)</a>
   </dt>
@@ -567,11 +778,21 @@
   </dt>
 
       </dl></dd>
+      
+  <dt><a href="modules/form_builder/models.html#form_builder.models.iterate_form_fields">iterate_form_fields() (in module form_builder.models)</a>
+  </dt>
+
   </dl></td>
 </tr></table>
 
 <h2 id="J">J</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="modules/form_builder/utils.html#form_builder.utils.JsCompilerTool">JsCompilerTool (class in form_builder.utils)</a>
+  </dt>
+
+  </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/utilities/templatetags.html#utilities.templatetags.commontags.jsonify">jsonify() (in module utilities.templatetags.commontags)</a>
@@ -599,10 +820,30 @@
   <dt><a href="modules/languages/templatetags.html#module-languages.templatetags.language_tags">languages.templatetags.language_tags (module)</a>
   </dt>
 
+      
+  <dt><a href="modules/languages/views.html#module-languages.views">languages.views (module)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/form_exceptions.html#form_builder.form_exceptions.LayoutDefinitionError">LayoutDefinitionError</a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="modules/languages/views.html#module-languages.views">languages.views (module)</a>
+  <dt><a href="modules/form_builder/form_schema.html#form_builder.form_schema.load_calculated_fields_schema">load_calculated_fields_schema() (in module form_builder.form_schema)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/form_schema.html#form_builder.form_schema.load_constant_schema">load_constant_schema() (in module form_builder.form_schema)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/form_schema.html#form_builder.form_schema.load_form_class">load_form_class() (in module form_builder.form_schema)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/form_schema.html#form_builder.form_schema.load_form_schema">load_form_schema() (in module form_builder.form_schema)</a>
   </dt>
 
       
@@ -635,8 +876,6 @@
   <dt><a href="modules/brands/operations.html#brands.operations.mark_brand_verified">mark_brand_verified() (in module brands.operations)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/owlery/models.html#owlery.models.EmailMessage.mark_send">mark_send() (owlery.models.EmailMessage method)</a>
   </dt>
@@ -647,8 +886,26 @@
   </dt>
 
       </dl></dd>
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.MCMSFormField">MCMSFormField (class in form_builder.fields)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.MCQ_Types">MCQ_Types (class in form_builder.fields)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.MCSSFormField">MCSSFormField (class in form_builder.fields)</a>
+  </dt>
+
       
   <dt><a href="modules/utilities/custom_storages.html#utilities.custom_storages.MediaStorage">MediaStorage (class in utilities.custom_storages)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/validators.html#form_builder.validators.min_max_validator">min_max_validator() (in module form_builder.validators)</a>
   </dt>
 
       
@@ -679,12 +936,20 @@
   <dt><a href="modules/owlery/models.html#owlery.models.NotificationRecipient">NotificationRecipient (class in owlery.models)</a>
   </dt>
 
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.NumberFormField">NumberFormField (class in form_builder.fields)</a>
+  </dt>
+
   </dl></td>
 </tr></table>
 
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.OtherOptionType">OtherOptionType (class in form_builder.fields)</a>
+  </dt>
+
       
   <dt><a href="modules/owlery/models.html#module-owlery.models">owlery.models (module)</a>
   </dt>
@@ -707,6 +972,10 @@
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/accounts/forms.html#accounts.forms.PasswordChangeForm">PasswordChangeForm (class in accounts.forms)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.PasswordFormField">PasswordFormField (class in form_builder.fields)</a>
   </dt>
 
       
@@ -747,6 +1016,10 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.RatingFormField">RatingFormField (class in form_builder.fields)</a>
+  </dt>
+
       
   <dt><a href="modules/accounts/views.html#accounts.views.recover_account">recover_account() (in module accounts.views)</a>
   </dt>
@@ -906,6 +1179,10 @@
   </dt>
 
       
+  <dt><a href="modules/form_builder/layouts.html#form_builder.layouts.SectionLayout">SectionLayout (class in form_builder.layouts)</a>
+  </dt>
+
+      
   <dt><a href="modules/owlery/mod_services.html#owlery.services.firebase.FcmPushService.send">send() (owlery.services.firebase.FcmPushService method)</a>
   </dt>
 
@@ -1052,6 +1329,10 @@
   </dt>
 
       
+  <dt><a href="modules/form_builder/validators.html#form_builder.validators.string_choices">string_choices() (in module form_builder.validators)</a>
+  </dt>
+
+      
   <dt><a href="modules/watchdog/models.html#watchdog.models.Suggestion">Suggestion (class in watchdog.models)</a>
   </dt>
 
@@ -1075,6 +1356,10 @@
   <dt><a href="modules/surveys/models.html#surveys.models.SurveyTag">SurveyTag (class in surveys.models)</a>
   </dt>
 
+      
+  <dt><a href="modules/form_builder/conditions.html#form_builder.conditions.SwitchCondition">SwitchCondition (class in form_builder.conditions)</a>
+  </dt>
+
   </dl></td>
 </tr></table>
 
@@ -1082,7 +1367,31 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.TextAreaFormField">TextAreaFormField (class in form_builder.fields)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.TextFormField">TextFormField (class in form_builder.fields)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/models.html#form_builder.models.Theme">Theme (class in form_builder.models)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/models.html#form_builder.models.ThemeSkin">ThemeSkin (class in form_builder.models)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.TimeFormField">TimeFormField (class in form_builder.fields)</a>
+  </dt>
+
+      
   <dt><a href="modules/languages/templatetags.html#languages.templatetags.language_tags.to_js_json_unicode">to_js_json_unicode() (in module languages.templatetags.language_tags)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.BasicFormField.to_json">to_json() (form_builder.fields.BasicFormField method)</a>
   </dt>
 
       
@@ -1105,6 +1414,8 @@
   <dt><a href="modules/surveys/models.html#surveys.models.Survey.trans_pause">trans_pause() (surveys.models.Survey method)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/surveys/models.html#surveys.models.Survey.trans_publish">trans_publish() (surveys.models.Survey method)</a>
   </dt>
@@ -1117,8 +1428,6 @@
   <dt><a href="modules/brands/models.html#brands.models.BrandChangeRequest.trans_rejected">trans_rejected() (brands.models.BrandChangeRequest method)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/surveys/models.html#surveys.models.Survey.trans_resume">trans_resume() (surveys.models.Survey method)</a>
   </dt>
@@ -1149,6 +1458,10 @@
 
       
   <dt><a href="modules/languages/models.html#languages.models.Translation">Translation (class in languages.models)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.BasicFormField.translation">translation (form_builder.fields.BasicFormField attribute)</a>
   </dt>
 
       
@@ -1258,11 +1571,27 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
+  <dt><a href="modules/form_builder/validators.html#form_builder.validators.validate_calc_fld_expression">validate_calc_fld_expression() (in module form_builder.validators)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/validators.html#form_builder.validators.validate_email">validate_email() (in module form_builder.validators)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/models.html#form_builder.models.Form.validate_form">validate_form() (form_builder.models.Form method)</a>
+  </dt>
+
+      
   <dt><a href="modules/utilities/validators.html#utilities.validators.validate_hex_color">validate_hex_color() (in module utilities.validators)</a>
   </dt>
 
       
   <dt><a href="modules/brands/models.html#brands.models.Brand.validate_icon_image">validate_icon_image() (brands.models.Brand static method)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/validators.html#form_builder.validators.validate_label">validate_label() (in module form_builder.validators)</a>
   </dt>
 
       
@@ -1272,7 +1601,23 @@
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
+  <dt><a href="modules/form_builder/validators.html#form_builder.validators.validate_max_score">validate_max_score() (in module form_builder.validators)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/validators.html#form_builder.validators.validate_no_special_char">validate_no_special_char() (in module form_builder.validators)</a>
+  </dt>
+
+      
   <dt><a href="modules/owlery/models.html#owlery.models.validate_sms_no">validate_sms_no() (in module owlery.models)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/fields.html#form_builder.fields.BasicFormField.validate_value">validate_value() (form_builder.fields.BasicFormField method)</a>
+  </dt>
+
+      
+  <dt><a href="modules/form_builder/form_exceptions.html#form_builder.form_exceptions.VariableDefinitionError">VariableDefinitionError</a>
   </dt>
 
       

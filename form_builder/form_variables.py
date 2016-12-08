@@ -13,6 +13,8 @@ class Constant(JsonObject):
     """
     Defines a readonly constant in the form whose value can be used to conditionally
     change form behavior.
+
+    **Authors**: Gagandeep Singh
     """
     _allow_dynamic_properties = False
 
@@ -46,6 +48,8 @@ class CalculatedField(JsonObject):
     """
     Defines a calculated field whose value is the resultant of the expression.
     This field is different from any 'BasicFormField'.
+
+    **Authors**: Gagandeep Singh
     """
     _allow_dynamic_properties = False
 
@@ -82,11 +86,14 @@ class CalculatedField(JsonObject):
 
 # ---------- Methods ----------
 def create_constant_obj(constant_dict):
-    '''
+    """
     Converts a constant dictionary into a corresponding constant object.
+
     :param constant_dict: dict
     :return: Constant Object
-    '''
+
+    **Authors**: Gagandeep Singh
+    """
     try:
         constant_obj = Constant(constant_dict)
         return constant_obj

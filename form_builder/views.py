@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.template.context import RequestContext
 from django.contrib.auth.decorators import login_required
 
-from .models import *
+from form_builder.models import *
 from form_builder.utils import GeoLocation
 from form_builder import fields
 from form_builder import layouts

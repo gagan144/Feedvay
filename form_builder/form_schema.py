@@ -15,8 +15,11 @@ from form_variables import create_constant_obj
 
 def load_form_class(node_dict):
     """
-    Accepts a dict and convert it into form class object
+    Accepts a dict and convert it into form class object.
+
     :param class_dict: dict
+
+    **Authors**: Gagandeep Singh
     """
 
     class_name = node_dict['_cls']
@@ -44,8 +47,11 @@ def load_form_schema(schema):
     Accepts json or json string of form json and returns object schema.
     If schema is list, it is treated as form schema.
     If schema is dict, it is treated as form class schema, which will return object of that class
+
     :param schema: list/str
     :return: object schema
+
+    **Authors**: Gagandeep Singh
     """
 
     schema_object = None
@@ -72,6 +78,8 @@ def load_form_schema(schema):
 def load_constant_schema(schema):
     """
     Accepts a list json or a equivalent string and converts into list of 'form_variables.Constant'.
+
+    **Authors**: Gagandeep Singh
     """
     if isinstance(schema, str):
         schema = json.loads(schema)
@@ -91,6 +99,8 @@ def load_constant_schema(schema):
 def load_calculated_fields_schema(schema):
     """
     Accepts a list json or a equivalent string and converts into list of 'form_variables.CalculatedField'.
+
+    **Authors**: Gagandeep Singh
     """
     if isinstance(schema, str):
         schema = json.loads(schema)

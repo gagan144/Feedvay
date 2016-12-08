@@ -8,6 +8,15 @@ from form_builder.utils import JsCompilerTool
 
 # ---------- General use validations ----------
 def validate_label(label):
+    """
+    Method to validate if the label name follows conventions for declaring a javascript variable.
+
+    :param label: Label name
+
+    **Throws**: :class:`form_builder.form_exceptions.FieldDefinitionError`
+
+    **Authors**: Gagandeep Singh
+    """
     # if re.match(r'.*[ \\\#\%\$\^\*\@\!\-\(\)\:\;\'\"\{\}\[\]].*', label) is None and not label.__contains__('__'):
     # if re.match(r'.*[ \\\#\%\$\^\*\@\!\-\:\;\'\"\/\>\<\~\`\)\(\}\{\]\[\|\+].*', label) is None and not label.__contains__('__'):
     if re.match('^[A-Za-z0-9_]+$',label) is not None and not label.__contains__('__'):
@@ -16,10 +25,28 @@ def validate_label(label):
         raise FieldDefinitionError("Label '{}' cannot contain special characters, space or double underscore.".format(label))
 
 def validate_no_special_char(value):
+    """
+    Method to check that value must not contain any special characters.
+
+    :param value: Value
+
+    **Throws**: :class:`form_builder.form_exceptions.FieldValueError`
+
+    **Authors**: Gagandeep Singh
+    """
     if re.match('^[A-Za-z0-9]+$', value) is None:
         raise FieldValueError("Value cannot have special characters.")
 
 def validate_email(email_addr):
+    """
+    Method to validate email address.
+
+    :param email_addr: Email address
+
+    **Throws**: :class:`form_builder.form_exceptions.FieldValueError`
+
+    **Authors**: Gagandeep Singh
+    """
     match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email_addr)
     if match is None:
         raise FieldValueError("Invalid email '{}'.".format(email_addr))
@@ -28,7 +55,12 @@ def validate_email(email_addr):
 def int_choices(list_choices):
     """
     Validate if 'value' in all choices are of type int or not.
+
     :param list_choice: [ <fields.Choice>, <fields.Choice>, ... ]
+
+    **Throws**: :class:`form_builder.form_exceptions.FieldDefinitionError`
+
+    **Authors**: Gagandeep Singh
     """
 
     for ch in list_choices:
@@ -39,7 +71,12 @@ def int_choices(list_choices):
 def float_choices(list_choices):
     """
     Validate if 'value' in all choices are of type int or not.
+
     :param list_choice: [ <fields.Choice>, <fields.Choice>, ... ]
+
+    **Throws**: :class:`form_builder.form_exceptions.FieldDefinitionError`
+
+    **Authors**: Gagandeep Singh
     """
 
     for ch in list_choices:
@@ -50,7 +87,12 @@ def float_choices(list_choices):
 def string_choices(list_choices):
     """
     Validate if 'value' in all choices are of type string or not.
+
     :param list_choice: [ <fields.Choice>, <fields.Choice>, ... ]
+
+    **Throws**: :class:`form_builder.form_exceptions.FieldDefinitionError`
+
+    **Authors**: Gagandeep Singh
     """
 
     for ch in list_choices:
@@ -65,20 +107,41 @@ def string_choices(list_choices):
 def min_max_validator(min_val, max_val):
     """
     Validates if 'min_val' <= 'max_val'
-    :param min_val:
-    :param max_val:
-    :return:
+    :param min_val: Test value which is supposed to be smaler.
+    :param max_val: Test value which is supposed to be greater.
+
+    **Throws**: AssertionError
+
+    **Authors**: Gagandeep Singh
     """
     if min_val > max_val:
         raise AssertionError("Minimum value {} cannot be greater than maximum value {}.".format(min_val, max_val))
 
 # ---------- Rating ----------
 def validate_max_score(max_score):
-        if not (3 <= max_score <= 12):
-            raise FieldDefinitionError("Max Score must be between 3 and 12.")
+    """
+    Method to check if max score is between 3 and 12 for a rating field.
+
+    :param max_score: Max score
+
+    **Throws**: :class:`form_builder.form_exceptions.FieldDefinitionError`
+
+    **Authors**: Gagandeep Singh
+    """
+    if not (3 <= max_score <= 12):
+        raise FieldDefinitionError("Max Score must be between 3 and 12.")
 
 # ---------- Calculated Field Validators ----------
 def validate_calc_fld_expression(expression):
+    """
+    Validates calculated field evaluation expression.
+
+    :param expression: Expression
+
+    **Throws**: :class:`form_builder.form_exceptions.InvalidCalculatedFieldExpression`
+
+    **Authors**: Gagandeep Singh
+    """
     jscompiler = JsCompilerTool(expression)
     list_var = jscompiler.extract_variables()
 

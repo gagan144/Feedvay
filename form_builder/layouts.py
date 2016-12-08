@@ -28,6 +28,8 @@ class BaseLayout(JsonObject):
     """
     A Layout defines an encapsulated arrangement of components (Fields, Conditions or even a layout).
     This is generic class which must be inherited to define specific layout.
+
+    **Authors**: Gagandeep Singh
     """
     _allow_dynamic_properties = False
 
@@ -104,17 +106,22 @@ class BaseLayout(JsonObject):
 class SectionLayout(BaseLayout):
     """
     Defines a division or a section in a form
+
+    **Authors**: Gagandeep Singh
     """
 
 
 
 # ---------- Methods ----------
 def create_layout_obj(layout_dict):
-    '''
+    """
     Converts a field dictionary into a corresponding field object.
+
     :param condition_dict: dict
     :return: Layout Object
-    '''
+
+    **Authors**: Gagandeep Singh
+    """
     class_name = layout_dict['_cls']
     try:
         layout_obj = globals()[class_name](layout_dict)

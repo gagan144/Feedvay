@@ -18,9 +18,17 @@ from languages.models import Translation
 
 class DataType:
     """
-    Warning: Some of these static variables have been used in 'MCQ_Types' which have been referenced using
-    values instead of variable. Please be careful will making any amendments.
-        usage: form_builder/templates/themes/<theme_name>/fields/choice_other.html
+    Enum class for data types used in the form.
+
+    .. warning::
+        Some of these static variables have been used in 'MCQ_Types' which have been referenced using
+        values instead of variable. Please be careful will making any amendments.
+
+    **usage**:
+
+        - form_builder/templates/themes/<theme_name>/fields/choice_other.html
+
+    **Authors**: Gagandeep Singh
     """
     STRING = 'string'
     INT = 'int'
@@ -42,6 +50,14 @@ class DataType:
 
     @staticmethod
     def get_python_class(type):
+        """
+        Returns a python data type for a form data type.
+
+        :param type: Form type as in :class:`form_builder.fields.DataType`
+        :return: Python type
+
+        **Authors**: Gagandeep Singh
+        """
         if type == DataType.STRING:
             return str
         elif type == DataType.INT:
@@ -62,7 +78,12 @@ class DataType:
 
 class MCQ_Types:
     """
-    Warning: Please read 'DataType' warning before making any changes.
+    Enum class for data types allowed for MCQ questions. These are subset of :class:`form_builder.fields.DataType`.
+
+    .. warning::
+        Please read :class:`form_builder.fields.DataType` warning before making any changes.
+
+    **Authors**: Gagandeep Singh
     """
     STRING = DataType.STRING
     INT = DataType.INT
@@ -75,6 +96,11 @@ class MCQ_Types:
     )
 
 class ChoiceOrder:
+    """
+    Enum class for types of ordering in choice fields.
+
+    **Authors**: Gagandeep Singh
+    """
     ASCENDING = 'ascending'
     DESCENDING = 'descending'
     RANDOM = 'random'
@@ -88,6 +114,11 @@ class ChoiceOrder:
     )
 
 class OtherOptionType:
+    """
+    Enum class for types of questions asked when other option is selected for a MCQ question.
+
+    **Authors**: Gagandeep Singh
+    """
     SINGLE_LINE = 'single_line'
     PARAGRAPH = 'paragraph'
 
@@ -101,6 +132,8 @@ class OtherOptionType:
 class Choice(JsonObject):
     """
     Define a simple choice (with value & text) for a multiple choice field.
+
+    **Authors**: Gagandeep Singh
     """
     value = DefaultProperty(required=True)  # Value that is relieved as an answer to the question
     text = StringProperty(required=True)    # Text displayed for the option o the user
@@ -128,6 +161,12 @@ class Choice(JsonObject):
 class BasicFormField(JsonObject):
     """
     An abstract field that defines basic definition of a field in a form. Inherit this class to create any field.
+
+    .. note::
+
+        All form fields inherit this fields that is, every form field is type of BasicFirmField.
+
+    **Authors**: Gagandeep Singh
     """
     _allow_dynamic_properties = False
 
@@ -146,6 +185,13 @@ class BasicFormField(JsonObject):
 
     @property
     def translation(self):
+        """
+        Returns translation for question text.
+
+        :return: :class:`languages.models.Translation` instance.
+
+        **Authors**: Gagandeep Singh
+        """
         return Translation.objects.with_id(self.text_translation_id)
 
     def __init__(self, _obj=None, **kwargs):
@@ -180,6 +226,13 @@ class BasicFormField(JsonObject):
         return self._cls
 
     def get_translation_ids(self):
+        """
+        Get all translations used in this field.
+
+        :return: List<:class:`languages.model.Translation`>
+
+        **Authors**: Gagandeep Singh
+        """
         list_translation_ids = [self.text_translation_id]
 
         if self.description:
@@ -191,11 +244,27 @@ class BasicFormField(JsonObject):
         return list_translation_ids
 
     def validate_value(self, value):
+        """
+        Validate value as the answer for question of this form field.
+        Throws :class:`form_builder.form_exceptions.FieldValueError`.
+
+        :param value: Value
+
+        **Authors**: Gagandeep Singh
+        """
         if self.required:
             if value is None or value == '':
                 raise FieldValueError("Value cannot be empty.")
 
     def to_json(self):
+        """
+        Get json form for this field.
+
+        :return: JSON
+
+        **Authors**: Gagandeep Singh
+        """
+
         self.text_ref = self.translation.sentence
         return super(BasicFormField, self).to_json()
 
@@ -205,6 +274,8 @@ class BasicFormField(JsonObject):
 class TextFormField(BasicFormField):
     """
     Defines a single-line text field.
+
+    **Authors**: Gagandeep Singh
     """
     min_length = IntegerProperty(default=0)                 # Minimum number of letters allowed.
     max_length = IntegerProperty(default=128)               # Maximum number of letters allowed.
@@ -226,6 +297,11 @@ class TextFormField(BasicFormField):
                 validators.validate_no_special_char(value)
 
 class EmailFormField(TextFormField):
+    """
+    Defines an email form field.
+
+    **Authors**: Gagandeep Singh
+    """
     max_length = IntegerProperty(default=254)
     widget = StringProperty(required=True, choices=FieldWidgets.choices_email, default=FieldWidgets.HTML_EMAIL)
 
@@ -242,6 +318,11 @@ class EmailFormField(TextFormField):
             validators.validate_email(value)
 
 class PasswordFormField(TextFormField):
+    """
+    Defines a password form field.
+
+    **Authors**: Gagandeep Singh
+    """
     allow_alphabets = BooleanProperty(required=True, default=True)  # Allow alphabets in the password
     allow_numbers = BooleanProperty(required=True, default=True)    # Allow numbers in the password
     # - allow_special_chars  - Already defined in TextFormField
@@ -274,6 +355,8 @@ class PasswordFormField(TextFormField):
 class TextAreaFormField(BasicFormField):
     """
     Defines a multi-line text field that can hold a reasonable number of characters.
+
+    **Authors**: Gagandeep Singh
     """
     min_length = IntegerProperty(default=0)                 # Minimum number of letters allowed.
     max_length = IntegerProperty(default=1000)              # Maximum number of letters allowed.
@@ -289,6 +372,8 @@ class TextAreaFormField(BasicFormField):
 class NumberFormField(BasicFormField):
     """
     Defines a numeric field for entering a integer values only.
+
+    **Authors**: Gagandeep Singh
     """
     min_length = IntegerProperty(default=0)                 # Minimum number of letters allowed.
     max_length = IntegerProperty(default=5)                 # Maximum number of letters allowed.
@@ -317,7 +402,10 @@ class NumberFormField(BasicFormField):
         """
         Returns minimum possible value this field can have
         depending upon 'allow_negative' & 'min_value'
-        :return:
+
+        :return: Minimuim value
+
+        **Authors**: Gagandeep Singh
         """
         if self.min_value is None:
             if self.allow_negative:
@@ -335,7 +423,9 @@ class NumberFormField(BasicFormField):
 class DecimalFormField(BasicFormField):
     """
     Defines a field for entering a decimal as well as integer values.
-    All integer values will be converted to decimal
+    All integer values will be converted to decimal.
+
+    **Authors**: Gagandeep Singh
     """
     max_integer_length = IntegerProperty(required=True, default=5)         # Maximum length of integer part; Minimum is default 1 which is value 0
     max_decimal_length = IntegerProperty(required=True, default=2)         # Maximum precision of decimal part
@@ -386,26 +476,34 @@ class DecimalFormField(BasicFormField):
 
 class DateFormField(BasicFormField):
     """
-    Defines a date field. Date is stored as YYYY-MM-DD
+    Defines a date field. Date is stored as YYYY-MM-DD.
+
+    **Authors**: Gagandeep Singh
     """
     widget = StringProperty(required=True, choices=FieldWidgets.choices_date, default=FieldWidgets.HTML_DATE)
 
 class TimeFormField(BasicFormField):
     """
     Defines a time field. Time is stored as HH:MM:SS.
+
+    **Authors**: Gagandeep Singh
     """
     widget = StringProperty(required=True, choices=FieldWidgets.choices_time, default=FieldWidgets.HTML_TIME)
 
 class DateTimeFormField(BasicFormField):
     """
     Defines a datetime form field that stores date as well as time together.
+
+    **Authors**: Gagandeep Singh
     """
     widget = StringProperty(required=True, choices=FieldWidgets.choices_datetime, default=FieldWidgets.HTML_DATEIME_LOCAL)
 
 
 class BinaryFormField(BasicFormField):
     """
-    Defines a binary choice field with only 2 options, one for true and other for false
+    Defines a binary choice field with only 2 options, one for true and other for false.
+
+    **Authors**: Gagandeep Singh
     """
     choice_type = MCQ_Types.STRING
 
@@ -430,6 +528,8 @@ class MCSSFormField(BasicFormField):
     """
     Defines a 'Multiple Choice Single Select' field that will show multiple choices
     from which only one choice can be selected as answer.
+
+    **Authors**: Gagandeep Singh
     """
     choice_type = StringProperty(required=True, default=MCQ_Types.STRING, choices=MCQ_Types.choices)
     list_choices = ListProperty(Choice,required=True)    # List of choices of form [{"value":"<value>", "text":"<text>"}, ... ]
@@ -498,6 +598,8 @@ class MCMSFormField(BasicFormField):
     """
     Defines a 'Multiple Choice Multiple Select' field that will show multiple choices
     from which n-number of choices can be selected as answer.
+
+    **Authors**: Gagandeep Singh
     """
     choice_type = StringProperty(required=True, default=MCQ_Types.STRING, choices=MCQ_Types.choices)
     # list_choices = DictProperty(required=True, validators=[validators.validate_choices])       # Dictionary of choices of form {"<value>":"<value text>", ... }
@@ -578,6 +680,8 @@ class RatingFormField(BasicFormField):
     """
     Defines a rating field that allows user to rate on a scale of 1 to 'max-score'.
     Rating is of type integer.
+
+    **Authors**: Gagandeep Singh
     """
     choice_type = MCQ_Types.INT
 
@@ -591,11 +695,14 @@ class RatingFormField(BasicFormField):
 
 # ---------- Methods ----------
 def create_field_obj(field_dict):
-    '''
+    """
     Converts a field dictionary into a corresponding field object.
+
     :param condition_dict: dict
     :return: Field Object
-    '''
+
+    **Authors**: Gagandeep Singh
+    """
     class_name = field_dict['_cls']
     try:
         field_obj = globals()[class_name](field_dict)

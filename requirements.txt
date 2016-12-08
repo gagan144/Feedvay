@@ -22,6 +22,8 @@ boto
 django-storages
 shortuuid
 django-fcm
+django-colorful
+django-tree-tag
 # Pillow
 
 

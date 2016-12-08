@@ -1,0 +1,10 @@
+[
+  {
+    "code" : "bootstrap_3",
+    "name" : "Bootstrap V3",
+    "description" : "A very simple and elegant theme.",
+    "icon_path" : "db/files/bootstrap_v3_icon.png",
+    "active" : true,
+    "skins" : []
+  }
+]

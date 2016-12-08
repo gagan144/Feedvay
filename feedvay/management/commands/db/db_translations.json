@@ -1,0 +1,542 @@
+[
+    {
+        "sentence": "Please fill the following form", 
+        "translations": {
+            "guj": "નીચેના ફોર્મ ભરો", 
+            "pan": "ਹੇਠ ਫਾਰਮ ਭਰੋ ਜੀ", 
+            "hin": "कृपया निचे दिए गए प्रशनो का उत्तर दिजिय"
+        }, 
+        "is_public": true,
+        "list_language_codes": [
+            "guj", 
+            "hin", 
+            "pan"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "please-fill-the-following-form", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Submit", 
+        "translations": {
+            "guj": "સબમિટ", 
+            "hin": "जमा करें"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "submit", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Reset", 
+        "translations": {
+            "guj": "રીસેટ", 
+            "hin": "रीसेट"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "reset", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Read more", 
+        "translations": {
+            "guj": "વધુ વાંચો", 
+            "hin": "अधिक पढ़ें"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "read-more", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Instructions", 
+        "translations": {
+            "guj": "સૂચનાઓ", 
+            "hin": "अनुदेश"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "instructions", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Close", 
+        "translations": {
+            "guj": "બંધ", 
+            "hin": "बंद करे"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "close", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "About", 
+        "translations": {
+            "guj": "વિશે", 
+            "hin": "के बारे में"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "about", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Change language", 
+        "translations": {
+            "guj": "ભાષા બદલો", 
+            "hin": "भाषा बदलो"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "change-language", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "This field is required", 
+        "translations": {
+            "guj": "આ ક્ષેત્ર જરૂરી છે", 
+            "hin": "यह फ़ील्ड आवश्यक है"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "this-field-is-required", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Sorry, time's up!", 
+        "translations": {
+            "guj": "માફ કરશો, સમય પુરો!", 
+            "hin": "क्षमा करें, समय समाप्त!"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "sorry-times-up", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Go back", 
+        "translations": {
+            "guj": "પાછા જાવ", 
+            "hin": "वापस जाएँ"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "go-back", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "You must complete the questionnaire in less than", 
+        "translations": {
+            "guj": "તમે આપેલ સમય પહેલાં આ પ્રશ્નાવલી પૂર્ણ કરવું આવશ્યક છે", 
+            "hin": "आपको यह प्रश्नावली निचे दिए गए समय से पहले ख़तम करना होगा"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "you-must-complete-the-questionnaire-in-less-than", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Tell us where you are", 
+        "translations": {
+            "guj": "અમને જણાવો કે તમે જ્યાં છો", 
+            "hin": "हमें बताइये की अप कहाँ हां"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "tell-us-where-you-are", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Unable to find your location", 
+        "translations": {
+            "guj": "તમારા સ્થાન શોધી શકો છો", 
+            "hin": "आपका स्थान नहीं मिल पाया"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "unable-to-find-your-location", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Retry", 
+        "translations": {
+            "guj": "ફરી પ્રયાસ કરો", 
+            "hin": "पुन: प्रयास करें"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "retry", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Please wait", 
+        "translations": {
+            "guj": "મહેરબાની કરી રાહ જુવો", 
+            "hin": "कृपया प्रतीक्षा करें"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "please-wait", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Finding your location", 
+        "translations": {
+            "guj": "તમારું સ્થાન શોધી", 
+            "hin": "आपका स्थान ढूंढा जा रहा हे"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "finding-your-location", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Please complete the form", 
+        "translations": {
+            "guj": "ફોર્મ પૂર્ણ કરો", 
+            "hin": "प्रपत्र को पूरा करें"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "please-complete-the-form", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Thank you for your response", 
+        "translations": {
+            "guj": "તમારા પ્રતિભાવ માટે આભાર", 
+            "hin": "आपके प्रतिक्रिया के लिए धनयवाद"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "thank-you-for-your-response", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Done", 
+        "translations": {
+            "guj": "ઠીક છે", 
+            "hin": "उचित"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "done", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Clear", 
+        "translations": {
+            "guj": "તેને દૂર", 
+            "hin": "इसे हटा दो"
+        }, 
+        "is_public": true, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "clear", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "This is {$username$} test", 
+        "translations": {
+            "hin": "ये एक {$username$} टेस्ट है"
+        }, 
+        "is_public": false, 
+        "list_language_codes": [
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "this-is-username-test", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "You must provide atleast {$ min_length $} characters.", 
+        "translations": {
+            "guj": "તમે ઓછામાં ઓછા {$ min_length $} અક્ષરો પૂરી પાડવી જ જોઇએ.", 
+            "hin": "आपको कम से कम {$ min_length $} अक्षर प्रदान करनी चाहिए।"
+        }, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "is_public": false, 
+        "always_include_in_form": true, 
+        "unique_id": "error-min-length", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "You cannot exceed more than {$ max_length $} characters.", 
+        "translations": {
+            "guj": "તમે એક કરતાં વધુ {$ max_length $} અક્ષરો કરતાં વધી શકતા નથી.", 
+            "hin": "आप अधिक से अधिक {$ max_length $} अक्षर इस्तेमाल कर सकते हो।"
+        }, 
+        "is_public": false, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "error-max-length", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Incorrect pattern.", 
+        "translations": {
+            "guj": "ખોટો પેટર્ન.", 
+            "hin": "गलत पैटर्न।"
+        }, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "is_public": false, 
+        "always_include_in_form": true, 
+        "unique_id": "error-incorrect-pattern", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Please enter a valid date.", 
+        "translations": {
+            "guj": "માન્ય તારીખ દાખલ કરો .", 
+            "hin": "कृपया एक मान्य तारिक प्रविष्ट करें।"
+        }, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "is_public": false, 
+        "always_include_in_form": true, 
+        "unique_id": "error-invalid-date", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Please enter a valid date and time.", 
+        "translations": {
+            "guj": "માન્ય તારીખ અને સમય દાખલ કરો .", 
+            "hin": "कोई मान्य दिनांक और समय दर्ज करें।"
+        }, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "is_public": false, 
+        "always_include_in_form": true, 
+        "unique_id": "error-invalid-datetime", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Please enter a valid time.", 
+        "translations": {
+            "guj": "માન્ય સમય દાખલ કરો .", 
+            "hin": "एक वैध समय दर्ज करें।"
+        }, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "is_public": false, 
+        "always_include_in_form": true, 
+        "unique_id": "error-invalid-time", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Please enter a valid email address.", 
+        "translations": {
+            "guj": "કૃપા કરીને માન્ય ઇમેઇલ સરનામું દાખલ કરો.", 
+            "hin": "कृपया एक वैध ई - मेल एड्रेस डालें।"
+        }, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "is_public": false, 
+        "always_include_in_form": true, 
+        "unique_id": "error-invalid-email", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Please enter a valid number.", 
+        "translations": {
+            "guj": "માન્ય નંબર દાખલ કરો .", 
+            "hin": "कृपया एक सही संख्या डालिये।"
+        }, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "is_public": false, 
+        "always_include_in_form": true, 
+        "unique_id": "error-invalid-number", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Please enter number less than or equal to {$ max_value $}.", 
+        "translations": {
+            "guj": "કરતાં ઓછા અથવા બરાબર {$ max_value $} નંબર દાખલ કરો .", 
+            "hin": "कृपया {$ max_value $} या उसे कम संख्या दर्ज करें।"
+        }, 
+        "is_public": false, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "error-max-value", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Please enter a number greater than or equal to {$ min_value $}.", 
+        "translations": {
+            "guj": "એક કરતાં વધારે અથવા બરાબર {$ min_value $} નંબર દાખલ કરો.", 
+            "hin": "कृपया {$ min_value $} या उसे अधिक संख्या दर्ज करें।"
+        }, 
+        "is_public": false, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "error-min-value", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Please select atleast {$ node.min_selection $} choices.", 
+        "translations": {
+            "guj": "ઓછામાં ઓછા {$ min_selection $} પસંદગીઓ પસંદ કરો.", 
+            "hin": "कम से कम {$ min_selection $} विकल्प का चयन करें।"
+        }, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "is_public": false, 
+        "always_include_in_form": true, 
+        "unique_id": "error-min-selection", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Please enter a valid URL.", 
+        "translations": {
+            "guj": "માન્ય URL દાખલ કરો .", 
+            "hin": "कृपया एक मान्य यू.अरे.एल दर्ज कीजिए।"
+        }, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "is_public": false, 
+        "always_include_in_form": true, 
+        "unique_id": "error-invalid-url", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Please provide an answer.", 
+        "translations": {
+            "guj": "કૃપા કરીને એક જવાબ દાખલ કરો.", 
+            "hin": "कृपया एक जवाब दाखिल करें।"
+        }, 
+        "is_public": false, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "always_include_in_form": true, 
+        "unique_id": "error-required", 
+        "is_paragraph": false
+    }, 
+    {
+        "sentence": "Please enter an answer other than the given options.", 
+        "translations": {
+            "guj": "કૃપા કરીને આપવામાં વિકલ્પો કરતાં અન્ય એક જવાબ દાખલ કરો.", 
+            "hin": "कृपया दिए गए विकल्पों के अलावा अन्य एक जवाब दाखिल करें।"
+        }, 
+        "list_language_codes": [
+            "guj", 
+            "hin"
+        ], 
+        "is_public": false, 
+        "always_include_in_form": true, 
+        "unique_id": "error-invalid-values", 
+        "is_paragraph": false
+    }
+]

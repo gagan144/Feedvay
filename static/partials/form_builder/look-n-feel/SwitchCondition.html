@@ -1,0 +1,59 @@
+<div ui-tree-handle class="form_component_content" style="padding: 5px;" ng-init="this_component = component">
+    <table style="width: 100%;" id="component_{$ component._id $}">
+        <tr>
+            <td align="left" valign="middle" style="width: 30px;" >
+                <a class="btn btn-primary btn-xs" style="min-width: 22px;" data-nodrag ng-click="toggle(this)"><span class="fa" ng-class="{'fa-plus': collapsed, 'fa-minus': !collapsed}"></span></a>
+            </td>
+            <td align="left" valign="middle" style="font-weight: 600; font-size: 14px;">
+                Switch Condition: <span style="font-weight: normal !important;">{$ this_component.name $}</span>
+            </td>
+            <td align="right" valign="middle">
+                <a class="pull-right btn btn-white btn-xs component_controls" data-nodrag ng-click="remove_condition(this, this_component)"><span class="fa fa-trash"></span></a>
+                <a class="pull-right btn btn-white btn-xs component_controls" data-nodrag ng-click="edit_condition(this, this_component)"><span class="fa fa-pencil"></span></a>
+            </td>
+        </tr>
+    </table>
+
+    <div style="padding-left: 30px;margin-top: 5px;" ng-class="{'hidden': collapsed}">
+        <div class="panel panel-default" data-nodrag>
+            <div class="panel-body panel_body_preview">
+                Depending upon the {$ (this_component.expression.startsWith('constants.'))?'value':'answer' $} for the
+                <b>{$ (this_component.expression.startsWith('constants.'))?'constant':'question' $}</b>:
+
+                <div style="margin: 5px 0px 10px 0px;">
+                    <a style="font-weight: 600;" ng-init="node = lookup_variable_with_fullid(this_component.expression)" ng-if="true" scroll-to-item="fast" scroll-to="#component_{$ node.label $}">
+                        {$ Translations[node.text_translation_id].sentence $}
+                    </a>
+                </div>
+
+                following branch is executed:
+                <div ng-if="this_component.validate_expr_var" style="font-size:11px;">
+                    <hr style="margin: 5px 0px;"/>
+                    <i class="text-success fa fa-check"></i>
+                    Apply condition only when all variables have value.
+                </div>
+            </div>
+        </div>
+
+        <div ng-repeat="case_value in this_component.list_cases" style="margin-bottom: 20px;">
+            <h4>
+                <i class="fa fa-code-fork"></i>&nbsp;
+                Case: {$ case_value $}
+            </h4>
+            <hr style="margin: 8px 0px;"/>
+            <div ng-include="'/static/partials/form_builder/look-n-feel/' + (this_component.list_branches[$index]._cls) + '.html'" ng-init="component = this_component.list_branches[$index]; hide_collapse=true;hide_cntrl=true;"></div>
+        </div>
+
+        <div ng-if="this_component.use_default">
+            <h4>
+                <i class="fa fa-asterisk"></i>&nbsp;
+                Default Case
+            </h4>
+            <hr style="margin: 8px 0px;"/>
+            <div ng-include="'/static/partials/form_builder/look-n-feel/' + (this_component.default_branch._cls) + '.html'" ng-init="component = this_component.default_branch; hide_collapse=true;hide_cntrl=true;"></div>
+        </div>
+    </div>
+
+    <div class="user_notes_brief" ng-if="component.user_notes" ng-bind-html="component.user_notes">
+    </div>
+</div>

@@ -1,0 +1,73 @@
+<div ui-tree-handle class="form_component_content">
+    <a class="pull-right btn btn-white btn-xs component_controls" data-nodrag ng-click="remove_question(this, component)"><span class="fa fa-trash"></span></a>
+    <a class="pull-right btn btn-white btn-xs component_controls" data-nodrag ng-click="edit_question(this, component)"><span class="fa fa-pencil"></span></a>
+
+    <div class="form-group" ng-init="trans_text = Translations[component.text_translation_id]" id="component_{$ component.label $}">
+        <label for="fld_{$ component.label $}" class="control-label">
+            <span ng-bind-html="trans_text.sentence"></span><span class="required" ng-if="component.required">*</span>
+            <br ng-if="component.description"/>
+            <small ng-show="component.description" ng-init="trans_description = Translations[component.description]" ng-bind-html="trans_description.sentence"></small>
+        </label>
+        <div ng-switch="component._cls" data-nodrag>
+            <div ng-switch-when="BinaryFormField">
+                <div class="btn-group multi_choice_btn_group">
+                    <label class="btn btn-default" name="{$ component.label $}" >
+                        {$ component.true_text $}
+                    </label>
+                    <label class="btn btn-default" name="{$ component.label $}" >
+                        {$ component.false_text $}
+                    </label>
+                </div>
+            </div>
+
+            <div ng-switch-when="RatingFormField">
+                <div style="display:inline-block;">
+                    <div style="font-size: 11px; padding: 0px 3px;">
+                        <span>Low</span>
+                        <span class="pull-right">High</span>
+                    </div>
+
+                    <div class="btn-group multi_choice_btn_group">
+                        <label class="btn btn-default" ng-repeat="n in [] | range:component.max_score" name="{$ $index+1 $}" >
+                            {$ $index+1 $}
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-switch-default>
+                <div class="btn-group multi_choice_btn_group" >
+                    <label class="btn btn-default" ng-repeat="choice in component.list_choices" name="{$ component.label $}" >
+                        {$ choice.text $}
+                    </label>
+
+                    <label class="btn btn-default" ng-if="component.allow_other" name="{$ component.label $}" >
+                        {$ component.other_text $}
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin: 20px 0px 0px 15px;" ng-if="component.allow_other">
+            <div class="user_notes_brief" style="margin: 0px 0px 5px 0px;">
+                If '{$ component.other_text $}' is selected, then following question is asked:
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+
+                    <label class="control-label">
+                        {$ component.other_question $}
+                        <span class="required">*</span>
+                    </label>
+                    <div ng-include="'/static/partials/form_builder/look-n-feel/choice_other.html'" ng-init="placeholder=false">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="user_notes_brief" ng-if="component.user_notes" ng-bind-html="component.user_notes">
+    </div>
+</div>

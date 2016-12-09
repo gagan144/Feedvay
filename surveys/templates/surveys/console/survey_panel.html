@@ -1,0 +1,36 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'console/base.html' %}
+{% load static commontags %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-12">
+            <h2>{{ survey.title }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{% url 'console_home' %}">Home</a>
+                </li>
+                <li>
+                    <a href="{% url 'console_surveys' %}">Surveys</a>
+                </li>
+                <li class="active">
+                    {{ survey.title }}
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    {% if survey.type == 'simple' %}
+        <a href="{% url 'console_survey_simple_form_editor' survey.survey_uid %}">Edit (Simple)</a>
+    {% else %}
+        {% for ph in survey.surveyphase_set.all %}
+            <a href="{% url 'console_survey_phase_form_editor' survey.survey_uid ph.id %}">Edit Phase-{{ forloop.counter }}</a>
+        {% endfor %}
+    {% endif %}
+
+{% endblock %}

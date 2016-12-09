@@ -1,0 +1,29 @@
+<div class="form_component_content" style="padding: 5px;" ng-init="this_component = component">
+    <div ui-tree-handle>
+        <table style="width:100%">
+            <tr>
+                <td style="width: 30px;" valign="top" ng-if="!hide_collapse">
+                    <a class="btn btn-primary btn-xs" style="min-width: 22px;" data-nodrag ng-click="toggle(this)"><span class="fa" ng-class="{'fa-plus': collapsed, 'fa-minus': !collapsed}"></span></a>
+                </td>
+                <td valign="top">
+                    <div style="font-weight: normal;margin-bottom: 0px;" ng-class="{'panel panel-default': (this_component.highlight_layout) }" id="component_{$ component._id $}">
+                        <div ng-if="!hide_cntrl" style="padding: 10px;" ng-class="{'panel-heading': (this_component.highlight_layout && this_component.title)}" >
+                            <span ng-if="(this_component.highlight_layout && this_component.title)">{$ this_component.title $}</span>&nbsp;
+                            <div style="float: right;">
+                                <a class="pull-right btn btn-white btn-xs component_controls" data-nodrag ng-click="remove_layout(this, this_component)"><span class="fa fa-trash"></span></a>
+                                <a class="pull-right btn btn-white btn-xs component_controls" data-nodrag ng-click="edit_layout(this, this_component)"><span class="fa fa-pencil"></span></a>
+                            </div>
+                        </div>
+                        <div class="panel_body_preview" ng-class="{'panel-body':(this_component.highlight_layout), 'hidden': collapsed}" >
+                            <ol ui-tree-nodes="" ng-model="this_component.children" style="padding-left: 0px;">
+                                <li ng-repeat="component in this_component.children" ui-tree-node ng-include="'/static/partials/form_builder/look-n-feel/' + (component.widget||component._cls) + '.html'">
+                                </li>
+                            </ol>
+                            <!--<div ng-if="!this_component.children.length" class="angular-ui-tree-empty"></div>-->
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

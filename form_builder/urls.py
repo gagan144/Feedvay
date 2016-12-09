@@ -17,13 +17,13 @@ partial_patterns = [
 
 urlpatterns = [
     # url(r'^$', views.index, name='index'),
-    url(r'^open/(?P<id>[0-9]+)/$', views.open_form, name='form_builder_open_form'),
-    url(r'^update_test/$', views.update_test, name='update_test'),
+    url(r'^open/(?P<id>[0-9]+)/$', views.open_form, name='form_builder_open_form'), #TODO: remove url
+    url(r'^update_test/$', views.update_test, name='update_test'),  #TODO: remove url
 
     url(r'^partials/', include(partial_patterns)),
 
     # Delete
-    url(r'^testing/$', views.testing, name='testing'),
+    url(r'^testing/$', views.testing, name='testing'),  #TODO: remove url
 
     # Api
     # url(r'^api/', include(api_forms.urls)),

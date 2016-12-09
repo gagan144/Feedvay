@@ -1,0 +1,16 @@
+<div ui-tree-handle class="form_component_content">
+    <a class="pull-right btn btn-white btn-xs component_controls" data-nodrag ng-click="remove_question(this, component)"><span class="fa fa-trash"></span></a>
+    <a class="pull-right btn btn-white btn-xs component_controls" data-nodrag ng-click="edit_question(this, component)"><span class="fa fa-pencil"></span></a>
+
+    <div class="form-group" ng-init="trans_text = Translations[component.text_translation_id]" id="component_{$ component.label $}">
+        <label for="fld_{$ component.label $}" class="control-label">
+            <span ng-bind-html="trans_text.sentence"></span><span class="required" ng-if="component.required">*</span>
+            <br ng-if="component.description"/>
+            <small ng-show="component.description" ng-init="trans_description = Translations[component.description]" ng-bind-html="trans_description.sentence"></small>
+        </label>
+        <input type="datetime-local" class="form-control" id="fld_{$ component.label $}">
+    </div>
+
+    <div class="user_notes_brief" ng-if="component.user_notes" ng-bind-html="component.user_notes">
+    </div>
+</div>

@@ -214,7 +214,7 @@
 {% endblock %}
 
 {% block content %}
-    <div ng-app="app" ng-cloak>
+    <div ng-cloak>
         <!-- Modals Templates -->
         <script type="text/ng-template" id="tmpl_modal_form_constant">
             <form role="form" name="form_edit_constant" class="form-horizontal" novalidate>
@@ -280,7 +280,7 @@
                                             that will be displayed for this constant along with the translations:
                                         </p>
 
-                                        <div ng-include="'{% get_static_prefix %}templates/translations/edit_translation.html'" ng-if="true"></div>
+                                        <div ng-include="'{% get_static_prefix %}partials/translations/edit_translation.html'" ng-if="true"></div>
                                     </div>
                                 </div>
                             </div>
@@ -856,7 +856,7 @@
                                                             <div ui-tree>
                                                                 <ol ui-tree-nodes ng-model="FormData.schema">
 {#                                                                    <li ng-repeat="node in FormData.schema" ui-tree-node ng-include="'nodes_renderer.html'"></li>#}
-                                                                    <li ng-repeat="component in FormData.schema" ui-tree-node ng-include="'{% get_static_prefix %}templates/form_builder/look-n-feel/' + (component.widget||component._cls) + '.html'"></li>
+                                                                    <li ng-repeat="component in FormData.schema" ui-tree-node ng-include="'{% get_static_prefix %}partials/form_builder/look-n-feel/' + (component.widget||component._cls) + '.html'"></li>
                                                                 </ol>
                                                             </div>
                                                         </div>
@@ -1111,13 +1111,12 @@
     <script src="{% get_static_prefix %}lib/highlightjs/highlight.min.js"></script>
 
 {#    <script src="{% get_static_prefix %}lib/angular/angular.min.js"></script>#}
-    <script src="{% get_static_prefix %}lib/angular/angular.min.js"></script>
-    <script src="{% get_static_prefix %}lib/angular/angular-cookies.min.js"></script>
-    <script src="{% get_static_prefix %}lib/angular/angular-sanitize.min.js"></script>
+{#    <script src="{% get_static_prefix %}lib/angular/angular-cookies.min.js"></script>#}
+{#    <script src="{% get_static_prefix %}lib/angular/angular-sanitize.min.js"></script>#}
     <script src="{% get_static_prefix %}lib/angular/angular-slugify/angular-slugify.js"></script>
     <script src="{% get_static_prefix %}lib/summernote/angular/angular-summernote.min.js"></script>
     <script src="{% get_static_prefix %}lib/angular/checklist-model.js"></script>
-    <script src="{% get_static_prefix %}lib/angular/angular-messages.min.js"></script>
+{#    <script src="{% get_static_prefix %}lib/angular/angular-messages.min.js"></script>#}
     <script src="{% get_static_prefix %}lib/angular/angular-animate.min.js"></script>
     <script src="{% get_static_prefix %}lib/highlightjs/angular/angular-highlightjs.min.js"></script>
 
@@ -1129,9 +1128,8 @@
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
 
-    <script src="{% get_static_prefix %}apps/common_app.js"></script>
-    <script src="{% get_static_prefix %}apps/common_directives.js"></script>
-    <script src="{% get_static_prefix %}apps/languages.js"></script>
+    <script src="{% get_static_prefix %}apps/app_common.js"></script>
+    <script src="{% get_static_prefix %}apps/languages/languages.js"></script>
 
     <script>
         'use strict';
@@ -1141,9 +1139,10 @@
 
         }
 
-        var app = angular.module('app', [
-            'commonApp',
-            'mod.languages',
+        var app = angular.module('{{ app_name }}', [
+            'feedvay.uiapp',
+            'feedvay.common',
+            'feedvay.languages',
 
             'ngCookies',
             'ngSanitize',

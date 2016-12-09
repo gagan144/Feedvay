@@ -1,0 +1,30 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'console/base.html' %}
+{% load static commontags %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-8">
+            <h2 class="m-b-none">
+                <i class="fa fa-list"></i>
+                Surveys
+            </h2>
+        </div>
+        <div class="col-xs-4">
+            <div class="title-action" style="padding-top: 20px !important;">
+                <a href="#" class="btn btn-primary">
+                    <i class="fa fa-plus"></i>
+                    <span class="mobile_hide">&nbsp;Create new survey</span>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    {% for s in list_surveys %}
+        <a href="{% url 'console_survey_panel' s.survey_uid %}">{{ s.title }}</a>
+    {% endfor %}
+{% endblock %}

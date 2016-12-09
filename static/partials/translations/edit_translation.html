@@ -1,0 +1,112 @@
+<style>
+    .error_messages{
+        margin-top: 5px;
+    }
+
+    .native-name{
+        margin-left: 3px;
+        color: #737373;
+        font-weight: normal;
+    }
+
+    .note-frame{
+        margin-bottom: 0px !important;
+    }
+
+    .removed_language{
+        text-decoration: line-through;
+    }
+</style>
+
+<!--
+<script type="text/ng-template" id="tmpl_translation_search">
+  <a>
+      <span>{$ match.model.sentence | uibTypeaheadHighlight:query $}</span><br/>
+      <small>{$ match.model.list_language_codes.length $} Translations</small>
+  </a>
+</script>
+-->
+
+<!--
+    <div class="well">
+        {$ translation.sentence $} <br/>{$ loading_trans_search $}
+        <input type="text" ng-model="translation.sentence" placeholder="Default english sentence."
+               typeahead-min-length="3"
+               uib-typeahead="trans as trans.sentence for trans in ServiceTranslations.search($viewValue)"
+               typeahead-loading="loading_trans_search" typeahead-no-results="noResults"
+               class="form-control" ng-class="{'loading': loading_trans_search }">
+
+        <div ng-show="noResults">
+            <i class="glyphicon glyphicon-remove"></i> No Results Found
+        </div>
+    </div>
+-->
+
+    <div ng-if="options.type == null">
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-8">
+                <div class="checkbox checkbox-primary">
+                    <input id="fld_is_paragraph" type="checkbox" ng-model="translation.is_paragraph">
+                    <label for="fld_is_paragraph">
+                        Is a paragraph?
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="hr-line-dashed"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">
+            {$ translation.is_paragraph?'Text':'Sentence' $}<span class="required">*</span><br/>
+            <small class="native-name">(English)</small>:
+        </label>
+        <div class="col-sm-8">
+            <!--<input ng-if="!translation.is_paragraph" type="text" class="form-control" name="sentence" ng-model="translation.sentence" placeholder="Default english sentence." required ng-class="{ 'error': (from_edit_translation.sentence.$dirty && from_edit_translation.sentence.$invalid) }">-->
+            <input ng-if="!translation.is_paragraph" type="text" ng-model="translation.sentence" name="sentence" required
+               placeholder="Default english sentence."
+               typeahead-min-length="3"
+               uib-typeahead="trans as trans.sentence for trans in ServiceTranslations.search($viewValue)"
+               typeahead-loading="loading_trans_search" typeahead-no-results="noResults"
+               class="form-control" ng-class="{'loading': loading_trans_search, 'error': (from_edit_translation.sentence.$dirty && from_edit_translation.sentence.$invalid) }">
+
+            <textarea summernote ng-if="translation.is_paragraph" name="sentence" ng-model="translation.sentence" config="summernote_config" required></textarea>
+            <p class="help-block m-b-none">
+                English {$ translation.is_paragraph?'text':'Sentence' $} that is displayed by default.
+            </p>
+            <div ng-messages="from_edit_translation.sentence.$dirty && from_edit_translation.sentence.$error" role="alert" class="error_messages">
+                <label ng-message="required" class="error">Please enter {$ translation.is_paragraph?'text':'Sentence' $} for english.</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="hr-line-dashed" ng-if="options.languages.length || (translation.translations|dictlength)"></div>
+    <div class="form-group" ng-if="options.languages.length || (translation.translations|dictlength)">
+
+        <div class="col-sm-10 col-sm-offset-1">
+            <h2 style="margin-top: 0px;" class="text-navy">Translations</h2>
+            <hr/>
+
+            <div class="form-group" ng-repeat="lang in LIST_LANGUAGES" ng-if="(options.languages.indexOf(lang.code)!=-1 || translation.translations[lang.code])">
+                <label class="col-sm-2 control-label" ng-class="{ 'removed_language': (options.languages.indexOf(lang.code)==-1) }">
+                    {$ lang.name $}
+                    <small class="native-name">({$ lang.name_native $})</small>:
+                </label>
+                <div class="col-sm-10">
+                    <div ng-if="!translation.is_paragraph" class="input-group">
+                        <input type="text" class="form-control" placeholder="Translation for {$ lang.name $}" ng-model="translation.translations[lang.code]">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" ng-click="translation.translations[lang.code] = null;">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </span>
+                    </div>
+                    <div ng-if="translation.is_paragraph">
+                        <textarea summernote ng-model="translation.translations[lang.code]" config="summernote_config"></textarea>
+                        <p class="help-block m-b-none">Translation for {$ lang.name $}.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>

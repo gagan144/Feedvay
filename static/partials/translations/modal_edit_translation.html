@@ -1,0 +1,18 @@
+<form role="form" name="from_edit_translation" class="form-horizontal" novalidate>
+    <div class="inmodal">
+        <div class="modal-header" style="padding: 20px 15px;">
+            <button type="button" class="close" ng-click="close()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title">
+                <i class="fa fa-language"></i>&nbsp;
+                Edit Translation
+            </h4>
+        </div>
+        <div class="modal-body">
+            <div ng-include="'/static/partials/translations/edit_translation.html'" ng-if="true"></div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-white" ng-click="close()">Close</button>
+            <button type="button" class="btn btn-primary" ng-disabled="from_edit_translation.$invalid" ng-click="save(from_edit_translation)">Ok</button>
+        </div>
+    </div>
+</form>

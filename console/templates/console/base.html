@@ -126,12 +126,9 @@
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a aria-expanded="false" role="button" href="javascript: void(0);" class="dropdown-toggle" data-toggle="dropdown"> Menu item <span class="caret"></span></a>
+                                <a aria-expanded="false" role="button" href="javascript: void(0);" class="dropdown-toggle" data-toggle="dropdown"> Surveys <span class="caret"></span></a>
                                 <ul role="menu" class="dropdown-menu">
-                                    <li><a href="">Menu item</a></li>
-                                    <li><a href="">Menu item</a></li>
-                                    <li><a href="">Menu item</a></li>
-                                    <li><a href="">Menu item</a></li>
+                                    <li><a href="{% url 'console_surveys' %}">My surveys</a></li>
                                 </ul>
                             </li>
                             <li class="dropdown">
@@ -311,7 +308,9 @@
     <script src="{% get_static_prefix %}ui/js/plugins/ladda/angular-ladda.min.js"></script>
 
     <!-- Feedvay angular apps -->
+    <script src="{% get_static_prefix %}js/common.js"></script>
     <script src="{% get_static_prefix %}ui/js/custom.js"></script>
+    <script src="{% get_static_prefix %}apps/app_ui.js"></script>
     <script src="{% get_static_prefix %}apps/app_common.js"></script>
     <script src="{% get_static_prefix %}apps/watchdog/watchdog.js"></script>
 

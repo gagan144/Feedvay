@@ -353,6 +353,7 @@ class Form(Model):
 
     def to_json(self):
         data_dict = model_to_dict(self)
+        data_dict['languages'] = list(data_dict['languages'].values_list('id', flat=True))
         data_dict['language_codes'] = list(self.languages.all().values_list('code', flat=True))
         for key, val in data_dict.iteritems():
             if isinstance(val, uuid.UUID):

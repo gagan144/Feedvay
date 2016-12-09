@@ -1,5 +1,31 @@
 'use strict';
 
+// ---------- Filters ----------
+function unhtml() {
+    return function(html) {
+        var content_text = html.replace(/(<([^>]+)>)/ig,"");
+        return content_text;
+    };
+}
+
+function dictlength() {
+    return function(dict) {
+        return dict?Object.keys(dict).length:null;
+    };
+}
+
+function range() {
+    return function (input, total) {
+        total = parseInt(total);
+
+        for (var i = 0; i < total; i++) {
+            input.push(i);
+        }
+
+        return input;
+    };
+}
+
 // ---------- Directives ----------
 function staticInclude($http, $templateCache, $compile) {
     return function (scope, element, attrs) {
@@ -153,32 +179,39 @@ function validateHexColor() {
 
 
 
-/* ----- UI Theme ----- */
-/**
- * pageTitle - Directive for set Page title - mata title
- */
-function pageTitle($rootScope, $timeout) {
-    return {
-        link: function(scope, element) {
-            var listener = function(event, toState, toParams, fromState, fromParams) {
-                // Default title
-                var title = 'Feedvay Management Console';
-                // Create your own title pattern
-                if (toState.data && toState.data.pageTitle){
-                    title = toState.data.pageTitle;
-                }
-                $timeout(function() {
-                    element.text(title);
-                });
-            };
-            $rootScope.$on('$stateChangeStart', listener);
-        }
-    }
-}
+///* ----- UI Theme ----- */
+///**
+// * pageTitle - Directive for set Page title - mata title
+// */
+//function pageTitle($rootScope, $timeout) {
+//    return {
+//        link: function(scope, element) {
+//            var listener = function(event, toState, toParams, fromState, fromParams) {
+//                // Default title
+//                var title = 'Feedvay Management Console';
+//                // Create your own title pattern
+//                if (toState.data && toState.data.pageTitle){
+//                    title = toState.data.pageTitle;
+//                }
+//                $timeout(function() {
+//                    element.text(title);
+//                });
+//            };
+//            $rootScope.$on('$stateChangeStart', listener);
+//        }
+//    }
+//}
 
 // ---------- /Directives ----------
 
 angular.module('feedvay.common',[])
+.run(function($rootScope){
+    $rootScope.sentencify = sentencify;
+})
+.filter('unhtml', unhtml)
+.filter('dictlength', dictlength)
+.filter('range', range)
+
 .directive('staticInclude', staticInclude)
 .directive("compareTo", compareTo)
 .directive('remodelDatetime', remodelDatetime)
@@ -187,5 +220,5 @@ angular.module('feedvay.common',[])
 .directive('validateHexColor', validateHexColor)
 .directive('fileModel', ['$parse', fileModel])
 
-.directive('pageTitle', pageTitle);
+//.directive('pageTitle', pageTitle);
 

@@ -334,6 +334,9 @@ class SurveyPhase(models.Model):
     class Meta:
         ordering = ('survey', 'order')
 
+    def __unicode__(self):
+        return "{} - {}".format(self.survey.survey_uid, self.id)
+
     def clean(self):
         """
         Method to clean & validate data fields.

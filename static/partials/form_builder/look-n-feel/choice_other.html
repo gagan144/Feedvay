@@ -1,0 +1,12 @@
+<div ng-switch="component.choice_type">
+    <input ng-switch-when="int" type="number" class="form-control input-sm other_answer_field"
+        placeholder="{$ placeholder?component.other_question:'' $}"
+    >
+    <input ng-switch-when="float" type="number" class="form-control input-sm other_answer_field"
+        placeholder="{$ placeholder?component.other_question:'' $}"
+    >
+    <input ng-switch-default="" type="text" class="form-control input-sm other_answer_field"
+        placeholder="{$ placeholder?component.other_question:'' $}"
+    >
+</div>
+

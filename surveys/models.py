@@ -15,6 +15,7 @@ import shortuuid
 
 from accounts.models import RegisteredUser
 from brands.models import Brand
+from form_builder.models import Form
 
 class SurveyTag(models.Model):
     """
@@ -22,8 +23,8 @@ class SurveyTag(models.Model):
 
     **Authors**: Gagandeep Singh
     """
-    name        = models.CharField(max_length=255, db_index=True, unique=True, help_text='Name of the survey category.')
-    description = tinymce_models.HTMLField(help_text='Description about this category.')
+    name        = models.CharField(max_length=255, default=None, db_index=True, unique=True, help_text='Name of the survey category.')
+    description = tinymce_models.HTMLField(default=None, help_text='Description about this category.')
 
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
@@ -63,8 +64,8 @@ class SurveyCategory(models.Model):
 
     **Authors**: Gagandeep Singh
     """
-    name        = models.CharField(max_length=255, db_index=True, unique=True, help_text='Name of the survey category.')
-    description = tinymce_models.HTMLField(help_text='Description about this category.')
+    name        = models.CharField(max_length=255, default=None, db_index=True, unique=True, help_text='Name of the survey category.')
+    description = tinymce_models.HTMLField(default=None, help_text='Description about this category.')
 
     active      = models.BooleanField(default=True, help_text='If this category is active. On deactivation, it does not effect connected surveys.')
 
@@ -166,26 +167,27 @@ class Survey(models.Model):
     )
 
     # --- Fields ---
-    type        = models.CharField(max_length=10, db_index=True,help_text='Type of survey - simple or complex.')
+    type        = models.CharField(max_length=10, default=None, choices=CH_TYPE, db_index=True, help_text='Type of survey - simple or complex.')
     category    = models.ForeignKey(SurveyCategory, help_text='Category of this survey.')
 
     # Basic
-    survey_uid  = models.CharField(max_length=SURVEY_UID_LEN, blank=True, unique=True, db_index=True, editable=False, help_text='Eight letter survey unique id that can be shared user users.')
-    title       = models.CharField(max_length=512, db_index=True, help_text='Title of the survey. This is visible to the public')
-    description = tinymce_models.HTMLField(help_text='Detailed description about the survey. This tells what the survey is all about.')
+    survey_uid  = models.CharField(max_length=SURVEY_UID_LEN, default=None, blank=True, editable=False, unique=True, db_index=True, help_text='Eight letter survey unique id that can be shared user users.')
+    title       = models.CharField(max_length=512, default=None, db_index=True, help_text='Title of the survey. This is visible to the public')
+    description = tinymce_models.HTMLField(default=None, help_text='Detailed description about the survey. This tells what the survey is all about.')
 
-    tags        = models.ManyToManyField(SurveyTag, help_text='Tag survey with keywords.')
+    tags        = models.ManyToManyField(SurveyTag, default=None, blank=True, help_text='Tag survey with keywords.')
     start_date  = models.DateField(help_text='Start date of this survey (Included).')
     end_date    = models.DateField(help_text='End date of this survey (Included).')
 
     # Surveyor
-    surveyor_type = models.CharField(max_length=16, choices=CH_SURVEYOR, help_text='Who is conducting this survey?')
+    surveyor_type = models.CharField(max_length=16, default=None, choices=CH_SURVEYOR, help_text='Who is conducting this survey?')
     # TODO: company     = models.ForeignKey(Company, null=True, blank=True, help_text='Company reference if the surveyor is a company.')
     brand       = models.ForeignKey(Brand, null=True, blank=True, help_text='Brand reference if the surveyor is a brand.')
 
     # Audience
-    audience_type    = models.CharField(max_length=16, choices=CH_AUDIENCE, help_text='Type of the target audience.')
+    audience_type    = models.CharField(max_length=16, default=None, choices=CH_AUDIENCE, help_text='Type of the target audience.')
     audience_filters = models57.JSONField(default=None, blank=True, null=True, help_text='Expression to filter the audience. (Only for public & invited)')
+    audience_cease   = models.BooleanField(verbose_name='Cease further audience', default=False, help_text='Switch to stop new audience that is, if checked will not allow new user to open survey.')
 
     # Status
     status      = FSMField(default=ST_DRAFT, choices=CH_STATUS, protected=True, help_text='Status of the survey')
@@ -254,7 +256,7 @@ class Survey(models.Model):
         **Authors**: Gagandeep Singh
         """
 
-        if self.pk:
+        if not self.pk:
             # Set, check & correct survey_uid
             self.survey_uid = Survey.generate_uid()
 
@@ -322,7 +324,7 @@ class SurveyPhase(models.Model):
     """
 
     survey      = models.ForeignKey(Survey, db_index=True, help_text='Survey to which this phase belongs.')
-    # TODO: form        = models.ForeignKey(Form, db_index=True, help_text='Form attached to this phase')
+    form        = models.ForeignKey(Form, db_index=True, help_text='Questionnaire form for this phase.')
     order       = models.SmallIntegerField(db_index=True, help_text='Order of this phase in the survey. Phase with lower order is conducted first.')
 
     # Misc

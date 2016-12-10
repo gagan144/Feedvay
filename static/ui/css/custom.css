@@ -57,6 +57,11 @@
     background-position: center center;
 }
 
+.list_md_icon{
+    width: 16px;
+    margin-right: 2px;
+}
+
 /* ----- form loader ----- */
 .form-loading, .ps-container:hover.ps-in-scrolling.ps-in-scrolling, .ps-in-scrolling {
     pointer-events: none

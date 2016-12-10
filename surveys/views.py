@@ -43,7 +43,8 @@ def console_survey_panel(request, survey_uid):
         survey = Survey.objects.get(survey_uid=survey_uid, created_by_id=reg_user.id)
 
         data ={
-            'survey': survey
+            'survey': survey,
+            'app_name': 'app_survey_panel'
         }
         return render(request, 'surveys/console/survey_panel.html', data)
     except Survey.DoesNotExist:

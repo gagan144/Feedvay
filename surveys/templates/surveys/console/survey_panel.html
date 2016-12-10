@@ -4,6 +4,75 @@
 {% extends 'console/base.html' %}
 {% load static commontags %}
 
+{% block head %}
+    <!-- Favicon -->
+    <link rel="shortcut icon"  href="{% if request.curr_brand %}{{ request.curr_brand.icon.url }}{% else %}{% get_static_prefix %}images/favicon.png{% endif %}" />
+
+    <title page-title></title>
+
+    <!-- Templates -->
+    <script type="text/ng-template" id="tmpl_summary">
+        <div>
+            <h2 style="margin-top: 10px;">
+                <i class="fa fa-bar-chart"></i>&nbsp;
+                Summary
+            </h2>
+            <hr style="margin-top: 15px;"/>
+
+        </div>
+    </script>
+    <script type="text/ng-template" id="tmpl_responses">
+        <div>
+            <h2 style="margin-top: 10px;">
+                <i class="fa fa-rss"></i>&nbsp;
+                Responses
+            </h2>
+            <hr style="margin-top: 15px;"/>
+
+        </div>
+    </script>
+    <script type="text/ng-template" id="tmpl_analyse">
+        <div>
+            <h2 style="margin-top: 10px;">
+                <i class="fa fa-cubes"></i>&nbsp;
+                Analyse
+            </h2>
+            <hr style="margin-top: 15px;"/>
+
+        </div>
+    </script>
+    <script type="text/ng-template" id="tmpl_edit">
+        <div>
+            <h2 style="margin-top: 10px;">
+                <i class="fa fa-pencil-square-o"></i>&nbsp;
+                Review/Edit
+            </h2>
+            <hr style="margin-top: 15px;"/>
+
+            <p>
+                Review or edit your survey. Please note that editing your survey while published can be critical and
+                might take some time to reach devices. You might also receive responses corresponding to old version
+                even after saving changes.
+            </p>
+
+            <form name="form_create_edit_brand" class="form-horizontal" novalidate>
+                {$ survey $}
+            </form>
+
+
+            {% if survey.type == 'simple' %}
+                <a href="{% url 'console_survey_simple_form_editor' survey.survey_uid %}">Edit (Simple)</a>
+            {% else %}
+                {% for ph in survey.surveyphase_set.all %}
+                    <a href="{% url 'console_survey_phase_form_editor' survey.survey_uid ph.id %}">Edit Phase-{{ forloop.counter }}</a>
+                {% endfor %}
+            {% endif %}
+
+        </div>
+    </script>
+    <!-- /Templates -->
+{% endblock %}
+
 {% block page_header %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-xs-12">
@@ -25,38 +94,161 @@
 
 {% block content %}
 
-    <div class="wrapper_admin_content">
+    <div class="wrapper_admin_content" ng-controller="MainCtrl">
         <table class="table_tab_admin">
             <tr>
                 <td class="admin_tabs" valign="top">
-                    <ul class="list-group list_group_tabs" >
-                        <a href="#" class="list-group-item active">
+                    <div class="list-group list_group_tabs" >
+                        <a ui-sref="summary" class="list-group-item" ng-class="{'active': $state.current.name=='summary'}">
+                            <i class="fa fa-bar-chart-o list_md_icon"></i>
                             Summary
                         </a>
-                        <a href="#" class="list-group-item ">
+                        <a ui-sref="responses" class="list-group-item" ng-class="{'active': $state.current.name=='responses'}">
+                            <i class="fa fa-rss list_md_icon"></i>
                             Responses
                         </a>
-                        <a href="#" class="list-group-item ">
-                            Explore
+                        <a ui-sref="analyse" class="list-group-item" ng-class="{'active': $state.current.name=='analyse'}">
+                            <i class="fa fa-cubes list_md_icon"></i>
+                            Analyse
                         </a>
-                        <a href="#" class="list-group-item">
-                            Edit survey
+                        <a ui-sref="edit" class="list-group-item" ng-class="{'active': $state.current.name=='edit'}">
+                            <i class="fa fa-pencil-square-o list_md_icon"></i>
+                            Review/Edit
                         </a>
-                    </ul>
+                    </div>
                 </td>
                 <td class="admin_content" valign="top">
-
-                    {% if survey.type == 'simple' %}
-                        <a href="{% url 'console_survey_simple_form_editor' survey.survey_uid %}">Edit (Simple)</a>
-                    {% else %}
-                        {% for ph in survey.surveyphase_set.all %}
-                            <a href="{% url 'console_survey_phase_form_editor' survey.survey_uid ph.id %}">Edit Phase-{{ forloop.counter }}</a>
-                        {% endfor %}
-                    {% endif %}
-
+                    <!-- Partial view div -->
+                    <div ui-view></div>
+                    <!-- Partial view div -->
                 </td>
             </tr>
         </table>
     </div>
 
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% get_static_prefix %}ui/js/ui-router/angular-ui-router.min.js"></script>
+
+    <script>
+        'use strict';
+
+        var APP = angular.module('{{ app_name }}',[
+            'feedvay.uiapp',
+            'feedvay.common',
+            'feedvay.watchdog',
+
+            'ngCookies',
+            'ngMessages',
+            'ngSanitize',
+            'ui.router',                    // Routing
+            'oc.lazyLoad',                  // ocLazyLoad
+            'ui.bootstrap',
+            'angular-ladda'
+        ])
+        .config(function($interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+
+            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+
+            // ----- Routing -----
+            $urlRouterProvider.otherwise("/summary");   // Default state to load
+
+            $ocLazyLoadProvider.config({
+                // Set to true if you want to see what and when is dynamically loaded
+                debug: false
+            });
+
+            $stateProvider
+                .state('summary', {
+                    url: "/summary",
+                    templateUrl: "tmpl_summary",
+                    data: { pageTitle: 'Summary - {{ survey.title }}' },
+{#                    controller: DetailsCtrl,#}
+{#                    resolve: {#}
+{#                        loadPlugin: function ($ocLazyLoad) {#}
+{#                            return $ocLazyLoad.load([#}
+{#                                {#}
+{#                                    files:['{% get_static_prefix %}lib/vibrantjs/Vibrant.js']#}
+{#                                },#}
+{#                                {#}
+{#                                    name: 'colorpicker.module',#}
+{#                                    files: [#}
+{#                                        '{% get_static_prefix %}ui/css/plugins/colorpicker/colorpicker.css',#}
+{#                                        '{% get_static_prefix %}ui/js/plugins/colorpicker/bootstrap-colorpicker-module.js'#}
+{#                                    ]#}
+{#                                }#}
+{#                            ]);#}
+{#                        }#}
+{#                    }#}
+                })
+                .state('responses', {
+                    url: "/responses",
+                    templateUrl: "tmpl_responses",
+                    data: { pageTitle: 'Responses - {{ survey.title }}' },
+{#                    controller: OwnershipCtrl,#}
+                })
+                .state('analyse', {
+                    url: "/analyse",
+                    templateUrl: "tmpl_analyse",
+                    data: { pageTitle: 'Analyse - {{ survey.title }}' },
+{#                    controller: ControlsCtrl,#}
+                })
+                .state('edit', {
+                    url: "/edit",
+                    templateUrl: "tmpl_edit",
+                    data: { pageTitle: 'Review/Edit - {{ survey.title }}' },
+                    controller: ReviewEditCtrl,
+                })
+
+
+
+        })
+        .run(function($rootScope, $http, $cookies, $state) {
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+            $http.defaults.xsrfCookieName = 'csrftoken';
+            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+            // ----- Routing -----
+            $rootScope.$state = $state;
+
+            $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
+                event.preventDefault();
+                //console.log(error);
+
+                if(error.status == -1){
+                    $.growl.error({
+                        title: '<i class="fa fa-signal"></i> Network error!',
+                        message: "Please check your internet connection."
+                    });
+                }else{
+                    $.growl.error({
+                        title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                        message: "Something went wrong. Our engineers will be informed."
+                    });
+                }
+
+            });
+
+        });
+
+
+        APP.controller('MainCtrl', function($scope){
+
+        });
+
+        // ========== State Controllers ==========
+        // ----- Review/Edit -----
+        function ReviewEditCtrl($scope, $http, $uibModal){
+            $scope.survey = {"name":"sdfgfsdh"};
+
+        }
+        // ----- /Review/Edit -----
+        // ========== /State Controllers ==========
+
+    </script>
 {% endblock %}

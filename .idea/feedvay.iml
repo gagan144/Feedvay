@@ -27,6 +27,7 @@
         <option value="$MODULE_DIR$/owlery/templates" />
         <option value="$MODULE_DIR$/brands/templates" />
         <option value="$MODULE_DIR$/form_builder/templates" />
+        <option value="$MODULE_DIR$/surveys/templates" />
       </list>
     </option>
   </component>

@@ -217,890 +217,894 @@
 {% endblock %}
 
 {% block content %}
-    <div ng-cloak>
-        <!-- Modals Templates -->
-        <script type="text/ng-template" id="tmpl_modal_form_constant">
-            <form role="form" name="form_edit_constant" class="form-horizontal" novalidate>
-                <div class="inmodal">
-                    <div class="modal-header" style="padding: 20px 15px;">
-                        <button type="button" class="close" ng-click="close()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <h4 class="modal-title">
-                            <i class="fa fa-puzzle-piece"></i>&nbsp;
-                            Constant
-                        </h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">
-                                Label<span class="required">*</span>:
-                            </label>
-                            <div class="col-sm-8">
-                                <input type="text" name="label" ng-model="constant.label" class="form-control" required val-variable-name val-unique-label="constants:{$ idx $}">
-                                <p class="help-block m-b-none">
-                                    A name that uniquely identifies this constant.
-                                </p>
-                                <div ng-messages="form_edit_constant.label.$dirty && form_edit_constant.label.$error" role="alert" class="error_messages">
-                                    <label ng-message="required" class="error">Please enter an label.</label>
-                                    <label ng-message="val-variable-name" class="error">Invalid label. The label must start with an alphabet or underscore followed by any number of alphabets, digits or underscore only.</label>
-                                    <label ng-message="val-unique-label" class="error">Label '{$ constant.label $}' is already in use, please enter an unique label.</label>
-                                </div>
+    <div class="wrapper wrapper-content">
+        <div class="container">
+                <div ng-cloak>
+                <!-- Modals Templates -->
+                <script type="text/ng-template" id="tmpl_modal_form_constant">
+                    <form role="form" name="form_edit_constant" class="form-horizontal" novalidate>
+                        <div class="inmodal">
+                            <div class="modal-header" style="padding: 20px 15px;">
+                                <button type="button" class="close" ng-click="close()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <h4 class="modal-title">
+                                    <i class="fa fa-puzzle-piece"></i>&nbsp;
+                                    Constant
+                                </h4>
                             </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">
-                                Value<span class="required">*</span>:
-                            </label>
-                            <div class="col-sm-8">
-                                <input type="text" name="value" ng-model="constant.value" class="form-control" required auto-type-cast>
-                                <p class="help-block m-b-none">
-                                    Value for this constant. This can be a number, decimal or simply an alphanumeric text.
-                                </p>
-                                <div ng-messages="form_edit_constant.value.$dirty && form_edit_constant.value.$error" role="alert" class="error_messages">
-                                    <label ng-message="required" class="error">Please enter a value for this constant.</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-
-                        <div class="form-group">
-                            <div class="col-sm-offset-2 col-sm-10">
-                                <div class="checkbox checkbox-primary">
-                                    <input id="fld_show_on_form" type="checkbox" ng-model="constant.show_on_form">
-                                    <label for="fld_show_on_form">
-                                        Show this constant in the form?
-                                        <p class="help-block m-b-none">
-                                            This will be displayed in the beginning of the form.
-                                        </p>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">
+                                        Label<span class="required">*</span>:
                                     </label>
-                                </div>
-
-                                <div class="panel panel-default" ng-if="constant.show_on_form" style="margin-top:20px;">
-                                    <div class="panel-body">
-                                        <p style="margin-bottom: 20px;">
-                                            If you wish to show this constant in the form, you must provide text
-                                            that will be displayed for this constant along with the translations:
-                                        </p>
-
-                                        <div ng-include="'{% get_static_prefix %}partials/translations/edit_translation.html'" ng-if="true"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-
-                        <div class="form-group">
-                            <div class="col-sm-offset-2 col-sm-8">
-                                <div class="checkbox checkbox-primary">
-                                    <input id="fld_include_in_answers" type="checkbox" ng-model="constant.include_in_answers">
-                                    <label for="fld_include_in_answers">
-                                        Include this constant in the answers?
+                                    <div class="col-sm-8">
+                                        <input type="text" name="label" ng-model="constant.label" class="form-control" required val-variable-name val-unique-label="constants:{$ idx $}">
                                         <p class="help-block m-b-none">
-                                            If selected, this constant will be included in the answers of the response.
+                                            A name that uniquely identifies this constant.
                                         </p>
+                                        <div ng-messages="form_edit_constant.label.$dirty && form_edit_constant.label.$error" role="alert" class="error_messages">
+                                            <label ng-message="required" class="error">Please enter an label.</label>
+                                            <label ng-message="val-variable-name" class="error">Invalid label. The label must start with an alphabet or underscore followed by any number of alphabets, digits or underscore only.</label>
+                                            <label ng-message="val-unique-label" class="error">Label '{$ constant.label $}' is already in use, please enter an unique label.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="hr-line-dashed"></div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">
+                                        Value<span class="required">*</span>:
                                     </label>
+                                    <div class="col-sm-8">
+                                        <input type="text" name="value" ng-model="constant.value" class="form-control" required auto-type-cast>
+                                        <p class="help-block m-b-none">
+                                            Value for this constant. This can be a number, decimal or simply an alphanumeric text.
+                                        </p>
+                                        <div ng-messages="form_edit_constant.value.$dirty && form_edit_constant.value.$error" role="alert" class="error_messages">
+                                            <label ng-message="required" class="error">Please enter a value for this constant.</label>
+                                        </div>
+                                    </div>
                                 </div>
+                                <div class="hr-line-dashed"></div>
+
+                                <div class="form-group">
+                                    <div class="col-sm-offset-2 col-sm-10">
+                                        <div class="checkbox checkbox-primary">
+                                            <input id="fld_show_on_form" type="checkbox" ng-model="constant.show_on_form">
+                                            <label for="fld_show_on_form">
+                                                Show this constant in the form?
+                                                <p class="help-block m-b-none">
+                                                    This will be displayed in the beginning of the form.
+                                                </p>
+                                            </label>
+                                        </div>
+
+                                        <div class="panel panel-default" ng-if="constant.show_on_form" style="margin-top:20px;">
+                                            <div class="panel-body">
+                                                <p style="margin-bottom: 20px;">
+                                                    If you wish to show this constant in the form, you must provide text
+                                                    that will be displayed for this constant along with the translations:
+                                                </p>
+
+                                                <div ng-include="'{% get_static_prefix %}partials/translations/edit_translation.html'" ng-if="true"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="hr-line-dashed"></div>
+
+                                <div class="form-group">
+                                    <div class="col-sm-offset-2 col-sm-8">
+                                        <div class="checkbox checkbox-primary">
+                                            <input id="fld_include_in_answers" type="checkbox" ng-model="constant.include_in_answers">
+                                            <label for="fld_include_in_answers">
+                                                Include this constant in the answers?
+                                                <p class="help-block m-b-none">
+                                                    If selected, this constant will be included in the answers of the response.
+                                                </p>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+        {#                        <div class="hr-line-dashed"></div>#}
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-white" ng-click="close()">Close</button>
+                                <button type="button" class="btn btn-primary" ng-disabled="form_edit_constant.$invalid" ng-click="save(form_edit_constant)">Ok</button>
                             </div>
                         </div>
-{#                        <div class="hr-line-dashed"></div>#}
+                    </form>
+                </script>
 
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-white" ng-click="close()">Close</button>
-                        <button type="button" class="btn btn-primary" ng-disabled="form_edit_constant.$invalid" ng-click="save(form_edit_constant)">Ok</button>
-                    </div>
-                </div>
-            </form>
-        </script>
+                <script type="text/ng-template" id="tmpl_modal_form_question">
+                    <form role="form" name="form_edit_question" class="form-horizontal" novalidate>
+                        <div class="inmodal">
+                            <div class="modal-header" style="padding: 20px 15px;">
+                                <button type="button" class="close" ng-click="close()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <h4 class="modal-title">
+                                    <i class="fa fa-question-circle"></i>&nbsp;
+                                    Question
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="well">
+                                    {$ question $}
+                                </div>
 
-        <script type="text/ng-template" id="tmpl_modal_form_question">
-            <form role="form" name="form_edit_question" class="form-horizontal" novalidate>
-                <div class="inmodal">
-                    <div class="modal-header" style="padding: 20px 15px;">
-                        <button type="button" class="close" ng-click="close()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <h4 class="modal-title">
-                            <i class="fa fa-question-circle"></i>&nbsp;
-                            Question
-                        </h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="well">
-                            {$ question $}
+                                <div ng-include="'/forms/partials/form-field/' + answer_type + '.html'" ng-if="true"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-white" ng-click="close()">Close</button>
+                                <button type="button" class="btn btn-primary" ng-disabled="form_edit_question.$invalid" ng-click="save(form_edit_question)">Ok</button>
+                            </div>
                         </div>
+                    </form>
+                </script>
+                <script type="text/ng-template" id="tmpl_modal_form_layout">
+                    <form role="form" name="form_edit_layout" class="form-horizontal" novalidate>
+                        <div class="inmodal">
+                            <div class="modal-header" style="padding: 20px 15px;">
+                                <button type="button" class="close" ng-click="close()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <h4 class="modal-title">
+                                    <i class="fa fa-th-large"></i>&nbsp;
+                                    Layout
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+        {#                        <div class="well">#}
+        {#                            {$ layout $}#}
+        {#                        </div>#}
 
-                        <div ng-include="'/forms/partials/form-field/' + answer_type + '.html'" ng-if="true"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-white" ng-click="close()">Close</button>
-                        <button type="button" class="btn btn-primary" ng-disabled="form_edit_question.$invalid" ng-click="save(form_edit_question)">Ok</button>
-                    </div>
-                </div>
-            </form>
-        </script>
-        <script type="text/ng-template" id="tmpl_modal_form_layout">
-            <form role="form" name="form_edit_layout" class="form-horizontal" novalidate>
-                <div class="inmodal">
-                    <div class="modal-header" style="padding: 20px 15px;">
-                        <button type="button" class="close" ng-click="close()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <h4 class="modal-title">
-                            <i class="fa fa-th-large"></i>&nbsp;
-                            Layout
-                        </h4>
-                    </div>
-                    <div class="modal-body">
-{#                        <div class="well">#}
-{#                            {$ layout $}#}
-{#                        </div>#}
-
-                        <div ng-include="'/forms/partials/form-layout/' + layout_class + '.html'" ng-if="true"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-white" ng-click="close()">Close</button>
-                        <button type="button" class="btn btn-primary" ng-disabled="form_edit_layout.$invalid" ng-click="save(form_edit_layout)">Ok</button>
-                    </div>
-                </div>
-            </form>
-        </script>
-        <script type="text/ng-template" id="tmpl_modal_form_condition">
-            <form role="form" name="form_edit_condition" class="form-horizontal" novalidate>
-                <div class="inmodal">
-                    <div class="modal-header" style="padding: 20px 15px;">
-                        <button type="button" class="close" ng-click="close()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <h4 class="modal-title">
-                            <i class="fa fa-sitemap"></i>&nbsp;
-                            Condition
-                        </h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="well">
-                            {$ condition $}
+                                <div ng-include="'/forms/partials/form-layout/' + layout_class + '.html'" ng-if="true"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-white" ng-click="close()">Close</button>
+                                <button type="button" class="btn btn-primary" ng-disabled="form_edit_layout.$invalid" ng-click="save(form_edit_layout)">Ok</button>
+                            </div>
                         </div>
+                    </form>
+                </script>
+                <script type="text/ng-template" id="tmpl_modal_form_condition">
+                    <form role="form" name="form_edit_condition" class="form-horizontal" novalidate>
+                        <div class="inmodal">
+                            <div class="modal-header" style="padding: 20px 15px;">
+                                <button type="button" class="close" ng-click="close()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <h4 class="modal-title">
+                                    <i class="fa fa-sitemap"></i>&nbsp;
+                                    Condition
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="well">
+                                    {$ condition $}
+                                </div>
 
-                        <div ng-include="'/forms/partials/form-condition/' + condition_class + '.html'" ng-if="true"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-white" ng-click="close()">Close</button>
-                        <button type="button" class="btn btn-primary" ng-disabled="form_edit_condition.$invalid" ng-click="save(form_edit_condition)">Ok</button>
-                    </div>
-                </div>
-            </form>
-        </script>
-        <!-- /Modals Templates -->
+                                <div ng-include="'/forms/partials/form-condition/' + condition_class + '.html'" ng-if="true"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-white" ng-click="close()">Close</button>
+                                <button type="button" class="btn btn-primary" ng-disabled="form_edit_condition.$invalid" ng-click="save(form_edit_condition)">Ok</button>
+                            </div>
+                        </div>
+                    </form>
+                </script>
+                <!-- /Modals Templates -->
 
-        <div class="tabs-container animated fadeInRight">
-            <ul class="nav nav-tabs">
-                <li class="active">
-                    <a data-toggle="tab" data-target="#tab_general">
-                        <i class="fa fa-info-circle"></i>
-                        General
-                    </a>
-                </li>
-                <li>
-                    <a data-toggle="tab" data-target="#tab_settings">
-                        <i class="fa fa-cog"></i>
-                        Settings
-                    </a>
-                </li>
-                <li>
-                    <a data-toggle="tab" data-target="#tab_questions">
-                        <i class="fa fa-question-circle"></i>
-                        Questions
-                    </a>
-                </li>
-            </ul>
-            <div class="tab-content">
-                <div id="tab_general" class="tab-pane active" ng-controller="GeneralController">
-                    <div class="panel-body">
-                        <p align="center" style="margin-bottom: 30px">
-                            Thousand unknown plants are noticed by me: when I hear the buzz of the little world among the stalks, and grow familiar with the countless indescribable forms of the insects
-                            and flies, then I feel the presence of the Almighty, who formed us in his own image, and the breath
-                        </p>
-                        <form name="form_general" role="form" class="form-horizontal" novalidate>
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">
-                                    Languages:
-                                </label>
-                                <div class="col-sm-8">
-                                    <p style="padding-top: 7px;">
-                                        Select languages that you want to enable for this form <i>(English is selected as default)</i>:
-                                    </p>
-
-                                    <div class="checkbox checkbox-primary checkbox-inline">
-                                        <input id="chk_lang_0" type="checkbox" checked="checked" disabled>
-                                        <label for="chk_lang_0">
-                                            English
-                                            <br/><small>(Standard)</small>
+                <div class="tabs-container animated fadeInRight">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a data-toggle="tab" data-target="#tab_general">
+                                <i class="fa fa-info-circle"></i>
+                                General
+                            </a>
+                        </li>
+                        <li>
+                            <a data-toggle="tab" data-target="#tab_settings">
+                                <i class="fa fa-cog"></i>
+                                Settings
+                            </a>
+                        </li>
+                        <li>
+                            <a data-toggle="tab" data-target="#tab_questions">
+                                <i class="fa fa-question-circle"></i>
+                                Questions
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="tab_general" class="tab-pane active" ng-controller="GeneralController">
+                            <div class="panel-body">
+                                <p align="center" style="margin-bottom: 30px">
+                                    Thousand unknown plants are noticed by me: when I hear the buzz of the little world among the stalks, and grow familiar with the countless indescribable forms of the insects
+                                    and flies, then I feel the presence of the Almighty, who formed us in his own image, and the breath
+                                </p>
+                                <form name="form_general" role="form" class="form-horizontal" novalidate>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">
+                                            Languages:
                                         </label>
+                                        <div class="col-sm-8">
+                                            <p style="padding-top: 7px;">
+                                                Select languages that you want to enable for this form <i>(English is selected as default)</i>:
+                                            </p>
+
+                                            <div class="checkbox checkbox-primary checkbox-inline">
+                                                <input id="chk_lang_0" type="checkbox" checked="checked" disabled>
+                                                <label for="chk_lang_0">
+                                                    English
+                                                    <br/><small>(Standard)</small>
+                                                </label>
+                                            </div>
+                                            <div class="checkbox checkbox-primary checkbox-inline" ng-repeat="lang in LIST_LANGUAGES">
+                                                <input id="chk_lang_{$ lang.id $}" type="checkbox" checklist-model="FormData.language_codes" checklist-value="lang.code" >
+                                                <label for="chk_lang_{$ lang.id $}">
+                                                    {$ lang.name $}
+                                                    <br/><small>{$ lang.name_native $}</small>
+                                                </label>
+                                            </div>
+
+
+        {#                                    <p class="help-block m-b-none">#}
+        {#                                        Title of the form that will be display on the top.#}
+        {#                                    </p>#}
+                                        </div>
                                     </div>
-                                    <div class="checkbox checkbox-primary checkbox-inline" ng-repeat="lang in LIST_LANGUAGES">
-                                        <input id="chk_lang_{$ lang.id $}" type="checkbox" checklist-model="FormData.language_codes" checklist-value="lang.code" >
-                                        <label for="chk_lang_{$ lang.id $}">
-                                            {$ lang.name $}
-                                            <br/><small>{$ lang.name_native $}</small>
+                                    <div class="hr-line-dashed"></div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">
+                                            Title<span class="required">*</span> :
                                         </label>
-                                    </div>
-
-
-{#                                    <p class="help-block m-b-none">#}
-{#                                        Title of the form that will be display on the top.#}
-{#                                    </p>#}
-                                </div>
-                            </div>
-                            <div class="hr-line-dashed"></div>
-
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">
-                                    Title<span class="required">*</span> :
-                                </label>
-                                <div class="col-sm-8">
-                                    <input type="text" class="form-control" ng-model="FormData.title" name="title" required>
-                                    <p class="help-block m-b-none">
-                                        Title of the form that will be display on the top.
-                                    </p>
-                                    <div ng-messages="form_general.title.$dirty && form_general.title.$error" role="alert">
-                                        <label ng-message="required" class="error">Please enter a title for this form.</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="hr-line-dashed"></div>
-
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">
-                                    Description:
-                                </label>
-                                <div class="col-sm-8">
-                                    <div ng-init="trans_description = Translations[FormData.description]">
-{#                                        {$ trans_description $}#}
-                                        <div class="form-control translation_sentence" ng-bind-html="trans_description.sentence"></div>
-                                        <div class="translation_controls">
-                                            <a class="small" href="javascript: void(0);" ng-click="edit_description();">
-                                                <i class="fa fa-pencil"></i>
-                                                {$ trans_description?'Edit':'Add' $}
-                                            </a>
-                                            <small class="text-muted" style="margin-left: 5px;" ng-if="trans_description">
-                                                − {$ 1+(trans_description.translations|dictlength) $} Translation{$ trans_description.translations.length?'s':'' $}
-                                            </small>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" ng-model="FormData.title" name="title" required>
+                                            <p class="help-block m-b-none">
+                                                Title of the form that will be display on the top.
+                                            </p>
+                                            <div ng-messages="form_general.title.$dirty && form_general.title.$error" role="alert">
+                                                <label ng-message="required" class="error">Please enter a title for this form.</label>
+                                            </div>
                                         </div>
                                     </div>
-                                    <p class="help-block m-b-none">
-                                        Some description about this form.
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="hr-line-dashed"></div>
+                                    <div class="hr-line-dashed"></div>
 
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">
-                                    Instructions:
-                                </label>
-                                <div class="col-sm-8">
-                                    <div ng-init="trans_instructions = Translations[FormData.instructions]">
-                                        <div class="form-control translation_sentence" ng-bind-html="trans_instructions.sentence"></div>
-                                        <div class="translation_controls">
-                                            <a class="small" href="javascript: void(0);" ng-click="edit_instructions();">
-                                                <i class="fa fa-pencil"></i>
-                                                {$ trans_instructions?'Edit':'Add' $}
-                                            </a>
-                                            <small class="text-muted" style="margin-left: 5px;" ng-if="trans_instructions">
-                                                − {$ 1+(trans_instructions.translations|dictlength) $} Translation{$ trans_instructions.translations.length?'s':'' $}
-                                            </small>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">
+                                            Description:
+                                        </label>
+                                        <div class="col-sm-8">
+                                            <div ng-init="trans_description = Translations[FormData.description]">
+        {#                                        {$ trans_description $}#}
+                                                <div class="form-control translation_sentence" ng-bind-html="trans_description.sentence"></div>
+                                                <div class="translation_controls">
+                                                    <a class="small" href="javascript: void(0);" ng-click="edit_description();">
+                                                        <i class="fa fa-pencil"></i>
+                                                        {$ trans_description?'Edit':'Add' $}
+                                                    </a>
+                                                    <small class="text-muted" style="margin-left: 5px;" ng-if="trans_description">
+                                                        − {$ 1+(trans_description.translations|dictlength) $} Translation{$ trans_description.translations.length?'s':'' $}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <p class="help-block m-b-none">
+                                                Some description about this form.
+                                            </p>
                                         </div>
                                     </div>
-                                    <p class="help-block m-b-none">
-                                        Any relevant instructions to fill this form.
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="hr-line-dashed"></div>
+                                    <div class="hr-line-dashed"></div>
 
-                            <div class="form-group">
-                                <div class="col-sm-8 col-md-offset-2">
-                                    <div class="user_notes">
-                                        <div class="heading">Notes:</div>
-                                        <div summernote ng-model="FormData.user_notes" config="summernote_config_notes" on-focus="console.log('Editable area is focused');"></div>
-                                        <small class="help-block m-b-none" style="font-style: italic">(This will not be displayed in the form)</small>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">
+                                            Instructions:
+                                        </label>
+                                        <div class="col-sm-8">
+                                            <div ng-init="trans_instructions = Translations[FormData.instructions]">
+                                                <div class="form-control translation_sentence" ng-bind-html="trans_instructions.sentence"></div>
+                                                <div class="translation_controls">
+                                                    <a class="small" href="javascript: void(0);" ng-click="edit_instructions();">
+                                                        <i class="fa fa-pencil"></i>
+                                                        {$ trans_instructions?'Edit':'Add' $}
+                                                    </a>
+                                                    <small class="text-muted" style="margin-left: 5px;" ng-if="trans_instructions">
+                                                        − {$ 1+(trans_instructions.translations|dictlength) $} Translation{$ trans_instructions.translations.length?'s':'' $}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <p class="help-block m-b-none">
+                                                Any relevant instructions to fill this form.
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="hr-line-dashed"></div>
+                                    <div class="hr-line-dashed"></div>
 
-                            <div align="right">
-                                <button type="button" class="btn btn-primary" ng-disabled="form_general.$invalid">
-                                    Next&nbsp;
-                                    <i class="fa fa-angle-right"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div id="tab_settings" class="tab-pane" ng-controller="SettingsController">
-                    <div class="panel-body">
-                        <p align="center" style="margin-bottom: 30px">
-                            Thousand unknown plants are noticed by me: when I hear the buzz of the little world among the stalks, and grow familiar with the countless indescribable forms of the insects
-                            and flies, then I feel the presence of the Almighty, who formed us in his own image, and the breath
-                        </p>
-
-                        <style>
-                            .widget_settings{
-
-                            }
-
-                            .widget_settings > h3{
-                                margin: 0px 0px 5px 0px;
-                            }
-
-                            .widget_settings > h3{
-                                margin: 0px 0px 5px 0px;
-                            }
-
-                            .widget_settings > hr{
-                                margin: 10px 0px;
-                            }
-
-                            .widget_settings > .description{
-                                font-size: smaller;
-                                text-align: justify;
-                            }
-
-                            .widget_settings > table {
-{#                                width: 100%;#}
-                            }
-
-                            .icon_widget{
-                                font-size: 90px;
-                                color: #d2d2d2;
-                            }
-                        </style>
-                        <div class="grid">
-                            <div class="grid-item">
-                                <div class="panel panel-default">
-                                    <div class="panel-body widget_settings">
-                                        <h3>Basic</h3>
-                                        <hr/>
-                                        <p class="description">
-                                            Basic settings to customize your form.
-                                        </p>
-                                        <table>
-                                            <tr>
-                                                <td style="padding-right: 10px;width: 100px;">
-                                                    <i class="fa fa-cog icon_widget"></i>
-                                                </td>
-                                                <td>
-                                                    <div class="form-group" >
-                                                        <div class="checkbox checkbox-primary checkbox-inline">
-                                                            <input id="fld_randomize" type="checkbox" ng-model="FormData.randomize">
-                                                            <label for="fld_randomize">
-                                                                Randomly order questions
-                                                                <br/>
-                                                                <small>
-                                                                    This is applicable only if forms does not contain any conditions.
-                                                                    Select this option to randomly order questions each time the form is viewed.
-                                                                </small>
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                    <div class="form-group">
+                                        <div class="col-sm-8 col-md-offset-2">
+                                            <div class="user_notes">
+                                                <div class="heading">Notes:</div>
+                                                <div summernote ng-model="FormData.user_notes" config="summernote_config_notes" on-focus="console.log('Editable area is focused');"></div>
+                                                <small class="help-block m-b-none" style="font-style: italic">(This will not be displayed in the form)</small>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="grid-item">
-                                <div class="panel panel-default">
-                                    <div class="panel-body widget_settings">
-                                        <h3>Timmer</h3>
-                                        <hr/>
-                                        <p class="description">
-                                            Add timmer to your form by specifying maximum time before which user must
-                                            complete the form. On exceeding the time, form is suspended by displaying an appropriate
-                                            message and option to exit.
-                                        </p>
-                                        <table>
-                                            <tr>
-                                                <td style="padding-right: 10px;width: 100px;">
-                                                    <i class="fa fa-clock-o icon_widget"></i>
-                                                </td>
-                                                <td>
-                                                    <div class="form-group">
-                                                        <label>
-                                                            Timeout time <small>(In seconds)</small>:
-                                                        </label>
-                                                        <input type="text" class="form-control" name="timeout" touch-spin spin-options="options_spin" ng-model="FormData.timeout">
-                                                    </div>
-                                                    <div class="form-group" >
-                                                        <div class="checkbox checkbox-primary checkbox-inline">
-                                                            <input id="fld_show_timer" type="checkbox" ng-model="FormData.show_timer" ng-disabled="!FormData.timeout">
-                                                            <label for="fld_show_timer">
-                                                                Show timer in the form
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="grid-item">
-                                <div class="panel panel-default">
-                                    <div class="panel-body widget_settings">
-                                        <h3>GPS Location</h3>
-                                        <hr/>
-                                        <p class="description">
-                                            Capture user location along with questions answer.
-                                        </p>
-                                        <table>
-                                            <tr>
-                                                <td style="padding-right: 10px;width: 100px;vertical-align: top;">
-                                                    <i class="fa fa-map-marker icon_widget"></i>
-                                                </td>
-                                                <td>
-                                                    <div class="form-group" >
-                                                        <div class="checkbox checkbox-primary checkbox-inline">
-                                                            <input id="fld_gps_enabled" type="checkbox" ng-model="FormData.gps_enabled">
-                                                            <label for="fld_gps_enabled">
-                                                                Enable location
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <div class="checkbox checkbox-primary checkbox-inline">
-                                                            <input id="fld_gps_required" type="checkbox" ng-model="FormData.gps_required" ng-disabled="!FormData.gps_enabled">
-                                                            <label for="fld_gps_required">
-                                                                Make location mandatory.
-                                                                <br/>
-                                                                <small>
-                                                                    If location is set mandatory, use must capture location before opening the form.
-                                                                    In case user fails to get valid gps location, he must try again until location is
-                                                                    retrieved by the device.
-                                                                </small>
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label ng-class="{'disabled_text': !FormData.gps_enabled }">Precision:</label>
-                                                        <div style="margin-left: 20px;">
-                                                            <div class="radio radio-primary radio-inline" ng-repeat="choice in gps_choices">
-                                                                <input type="radio" id="rd_gps_{$ choice.id $}" name="gps_choice" ng-value="choice.id" ng-disabled="!FormData.gps_enabled" ng-model="FormData.gps_choice">
-                                                                <label for="rd_gps_{$ choice.id $}">
-                                                                    {$ choice.name $}
-                                                                    <br><small>{$ choice.description $}</small>
-                                                                </label>
-                                                            </div>
+                                    <div class="hr-line-dashed"></div>
 
-                                                            <div ng-if="FormData.gps_choice" class="well" style="margin: 20px 0px 0px 0px;width: auto !important;" >
-                                                                <div style="font-weight: 600;font-size: large;">
-                                                                    {$ selected_gps_choice.name $}
-                                                                </div>
-                                                                <small>{$ selected_gps_choice.remarks $}</small>
-                                                                <hr style="margin: 5px 0px;"/>
-                                                                <div style="padding-left: 15px;">
-                                                                    <p style="margin-bottom: 5px;">
-                                                                        <i class="fa  text-navy" ng-class="{'fa-location-arrow': selected_gps_choice.high_accuracy, 'fa-signal':!selected_gps_choice.high_accuracy }"></i>&nbsp;&nbsp;
-                                                                        Use <b>{$ selected_gps_choice.high_accuracy?'Satellite based methods':'Network based methods' $}</b> to retrieve location.
-                                                                    </p>
-                                                                    <p style="margin-bottom: 5px;" ng-if="selected_gps_choice.max_radius">
-                                                                        <i class="fa fa-street-view text-navy"></i>&nbsp;&nbsp;
-                                                                        Location must be within <b>{$ selected_gps_choice.max_radius $} meters</b> of radius.
-                                                                    </p>
-                                                                    <p style="margin-bottom: 5px;">
-                                                                        <i class="fa fa-history text-navy"></i>&nbsp;&nbsp;
-                                                                        Location must not be older than <b>{$ selected_gps_choice.max_age/1000 $} seconds</b>.
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                    <div align="right">
+                                        <button type="button" class="btn btn-primary" ng-disabled="form_general.$invalid">
+                                            Next&nbsp;
+                                            <i class="fa fa-angle-right"></i>
+                                        </button>
                                     </div>
-                                </div>
+                                </form>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div id="tab_questions" class="tab-pane">
-                    <div class="panel-body">
-                        <p align="center" style="margin-bottom: 30px;text-align: justify;">
-                            Thousand unknown plants are noticed by me: when I hear the buzz of the little world among the stalks, and grow familiar with the countless indescribable forms of the insects
-                            and flies, then I feel the presence of the Almighty, who formed us in his own image, and the breath
-                        </p>
-                        <div class="tabs-left">
-                            <ul class="nav nav-tabs">
-                                <li class="active">
-                                    <a data-toggle="tab" data-target="#tab_constants">
-                                        <i class="fa fa-puzzle-piece"></i>
-                                        Constants
-                                    </a>
-                                </li>
-                                <li class="">
-                                    <a data-toggle="tab" data-target="#tab_schema">
-                                        <i class="fa fa-question-circle"></i>
-                                        Questions
-                                    </a>
-                                </li>
-                                <li class="">
-                                    <a data-toggle="tab" data-target="#tab_calculated_fields">
-                                        <i class="fa fa-calculator"></i>
-                                        Calculated Fields
-                                    </a>
-                                </li>
-                            </ul>
-                            <div class="tab-content">
-                                <div id="tab_constants" class="tab-pane active">
-                                    <div class="panel-body" ng-controller="ConstantsController">
-                                        <h3>
-                                            <i class="fa fa-puzzle-piece"></i>
-                                            Constants
-                                        </h3>
-                                        <hr style="margin: 5px 0px 10px 0px;"/>
-                                        <p>
-                                            A constant is a identifier with an associated value which does not alter during the form.
-                                            You can introduce a set of constants into your form which can be used to display a question
-                                            conditionally or can be used to evalute caluclated fields.
-                                        </p>
+                        <div id="tab_settings" class="tab-pane" ng-controller="SettingsController">
+                            <div class="panel-body">
+                                <p align="center" style="margin-bottom: 30px">
+                                    Thousand unknown plants are noticed by me: when I hear the buzz of the little world among the stalks, and grow familiar with the countless indescribable forms of the insects
+                                    and flies, then I feel the presence of the Almighty, who formed us in his own image, and the breath
+                                </p>
 
-                                        <div class="alert alert-info" ng-if="!FormData.constants.length">
-                                            You have no constants defined for your form. Click below button to add one:
-                                            <br/><br/>
-                                            <button class="btn btn-primary btn-sm" ng-click="edit_constant(null, null);">
-                                                <i class="fa fa-plus"></i>&nbsp;
-                                                Add Constant
-                                            </button>
-                                        </div>
+                                <style>
+                                    .widget_settings{
 
-                                        <div ng-if="FormData.constants.length">
-                                            <table class="table table-striped">
-                                                <thead>
+                                    }
+
+                                    .widget_settings > h3{
+                                        margin: 0px 0px 5px 0px;
+                                    }
+
+                                    .widget_settings > h3{
+                                        margin: 0px 0px 5px 0px;
+                                    }
+
+                                    .widget_settings > hr{
+                                        margin: 10px 0px;
+                                    }
+
+                                    .widget_settings > .description{
+                                        font-size: smaller;
+                                        text-align: justify;
+                                    }
+
+                                    .widget_settings > table {
+        {#                                width: 100%;#}
+                                    }
+
+                                    .icon_widget{
+                                        font-size: 90px;
+                                        color: #d2d2d2;
+                                    }
+                                </style>
+                                <div class="grid">
+                                    <div class="grid-item">
+                                        <div class="panel panel-default">
+                                            <div class="panel-body widget_settings">
+                                                <h3>Basic</h3>
+                                                <hr/>
+                                                <p class="description">
+                                                    Basic settings to customize your form.
+                                                </p>
+                                                <table>
                                                     <tr>
-                                                        <th style="width: 20px;">&nbsp;</th>
-                                                        <th style="min-width: 200px;">Name</th>
-                                                        <th style="min-width: 100px;">Value</th>
-                                                        <th style="width: 60px;">Show</th>
-                                                        <th>Include in answers</th>
-                                                        <th style="width: 70px;">&nbsp;</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody ui-sortable ng-model="FormData.constants">
-                                                    <tr ng-repeat="constant in FormData.constants" >
-                                                        <td>
-                                                            <i class="fa fa-arrows"></i>
+                                                        <td style="padding-right: 10px;width: 100px;">
+                                                            <i class="fa fa-cog icon_widget"></i>
                                                         </td>
                                                         <td>
-                                                            <div ng-if="constant.text_translation_id">
-                                                                <span class="semi_bold">{$ Translations[constant.text_translation_id].sentence $}</span>
-                                                                <br><small>ID: {$ constant.label $}</small>
-                                                            </div>
-                                                            <div ng-if="!constant.text_translation_id">
-                                                                ID: {$ constant.label $}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            {$ constant.value $}
-                                                        </td>
-                                                        <td>
-                                                            <i class="fa fa-check-circle text-success" ng-if="constant.show_on_form"></i>
-                                                        </td>
-                                                        <td>
-                                                            <i class="fa fa-check-circle text-success" ng-if="constant.include_in_answers"></i>
-                                                        </td>
-
-                                                        <td>
-                                                            <button type="button" class="btn btn-outline btn-xs btn-primary" ng-click="edit_constant(constant, $index);">
-                                                                <i class="fa fa-pencil"></i>
-                                                            </button>
-                                                            <button type="button" class="btn btn-outline btn-xs btn-primary" ng-click="remove_constant($index);">
-                                                                <i class="fa fa-remove"></i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            <button class="btn btn-primary btn-sm" ng-click="edit_constant(null, null);">
-                                                <i class="fa fa-plus"></i>&nbsp;
-                                                Add Constant
-                                            </button>
-                                        </div>
-
-                                    </div>
-                                </div>
-                                <div id="tab_schema" class="tab-pane">
-                                    <div class="panel-body" ng-controller="QuestionSchemaController">
-                                        <h3>
-                                            <i class="fa fa-question-circle"></i>
-                                            Questions
-                                        </h3>
-                                        <hr style="margin: 5px 0px 10px 0px;"/>
-                                        <p style="text-align: justify;">
-                                            A question is an information that you collect from the user through this form. It is here,
-                                            where you build the main structure of your form by defining set of questions using various
-                                            answer types, their properties and define branching logic based on the answer to previous
-                                            question.
-                                        </p>
-
-                                        <p ng-if="FormData.schema.length" style="font-size:11px;text-align: justify;">
-                                            <span><i class="fa fa-info"></i> <b>Note:</b></span> The below view just gives a rough look-n-feel of the form.
-                                            The actual look and the behavior of the form will differ greatly as compared to final form.
-                                            Kindly preview before concluding.
-                                        </p>
-
-                                        <table style="width: 100%;">
-                                            <tbody>
-                                                <tr>
-                                                    <td style="padding-right: 10px;" valign="top">
-                                                        <!-- QuestionSchema -->
-                                                        <div class="alert alert-info" ng-if="!FormData.schema.length">
-                                                            You have no questions defined for your form. Click below button to add one:
-                                                        </div>
-
-                                                        <div ng-if="FormData.schema.length">
-                                                            <div ui-tree>
-                                                                <ol ui-tree-nodes ng-model="FormData.schema">
-{#                                                                    <li ng-repeat="node in FormData.schema" ui-tree-node ng-include="'nodes_renderer.html'"></li>#}
-                                                                    <li ng-repeat="component in FormData.schema" ui-tree-node ng-include="'{% get_static_prefix %}partials/form_builder/look-n-feel/' + (component.widget||component._cls) + '.html'"></li>
-                                                                </ol>
-                                                            </div>
-                                                        </div>
-                                                        <!-- /QuestionSchema -->
-                                                    </td>
-                                                    <td style="width: 260px;" valign="top">
-
-                                                        <!-- AnswerTypes -->
-                                                        <div class="panel panel-default">
-                                                            <div class="panel-heading" style="font-size: 16px;">
-                                                                <i class="fa fa-sitemap"></i>&nbsp;
-                                                                Form Components
-                                                            </div>
-                                                            <div class="panel-body" style="padding: 15px;width: 100%;margin: 0px;border: none;">
-                                                                <div {# slim-scroll="" #}>
-                                                                    <h3 style="font-weight: 600;">Basic Answer Types</h3>
-                                                                    <hr style="margin: 10px 0px;"/>
-
-                                                                    <style>
-                                                                        table.tbl_components{
-                                                                            width: 100%;
-                                                                        }
-
-                                                                        table.tbl_components > tbody > tr > td {
-                                                                            padding: 7px;
-                                                                        }
-                                                                    </style>
-
-                                                                    <table class="tbl_components">
-                                                                        <tbody>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'TextFormField')">
-                                                                                        <div class="btn_icon">
-                                                                                            <i class="fa fa-text-width"></i>
-                                                                                        </div>
-                                                                                        Text
-                                                                                    </button>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'EmailFormField')">
-                                                                                        <div class="btn_icon">
-                                                                                            <i class="fa fa-envelope"></i>
-                                                                                        </div>
-                                                                                        Email
-                                                                                    </button>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'PasswordFormField')">
-                                                                                        <div class="btn_icon">
-                                                                                            <i class="fa fa-key"></i>
-                                                                                        </div>
-                                                                                        Password
-                                                                                    </button>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'TextAreaFormField')">
-                                                                                        <div class="btn_icon">
-                                                                                            <i class="fa fa-font"></i>
-                                                                                        </div>
-                                                                                        Paragraph
-                                                                                    </button>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'NumberFormField')">
-                                                                                        <div class="btn_icon">
-                                                                                            <i class="fa fa-sort-numeric-asc"></i>
-                                                                                        </div>
-                                                                                        Numeric
-                                                                                    </button>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'DecimalFormField')">
-                                                                                        <div class="btn_icon">
-                                                                                            <i class="fa fa-circle"></i>
-                                                                                        </div>
-                                                                                        Decimal
-                                                                                    </button>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'DateFormField')">
-                                                                                        <div class="btn_icon">
-                                                                                            <i class="fa fa-calendar"></i>
-                                                                                        </div>
-                                                                                        Date
-                                                                                    </button>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'TimeFormField')">
-                                                                                        <div class="btn_icon">
-                                                                                            <i class="fa fa-clock-o"></i>
-                                                                                        </div>
-                                                                                        Time
-                                                                                    </button>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'DateTimeFormField')">
-                                                                                        <div class="btn_icon">
-                                                                                            <i class="fa fa-calendar-o"></i>
-                                                                                        </div>
-                                                                                        Date and time
-                                                                                    </button>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'RatingFormField')">
-                                                                                        <div class="btn_icon">
-                                                                                            <i class="fa fa-star"></i>
-                                                                                        </div>
-                                                                                        Rating
-                                                                                    </button>
-                                                                                </td>
-                                                                            </tr>
-                                                                        </tbody>
-                                                                    </table>
-
-
-                                                                    <h3 style="font-weight: 600;margin-top:20px;">Choice Answer Types</h3>
-                                                                    <hr style="margin: 10px 0px;"/>
-                                                                    <table class="tbl_components">
-                                                                        <tbody>
-                                                                            <tr>
-                                                                                <td valign="top">
-                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'BinaryFormField')">
-                                                                                        <div class="btn_icon">
-                                                                                            <i class="fa fa-random"></i>
-                                                                                        </div>
-                                                                                        Binary choice
-                                                                                    </button>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'MCSSFormField')">
-                                                                                        <div class="btn_icon">
-                                                                                            <i class="fa fa-list-ul"></i>
-                                                                                        </div>
-                                                                                        Multiple choice <br/> Single select
-                                                                                    </button>
-                                                                                </td>
-                                                                            </tr>
-                                                                        </tbody>
-                                                                    </table>
-
-                                                                    <h3 style="font-weight: 600;margin-top:20px;">Layouts</h3>
-                                                                    <hr style="margin: 10px 0px;"/>
-                                                                    <table class="tbl_components">
-                                                                        <tbody>
-                                                                            <tr>
-                                                                                <td valign="top" style="width: 50%;">
-                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_layout(null, null, 'SectionLayout')">
-                                                                                        <div class="btn_icon">
-                                                                                            <i class="fa fa-list-alt"></i>
-                                                                                        </div>
-                                                                                        Section
-                                                                                    </button>
-                                                                                </td>
-                                                                                <td>
-                                                                                    &nbsp;
-                                                                                </td>
-                                                                            </tr>
-                                                                        </tbody>
-                                                                    </table>
-
-                                                                    <h3 style="font-weight: 600;margin-top:20px;">Conditions</h3>
-                                                                    <hr style="margin: 10px 0px;"/>
-                                                                    <table class="tbl_components">
-                                                                        <tbody>
-                                                                            <tr>
-                                                                                <td valign="top" style="width: 50%;">
-                                                                                    <button class="btn btn-default btn_answer_type" ng-click="edit_condition(null, null, 'SwitchCondition')">
-                                                                                        <div class="btn_icon">
-                                                                                            <i class="fa fa-sitemap"></i>
-                                                                                        </div>
-                                                                                        Switch
-                                                                                    </button>
-                                                                                </td>
-                                                                                <td>
-                                                                                    &nbsp;
-                                                                                </td>
-                                                                            </tr>
-                                                                        </tbody>
-                                                                    </table>
-
+                                                            <div class="form-group" >
+                                                                <div class="checkbox checkbox-primary checkbox-inline">
+                                                                    <input id="fld_randomize" type="checkbox" ng-model="FormData.randomize">
+                                                                    <label for="fld_randomize">
+                                                                        Randomly order questions
+                                                                        <br/>
+                                                                        <small>
+                                                                            This is applicable only if forms does not contain any conditions.
+                                                                            Select this option to randomly order questions each time the form is viewed.
+                                                                        </small>
+                                                                    </label>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        <!-- /AnswerTypes -->
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-
-
-
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div id="tab_calculated_fields" class="tab-pane">
-                                    <div class="panel-body">
-                                        <h3>
-                                            <i class="fa fa-calculator"></i>
-                                            Calculated Fields
-                                        </h3>
-                                        <hr style="margin: 5px 0px 10px 0px;"/>
-                                        <p>
-                                            ...
-                                        </p>
+                                    <div class="grid-item">
+                                        <div class="panel panel-default">
+                                            <div class="panel-body widget_settings">
+                                                <h3>Timmer</h3>
+                                                <hr/>
+                                                <p class="description">
+                                                    Add timmer to your form by specifying maximum time before which user must
+                                                    complete the form. On exceeding the time, form is suspended by displaying an appropriate
+                                                    message and option to exit.
+                                                </p>
+                                                <table>
+                                                    <tr>
+                                                        <td style="padding-right: 10px;width: 100px;">
+                                                            <i class="fa fa-clock-o icon_widget"></i>
+                                                        </td>
+                                                        <td>
+                                                            <div class="form-group">
+                                                                <label>
+                                                                    Timeout time <small>(In seconds)</small>:
+                                                                </label>
+                                                                <input type="text" class="form-control" name="timeout" touch-spin spin-options="options_spin" ng-model="FormData.timeout">
+                                                            </div>
+                                                            <div class="form-group" >
+                                                                <div class="checkbox checkbox-primary checkbox-inline">
+                                                                    <input id="fld_show_timer" type="checkbox" ng-model="FormData.show_timer" ng-disabled="!FormData.timeout">
+                                                                    <label for="fld_show_timer">
+                                                                        Show timer in the form
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="grid-item">
+                                        <div class="panel panel-default">
+                                            <div class="panel-body widget_settings">
+                                                <h3>GPS Location</h3>
+                                                <hr/>
+                                                <p class="description">
+                                                    Capture user location along with questions answer.
+                                                </p>
+                                                <table>
+                                                    <tr>
+                                                        <td style="padding-right: 10px;width: 100px;vertical-align: top;">
+                                                            <i class="fa fa-map-marker icon_widget"></i>
+                                                        </td>
+                                                        <td>
+                                                            <div class="form-group" >
+                                                                <div class="checkbox checkbox-primary checkbox-inline">
+                                                                    <input id="fld_gps_enabled" type="checkbox" ng-model="FormData.gps_enabled">
+                                                                    <label for="fld_gps_enabled">
+                                                                        Enable location
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="checkbox checkbox-primary checkbox-inline">
+                                                                    <input id="fld_gps_required" type="checkbox" ng-model="FormData.gps_required" ng-disabled="!FormData.gps_enabled">
+                                                                    <label for="fld_gps_required">
+                                                                        Make location mandatory.
+                                                                        <br/>
+                                                                        <small>
+                                                                            If location is set mandatory, use must capture location before opening the form.
+                                                                            In case user fails to get valid gps location, he must try again until location is
+                                                                            retrieved by the device.
+                                                                        </small>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label ng-class="{'disabled_text': !FormData.gps_enabled }">Precision:</label>
+                                                                <div style="margin-left: 20px;">
+                                                                    <div class="radio radio-primary radio-inline" ng-repeat="choice in gps_choices">
+                                                                        <input type="radio" id="rd_gps_{$ choice.id $}" name="gps_choice" ng-value="choice.id" ng-disabled="!FormData.gps_enabled" ng-model="FormData.gps_choice">
+                                                                        <label for="rd_gps_{$ choice.id $}">
+                                                                            {$ choice.name $}
+                                                                            <br><small>{$ choice.description $}</small>
+                                                                        </label>
+                                                                    </div>
+
+                                                                    <div ng-if="FormData.gps_choice" class="well" style="margin: 20px 0px 0px 0px;width: auto !important;" >
+                                                                        <div style="font-weight: 600;font-size: large;">
+                                                                            {$ selected_gps_choice.name $}
+                                                                        </div>
+                                                                        <small>{$ selected_gps_choice.remarks $}</small>
+                                                                        <hr style="margin: 5px 0px;"/>
+                                                                        <div style="padding-left: 15px;">
+                                                                            <p style="margin-bottom: 5px;">
+                                                                                <i class="fa  text-navy" ng-class="{'fa-location-arrow': selected_gps_choice.high_accuracy, 'fa-signal':!selected_gps_choice.high_accuracy }"></i>&nbsp;&nbsp;
+                                                                                Use <b>{$ selected_gps_choice.high_accuracy?'Satellite based methods':'Network based methods' $}</b> to retrieve location.
+                                                                            </p>
+                                                                            <p style="margin-bottom: 5px;" ng-if="selected_gps_choice.max_radius">
+                                                                                <i class="fa fa-street-view text-navy"></i>&nbsp;&nbsp;
+                                                                                Location must be within <b>{$ selected_gps_choice.max_radius $} meters</b> of radius.
+                                                                            </p>
+                                                                            <p style="margin-bottom: 5px;">
+                                                                                <i class="fa fa-history text-navy"></i>&nbsp;&nbsp;
+                                                                                Location must not be older than <b>{$ selected_gps_choice.max_age/1000 $} seconds</b>.
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div id="tab_questions" class="tab-pane">
+                            <div class="panel-body">
+                                <p align="center" style="margin-bottom: 30px;text-align: justify;">
+                                    Thousand unknown plants are noticed by me: when I hear the buzz of the little world among the stalks, and grow familiar with the countless indescribable forms of the insects
+                                    and flies, then I feel the presence of the Almighty, who formed us in his own image, and the breath
+                                </p>
+                                <div class="tabs-left">
+                                    <ul class="nav nav-tabs">
+                                        <li class="active">
+                                            <a data-toggle="tab" data-target="#tab_constants">
+                                                <i class="fa fa-puzzle-piece"></i>
+                                                Constants
+                                            </a>
+                                        </li>
+                                        <li class="">
+                                            <a data-toggle="tab" data-target="#tab_schema">
+                                                <i class="fa fa-question-circle"></i>
+                                                Questions
+                                            </a>
+                                        </li>
+                                        <li class="">
+                                            <a data-toggle="tab" data-target="#tab_calculated_fields">
+                                                <i class="fa fa-calculator"></i>
+                                                Calculated Fields
+                                            </a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div id="tab_constants" class="tab-pane active">
+                                            <div class="panel-body" ng-controller="ConstantsController">
+                                                <h3>
+                                                    <i class="fa fa-puzzle-piece"></i>
+                                                    Constants
+                                                </h3>
+                                                <hr style="margin: 5px 0px 10px 0px;"/>
+                                                <p>
+                                                    A constant is a identifier with an associated value which does not alter during the form.
+                                                    You can introduce a set of constants into your form which can be used to display a question
+                                                    conditionally or can be used to evalute caluclated fields.
+                                                </p>
 
+                                                <div class="alert alert-info" ng-if="!FormData.constants.length">
+                                                    You have no constants defined for your form. Click below button to add one:
+                                                    <br/><br/>
+                                                    <button class="btn btn-primary btn-sm" ng-click="edit_constant(null, null);">
+                                                        <i class="fa fa-plus"></i>&nbsp;
+                                                        Add Constant
+                                                    </button>
+                                                </div>
+
+                                                <div ng-if="FormData.constants.length">
+                                                    <table class="table table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="width: 20px;">&nbsp;</th>
+                                                                <th style="min-width: 200px;">Name</th>
+                                                                <th style="min-width: 100px;">Value</th>
+                                                                <th style="width: 60px;">Show</th>
+                                                                <th>Include in answers</th>
+                                                                <th style="width: 70px;">&nbsp;</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody ui-sortable ng-model="FormData.constants">
+                                                            <tr ng-repeat="constant in FormData.constants" >
+                                                                <td>
+                                                                    <i class="fa fa-arrows"></i>
+                                                                </td>
+                                                                <td>
+                                                                    <div ng-if="constant.text_translation_id">
+                                                                        <span class="semi_bold">{$ Translations[constant.text_translation_id].sentence $}</span>
+                                                                        <br><small>ID: {$ constant.label $}</small>
+                                                                    </div>
+                                                                    <div ng-if="!constant.text_translation_id">
+                                                                        ID: {$ constant.label $}
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    {$ constant.value $}
+                                                                </td>
+                                                                <td>
+                                                                    <i class="fa fa-check-circle text-success" ng-if="constant.show_on_form"></i>
+                                                                </td>
+                                                                <td>
+                                                                    <i class="fa fa-check-circle text-success" ng-if="constant.include_in_answers"></i>
+                                                                </td>
+
+                                                                <td>
+                                                                    <button type="button" class="btn btn-outline btn-xs btn-primary" ng-click="edit_constant(constant, $index);">
+                                                                        <i class="fa fa-pencil"></i>
+                                                                    </button>
+                                                                    <button type="button" class="btn btn-outline btn-xs btn-primary" ng-click="remove_constant($index);">
+                                                                        <i class="fa fa-remove"></i>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    <button class="btn btn-primary btn-sm" ng-click="edit_constant(null, null);">
+                                                        <i class="fa fa-plus"></i>&nbsp;
+                                                        Add Constant
+                                                    </button>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div id="tab_schema" class="tab-pane">
+                                            <div class="panel-body" ng-controller="QuestionSchemaController">
+                                                <h3>
+                                                    <i class="fa fa-question-circle"></i>
+                                                    Questions
+                                                </h3>
+                                                <hr style="margin: 5px 0px 10px 0px;"/>
+                                                <p style="text-align: justify;">
+                                                    A question is an information that you collect from the user through this form. It is here,
+                                                    where you build the main structure of your form by defining set of questions using various
+                                                    answer types, their properties and define branching logic based on the answer to previous
+                                                    question.
+                                                </p>
+
+                                                <p ng-if="FormData.schema.length" style="font-size:11px;text-align: justify;">
+                                                    <span><i class="fa fa-info"></i> <b>Note:</b></span> The below view just gives a rough look-n-feel of the form.
+                                                    The actual look and the behavior of the form will differ greatly as compared to final form.
+                                                    Kindly preview before concluding.
+                                                </p>
+
+                                                <table style="width: 100%;">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td style="padding-right: 10px;" valign="top">
+                                                                <!-- QuestionSchema -->
+                                                                <div class="alert alert-info" ng-if="!FormData.schema.length">
+                                                                    You have no questions defined for your form. Click below button to add one:
+                                                                </div>
+
+                                                                <div ng-if="FormData.schema.length">
+                                                                    <div ui-tree>
+                                                                        <ol ui-tree-nodes ng-model="FormData.schema">
+        {#                                                                    <li ng-repeat="node in FormData.schema" ui-tree-node ng-include="'nodes_renderer.html'"></li>#}
+                                                                            <li ng-repeat="component in FormData.schema" ui-tree-node ng-include="'{% get_static_prefix %}partials/form_builder/look-n-feel/' + (component.widget||component._cls) + '.html'"></li>
+                                                                        </ol>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- /QuestionSchema -->
+                                                            </td>
+                                                            <td style="width: 260px;" valign="top">
+
+                                                                <!-- AnswerTypes -->
+                                                                <div class="panel panel-default">
+                                                                    <div class="panel-heading" style="font-size: 16px;">
+                                                                        <i class="fa fa-sitemap"></i>&nbsp;
+                                                                        Form Components
+                                                                    </div>
+                                                                    <div class="panel-body" style="padding: 15px;width: 100%;margin: 0px;border: none;">
+                                                                        <div {# slim-scroll="" #}>
+                                                                            <h3 style="font-weight: 600;">Basic Answer Types</h3>
+                                                                            <hr style="margin: 10px 0px;"/>
+
+                                                                            <style>
+                                                                                table.tbl_components{
+                                                                                    width: 100%;
+                                                                                }
+
+                                                                                table.tbl_components > tbody > tr > td {
+                                                                                    padding: 7px;
+                                                                                }
+                                                                            </style>
+
+                                                                            <table class="tbl_components">
+                                                                                <tbody>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'TextFormField')">
+                                                                                                <div class="btn_icon">
+                                                                                                    <i class="fa fa-text-width"></i>
+                                                                                                </div>
+                                                                                                Text
+                                                                                            </button>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'EmailFormField')">
+                                                                                                <div class="btn_icon">
+                                                                                                    <i class="fa fa-envelope"></i>
+                                                                                                </div>
+                                                                                                Email
+                                                                                            </button>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'PasswordFormField')">
+                                                                                                <div class="btn_icon">
+                                                                                                    <i class="fa fa-key"></i>
+                                                                                                </div>
+                                                                                                Password
+                                                                                            </button>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'TextAreaFormField')">
+                                                                                                <div class="btn_icon">
+                                                                                                    <i class="fa fa-font"></i>
+                                                                                                </div>
+                                                                                                Paragraph
+                                                                                            </button>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'NumberFormField')">
+                                                                                                <div class="btn_icon">
+                                                                                                    <i class="fa fa-sort-numeric-asc"></i>
+                                                                                                </div>
+                                                                                                Numeric
+                                                                                            </button>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'DecimalFormField')">
+                                                                                                <div class="btn_icon">
+                                                                                                    <i class="fa fa-circle"></i>
+                                                                                                </div>
+                                                                                                Decimal
+                                                                                            </button>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'DateFormField')">
+                                                                                                <div class="btn_icon">
+                                                                                                    <i class="fa fa-calendar"></i>
+                                                                                                </div>
+                                                                                                Date
+                                                                                            </button>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'TimeFormField')">
+                                                                                                <div class="btn_icon">
+                                                                                                    <i class="fa fa-clock-o"></i>
+                                                                                                </div>
+                                                                                                Time
+                                                                                            </button>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'DateTimeFormField')">
+                                                                                                <div class="btn_icon">
+                                                                                                    <i class="fa fa-calendar-o"></i>
+                                                                                                </div>
+                                                                                                Date and time
+                                                                                            </button>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'RatingFormField')">
+                                                                                                <div class="btn_icon">
+                                                                                                    <i class="fa fa-star"></i>
+                                                                                                </div>
+                                                                                                Rating
+                                                                                            </button>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+
+
+                                                                            <h3 style="font-weight: 600;margin-top:20px;">Choice Answer Types</h3>
+                                                                            <hr style="margin: 10px 0px;"/>
+                                                                            <table class="tbl_components">
+                                                                                <tbody>
+                                                                                    <tr>
+                                                                                        <td valign="top">
+                                                                                            <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'BinaryFormField')">
+                                                                                                <div class="btn_icon">
+                                                                                                    <i class="fa fa-random"></i>
+                                                                                                </div>
+                                                                                                Binary choice
+                                                                                            </button>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <button class="btn btn-default btn_answer_type" ng-click="edit_question(null, null, 'MCSSFormField')">
+                                                                                                <div class="btn_icon">
+                                                                                                    <i class="fa fa-list-ul"></i>
+                                                                                                </div>
+                                                                                                Multiple choice <br/> Single select
+                                                                                            </button>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+
+                                                                            <h3 style="font-weight: 600;margin-top:20px;">Layouts</h3>
+                                                                            <hr style="margin: 10px 0px;"/>
+                                                                            <table class="tbl_components">
+                                                                                <tbody>
+                                                                                    <tr>
+                                                                                        <td valign="top" style="width: 50%;">
+                                                                                            <button class="btn btn-default btn_answer_type" ng-click="edit_layout(null, null, 'SectionLayout')">
+                                                                                                <div class="btn_icon">
+                                                                                                    <i class="fa fa-list-alt"></i>
+                                                                                                </div>
+                                                                                                Section
+                                                                                            </button>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            &nbsp;
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+
+                                                                            <h3 style="font-weight: 600;margin-top:20px;">Conditions</h3>
+                                                                            <hr style="margin: 10px 0px;"/>
+                                                                            <table class="tbl_components">
+                                                                                <tbody>
+                                                                                    <tr>
+                                                                                        <td valign="top" style="width: 50%;">
+                                                                                            <button class="btn btn-default btn_answer_type" ng-click="edit_condition(null, null, 'SwitchCondition')">
+                                                                                                <div class="btn_icon">
+                                                                                                    <i class="fa fa-sitemap"></i>
+                                                                                                </div>
+                                                                                                Switch
+                                                                                            </button>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            &nbsp;
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- /AnswerTypes -->
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+
+
+
+                                            </div>
+                                        </div>
+                                        <div id="tab_calculated_fields" class="tab-pane">
+                                            <div class="panel-body">
+                                                <h3>
+                                                    <i class="fa fa-calculator"></i>
+                                                    Calculated Fields
+                                                </h3>
+                                                <hr style="margin: 5px 0px 10px 0px;"/>
+                                                <p>
+                                                    ...
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+
                 </div>
+
+                <!-- delete -->
+                <div class="well">
+                    <p>
+                        <label>FormData:</label><br>
+                        {$ FormData $}
+                    </p>
+                    <p>
+                        <label>Translations:</label><br>
+                        {$ Translations $}
+                    </p>
+
+                    <p>
+                        <label>META_QUESTIONS:</label><br/>
+                        {$ META_QUESTIONS $}
+                    </p>
+                </div>
+                <!-- delete -->
             </div>
-
-
         </div>
-
-        <!-- delete -->
-        <div class="well">
-            <p>
-                <label>FormData:</label><br>
-                {$ FormData $}
-            </p>
-            <p>
-                <label>Translations:</label><br>
-                {$ Translations $}
-            </p>
-
-            <p>
-                <label>META_QUESTIONS:</label><br/>
-                {$ META_QUESTIONS $}
-            </p>
-        </div>
-        <!-- delete -->
     </div>
 {% endblock %}
 

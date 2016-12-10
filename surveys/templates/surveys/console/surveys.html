@@ -24,7 +24,11 @@
 {% endblock %}
 
 {% block content %}
-    {% for s in list_surveys %}
-        <a href="{% url 'console_survey_panel' s.survey_uid %}">{{ s.title }}</a>
-    {% endfor %}
+    <div class="wrapper wrapper-content">
+        <div class="container">
+            {% for s in list_surveys %}
+                <a href="{% url 'console_survey_panel' s.survey_uid %}">{{ s.title }}</a>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

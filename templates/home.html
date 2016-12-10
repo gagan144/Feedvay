@@ -1,10 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Home Page</h1>
-    <hr/>
-    User: {{ user.username }}
-    <hr/>
+    <div class="wrapper wrapper-content">
+        <div class="container">
+            <h1>Home Page</h1>
+            <hr/>
+            User: {{ user.username }}
+            <hr/>
 
-    {% if welcome %}<h1>WELCOME!</h1>{% endif %}
+            {% if welcome %}<h1>WELCOME!</h1>{% endif %}
+        </div>
+    </div>
 {% endblock %}

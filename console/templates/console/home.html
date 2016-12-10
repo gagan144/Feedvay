@@ -39,18 +39,22 @@
 {% endblock %}
 
 {% block content %}
-    {{ perms.brands }}
-    <div ng-cloak>
-        <div ng-controller="MainCtrl">
-            {$ msg $}
+    <div class="wrapper wrapper-content">
+        <div class="container">
+            {{ perms.brands }}
+            <div ng-cloak>
+                <div ng-controller="MainCtrl">
+                    {$ msg $}
 
-            <button class="btn btn-primary">Click me</button>
+                    <button class="btn btn-primary">Click me</button>
 
-            Content <a class="text-primary">here</a> helloooo
-            <span class="badge badge-success">here</span> helloooo
-            <span class="text-info">here</span>
+                    Content <a class="text-primary">here</a> helloooo
+                    <span class="badge badge-success">here</span> helloooo
+                    <span class="text-info">here</span>
 
 
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

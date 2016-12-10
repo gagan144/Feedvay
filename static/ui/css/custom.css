@@ -361,6 +361,7 @@ td.admin_tabs{
 td.admin_content{
     padding: 10px 20px;
     background-color: #f9f9f9;
+    border-left: solid 1px #e7eaec;
 }
 
 .list_group_tabs{
@@ -370,6 +371,8 @@ td.admin_content{
 
 .list_group_tabs > .list-group-item{
     border-radius: 0px !important;
+    border-left: none !important;
+    border-right: none !important;
 }
 .list_group_tabs > .list-group-item:first-child{
     border-top: none;
@@ -389,11 +392,11 @@ td.admin_content{
    content:"";
    position: absolute;
    top: 10px;
-   right: -1px;
+   right: -2px;
    width: 0;
    height: 0;
    border-top: 8px solid transparent;
-   border-right: 11px solid #f9f9f9; /*#f3f3f4;*/
+   border-right: 12px solid #f9f9f9; /*#f3f3f4;*/
    border-bottom: 8px solid transparent;
 }
 /* ----- /Admin Content with left tabs ----- */

@@ -31,41 +31,32 @@
                 <td class="admin_tabs" valign="top">
                     <ul class="list-group list_group_tabs" >
                         <a href="#" class="list-group-item active">
-                            <span class="badge badge-primary">16</span>
-                            But I must explain to
+                            Summary
                         </a>
                         <a href="#" class="list-group-item ">
-                            <span class="badge badge-info">12</span>
-                            How all this mistaken
+                            Responses
+                        </a>
+                        <a href="#" class="list-group-item ">
+                            Explore
                         </a>
                         <a href="#" class="list-group-item">
-                            <span class="badge badge-danger">10</span>
-                            But because occasionally
-                        </a>
-                        <a href="#" class="list-group-item">
-                            <span class="badge badge-success">10</span>
-                            But who has any right
-                        </a>
-                        <a href="#" class="list-group-item">
-                            <span class="badge badge-warning">7</span>
-                            On the other hand
+                            Edit survey
                         </a>
                     </ul>
                 </td>
                 <td class="admin_content" valign="top">
-                    ghnkfjfhgh
+
+                    {% if survey.type == 'simple' %}
+                        <a href="{% url 'console_survey_simple_form_editor' survey.survey_uid %}">Edit (Simple)</a>
+                    {% else %}
+                        {% for ph in survey.surveyphase_set.all %}
+                            <a href="{% url 'console_survey_phase_form_editor' survey.survey_uid ph.id %}">Edit Phase-{{ forloop.counter }}</a>
+                        {% endfor %}
+                    {% endif %}
+
                 </td>
             </tr>
         </table>
-
-
-        {% if survey.type == 'simple' %}
-            <a href="{% url 'console_survey_simple_form_editor' survey.survey_uid %}">Edit (Simple)</a>
-        {% else %}
-            {% for ph in survey.surveyphase_set.all %}
-                <a href="{% url 'console_survey_phase_form_editor' survey.survey_uid ph.id %}">Edit Phase-{{ forloop.counter }}</a>
-            {% endfor %}
-        {% endif %}
     </div>
 
 {% endblock %}

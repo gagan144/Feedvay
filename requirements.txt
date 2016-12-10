@@ -25,6 +25,7 @@ django-fcm
 django-colorful
 django-tree-tag
 # Pillow
+qrcode
 
 
 

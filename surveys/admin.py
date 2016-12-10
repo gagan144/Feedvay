@@ -85,7 +85,7 @@ class SurveyAdmin(admin.ModelAdmin):
             'fields': ('status', )
         }),
         ('Miscellaneous', {
-            'fields': ('created_by', 'created_on', 'modified_on')
+            'fields': ('qrcode', 'created_by', 'created_on', 'modified_on')
         }),
     )
 

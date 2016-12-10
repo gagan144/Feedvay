@@ -56,7 +56,17 @@
             </p>
 
             <form name="form_create_edit_brand" class="form-horizontal" novalidate>
-                {$ survey $}
+
+                <div class="row">
+                    <div class="col-xs-10">
+                        {$ survey $}
+                    </div>
+                    <div class="col-xs-2" align="center">
+                        <img src="{{ survey.qrcode.url }}" width="100%;">
+                        <br/>
+                        <label>Survey UID:</label> {{ survey.survey_uid }}
+                    </div>
+                </div>
             </form>
 
 

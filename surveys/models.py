@@ -12,6 +12,11 @@ from django_fsm_log.decorators import fsm_log_by
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 import shortuuid
+import uuid
+import os
+import qrcode
+import StringIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from accounts.models import RegisteredUser
 from brands.models import Brand
@@ -101,7 +106,15 @@ class SurveyCategory(models.Model):
         self.clean()
         super(self.__class__, self).save(*args, **kwargs)
 
+def upload_survey_qrcode_to(instance, filename):
+    id = str(uuid.uuid4())
+    fname, ext = os.path.splitext(filename)
+    new_filename = "{}.{}".format(id, ext.replace('.',''))
 
+    return "surveys/{survey_uid}/{filename}".format(
+        survey_uid = str(instance.survey_uid),
+        filename = new_filename
+    )
 class Survey(models.Model):
     """
     Model to define a survey.
@@ -193,6 +206,7 @@ class Survey(models.Model):
     status      = FSMField(default=ST_DRAFT, choices=CH_STATUS, protected=True, help_text='Status of the survey')
 
     # Misc
+    qrcode      = models.ImageField(upload_to=upload_survey_qrcode_to, blank=True, editable=False, help_text='Qrcode image file for this survey.')
     created_by  = models.ForeignKey(RegisteredUser, editable=False, help_text='User that created this survey.')
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
@@ -249,6 +263,56 @@ class Survey(models.Model):
 
     # --- /Transitions ---
 
+    def update_qrcode(self, auto_save=True):
+        """
+        Method to update survey qrcode.
+
+        **Authors**: Gagandeep Singh
+        """
+        survey_uid = self.survey_uid
+        if self.survey_uid is None:
+            raise ValidationError("Survey uid is not set yet.")
+
+        # Prepare data
+        data = {
+            "type": "survey",
+            "survey_uid": survey_uid,
+            "title": self.title
+        }
+
+        # Create qrcode image
+        qr = qrcode.QRCode(
+            version=3,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=2,
+        )
+
+        qr.add_data(data)
+        qr.make(fit=True)
+
+        img = qr.make_image()
+
+        # Create image file
+        img_io = StringIO.StringIO()
+        img.save(img_io, format='JPEG')
+
+        img_file = InMemoryUploadedFile(
+            img_io,
+            None,
+            'qrcode_{}.jpg'.format(survey_uid),
+            'image/jpeg',
+            img_io.len,
+            None
+        )
+
+        # Set file
+        self.qrcode = img_file
+
+        if auto_save:
+            self.save()
+
+
     def clean(self):
         """
         Method to clean & validate data fields.
@@ -259,6 +323,9 @@ class Survey(models.Model):
         if not self.pk:
             # Set, check & correct survey_uid
             self.survey_uid = Survey.generate_uid()
+
+            # Set qrcode
+            self.update_qrcode(auto_save=False)
 
         # Check surveyor type
         if self.surveyor_type == Survey.SURVYR_COMPANY:
@@ -281,7 +348,7 @@ class Survey(models.Model):
 
         super(self.__class__, self).clean()
 
-    def save(self, update_theme=False, *args, **kwargs):
+    def save(self, *args, **kwargs):
         """
         Pre-save method for this model.
 

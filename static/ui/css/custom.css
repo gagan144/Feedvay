@@ -298,6 +298,44 @@
 }
 /* ----- /Top alert strip ----- */
 
+.code_highlight > pre{
+    padding: 0px;
+    border: none;
+    background: none;
+    margin: 0px;
+}
+
+.custom_tooltip{
+    cursor: help;
+}
+
+/* ----- Sentencify ----- */
+.identifier{
+    font-weight: 600;
+}
+/*.identifier > a{*/
+    /*color: inherit;*/
+    /*font-weight: inherit;*/
+    /*font-style: inherit;*/
+/*}*/
+/*.identifier > a:hover{*/
+    /*text-decoration: underline;*/
+/*}*/
+
+.operator{
+    font-style: italic;
+}
+
+.string{
+    color: #178000;
+}
+
+
+.number{
+    color: #1a1aa6;
+}
+/* ----- Sentencify ----- */
+
 /* =============== Desktop =============== */
 @media (min-width: 767px) {
     .mobile_show{

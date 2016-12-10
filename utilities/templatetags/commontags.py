@@ -3,7 +3,7 @@
 # permission of Gagandeep Singh.
 
 from django import template
-import json
+import ujson
 
 register = template.Library()
 
@@ -17,7 +17,7 @@ def jsonify(obj):
 
     **Authors**: Gagandeep Singh
     """
-    return json.dumps(obj, ensure_ascii=False).encode('utf8')
+    return ujson.dumps(obj, ensure_ascii=False).encode('utf8')
 
 @register.filter
 def get_item(dictionary, key):

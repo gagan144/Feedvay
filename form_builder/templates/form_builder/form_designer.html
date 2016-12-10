@@ -7,7 +7,10 @@
 {% block head %}
     <title>{% if form %}Edit{% else %}New{% endif %} Form | FormPOC</title>
 
-    <link rel="stylesheet" href="{% get_static_prefix %}lib/summernote/summernote.css">
+    <link href="{% get_static_prefix %}lib/bootstrap_3/css/bootstrap-addons.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}lib/select2/css/select2.css" rel="stylesheet">
+
+{#    <link rel="stylesheet" href="{% get_static_prefix %}lib/summernote/summernote.css">#}
     <link rel="stylesheet" href="{% get_static_prefix %}ui/css/plugins/touchspin/jquery.bootstrap-touchspin.min.css">
     <link rel="stylesheet" href="{% get_static_prefix %}ui/css/plugins/uiTree/angular-ui-tree.min.css">
     <link rel="stylesheet" href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css">
@@ -1103,7 +1106,7 @@
 
 {% block scripts %}
     <script src="{% get_static_prefix %}ui/js/plugins/jquery-ui/jquery-ui.min.js"></script>
-    <script src="{% get_static_prefix %}lib/summernote/summernote.min.js"></script>
+{#    <script src="{% get_static_prefix %}lib/summernote/summernote.min.js"></script>#}
     <script src="{% get_static_prefix %}lib/bootstrap_compenents/bootstrap-rating.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/select2/select2.full.min.js"></script>
     <script src="{% get_static_prefix %}lib/lexer/lex.js"></script>
@@ -1114,7 +1117,7 @@
 {#    <script src="{% get_static_prefix %}lib/angular/angular-cookies.min.js"></script>#}
 {#    <script src="{% get_static_prefix %}lib/angular/angular-sanitize.min.js"></script>#}
     <script src="{% get_static_prefix %}lib/angular/angular-slugify/angular-slugify.js"></script>
-    <script src="{% get_static_prefix %}lib/summernote/angular/angular-summernote.min.js"></script>
+{#    <script src="{% get_static_prefix %}lib/summernote/angular/angular-summernote.min.js"></script>#}
     <script src="{% get_static_prefix %}lib/angular/checklist-model.js"></script>
 {#    <script src="{% get_static_prefix %}lib/angular/angular-messages.min.js"></script>#}
     <script src="{% get_static_prefix %}lib/angular/angular-animate.min.js"></script>

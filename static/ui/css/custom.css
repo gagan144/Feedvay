@@ -350,6 +350,7 @@ table.table_tab_admin{
     display: table;
     border-spacing: 0;
     border-collapse: collapse;
+    border-bottom: solid 1px #e7eaec;
 }
 
 td.admin_tabs{
@@ -359,6 +360,7 @@ td.admin_tabs{
 
 td.admin_content{
     padding: 10px 20px;
+    background-color: #f9f9f9;
 }
 
 .list_group_tabs{
@@ -368,6 +370,9 @@ td.admin_content{
 
 .list_group_tabs > .list-group-item{
     border-radius: 0px !important;
+}
+.list_group_tabs > .list-group-item:first-child{
+    border-top: none;
 }
 .list_group_tabs > .list-group-item:hover{
     font-weight: 600 !important;
@@ -388,7 +393,7 @@ td.admin_content{
    width: 0;
    height: 0;
    border-top: 8px solid transparent;
-   border-right: 11px solid #f3f3f4;
+   border-right: 11px solid #f9f9f9; /*#f3f3f4;*/
    border-bottom: 8px solid transparent;
 }
 /* ----- /Admin Content with left tabs ----- */

@@ -3,8 +3,9 @@
 # permission of Gagandeep Singh.
 from django.http.response import Http404
 from django.shortcuts import render
+from django.db.models import Q
 
-from surveys.models import Survey, SurveyPhase
+from surveys.models import Survey, SurveyPhase, SurveyCategory
 from languages.models import Language
 from form_builder.utils import GeoLocation
 from utilities.decorators import registered_user_only
@@ -44,7 +45,8 @@ def console_survey_panel(request, survey_uid):
 
         data ={
             'survey': survey,
-            'app_name': 'app_survey_panel'
+            'app_name': 'app_survey_panel',
+            'list_categories': SurveyCategory.objects.filter(Q(active=True)|Q(id=survey.category_id)).only('id', 'name')
         }
         return render(request, 'surveys/console/survey_panel.html', data)
     except Survey.DoesNotExist:

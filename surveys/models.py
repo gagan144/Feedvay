@@ -34,6 +34,9 @@ class SurveyTag(models.Model):
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
 
+    class Meta:
+        ordering = ('name', )
+
     def __unicode__(self):
         return self.name
 
@@ -78,6 +81,7 @@ class SurveyCategory(models.Model):
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
 
     class Meta:
+        ordering = ('name', )
         verbose_name_plural = 'Survey categories'
 
     def __unicode__(self):
@@ -169,12 +173,12 @@ class Survey(models.Model):
     )
 
     ST_DRAFT = 'draft'
-    ST_PUBLISHED = 'published'
+    ST_READY = 'ready'
     ST_PAUSED = 'paused'
     ST_STOPPED = 'stopped'
     CH_STATUS = (
         (ST_DRAFT, 'Draft'),
-        (ST_PUBLISHED, 'Published'),
+        (ST_READY, 'Ready'),
         (ST_PAUSED, 'Paused'),
         (ST_STOPPED, 'Stopped')
     )
@@ -220,8 +224,8 @@ class Survey(models.Model):
 
     # --- Transitions ---
     @fsm_log_by
-    @transition(field=status, source=ST_DRAFT, target=ST_PUBLISHED)
-    def trans_publish(self):
+    @transition(field=status, source=ST_DRAFT, target=ST_READY)
+    def trans_ready(self):
         """
         Transition edge to publish a survey. On publishing, survey is active & will automatically start
         as per ``start_date`` & ``end_date``.
@@ -231,7 +235,7 @@ class Survey(models.Model):
         pass
 
     @fsm_log_by
-    @transition(field=status, source=ST_PUBLISHED, target=ST_PAUSED)
+    @transition(field=status, source=ST_READY, target=ST_PAUSED)
     def trans_pause(self):
         """
         Transition edge to pause a survey after it has been published. Puases survey are not executable.
@@ -242,7 +246,7 @@ class Survey(models.Model):
         pass
 
     @fsm_log_by
-    @transition(field=status, source=ST_PAUSED, target=ST_PUBLISHED)
+    @transition(field=status, source=ST_PAUSED, target=ST_READY)
     def trans_resume(self):
         """
         Transition edge to resume a paused survey. After resuming, it will be visible to public.
@@ -252,7 +256,7 @@ class Survey(models.Model):
         pass
 
     @fsm_log_by
-    @transition(field=status, source=[ST_PUBLISHED,ST_PAUSED], target=ST_STOPPED)
+    @transition(field=status, source=[ST_READY,ST_PAUSED], target=ST_STOPPED)
     def trans_stop(self):
         """
         Transition edge to stop a survey. A survey after stop cannot be restarted.

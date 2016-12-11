@@ -356,7 +356,7 @@
 													"height": 13,
 													"autoResize": false,
 													"underline": false,
-													"text": "Published",
+													"text": "Ready",
 													"horizontalAlignment": 2,
 													"verticalAlignment": 5
 												},
@@ -1075,9 +1075,9 @@
 											"showShadow": true,
 											"containerChangeable": false,
 											"containerExtending": false,
-											"left": 220,
+											"left": 224,
 											"top": 118,
-											"width": 41.1962890625,
+											"width": 32.51904296875,
 											"height": 13,
 											"autoResize": false,
 											"alpha": 1.5707963267948966,
@@ -1087,7 +1087,7 @@
 											},
 											"edgePosition": 1,
 											"underline": false,
-											"text": "publish",
+											"text": "ready",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5
 										},
@@ -1208,7 +1208,7 @@
 									"width": 142,
 									"height": 81,
 									"autoResize": false,
-									"text": "Survey is active and  will start if current date is withing survey period",
+									"text": "Survey is ready and  will start if current date is withing survey period",
 									"wordWrap": true
 								},
 								{
@@ -1781,7 +1781,7 @@
 									"_parent": {
 										"$ref": "AAAAAAFY1SdPQwhVSPU="
 									},
-									"name": "Published",
+									"name": "Ready",
 									"visibility": "public"
 								},
 								{
@@ -1825,7 +1825,7 @@
 											"_parent": {
 												"$ref": "AAAAAAFY1Sk9HgkDF+I="
 											},
-											"name": "publish",
+											"name": "ready",
 											"visibility": "public",
 											"kind": "anyReceive"
 										}

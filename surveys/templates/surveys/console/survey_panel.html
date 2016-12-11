@@ -10,10 +10,16 @@
 
     <title page-title></title>
 
+    <style>
+        .form_section{
+            margin-bottom: 30px;
+        }
+    </style>
+
     <!-- Templates -->
     <script type="text/ng-template" id="tmpl_summary">
         <div>
-            <h2 style="margin-top: 10px;">
+            <h2 style="margin-top: 0px;">
                 <i class="fa fa-bar-chart"></i>&nbsp;
                 Summary
             </h2>
@@ -23,7 +29,7 @@
     </script>
     <script type="text/ng-template" id="tmpl_responses">
         <div>
-            <h2 style="margin-top: 10px;">
+            <h2 style="margin-top: 0px;">
                 <i class="fa fa-rss"></i>&nbsp;
                 Responses
             </h2>
@@ -33,7 +39,7 @@
     </script>
     <script type="text/ng-template" id="tmpl_analyse">
         <div>
-            <h2 style="margin-top: 10px;">
+            <h2 style="margin-top: 0px;">
                 <i class="fa fa-cubes"></i>&nbsp;
                 Analyse
             </h2>
@@ -43,41 +49,247 @@
     </script>
     <script type="text/ng-template" id="tmpl_edit">
         <div>
-            <h2 style="margin-top: 10px;">
+            <h2 style="margin-top: 0px;">
                 <i class="fa fa-pencil-square-o"></i>&nbsp;
                 Review/Edit
             </h2>
             <hr style="margin-top: 15px;"/>
 
             <p>
-                Review or edit your survey. Please note that editing your survey while published can be critical and
+                Review or edit your survey. Please note that editing your survey while its live can be critical and
                 might take some time to reach devices. You might also receive responses corresponding to old version
                 even after saving changes.
             </p>
 
-            <form name="form_create_edit_brand" class="form-horizontal" novalidate>
+            <div class="row">
+                <div class="col-xs-10">
+                    <!-- Edit region -->
+                    <div class="tabs-container">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#tab_edit_review" onclick="event.preventDefault();">Review</a></li>
+                            {% if survey.type == 'simple' %}
+                                <li class=""><a data-toggle="tab" href="#tab_edit_form" onclick="event.preventDefault();">Questionnaire</a></li>
+                            {% elif survey.type == 'complex' %}
+                                <li class=""><a data-toggle="tab" href="#tab_edit_workflow" onclick="event.preventDefault();">Workflow</a></li>
+                            {% endif %}
+                        </ul>
+                        <div class="tab-content">
+                            <div id="tab_edit_review" class="tab-pane active">
+                                <div class="panel-body">
+                                    <!-- General information -->
+                                    <form name="form_survey" class="form-horizontal" novalidate>
+                                        {$ survey $}
 
-                <div class="row">
-                    <div class="col-xs-10">
-                        {$ survey $}
+                                        <div class="form_section">
+                                            <h3>
+                                                <i class="fa fa-info-circle"></i>&nbsp;
+                                                General
+                                            </h3>
+                                            <hr style="margin: 15px 0px;"/>
+
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">Category<span class="required">*</span>:</label>
+                                                <div class="col-sm-8">
+                                                    <select class="form-control" name="category" ng-model="survey.category" ng-class="{'error': form_survey.category.$invalid}" required>
+                                                        <option value="">Please Select</option>
+                                                        {% for c in list_categories %}
+                                                            <option value="{{ c.id }}">{{ c.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <p class="help-block m-b-none">
+                                                        Category to which this survey belongs.
+                                                    </p>
+                                                    <div ng-messages="form_survey.category.$dirty && form_survey.category.$error" role="alert" class="error_messages">
+                                                        <label ng-message="required" class="error">Please select a category.</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">Title<span class="required">*</span>:</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" name="title" ng-model="survey.title" ng-class="{'error': form_survey.title.$invalid}" required>
+                                                    <p class="help-block m-b-none">
+                                                        Catchy title for your survey.
+                                                    </p>
+                                                    <div ng-messages="form_survey.title.$dirty && form_survey.title.$error" role="alert" class="error_messages">
+                                                        <label ng-message="required" class="error">Please enter a title.</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">Description<span class="required">*</span>:</label>
+                                                <div class="col-sm-8">
+                                                    <textarea summernote name="description" ng-model="survey.description" config="summernote_config" required></textarea>
+                                                    <p class="help-block m-b-none">
+                                                        Detailed description about your survey. Use this area to explain what your survey is all about and
+                                                        purpose you want to achieve. Your description provides authenticity about your survey to the participants.
+                                                    </p>
+                                                    <div ng-messages="form_survey.description.$dirty && form_survey.description.$error" role="alert" class="error_messages">
+                                                        <label ng-message="required" class="error">Please write something about your survey.</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Duration -->
+                                        <div class="form_section">
+                                            <h3>
+                                                <i class="fa fa-calendar"></i>&nbsp;
+                                                Duration
+                                            </h3>
+                                            <hr style="margin: 15px 0px 10px 0px;"/>
+                                            <div class="form-group">
+                                                <div class="col-sm-6">
+                                                    <p class="help-block" style="margin-top: 0px;">
+                                                        Date range for which this survey will be live.
+                                                    </p>
+                                                    <div ng-class="{'input-group':survey.duration.endDate && survey.duration.startDate}">
+                                                        <input date-range-picker name="duration" class="form-control date-picker" type="text" ng-model="survey.duration" required/>
+                                                        <span class="input-group-addon" ng-if="survey.duration.endDate && survey.duration.startDate">
+                                                            {$ ((survey.duration.endDate - survey.duration.startDate)/(1000*60*60*24))|number:0 $} day/s
+                                                        </span>
+                                                    </div>
+                                                    <div ng-messages="form_survey.duration.$dirty && form_survey.duration.$error" role="alert" class="error_messages">
+                                                        <label ng-message="required" class="error">Please select date range.</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Audience -->
+                                        <div>
+                                            <h3>
+                                                <i class="fa fa-users"></i>&nbsp;
+                                                Audience
+                                            </h3>
+                                            <hr style="margin: 15px 0px;"/>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">Audience type<span class="required">*</span>:</label>
+                                                <div class="col-sm-8" style="padding-top: 7px;">
+                                                    <p>
+                                                        Select the follwing types of audience that can particiate this survey:
+                                                    </p>
+                                                    <div>
+                                                        <div class="radio radio-primary">
+                                                            <input type="radio" id="chk_audtype_public" value="public" name="audience_type" ng-model="survey.audience_type" required >
+                                                            <label for="chk_audtype_public">
+                                                                <span class="semi_bold">Public</span> <br/>
+                                                                <small>Survey will be open to public and anyone can respond to it.</small>
+                                                            </label>
+                                                        </div>
+                                                        <div class="radio radio-primary">
+                                                            <input type="radio" id="chk_audtype_invited" value="invited" name="audience_type" ng-model="survey.audience_type" required>
+                                                            <label for="chk_audtype_invited">
+                                                                <span class="semi_bold">Invited</span> <br/>
+                                                                <small>
+                                                                    Survey will not be visible to public. Only those who have Survey-UID or qrcode can
+                                                                    respond to it.
+                                                                </small>
+                                                            </label>
+                                                        </div>
+                                                        <div class="radio radio-primary">
+                                                            <input type="radio" id="chk_audtype_self" value="self" name="audience_type" ng-model="survey.audience_type" required ng-click="survey.audience_cease=false;">
+                                                            <label for="chk_audtype_self">
+                                                                <span class="semi_bold">Self</span> <br/>
+                                                                <small>
+                                                                    No one other than you can respond to this survey.
+                                                                    Use this when you are conducting survey yourself.
+                                                                </small>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div ng-messages="form_survey.audience_type.$dirty && form_survey.audience_type.$error" role="alert" class="error_messages">
+                                                        <label ng-message="required" class="error">Please select an audience type.</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+{#                                            <div class="hr-line-dashed hr_line_dashed_m10"></div>#}
+{#                                            <div class="form-group">#}
+{#                                                <label class="col-sm-2 control-label">Cease further audience:</label>#}
+{#                                                <div class="col-sm-8" style="padding-top: 7px;">#}
+{#                                                    <p>#}
+{#                                                        If you want to stop any further audience to participate in this survey, switch on the below switch.<br/>#}
+{#                                                        Your survey will be #}
+{#                                                    </p>#}
+{#                                                    <input type="checkbox" ng-model="data.active" class="js-switch" ui-switch="{color:'{{ request.curr_brand.ui_theme.primary }}'}" />#}
+{#                                                    <p class="help-block m-b-none">#}
+{#                                                        Detailed description about your survey. Use this area to explain what your survey is all about and#}
+{#                                                        purpose you want to achieve. Your description provides authenticity about your survey to the participants.#}
+{#                                                    </p>#}
+{#                                                    <div ng-messages="form_survey.description.$dirty && form_survey.description.$error" role="alert" class="error_messages">#}
+{#                                                        <label ng-message="required" class="error">Please write something about your survey.</label>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            </div>#}
+
+                                        </div>
+
+                                        <!-- Save -->
+                                        <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                                            <div class="form-group" style="margin-bottom: 0px !important;">
+                                                <div class="col-sm-7">
+                                                    <div ng-if="flags.error" class="alert alert-danger alert-dismissable" style="padding: 10px 30px 10px 10px;margin-bottom: 20px;">
+                                                        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                                                        <i class="fa fa-exclamation-triangle"></i>&nbsp;
+                                                        Something went wrong. Our engineers will be informed.
+                                                    </div>
+
+                                                    <button class="btn btn-primary" type="button" ng-disabled="form_survey.$invalid" ng-click="submit(form_survey)">Save</button>
+                                                </div>
+                                            </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
+                            {% if survey.type == 'simple' %}
+                                <div id="tab_edit_form" class="tab-pane">
+                                    <div class="panel-body">
+                                        <p>
+                                            Review or edit questionnaire associated with your survey. Please be save your
+                                            changes before proceeding and be careful will updating your questionnaire
+                                            as the changes cannot be reverted.
+                                        </p>
+                                        <p>
+                                            <a class="btn btn-primary" href="{% url 'console_survey_simple_form_editor' survey.survey_uid %}" onclick="return confirm('Are you sure you want to leave this page?');">
+                                                Edit questionnaire
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
+                            {% elif survey.type == 'complex' %}
+                                <div id="tab_edit_workflow" class="tab-pane">
+                                    <div class="panel-body">
+                                        <p>
+                                            Survey workflow
+                                        </p>
+                                        <p>
+                                            {% for ph in survey.surveyphase_set.all %}
+                                                <a href="{% url 'console_survey_phase_form_editor' survey.survey_uid ph.id %}">Edit Phase-{{ forloop.counter }}</a><br/>
+                                            {% endfor %}
+                                        </p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+
                     </div>
-                    <div class="col-xs-2" align="center">
-                        <img src="{{ survey.qrcode.url }}" width="100%;">
-                        <br/>
-                        <label>Survey UID:</label> {{ survey.survey_uid }}
-                    </div>
+                    <!-- /Edit region -->
                 </div>
-            </form>
-
-
-            {% if survey.type == 'simple' %}
-                <a href="{% url 'console_survey_simple_form_editor' survey.survey_uid %}">Edit (Simple)</a>
-            {% else %}
-                {% for ph in survey.surveyphase_set.all %}
-                    <a href="{% url 'console_survey_phase_form_editor' survey.survey_uid ph.id %}">Edit Phase-{{ forloop.counter }}</a>
-                {% endfor %}
-            {% endif %}
-
+                <div class="col-xs-2" align="center">
+                    <!-- Qrcode -->
+                    <img src="{{ survey.qrcode.url }}" width="100%;">
+                    <br/>
+                    <label>Survey-UID:</label> {{ survey.survey_uid }}
+                    <!-- /Qrcode -->
+                </div>
+            </div>
         </div>
     </script>
     <!-- /Templates -->
@@ -212,6 +424,23 @@
                     templateUrl: "tmpl_edit",
                     data: { pageTitle: 'Review/Edit - {{ survey.title }}' },
                     controller: ReviewEditCtrl,
+                    resolve: {
+                        loadPlugin: function ($ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                {
+                                    serie: true,
+                                    files: [
+                                        '{% get_static_prefix %}ui/js/plugins/daterangepicker/daterangepicker.js',
+                                        '{% get_static_prefix %}ui/css/plugins/daterangepicker/daterangepicker-bs3.css'
+                                    ]
+                                },
+                                {
+                                    name: 'daterangepicker',
+                                    files: ['{% get_static_prefix %}ui/js/plugins/daterangepicker/angular-daterangepicker.js']
+                                }
+                            ]);
+                        }
+                    }
                 })
 
 
@@ -244,6 +473,21 @@
 
             });
 
+            // ----- Survey -----
+            $rootScope.survey = {
+                category: "{{ survey.category_id }}",
+                title: "{{ survey.title }}",
+                description: "{{ survey.description|safe }}",
+                duration: {
+                    startDate: moment('{{ survey.start_date|date:"Y-m-d" }}', 'YYYY-MM-DD'),
+                    endDate: moment('{{ survey.end_date|date:"Y-m-d" }}', 'YYYY-MM-DD'),
+                },
+                audience_type: "{{ survey.audience_type }}",
+                audience_cease: {{ survey.audience_cease|yesno:'true,false' }}
+            };
+
+            $rootScope.summernote_config = SUMMERNOTE_CONFIG;
+
         });
 
 
@@ -254,7 +498,6 @@
         // ========== State Controllers ==========
         // ----- Review/Edit -----
         function ReviewEditCtrl($scope, $http, $uibModal){
-            $scope.survey = {"name":"sdfgfsdh"};
 
         }
         // ----- /Review/Edit -----

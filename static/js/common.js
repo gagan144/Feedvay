@@ -115,3 +115,23 @@ function sentencify(code){
 }
 // ---------- /Sentencify ----------
 
+// ----- Summer note defaults -----
+var SUMMERNOTE_CONFIG = {
+    height: 150,
+    toolbar: [
+        ['edit',['undo','redo']],
+        ['headline', ['style']],
+        ['style', ['bold', 'italic', 'underline']],
+        ['font', ['superscript', 'subscript', 'strikethrough', 'clear']],
+        ['textsize', ['fontsize']],
+        ['fontclr', ['color']],
+        ['alignment', ['ul', 'ol', 'paragraph', 'lineheight']],
+        ['height', ['height']],
+        ['table', ['table']],
+        ['insert', ['link' ,'picture','video', 'hr']],
+        ['view', ['fullscreen', 'codeview']],
+        ['help', ['help']]
+    ]
+}
+// ----- /Summer note defaults -----
+

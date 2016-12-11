@@ -20,37 +20,29 @@
 {% endblock %}
 
 {% block content %}
-    <div class="wrapper wrapper-content">
-        <div class="container">
-            <div ng-controller="MainCtrl" class="animated fadeInRight" ng-cloak>
 
-        <div class="tabs-container">
-            <div class="tabs-left">
-                <ul class="nav nav-tabs">
-                    <li ng-class="{'active': $state.current.name=='profile'}">
-                        <a ui-sref="profile"><i class="fa fa-user"></i> Profile</a>
-                    </li>
-                    <li ng-class="{'active': $state.current.name=='security'}">
-                        <a ui-sref="security"><i class="fa fa-shield"></i> Security</a>
-                    </li>
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane active">
-                        <div class="panel-body">
-                            <!-- Partial view div -->
-                            <div ui-view></div>
-                            <!-- Partial view div -->
-                        </div>
+    <div class="wrapper_admin_content" ng-controller="MainCtrl" ng-cloak>
+        <table class="table_tab_admin">
+            <tr>
+                <td class="admin_tabs" valign="top">
+                    <div class="list-group list_group_tabs" >
+                        <a ui-sref="profile" class="list-group-item" ng-class="{'active': $state.current.name=='profile'}">
+                            <i class="fa fa-user list_md_icon"></i> Profile
+                        </a>
+                        <a ui-sref="security" class="list-group-item" ng-class="{'active': $state.current.name=='security'}">
+                            <i class="fa fa-shield list_md_icon"></i> Security
+                        </a>
                     </div>
-                </div>
-
-            </div>
-
-        </div>
-
+                </td>
+                <td class="admin_content" valign="top">
+                    <!-- Partial view div -->
+                    <div ui-view></div>
+                    <!-- Partial view div -->
+                </td>
+            </tr>
+        </table>
     </div>
-        </div>
-    </div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -141,7 +133,7 @@
 
         // --- Security ---
         function SecurityCtrl($scope) {
-            $scope.delete = 'testing';
+
         }
 
         APP.controller('ChangePasswordCtrl', function($scope, $http, $window) {

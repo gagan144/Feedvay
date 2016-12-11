@@ -347,6 +347,7 @@
     margin: 0px -15px;
     height: 100%;
     min-width: 800px;
+    padding-bottom: 38px;
 }
 
 table.table_tab_admin{
@@ -364,8 +365,8 @@ td.admin_tabs{
 }
 
 td.admin_content{
-    padding: 10px 20px;
-    background-color: #f9f9f9;
+    padding: 20px;
+    background-color: #fcfcfc;
     border-left: solid 1px #e7eaec;
 }
 
@@ -401,7 +402,7 @@ td.admin_content{
    width: 0;
    height: 0;
    border-top: 8px solid transparent;
-   border-right: 12px solid #f9f9f9; /*#f3f3f4;*/
+   border-right: 12px solid #fcfcfc; /*#f3f3f4;*/
    border-bottom: 8px solid transparent;
 }
 /* ----- /Admin Content with left tabs ----- */

@@ -232,17 +232,18 @@
 
                                         <!-- Save -->
                                         <div class="hr-line-dashed hr_line_dashed_m10"></div>
-                                            <div class="form-group" style="margin-bottom: 0px !important;">
-                                                <div class="col-sm-7">
-                                                    <div ng-if="flags.error" class="alert alert-danger alert-dismissable" style="padding: 10px 30px 10px 10px;margin-bottom: 20px;">
-                                                        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-                                                        <i class="fa fa-exclamation-triangle"></i>&nbsp;
-                                                        Something went wrong. Our engineers will be informed.
-                                                    </div>
-
-                                                    <button class="btn btn-primary" type="button" ng-disabled="form_survey.$invalid" ng-click="submit(form_survey)">Save</button>
+                                        <div class="form-group" style="margin-bottom: 0px !important;">
+                                            <div class="col-sm-7">
+                                                <div ng-if="flags.error" class="alert alert-danger alert-dismissable" style="padding: 10px 30px 10px 10px;margin-bottom: 20px;">
+                                                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                                                    <i class="fa fa-exclamation-triangle"></i>&nbsp;
+                                                    Something went wrong. Our engineers will be informed.
                                                 </div>
+
+                                                <button class="btn btn-primary" type="button" ng-disabled="form_survey.$invalid" ng-click="submit(form_survey)">Save</button>
+                                                <button  class="btn btn-link" type="button" onclick="location.href = location.pathname;">Cancel</button>
                                             </div>
+                                        </div>
 
                                     </form>
 

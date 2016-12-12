@@ -9,6 +9,7 @@ from surveys.models import Survey, SurveyPhase, SurveyCategory
 from languages.models import Language
 from form_builder.utils import GeoLocation
 from utilities.decorators import registered_user_only
+from utilities.api_utils import ApiResponse
 
 # ==================== Console ====================
 @registered_user_only
@@ -38,6 +39,7 @@ def console_survey_panel(request, survey_uid):
     **Authors**: Gagandeep Singh
     """
 
+    # Currently for individual only.
     reg_user = request.user.registereduser
 
     try:
@@ -51,6 +53,30 @@ def console_survey_panel(request, survey_uid):
         return render(request, 'surveys/console/survey_panel.html', data)
     except Survey.DoesNotExist:
         raise Http404("invalid link.")
+
+@registered_user_only
+def console_survey_save(request, survey_uid=None):
+    """
+    API view to save survey information. If survey_uid is ``None``, it means create new survey.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    # Current only for individual
+    reg_user = request.user.registereduser
+
+    if request.method.lower() == 'post':
+        try:
+            survey = Survey.objects.get(survey_uid=survey_uid, created_by_id=reg_user.id)
+
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok').gen_http_response()
+        except Survey.DoesNotExist:
+            return ApiResponse(status=ApiResponse.ST_UNAUTHORIZED, message='Invalid survey.').gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
 
 @registered_user_only
 def console_survey_phase_form_editor(request, survey_uid, phase_id=None):

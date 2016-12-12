@@ -27,6 +27,18 @@
 
         </div>
     </script>
+
+    <script type="text/ng-template" id="tmpl_controls">
+        <div>
+            <h2 style="margin-top: 0px;">
+                <i class="fa fa-cogs"></i>&nbsp;
+                Controls
+            </h2>
+            <hr style="margin-top: 15px;"/>
+
+        </div>
+    </script>
+
     <script type="text/ng-template" id="tmpl_responses">
         <div>
             <h2 style="margin-top: 0px;">
@@ -37,6 +49,7 @@
 
         </div>
     </script>
+
     <script type="text/ng-template" id="tmpl_analyse">
         <div>
             <h2 style="margin-top: 0px;">
@@ -47,6 +60,7 @@
 
         </div>
     </script>
+
     <script type="text/ng-template" id="tmpl_edit">
         <div>
             <h2 style="margin-top: 0px;">
@@ -148,9 +162,14 @@
                                                         Date range for which this survey will be live.
                                                     </p>
                                                     <div ng-class="{'input-group':survey.duration.endDate && survey.duration.startDate}">
-                                                        <input date-range-picker name="duration" class="form-control date-picker" type="text" ng-model="survey.duration" required/>
+                                                        <input date-range-picker name="duration" class="form-control date-picker" type="text" ng-model="survey.duration"
+                                                           min="daterange_opt.min"
+                                                           options="{separator: '  to  ', format: 'DD-MMM-YYYY'}"
+                                                           required
+                                                        />
                                                         <span class="input-group-addon" ng-if="survey.duration.endDate && survey.duration.startDate">
-                                                            {$ ((survey.duration.endDate - survey.duration.startDate)/(1000*60*60*24))|number:0 $} day/s
+{#                                                            {$ ((survey.duration.endDate - survey.duration.startDate)/(1000*60*60*24))|number:0 $} day/s#}
+                                                            {$ survey.duration.endDate.diff(survey.duration.startDate, 'days')+1 $} day/s
                                                         </span>
                                                     </div>
                                                     <div ng-messages="form_survey.duration.$dirty && form_survey.duration.$error" role="alert" class="error_messages">
@@ -171,7 +190,7 @@
                                                 <label class="col-sm-2 control-label">Audience type<span class="required">*</span>:</label>
                                                 <div class="col-sm-8" style="padding-top: 7px;">
                                                     <p>
-                                                        Select the follwing types of audience that can particiate this survey:
+                                                        Select the following types of audience that can participate this survey:
                                                     </p>
                                                     <div>
                                                         <div class="radio radio-primary">
@@ -231,7 +250,7 @@
                                         </div>
 
                                         <!-- Save -->
-                                        <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                                        <div class="hr-line-dashed"></div>
                                         <div class="form-group" style="margin-bottom: 0px !important;">
                                             <div class="col-sm-7">
                                                 <div ng-if="flags.error" class="alert alert-danger alert-dismissable" style="padding: 10px 30px 10px 10px;margin-bottom: 20px;">
@@ -240,8 +259,8 @@
                                                     Something went wrong. Our engineers will be informed.
                                                 </div>
 
-                                                <button class="btn btn-primary" type="button" ng-disabled="form_survey.$invalid" ng-click="submit(form_survey)">Save</button>
-                                                <button  class="btn btn-link" type="button" onclick="location.href = location.pathname;">Cancel</button>
+                                                <button ladda="flags.submitting" class="btn btn-primary ladda-button" type="button" ng-disabled="form_survey.$invalid" ng-click="submit(form_survey)" data-style="zoom-in">Save</button>
+                                                <button class="btn btn-link" type="button" onclick="location.href = location.pathname;">Cancel</button>
                                             </div>
                                         </div>
 
@@ -326,6 +345,10 @@
                             <i class="fa fa-bar-chart-o list_md_icon"></i>
                             Summary
                         </a>
+                        <a ui-sref="controls" class="list-group-item" ng-class="{'active': $state.current.name=='controls'}">
+                            <i class="fa fa-cogs list_md_icon"></i>
+                            Controls
+                        </a>
                         <a ui-sref="responses" class="list-group-item" ng-class="{'active': $state.current.name=='responses'}">
                             <i class="fa fa-rss list_md_icon"></i>
                             Responses
@@ -407,6 +430,12 @@
 {#                            ]);#}
 {#                        }#}
 {#                    }#}
+                })
+                .state('controls', {
+                    url: "/controls",
+                    templateUrl: "tmpl_controls",
+                    data: { pageTitle: 'Controls - {{ survey.title }}' },
+{#                    controller: OwnershipCtrl,#}
                 })
                 .state('responses', {
                     url: "/responses",
@@ -498,8 +527,56 @@
 
         // ========== State Controllers ==========
         // ----- Review/Edit -----
-        function ReviewEditCtrl($scope, $http, $uibModal){
+        function ReviewEditCtrl($rootScope, $scope, $http, $window){
+            $scope.daterange_opt = {
+                min: moment.min(moment('{{ survey.start_date|date:"Y-m-d" }}', 'YYYY-MM-DD'), moment()).format('YYYY-MM-DD')
+            };
 
+            $scope.flags = {
+                submitting: false,
+                error: false
+            };
+
+            $scope.submit = function(form_obj){
+                if(form_obj.$invalid) {
+                    return false;
+                }
+
+                $scope.flags.submitting = true;
+                $scope.flags.error = false;
+
+
+                var data = angular.copy($rootScope.survey);
+                data['start_date'] = data['duration']['startDate'].format('YYYY-MM-DD');
+                data['end_date'] = data['duration']['endDate'].format('YYYY-MM-DD');
+                delete data['duration'];
+
+                $http.post(
+                    "/console/surveys/{{ survey.survey_uid }}/save/",
+                    $.param(data)
+                )
+                .success(function (response, status, headers, config) {
+                    if(response.status=='success'){
+                        $window.location.reload();
+                    }else{
+                        $scope.flags.submitting = false;
+                        $scope.flags.error = true;
+                    }
+                })
+                .error(function (response, status, headers, config) {
+                    $scope.flags.submitting = false;
+
+                    if(status != -1){
+                        $scope.flags.error = true;
+                    }else{
+                        $.growl.error({
+                            title: '<i class="fa fa-signal"></i> Network error!',
+                            message: "Please check your internet connection."
+                        });
+                    }
+                });
+
+            }
         }
         // ----- /Review/Edit -----
         // ========== /State Controllers ==========

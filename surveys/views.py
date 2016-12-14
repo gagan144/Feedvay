@@ -70,7 +70,16 @@ def console_survey_save(request, survey_uid=None):
         try:
             survey = Survey.objects.get(survey_uid=survey_uid, created_by_id=reg_user.id)
 
-            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok').gen_http_response()
+            from surveys.forms import SurveyEditForm
+            form_survey = SurveyEditForm(request.POST, instance=survey)
+
+            if form_survey.is_valid():
+                if len(form_survey.changed_data):
+                    form_survey.save()
+                return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok').gen_http_response()
+            else:
+                errors = dict(form_survey.errors)
+                return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()
         except Survey.DoesNotExist:
             return ApiResponse(status=ApiResponse.ST_UNAUTHORIZED, message='Invalid survey.').gen_http_response()
     else:

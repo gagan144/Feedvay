@@ -204,7 +204,6 @@ class Survey(models.Model):
     # Audience
     audience_type    = models.CharField(max_length=16, default=None, choices=CH_AUDIENCE, help_text='Type of the target audience.')
     audience_filters = models57.JSONField(default=None, blank=True, null=True, help_text='Expression to filter the audience. (Only for public & invited)')
-    audience_cease   = models.BooleanField(verbose_name='Cease further audience', default=False, help_text='Switch to stop new audience that is, if checked will not allow new user to open survey.')
 
     # Status
     status      = FSMField(default=ST_DRAFT, choices=CH_STATUS, protected=True, help_text='Status of the survey')
@@ -232,7 +231,8 @@ class Survey(models.Model):
 
         **Authors**: Gagandeep Singh
         """
-        pass
+        if not self.surveyphase_set.all().count():
+            raise Exception("Denied! This survey must have atleast one phase.")
 
     @fsm_log_by
     @transition(field=status, source=ST_READY, target=ST_PAUSED)
@@ -338,7 +338,8 @@ class Survey(models.Model):
             if self.brand is None:
                 raise ValidationError("Please select brand surveyor.")
         elif self.surveyor_type == Survey.SURVYR_INDIVIDUAL:
-            pass
+            if self.type != Survey.TYPE_SIMPLE:
+                raise ValidationError("Only simple surveys are allowed for individuals.")
         else:
             ValidationError("Invalid surveyor type '{}'.".format(self.surveyor_types))
 

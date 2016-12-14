@@ -92,7 +92,6 @@
                                 <div class="panel-body">
                                     <!-- General information -->
                                     <form name="form_survey" class="form-horizontal" novalidate>
-                                        {$ survey $}
 
                                         <div class="form_section">
                                             <h3>
@@ -116,6 +115,9 @@
                                                     <div ng-messages="form_survey.category.$dirty && form_survey.category.$error" role="alert" class="error_messages">
                                                         <label ng-message="required" class="error">Please select a category.</label>
                                                     </div>
+                                                    <label ng-if="flags.val_errors.category" class="error">
+                                                        {$ flags.val_errors.category.join(", ") $}
+                                                    </label>
                                                 </div>
                                             </div>
 
@@ -130,6 +132,9 @@
                                                     <div ng-messages="form_survey.title.$dirty && form_survey.title.$error" role="alert" class="error_messages">
                                                         <label ng-message="required" class="error">Please enter a title.</label>
                                                     </div>
+                                                    <label ng-if="flags.val_errors.title" class="error">
+                                                        {$ flags.val_errors.title.join(", ") $}
+                                                    </label>
                                                 </div>
                                             </div>
 
@@ -145,6 +150,9 @@
                                                     <div ng-messages="form_survey.description.$dirty && form_survey.description.$error" role="alert" class="error_messages">
                                                         <label ng-message="required" class="error">Please write something about your survey.</label>
                                                     </div>
+                                                    <label ng-if="flags.val_errors.description" class="error">
+                                                        {$ flags.val_errors.description.join(", ") $}
+                                                    </label>
                                                 </div>
                                             </div>
                                         </div>
@@ -175,6 +183,9 @@
                                                     <div ng-messages="form_survey.duration.$dirty && form_survey.duration.$error" role="alert" class="error_messages">
                                                         <label ng-message="required" class="error">Please select date range.</label>
                                                     </div>
+                                                    <label ng-if="flags.val_errors.start_date || flags.val_errors.end_date" class="error">
+                                                        {$ flags.val_errors.start_date.join(", ") $} {$ flags.val_errors.end_date.join(", ") $}
+                                                    </label>
                                                 </div>
                                             </div>
                                         </div>
@@ -211,7 +222,7 @@
                                                             </label>
                                                         </div>
                                                         <div class="radio radio-primary">
-                                                            <input type="radio" id="chk_audtype_self" value="self" name="audience_type" ng-model="survey.audience_type" required ng-click="survey.audience_cease=false;">
+                                                            <input type="radio" id="chk_audtype_self" value="self" name="audience_type" ng-model="survey.audience_type" required >
                                                             <label for="chk_audtype_self">
                                                                 <span class="semi_bold">Self</span> <br/>
                                                                 <small>
@@ -225,6 +236,9 @@
                                                     <div ng-messages="form_survey.audience_type.$dirty && form_survey.audience_type.$error" role="alert" class="error_messages">
                                                         <label ng-message="required" class="error">Please select an audience type.</label>
                                                     </div>
+                                                    <label ng-if="flags.val_errors.audience_type" class="error">
+                                                        {$ flags.val_errors.audience_type.join(", ") $}
+                                                    </label>
                                                 </div>
                                             </div>
 
@@ -253,10 +267,10 @@
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group" style="margin-bottom: 0px !important;">
                                             <div class="col-sm-7">
-                                                <div ng-if="flags.error" class="alert alert-danger alert-dismissable" style="padding: 10px 30px 10px 10px;margin-bottom: 20px;">
+                                                <div ng-if="flags.error_msg" class="alert alert-danger alert-dismissable" style="padding: 10px 30px 10px 10px;margin-bottom: 20px;">
                                                     <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
                                                     <i class="fa fa-exclamation-triangle"></i>&nbsp;
-                                                    Something went wrong. Our engineers will be informed.
+                                                    {$ flags.error_msg $}
                                                 </div>
 
                                                 <button ladda="flags.submitting" class="btn btn-primary ladda-button" type="button" ng-disabled="form_survey.$invalid" ng-click="submit(form_survey)" data-style="zoom-in">Save</button>
@@ -505,6 +519,7 @@
 
             // ----- Survey -----
             $rootScope.survey = {
+                type: "{{ survey.type }}",
                 category: "{{ survey.category_id }}",
                 title: "{{ survey.title }}",
                 description: "{{ survey.description|safe }}",
@@ -513,7 +528,6 @@
                     endDate: moment('{{ survey.end_date|date:"Y-m-d" }}', 'YYYY-MM-DD'),
                 },
                 audience_type: "{{ survey.audience_type }}",
-                audience_cease: {{ survey.audience_cease|yesno:'true,false' }}
             };
 
             $rootScope.summernote_config = SUMMERNOTE_CONFIG;
@@ -534,7 +548,8 @@
 
             $scope.flags = {
                 submitting: false,
-                error: false
+                error_msg: null,
+                val_errors: null
             };
 
             $scope.submit = function(form_obj){
@@ -543,8 +558,8 @@
                 }
 
                 $scope.flags.submitting = true;
-                $scope.flags.error = false;
-
+                $scope.flags.error_msg = null;
+                $scope.flags.val_errors = null;
 
                 var data = angular.copy($rootScope.survey);
                 data['start_date'] = data['duration']['startDate'].format('YYYY-MM-DD');
@@ -560,14 +575,15 @@
                         $window.location.reload();
                     }else{
                         $scope.flags.submitting = false;
-                        $scope.flags.error = true;
+                        $scope.flags.error_msg = response.message;
+                        $scope.flags.val_errors = response.errors;
                     }
                 })
                 .error(function (response, status, headers, config) {
                     $scope.flags.submitting = false;
 
                     if(status != -1){
-                        $scope.flags.error = true;
+                        $scope.flags.error_msg = 'Something went wrong. Our engineers will be informed.'
                     }else{
                         $.growl.error({
                             title: '<i class="fa fa-signal"></i> Network error!',

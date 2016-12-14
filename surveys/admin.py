@@ -79,7 +79,7 @@ class SurveyAdmin(admin.ModelAdmin):
             'fields': ('surveyor_type', 'brand')
         }),
         ('Audience', {
-            'fields': ('audience_type', 'audience_filters', 'audience_cease')
+            'fields': ('audience_type', 'audience_filters')
         }),
         ('Status', {
             'fields': ('status', )

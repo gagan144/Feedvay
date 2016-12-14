@@ -4,6 +4,7 @@
 from django.http.response import Http404
 from django.shortcuts import render
 from django.db.models import Q
+from django.utils import timezone
 
 from surveys.models import Survey, SurveyPhase, SurveyCategory
 from languages.models import Language
@@ -46,7 +47,9 @@ def console_survey_panel(request, survey_uid):
         survey = Survey.objects.get(survey_uid=survey_uid, created_by_id=reg_user.id)
 
         data ={
+            'SURVEY': Survey,
             'survey': survey,
+            'now': timezone.now(),
             'app_name': 'app_survey_panel',
             'list_categories': SurveyCategory.objects.filter(Q(active=True)|Q(id=survey.category_id)).only('id', 'name')
         }

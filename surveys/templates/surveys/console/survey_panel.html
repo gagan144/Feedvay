@@ -11,6 +11,12 @@
     <title page-title></title>
 
     <style>
+        .survey_state{
+            line-height: 0;
+            font-size: 30px;
+            margin-top: 22px;
+        }
+
         .form_section{
             margin-bottom: 30px;
         }
@@ -28,21 +34,10 @@
         </div>
     </script>
 
-    <script type="text/ng-template" id="tmpl_controls">
-        <div>
-            <h2 style="margin-top: 0px;">
-                <i class="fa fa-cogs"></i>&nbsp;
-                Controls
-            </h2>
-            <hr style="margin-top: 15px;"/>
-
-        </div>
-    </script>
-
     <script type="text/ng-template" id="tmpl_responses">
         <div>
             <h2 style="margin-top: 0px;">
-                <i class="fa fa-rss"></i>&nbsp;
+                <i class="fa fa-twitch"></i>&nbsp;
                 Responses
             </h2>
             <hr style="margin-top: 15px;"/>
@@ -50,11 +45,11 @@
         </div>
     </script>
 
-    <script type="text/ng-template" id="tmpl_analyse">
+    <script type="text/ng-template" id="tmpl_visualize">
         <div>
             <h2 style="margin-top: 0px;">
-                <i class="fa fa-cubes"></i>&nbsp;
-                Analyse
+                <i class="fa fa-pie-chart"></i>&nbsp;
+                Visualize
             </h2>
             <hr style="margin-top: 15px;"/>
 
@@ -242,25 +237,6 @@
                                                 </div>
                                             </div>
 
-{#                                            <div class="hr-line-dashed hr_line_dashed_m10"></div>#}
-{#                                            <div class="form-group">#}
-{#                                                <label class="col-sm-2 control-label">Cease further audience:</label>#}
-{#                                                <div class="col-sm-8" style="padding-top: 7px;">#}
-{#                                                    <p>#}
-{#                                                        If you want to stop any further audience to participate in this survey, switch on the below switch.<br/>#}
-{#                                                        Your survey will be #}
-{#                                                    </p>#}
-{#                                                    <input type="checkbox" ng-model="data.active" class="js-switch" ui-switch="{color:'{{ request.curr_brand.ui_theme.primary }}'}" />#}
-{#                                                    <p class="help-block m-b-none">#}
-{#                                                        Detailed description about your survey. Use this area to explain what your survey is all about and#}
-{#                                                        purpose you want to achieve. Your description provides authenticity about your survey to the participants.#}
-{#                                                    </p>#}
-{#                                                    <div ng-messages="form_survey.description.$dirty && form_survey.description.$error" role="alert" class="error_messages">#}
-{#                                                        <label ng-message="required" class="error">Please write something about your survey.</label>#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                            </div>#}
-
                                         </div>
 
                                         <!-- Save -->
@@ -331,7 +307,7 @@
 
 {% block page_header %}
     <div class="row wrapper border-bottom white-bg page-heading">
-        <div class="col-xs-12">
+        <div class="col-xs-11">
             <h2>{{ survey.title }}</h2>
             <ol class="breadcrumb">
                 <li>
@@ -344,6 +320,55 @@
                     {{ survey.title }}
                 </li>
             </ol>
+        </div>
+        <div class="col-xs-1" align="center">
+            <!-- Status -->
+
+            {% if survey.status == SURVEY.ST_DRAFT %}
+                <div style="color: #b7b7b7;">
+                    <div class="survey_state">
+                        <i class="fa fa-file-text-o"></i>
+                    </div>
+                    <div>Draft</div>
+                </div>
+            {% elif survey.status == SURVEY.ST_READY %}
+                {% if survey.start_date <= now and now <= survey.end_date %}
+                    <div class="text-success">
+                        <div class="survey_state">
+                            <i class="fa fa-play"></i>
+                        </div>
+                        <div>Live</div>
+                    </div>
+                {% elif now > survey.end_date %}
+                    <div class="text-success">
+                        <div class="survey_state">
+                            <i class="fa fa-check-circle"></i>
+                        </div>
+                        <div>Completed</div>
+                    </div>
+                {% else %}
+                    <div class="text-info">
+                        <div class="survey_state">
+                            <i class="fa fa-check"></i>
+                        </div>
+                        <div>Ready</div>
+                    </div>
+                {% endif %}
+            {% elif survey.status == SURVEY.ST_PAUSED %}
+                <div class="text-warning">
+                    <div class="survey_state">
+                        <i class="fa fa-pause"></i>
+                    </div>
+                    <div>Paused</div>
+                </div>
+            {% elif survey.status == SURVEY.ST_STOPPED %}
+                <div class="text-danger">
+                    <div class="survey_state">
+                        <i class="fa fa-stop"></i>
+                    </div>
+                    <div>Stopped</div>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
@@ -359,17 +384,13 @@
                             <i class="fa fa-bar-chart-o list_md_icon"></i>
                             Summary
                         </a>
-                        <a ui-sref="controls" class="list-group-item" ng-class="{'active': $state.current.name=='controls'}">
-                            <i class="fa fa-cogs list_md_icon"></i>
-                            Controls
-                        </a>
                         <a ui-sref="responses" class="list-group-item" ng-class="{'active': $state.current.name=='responses'}">
-                            <i class="fa fa-rss list_md_icon"></i>
+                            <i class="fa fa-twitch list_md_icon"></i>
                             Responses
                         </a>
-                        <a ui-sref="analyse" class="list-group-item" ng-class="{'active': $state.current.name=='analyse'}">
-                            <i class="fa fa-cubes list_md_icon"></i>
-                            Analyse
+                        <a ui-sref="visualize" class="list-group-item" ng-class="{'active': $state.current.name=='visualize'}">
+                            <i class="fa fa-pie-chart list_md_icon"></i>
+                            Visualize
                         </a>
                         <a ui-sref="edit" class="list-group-item" ng-class="{'active': $state.current.name=='edit'}">
                             <i class="fa fa-pencil-square-o list_md_icon"></i>
@@ -445,22 +466,16 @@
 {#                        }#}
 {#                    }#}
                 })
-                .state('controls', {
-                    url: "/controls",
-                    templateUrl: "tmpl_controls",
-                    data: { pageTitle: 'Controls - {{ survey.title }}' },
-{#                    controller: OwnershipCtrl,#}
-                })
                 .state('responses', {
                     url: "/responses",
                     templateUrl: "tmpl_responses",
                     data: { pageTitle: 'Responses - {{ survey.title }}' },
 {#                    controller: OwnershipCtrl,#}
                 })
-                .state('analyse', {
-                    url: "/analyse",
-                    templateUrl: "tmpl_analyse",
-                    data: { pageTitle: 'Analyse - {{ survey.title }}' },
+                .state('visualize', {
+                    url: "/visualize",
+                    templateUrl: "tmpl_visualize",
+                    data: { pageTitle: 'Visualize - {{ survey.title }}' },
 {#                    controller: ControlsCtrl,#}
                 })
                 .state('edit', {

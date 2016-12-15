@@ -442,14 +442,14 @@
                     <div>Draft</div>
                 </div>
             {% elif survey.status == SURVEY.ST_READY %}
-                {% if survey.start_date <= now and now <= survey.end_date %}
+                {% if survey.start_date <= now.date and now.date <= survey.end_date %}
                     <div class="text-success">
                         <div class="survey_state">
                             <i class="fa fa-play"></i>
                         </div>
                         <div>Live</div>
                     </div>
-                {% elif now > survey.end_date %}
+                {% elif now.date > survey.end_date %}
                     <div class="text-success">
                         <div class="survey_state">
                             <i class="fa fa-check-circle"></i>

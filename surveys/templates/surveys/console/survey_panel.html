@@ -94,14 +94,28 @@
                                     Control
                                 </div>
                                 <div class="panel-body" style="text-align: center;font-size: 11px;">
-                                    {% if survey.status == SURVEY.ST_DRAFT or survey.status == SURVEY.ST_PAUSED %}
+                                    {% if survey.status == SURVEY.ST_DRAFT %}
                                         <div>
                                             <p>
                                                 If you have ready with your survey,
                                                 please click below button to make it live. Survey will automatically
                                                 be available as per the survey duration.
                                             </p>
-                                            <button type="button" class="btn btn-block btn-info">Go live!</button>
+                                            <button type="button" class="btn btn-block btn-info" ng-click="survey_transit('ready')">
+                                                Go live!
+                                            </button>
+                                        </div>
+                                    {% endif %}
+
+                                    {% if survey.status == SURVEY.ST_PAUSED %}
+                                        <div>
+                                            <p>
+                                                If you want to resume your survey and go live again,
+                                                please click below button.
+                                            </p>
+                                            <button type="button" class="btn btn-block btn-info" ng-click="survey_transit('resume')">
+                                                Resume
+                                            </button>
                                         </div>
                                     {% endif %}
 
@@ -111,7 +125,7 @@
                                                 If you wish to pause your survey for some time, click the below button.
                                                 You can resume it later.
                                             </p>
-                                            <button type="button" class="btn btn-block btn-warning">
+                                            <button type="button" class="btn btn-block btn-warning" ng-click="survey_transit('pause')">
                                                 <i class="fa fa-pause"></i>&nbsp;&nbsp;Pause
                                             </button>
                                         </div>
@@ -123,7 +137,7 @@
                                                 If your survey is no longer valid and you want to permanently stop it, you can do so by
                                                 clicking below button. This action is <b>irreversible</b> and you cannot resume it.
                                             </p>
-                                            <button type="button" class="btn btn-block btn-danger">
+                                            <button type="button" class="btn btn-block btn-danger" ng-click="survey_transit('stop')">
                                                 <i class="fa fa-stop"></i>&nbsp;&nbsp;Stop
                                             </button>
                                         </div>
@@ -672,7 +686,38 @@
         // ========== State Controllers ==========
         // ----- Summary -----
         function SummaryCtrl($rootScope, $scope, $http, $window){
-            // temp
+
+            $scope.survey_transit = function(action){
+                $http.post(
+                    "/console/surveys/{{ survey.survey_uid }}/transit/",
+                    $.param({
+                        "action": action
+                    })
+                )
+                .success(function (response, status, headers, config) {
+                    if(response.status=='success'){
+                        $window.location.reload();
+                    }else{
+{#                        $scope.flags.submitting = false;#}
+{#                        $scope.flags.error_msg = response.message;#}
+{#                        $scope.flags.val_errors = response.errors;#}
+                    }
+                })
+                .error(function (response, status, headers, config) {
+{#                    $scope.flags.submitting = false;#}
+
+                    if(status != -1){
+{#                        $scope.flags.error_msg = 'Something went wrong. Our engineers will be informed.'#}
+                    }else{
+                        $.growl.error({
+                            title: '<i class="fa fa-signal"></i> Network error!',
+                            message: "Please check your internet connection."
+                        });
+                    }
+                });
+            }
+
+            // ----- delete -----
             var data1 = [
                 [0, 4],
                 [1, 8],
@@ -754,7 +799,7 @@
              */
             $scope.flotData = [data1, data2];
             $scope.flotOptions = options;
-            // /temp
+            // ----- delete -----
         }
 
         // ----- Review/Edit -----

@@ -5,8 +5,10 @@ from django.http.response import Http404
 from django.shortcuts import render
 from django.db.models import Q
 from django.utils import timezone
+from django_fsm import TransitionNotAllowed
 
 from surveys.models import Survey, SurveyPhase, SurveyCategory
+from surveys.decorators import *
 from languages.models import Language
 from form_builder.utils import GeoLocation
 from utilities.decorators import registered_user_only
@@ -56,6 +58,43 @@ def console_survey_panel(request, survey_uid):
         return render(request, 'surveys/console/survey_panel.html', data)
     except Survey.DoesNotExist:
         raise Http404("invalid link.")
+
+@registered_user_only
+@survey_access_firewall
+def console_survey_transit(request, survey):
+    """
+    API view to transit survey status.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+
+    if request.method.lower() == 'post':
+        action = request.POST['action']
+        try:
+
+            # Check & make transition.
+            if action == 'ready':
+                survey.trans_ready()
+            elif action == 'pause':
+                survey.trans_pause()
+            elif action == 'resume':
+                survey.trans_resume()
+            elif action == 'stop':
+                survey.trans_stop()
+            else:
+                # Invalid transition
+                return ApiResponse(status=ApiResponse.ST_BAD_REQUEST, message='Invalid action.').gen_http_response()
+
+            survey.save()
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok').gen_http_response()
+
+        except TransitionNotAllowed:
+            return ApiResponse(status=ApiResponse.ST_NOT_ALLOWED, message='You cannot perform this action.').gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
 @registered_user_only
 def console_survey_save(request, survey_uid=None):

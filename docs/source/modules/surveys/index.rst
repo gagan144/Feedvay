@@ -71,4 +71,7 @@ Contents
        :titlesonly:
 
        models
+       decorators
+       forms
+       views
 

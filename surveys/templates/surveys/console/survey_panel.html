@@ -10,6 +10,7 @@
 
     <title page-title></title>
 
+    <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
     <style>
         .survey_state{
             line-height: 0;
@@ -536,6 +537,8 @@
 
 {% block scripts %}
     <script src="{% get_static_prefix %}ui/js/ui-router/angular-ui-router.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
 
     <script>
         'use strict';
@@ -551,7 +554,8 @@
             'ui.router',                    // Routing
             'oc.lazyLoad',                  // ocLazyLoad
             'ui.bootstrap',
-            'angular-ladda'
+            'angular-ladda',
+            'oitozero.ngSweetAlert'
         ])
         .config(function($interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             $interpolateProvider.startSymbol('{$');
@@ -685,36 +689,78 @@
 
         // ========== State Controllers ==========
         // ----- Summary -----
-        function SummaryCtrl($rootScope, $scope, $http, $window){
+        function SummaryCtrl($rootScope, $scope, $http, $window, SweetAlert){
 
             $scope.survey_transit = function(action){
-                $http.post(
-                    "/console/surveys/{{ survey.survey_uid }}/transit/",
-                    $.param({
-                        "action": action
-                    })
-                )
-                .success(function (response, status, headers, config) {
-                    if(response.status=='success'){
-                        $window.location.reload();
-                    }else{
-{#                        $scope.flags.submitting = false;#}
-{#                        $scope.flags.error_msg = response.message;#}
-{#                        $scope.flags.val_errors = response.errors;#}
-                    }
-                })
-                .error(function (response, status, headers, config) {
-{#                    $scope.flags.submitting = false;#}
 
-                    if(status != -1){
-{#                        $scope.flags.error_msg = 'Something went wrong. Our engineers will be informed.'#}
-                    }else{
-                        $.growl.error({
-                            title: '<i class="fa fa-signal"></i> Network error!',
-                            message: "Please check your internet connection."
+                var text = null;
+                var type = 'warning';
+                switch(action){
+                    case 'ready': {
+                        text = 'Do you want to make this survey live?';
+                        type = 'info';
+                    } break;
+                    case 'pause': { text='Do you want to pause this survey?';} break;
+                    case 'resume': {
+                        text = 'Do you want to resume this survey and go live again?';
+                        type = 'info';
+                    } break;
+                    case 'stop': {
+                        text='This will permanently stop your survey and you will not be able to resume it!';
+                    } break;
+                }
+
+                SweetAlert.swal({
+                    title: "Are you sure?",
+                    text: text,
+                    type: type,
+                    showCancelButton: true,
+{#                    confirmButtonColor: "#DD6B55",#}
+                    confirmButtonText: "Yes, confirm!",
+                    cancelButtonText: "No, cancel!",
+                    closeOnConfirm: false,
+                    closeOnCancel: true,
+                    allowEscapeKey: false
+                },
+                function (isConfirm) {
+                    if (isConfirm) {
+
+                        $http.post(
+                            "/console/surveys/{{ survey.survey_uid }}/transit/",
+                            $.param({
+                                "action": action
+                            })
+                        )
+                        .success(function (response, status, headers, config) {
+                            if(response.status=='success'){
+                                SweetAlert.swal("Done!", "Status of this survey has been changed.", "success");
+                                $window.location.reload();
+                            }else{
+                                swal.close();
+                                $.growl.error({
+                                    title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                    message: response.message
+                                });
+                            }
+                        })
+                        .error(function (response, status, headers, config) {
+                            if(status != -1){
+                                $.growl.error({
+                                    title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                    message: 'Something went wrong. Our engineers will be informed.'
+                                });
+                            }else{
+                                $.growl.error({
+                                    title: '<i class="fa fa-signal"></i> Network error!',
+                                    message: "Please check your internet connection."
+                                });
+                            }
                         });
+
                     }
                 });
+
+
             }
 
             // ----- delete -----

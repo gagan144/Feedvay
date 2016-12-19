@@ -30,6 +30,7 @@ urlpatterns = [
 
     url(r'^languages/', include('languages.urls')),
     url(r'^forms/', include('form_builder.urls')),
+    url(r'^surveys/', include('surveys.urls')),
 
     # Admin and staff
     url(r'^admin/', admin.site.urls),

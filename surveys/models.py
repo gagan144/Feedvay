@@ -9,6 +9,8 @@ from django_mysql import models as models57
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
 
+from mongoengine.fields import *
+
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 import shortuuid
@@ -20,7 +22,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from accounts.models import RegisteredUser
 from brands.models import Brand
-from form_builder.models import Form
+from form_builder.models import Form, BaseResponse
 
 class SurveyTag(models.Model):
     """
@@ -438,3 +440,19 @@ class SurveyPhase(models.Model):
         super(self.__class__, self).save(*args, **kwargs)
 
 
+class SurveyResponse(BaseResponse):
+    """
+    Model to store a survey response. It inherits all properties of :class:`form_builder.models.BaseResponse`.
+
+    **Authors**: Gagandeep Singh
+    """
+
+    survey_uid  = StringField(required=True, help_text='Survey uid for which response is recorded.')
+    phase_id    = StringField(required=True, help_text='Survey phase id (pk) which has been responded.')
+
+    meta = {
+        'indexes':[
+            'survey_uid',
+            'phase_id'
+        ]
+    }

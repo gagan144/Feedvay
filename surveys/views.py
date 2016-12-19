@@ -7,12 +7,155 @@ from django.db.models import Q
 from django.utils import timezone
 from django_fsm import TransitionNotAllowed
 
-from surveys.models import Survey, SurveyPhase, SurveyCategory
+import json
+from django.views.decorators.csrf import csrf_exempt
+
+from surveys.models import Survey, SurveyPhase, SurveyCategory, SurveyResponse
 from surveys.decorators import *
 from languages.models import Language
 from form_builder.utils import GeoLocation
 from utilities.decorators import registered_user_only
 from utilities.api_utils import ApiResponse
+
+# TODO: Mobile/Source validation firewall
+def open_survey_form(request, survey_uid, phase_id=None):
+    """
+    View to open a survey form. If survey is simple, default phase is opened else phase_id is used.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+
+    try:
+        survey = Survey.objects.get(survey_uid=survey_uid)
+
+        # Check status
+        if survey.status == Survey.ST_READY:
+            # Check date
+            now = timezone.now().date()
+
+            if survey.start_date <= now <= survey.end_date:
+                #TODO: Audience filter
+
+                # Obtain phase
+                if survey.type == Survey.TYPE_SIMPLE:
+                    phase = survey.phases[0]
+                else:
+                    try:
+                        phase = survey.phases.filter(id=phase_id)
+                    except SurveyPhase.DoesNotExist:
+                        raise Survey.DoesNotExist("Invalid survey phase.")
+
+                # --- All check passed ---
+                form = phase.form
+                template = 'themes/{}/form_base.html'.format(form.theme_skin.theme.code)
+
+                data = {
+                    'context': 'SURVEY',
+                    'survey': survey,
+                    'phase': phase,
+
+                    'form': form,
+                    'title': survey.title,
+                    'theme': form.theme_skin.theme,
+                    'skin': form.theme_skin,
+                    'lookup_translations': form.get_translation_lookup(),
+                    'DEFAULT_LANGUAGE_CODE': Language.DEFAULT_LANGUAGE_CODE,    # Fallback language incase translation not found
+                    'USER_DEFAULT_LANG_CODE': 'hin' #TODO: User prefered language
+                }
+                return render(request, template, data)
+                # --- /All check passed ---
+            else:
+                raise Http404("Sorry! This survey has been completed.")
+
+        elif survey.status == Survey.ST_STOPPED:
+            raise Http404("Sorry! This survey has been concluded.")
+        else:
+            raise Http404("This survey is not currently active. Please try some other time.")
+
+    except Survey.DoesNotExist:
+        # Invalid link
+        raise Http404("Invalid survey.")
+
+# TODO: Mobile/Source validation firewall
+@csrf_exempt
+def submit_survey_response(request):
+    """
+    View to submit a response for survey phase.
+
+    **Points**:
+
+        - It does not block late submission.
+        - All responses are recorded irrespective of survey status.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        token = request.POST['token']
+
+        response_json = json.loads(request.POST['response'])
+
+        response_uid = response_json['response_uid']
+        form_version = response_json['form_version']
+
+        try:
+            survey = Survey.objects.get(survey_uid=response_json['survey_uid'])
+            phase = survey.phases.get(id=response_json['phase_id'])
+            form = phase.form
+
+            version_obsolete = False if str(form.version) == form_version else True
+
+            if not SurveyResponse.objects.filter(response_uid=response_uid).count():
+                survey_response = SurveyResponse.objects.create(
+                    survey_uid      = str(survey.survey_uid),
+                    phase_id        = str(phase.id),
+                    form_id         = str(form.id),
+                    form_version    = form_version,
+                    version_obsolete = version_obsolete,
+
+                    app_version     = response_json['app_version'],
+                    user            = SurveyResponse.UserInformation(**response_json['user']) if response_json['user'] else None,
+                    end_point_info  = SurveyResponse.EndPointInformation(**response_json['end_point_info']),
+                    language_code   = response_json["language_code"],
+
+                    response_uid    = response_uid,
+                    constants       = response_json['constants'],
+                    answers         = response_json['answers'],
+                    answers_other   = response_json['answers_other'],
+                    calculated_fields = response_json['calculated_fields'],
+
+                    timezone_offset        = response_json['timezone_offset'],
+                    response_date   = timezone.datetime.strptime(response_json['response_date'],"%Y-%m-%dT%H:%M:%S"), # parse(response_json['response_date']),
+                    start_time      = timezone.datetime.strptime(response_json['start_time'],"%Y-%m-%dT%H:%M:%S"), # parse(response_json['start_time']),
+                    end_time        = timezone.datetime.strptime(response_json['end_time'],"%Y-%m-%dT%H:%M:%S"), # parse(response_json['end_time']),
+                    duration        = response_json['duration'],
+
+                    location        = SurveyResponse.LocationInformation(**response_json['location']) if response_json['location'] else None,
+
+                    flags           = SurveyResponse.ResponseFlags(
+                                           description_read = response_json['flags']['description_read'],
+                                           instructions_read = response_json['flags']['instructions_read'],
+                                           suspect = response_json['flags']['suspect'],
+                                           suspect_reasons = response_json['flags']['suspect_reasons']
+                                      )
+                )
+
+                return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Survey response successfully submitted.').gen_http_response()
+
+            else:
+                return ApiResponse(status=ApiResponse.ST_IGNORED, message='Duplicate response received.').gen_http_response()
+
+        except Survey.DoesNotExist:
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Invalid survey.').gen_http_response()
+        except SurveyPhase.DoesNotExist:
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Invalid survey.').gen_http_response()
+
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
 # ==================== Console ====================
 @registered_user_only
@@ -57,7 +200,7 @@ def console_survey_panel(request, survey_uid):
         }
         return render(request, 'surveys/console/survey_panel.html', data)
     except Survey.DoesNotExist:
-        raise Http404("invalid link.")
+        raise Http404("Invalid link.")
 
 @registered_user_only
 @survey_access_firewall

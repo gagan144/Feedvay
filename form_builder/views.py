@@ -33,6 +33,7 @@ def open_form(request, id):
     form = Form.objects.get(id=id)
     template = 'themes/{}/form_base.html'.format(form.theme_skin.theme.code)
     data = {
+        'title': form.title,
         'theme': form.theme_skin.theme,
         'skin': form.theme_skin,
         'form': form,

@@ -14,6 +14,7 @@ from django.db.models.signals import post_save
 
 from mongoengine.document import *
 from mongoengine.fields import *
+from mongoengine.base.fields import BaseField
 
 from django.core.exceptions import ValidationError
 import uuid
@@ -26,6 +27,7 @@ from django.forms.models import model_to_dict
 from form_builder import form_schema
 from form_builder.form_exceptions import DuplicateVariableName, ExpressionCompileError
 from languages.models import Language, Translation
+from utilities.timezone_utils import validate_timezone_offset_string
 
 # ---------- Themes ----------
 def upload_theme_media(instance, filename):
@@ -461,6 +463,234 @@ class FormFieldMetaData(Document):
 
     def __unicode__(self):
         return "{}: {}".format(self.form_id, self.label)
+
+
+# ------------ Form Response -----------
+class BaseResponse(Document):
+    """
+    Abstract mongoDb model to store response for a form.
+
+    .. warning::
+        This is only an abstract model. This does not map any collection.
+
+    **Authors**: Gagandeep Singh
+    """
+
+    # --- Embedded Documents ---
+    class UserInformation(EmbeddedDocument):
+        """
+        Response embedded document to capture user information.
+
+        **Authors**: Gagandeep Singh
+        """
+        user_id         = StringField(help_text='Primary key of user.')
+        username        = StringField(help_text='User login username.')
+        user_fullname   = StringField(help_text='User full name.')
+
+    class LocationInformation(EmbeddedDocument):
+        """
+        Response embedded document to capture location information for a response
+
+        **Authors**: Gagandeep Singh
+        """
+        GPS = 'gps'
+        NETWORK_GPS = 'network_gps'
+        GEOLOCATION = 'geolocation'
+        CH_PROVIDER = (
+            (GPS, 'GPS'),
+            (NETWORK_GPS, 'Network GPS'),
+            (GEOLOCATION, 'GeoLocation')
+        )
+
+        provider        = StringField(required=True, choices=CH_PROVIDER, help_text="GPS Provider.")
+        coordinates     = GeoPointField(required=True, auto_index=True, help_text='GPS coordinates [longitude,latitude] from which this response was send.')
+        accuracy        = FloatField(required=True, help_text='Accuracy (in meters) at which GPS coordinates where captured.')
+        timestamp       = LongField(help_text='Timestamp at which gps was taken.')
+
+    class ResponseFlags(EmbeddedDocument):
+        """
+        Response embedded document to capture various types of flags related to the response.
+
+        **Authors**: Gagandeep Singh
+        """
+        description_read    = BooleanField(default=False, required=True, help_text='Determines if the description was read by the user')
+        instructions_read   = BooleanField(default=False, required=True, help_text='Determines if the instructions were read by the user.')
+        suspect             = BooleanField(default=False, required=True, help_text='Determins if this reponse is a suspect. If true, reason must be specified.')
+        suspect_reasons     = ListField(help_text='List of reasons is to why this response is a suspect.')
+
+    class EndPointInformation(EmbeddedDocument):
+        """
+        Response embedded document to capture various information about response end point.
+        An end point is source from where the response originated. It can be a web client,
+        a mobile hand-held device or any other device capable to generating response.
+
+        .. warning::
+            Do not change end point type enum. These are hardcoded in the device or web client scripts.
+
+        **Authors**: Gagandeep Singh
+        """
+        WEB_CLIENT = 'web_client'
+        MOBILE_DEVICE = 'mobile_device'
+        CH_END_POINT = (
+            (WEB_CLIENT, 'Web Client'),
+            (MOBILE_DEVICE, ' Mobile Device')
+        )
+
+        # --- Fields ---
+        type            = StringField(required=True, choices=CH_END_POINT, help_text="Type of end point.")
+
+        # Manufacture information
+        brand           = StringField(help_text="The consumer-visible brand with which the product/hardware will be associated, if any.")
+        model           = StringField(help_text="The end-user-visible name for the end product.")
+        manufacturer    = StringField(help_text="The manufacturer of the product/hardware.")
+        hardware        = StringField(help_text="The name of the hardware (from the kernel command line or /proc).")
+
+        # Platform
+        platform        = StringField(help_text="Device's operating system name i.e. Android/iOS/Windows etc.")
+        os_version      = StringField(help_text="Version of the operating system.")
+        api_sdk         = StringField(help_text="Api SDK version of the platform.")
+
+        # Hardware Information
+        uuid            = StringField(help_text="Device's UUID as determined by the device manufacturer and are specific to the device's platform or model.")
+        imei            = StringField(help_text="IMEI (International Mobile Equipment Identity) number of mobile device.")
+
+        # Service Provider
+        imsi            = StringField(help_text="IMSI (International Mobile Subscriber Identity) of the SIM used in the device.")
+        service_provider = StringField(help_text="Name of the network service provider i.e. Airtel, Vodafone etc.")
+        operator_country = StringField(help_text="ISO country code equivalent of the current registered operator's MCC (Mobile Country Code).")
+
+        def __unicode__(self):
+            return "{} - {}".format(self.type, self.model)
+
+    class Answer(EmbeddedDocument):
+        """
+        Response embedded document to an answer to the question in details. This includes
+        various meta information for an answer.
+
+        **Authors**: Gagandeep Singh
+        """
+        question_label  = StringField(required=True, help_text='Label of the question to which this answer is related')
+        answer          = BaseField(required=True, help_text='Answer to the question.')
+        is_other        = BooleanField(required=True, default=False, help_text='If true, it means the answer of the question belongs to other part of the question.')
+
+    # --- /Embedded Documents ---
+
+    # Form
+    form_id         = StringField(required=True, help_text='Primary key of the form.')
+    form_version    = StringField(required=True, help_text='Version of the form.')
+    version_obsolete = BooleanField(required=True, help_text='If true, it means this response belongs to older version of the form.')
+
+    # Misc Information
+    app_version     = StringField(help_text="Version of the app from which response was send.")
+    user            = EmbeddedDocumentField(UserInformation, help_text='User related data.')
+    end_point_info  = EmbeddedDocumentField(EndPointInformation, required=True, help_text="Device information")
+    language_code   = StringField(default=Language.DEFAULT_LANGUAGE_CODE, required=True, help_text="Code of the language used while responding.")
+
+    # Response Data
+    response_uid    = StringField(required=True, unique=True, help_text='Response unique id as send from device.')
+    constants       = DictField(help_text='Dictionary of all constants & their values as used in form.')
+    answers         = DictField(required=True, help_text='Dictionary containing answer for questions asked in the form.')
+    answers_other   = DictField(help_text='Dictionary containing answer for other option of the questions.')
+    list_answers    = EmbeddedDocumentListField(Answer, help_text="List of answers and other answer along with their meta details. These are indexed.")
+    calculated_fields = DictField(help_text='Dictionary of calculated fields as evaluated by the form.')
+
+    # Time Dimension
+    timezone_offset = StringField(required=True, max_length=5, help_text="Client's timezone in format [+/-]HHMM e.i. +0530")
+    response_date   = DateTimeField(required=True, help_text='Date on which user responded.')
+    start_time      = DateTimeField(required=True, help_text='Datetime at which user started filling the form.')
+    end_time        = DateTimeField(required=True, help_text='Datetime at which user started finished filling the form.')
+    duration        = FloatField(required=True, help_text='Time (In sec) taken by user to fill this form. This must be equal to (end_time-start_time).')
+
+    # Space Dimension
+    location        = EmbeddedDocumentField(LocationInformation, help_text='Location related data.')
+
+    # Flags
+    flags = EmbeddedDocumentField(ResponseFlags, required=True, help_text='Various information signalizing something related to this response.')
+
+    # Dates
+    created_on      = DateTimeField(default=datetime.now, required=True, help_text='Date on which this record was created in the database.')
+    updated_on      = DateTimeField(default=None, help_text='Date on which this record was modified.')
+
+    meta = {
+        'abstract': True,
+        'indexes':[
+            'form_id',
+            'version_obsolete',
+            'app_version',
+            'user.user_id',
+            'user.username',
+            'end_point_info.type',
+            'response_uid',
+            'list_answers.question_label',
+            'list_answers.answer',
+            'list_answers.is_other',
+            'flags.suspect',
+            'timezone_offset',
+            '-response_date',
+            '-created_on',
+        ]
+    }
+
+    def __unicode__(self):
+        return "{} - {}".format(self.form_id, str(self.pk))
+
+    def save(self, deep_save=True, *args, **kwargs):
+        """
+        Save method for a response.
+        :param deep_save: If True, re-evaluates/update ``list_answers``.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        if self.pk:
+            self.updated_on = datetime.now()
+
+        # Timezone validation
+        if not validate_timezone_offset_string(self.timezone_offset):
+            raise ValidationError("Invalid timezone offset string '{}'. Correct format '[+/-]HHMM'.".format(self.timezone_offset))
+
+        # Flags
+        if self.flags.suspect and len(self.flags.suspect_reasons) == 0:
+            raise Exception('Please specify atleast one reason is to why this response is a suspect.')
+
+        if deep_save:
+            list_answers = []
+
+            # (a) Add answers to list_answers
+            for ques_label,answer in self.answers.iteritems():
+                if isinstance(answer, list):
+                    # Answer is an arra of value
+                    list_values = answer
+                else:
+                    # Purposely make it array of value
+                    list_values = [answer]
+
+                # Add separate entry for each value of the answer.
+                for ans in list_values:
+                    list_answers.append(
+                        BaseResponse.Answer(
+                            question_label = ques_label,
+                            answer = ans
+                        )
+                    )
+
+            # (b) Add 'other' answers to list_answers
+            for ques_label, ans in self.answers_other.iteritems():
+                list_answers.append(
+                    BaseResponse.Answer(
+                        question_label = ques_label,
+                        answer = ans,
+                        is_other = True
+                    )
+                )
+
+            # Update variable
+            self.list_answers = list_answers
+
+        return super(BaseResponse, self).save(*args, **kwargs)
+
+
+# ------------ /Form Response -----------
 
 # ---------- Global methods ----------
 def iterate_form_fields(schema):

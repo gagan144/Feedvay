@@ -56,15 +56,24 @@ var MobileAPI = {
         }
     },
 
-    submit_response : function(response_dict_str){
+    submit_response : function(context, response_dict_str){
         var TOKEN = 'test-token';
 
         console.log("Response Json:", response_dict_str);
 
+        var url = null;
+        if(context=='SURVEY'){
+            url = '/surveys/submit-response/';
+        }
+        else{
+            alert("Invalid form context");
+            return;
+        }
+
         $.ajax({
             type: "POST",
             //contentType: "application/json; charset=utf-8",
-            url: "/dossier/post-response/",
+            url: url,
             data: {
                 "token": TOKEN,
                 "response": response_dict_str
@@ -75,7 +84,7 @@ var MobileAPI = {
                 alert(JSON.stringify(result));
             },
             error: function (xhr, ajaxOptions, thrownError) {
-                alert('Error submiting response');
+                alert('Error submitting response');
             }
         });
     },

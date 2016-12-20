@@ -14,6 +14,7 @@ from surveys.models import Survey, SurveyPhase, SurveyCategory, SurveyResponse
 from surveys.decorators import *
 from languages.models import Language
 from form_builder.utils import GeoLocation
+from accounts.models import RegisteredUser
 from utilities.decorators import registered_user_only
 from utilities.api_utils import ApiResponse
 
@@ -62,7 +63,10 @@ def open_survey_form(request, survey_uid, phase_id=None):
                     'skin': form.theme_skin,
                     'lookup_translations': form.get_translation_lookup(),
                     'DEFAULT_LANGUAGE_CODE': Language.DEFAULT_LANGUAGE_CODE,    # Fallback language incase translation not found
-                    'USER_DEFAULT_LANG_CODE': 'hin' #TODO: User prefered language
+
+                    #TODO: Set user properties
+                    'reg_user': RegisteredUser.objects.get(user__username=request.GET['username']),
+                    'USER_DEFAULT_LANG_CODE': 'hin'
                 }
                 return render(request, template, data)
                 # --- /All check passed ---

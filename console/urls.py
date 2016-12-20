@@ -8,6 +8,7 @@ from accounts import views as views_accounts
 from brands import views as views_brands
 from brands import api as api_brands
 from surveys import views as views_surveys
+from surveys import api as api_surveys
 
 url_account = [
     url(r'^settings/$', views_accounts.console_account_settings, name='console_accounts_settings'),
@@ -31,6 +32,7 @@ url_brands = [
     url(r'^api/', include(api_brand_change_req.urls)),
 ]
 
+api_survey_responses = api_surveys.SurveyResponsesAPI()
 url_surveys = [
     url(r'^$', views_surveys.console_surveys, name='console_surveys'),
     url(r'^(?P<survey_uid>\w+)/$', views_surveys.console_survey_panel, name='console_survey_panel'),
@@ -39,6 +41,9 @@ url_surveys = [
 
     url(r'^(?P<survey_uid>\w+)/edit/$', views_surveys.console_survey_phase_form_editor, name='console_survey_simple_form_editor'),
     url(r'^(?P<survey_uid>\w+)/edit/(?P<phase_id>[0-9]+)/$', views_surveys.console_survey_phase_form_editor, name='console_survey_phase_form_editor'),
+
+    # Api
+    url(r'^api/', include(api_survey_responses.urls)),
 ]
 
 urlpatterns = [

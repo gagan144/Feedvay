@@ -6,19 +6,24 @@
 
 {% block head %}
     <!-- Favicon -->
-    <link rel="shortcut icon"  href="{% if request.curr_brand %}{{ request.curr_brand.icon.url }}{% else %}{% get_static_prefix %}images/favicon.png{% endif %}" />
+    <link rel="shortcut icon" href="
+            {% if request.curr_brand %}{{ request.curr_brand.icon.url }}{% else %}{% get_static_prefix %}images/favicon.png{% endif %}"/>
 
     <title page-title></title>
 
     <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <!-- JqGrid -->
+    {#    <link href="{% get_static_prefix %}ui/css/plugins/jQueryUI/jquery-ui-1.10.4.custom.min.css" rel="stylesheet">#}
+    <link href="{% get_static_prefix %}ui/css/plugins/jqGrid/ui.jqgrid.css" rel="stylesheet">
+
     <style>
-        .survey_state{
+        .survey_state {
             line-height: 0;
             font-size: 30px;
             margin-top: 22px;
         }
 
-        .form_section{
+        .form_section {
             margin-bottom: 30px;
         }
     </style>
@@ -45,8 +50,10 @@
                                         </td>
                                         <td>
                                             <strong>Caution!</strong>
-                                            Your survey is in draft state. This means that you are still editing your survey and it
-                                            is not live. Kindly complete your survey and click 'Go live' button to make it live.
+                                            Your survey is in draft state. This means that you are still editing your
+                                            survey and it
+                                            is not live. Kindly complete your survey and click 'Go live' button to make
+                                            it live.
                                         </td>
                                     </tr>
                                 </table>
@@ -71,7 +78,7 @@
                         <!-- /Alert -->
 
                         <!-- Responses chart -->
-                        <div class="flot-chart" >
+                        <div class="flot-chart">
                             <div flot class="flot-chart-content" dataset="flotData" options="flotOptions"></div>
                         </div>
                         <!-- Responses chart -->
@@ -82,6 +89,7 @@
                                 <h2 style="margin-top: 20px;">
                                     <i class="fa fa-stop"></i>&nbsp;Stopped
                                 </h2>
+
                                 <p>
                                     Your survey is stopped and is no longer active. You cannot revert this survey and
                                     will no longer receive any responses. However, you may can still
@@ -102,7 +110,8 @@
                                                 please click below button to make it live. Survey will automatically
                                                 be available as per the survey duration.
                                             </p>
-                                            <button type="button" class="btn btn-block btn-info" ng-click="survey_transit('ready')">
+                                            <button type="button" class="btn btn-block btn-info"
+                                                    ng-click="survey_transit('ready')">
                                                 Go live!
                                             </button>
                                         </div>
@@ -114,7 +123,8 @@
                                                 If you want to resume your survey and go live again,
                                                 please click below button.
                                             </p>
-                                            <button type="button" class="btn btn-block btn-info" ng-click="survey_transit('resume')">
+                                            <button type="button" class="btn btn-block btn-info"
+                                                    ng-click="survey_transit('resume')">
                                                 Resume
                                             </button>
                                         </div>
@@ -126,7 +136,8 @@
                                                 If you wish to pause your survey for some time, click the below button.
                                                 You can resume it later.
                                             </p>
-                                            <button type="button" class="btn btn-block btn-warning" ng-click="survey_transit('pause')">
+                                            <button type="button" class="btn btn-block btn-warning"
+                                                    ng-click="survey_transit('pause')">
                                                 <i class="fa fa-pause"></i>&nbsp;&nbsp;Pause
                                             </button>
                                         </div>
@@ -135,10 +146,13 @@
                                     {% if survey.status == SURVEY.ST_READY or survey.status == SURVEY.ST_PAUSED %}
                                         <div style="margin-top: 15px;">
                                             <p>
-                                                If your survey is no longer valid and you want to permanently stop it, you can do so by
-                                                clicking below button. This action is <b>irreversible</b> and you cannot resume it.
+                                                If your survey is no longer valid and you want to permanently stop it,
+                                                you can do so by
+                                                clicking below button. This action is <b>irreversible</b> and you cannot
+                                                resume it.
                                             </p>
-                                            <button type="button" class="btn btn-block btn-danger" ng-click="survey_transit('stop')">
+                                            <button type="button" class="btn btn-block btn-danger"
+                                                    ng-click="survey_transit('stop')">
                                                 <i class="fa fa-stop"></i>&nbsp;&nbsp;Stop
                                             </button>
                                         </div>
@@ -167,6 +181,16 @@
                 Responses
             </h2>
             <hr style="margin-top: 15px;"/>
+
+            <ng-jq-grid config="config_jq" data="responses.objects||[]"></ng-jq-grid>
+{#            <div>#}
+{#                <table id="grid_responses"><tr><td></td></tr></table>#}
+{#                <div id="grid_responses_pager"></div>#}
+{#            </div>#}
+
+            <hr/>
+
+            {$ responses $}
 
         </div>
     </script>
@@ -201,11 +225,14 @@
                     <!-- Edit region -->
                     <div class="tabs-container">
                         <ul class="nav nav-tabs">
-                            <li class="active"><a data-toggle="tab" href="#tab_edit_review" onclick="event.preventDefault();">Review</a></li>
+                            <li class="active"><a data-toggle="tab" href="#tab_edit_review"
+                                                  onclick="event.preventDefault();">Review</a></li>
                             {% if survey.type == 'simple' %}
-                                <li class=""><a data-toggle="tab" href="#tab_edit_form" onclick="event.preventDefault();">Questionnaire</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab_edit_form"
+                                                onclick="event.preventDefault();">Questionnaire</a></li>
                             {% elif survey.type == 'complex' %}
-                                <li class=""><a data-toggle="tab" href="#tab_edit_workflow" onclick="event.preventDefault();">Workflow</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab_edit_workflow"
+                                                onclick="event.preventDefault();">Workflow</a></li>
                             {% endif %}
                         </ul>
                         <div class="tab-content">
@@ -222,19 +249,28 @@
                                             <hr style="margin: 15px 0px;"/>
 
                                             <div class="form-group">
-                                                <label class="col-sm-2 control-label">Category<span class="required">*</span>:</label>
+                                                <label class="col-sm-2 control-label">Category<span
+                                                        class="required">*</span>:</label>
+
                                                 <div class="col-sm-8">
-                                                    <select class="form-control" name="category" ng-model="survey.category" ng-class="{'error': form_survey.category.$invalid}" required>
+                                                    <select class="form-control" name="category"
+                                                            ng-model="survey.category"
+                                                            ng-class="{'error': form_survey.category.$invalid}"
+                                                            required>
                                                         <option value="">Please Select</option>
                                                         {% for c in list_categories %}
                                                             <option value="{{ c.id }}">{{ c.name }}</option>
                                                         {% endfor %}
                                                     </select>
+
                                                     <p class="help-block m-b-none">
                                                         Category to which this survey belongs.
                                                     </p>
-                                                    <div ng-messages="form_survey.category.$dirty && form_survey.category.$error" role="alert" class="error_messages">
-                                                        <label ng-message="required" class="error">Please select a category.</label>
+
+                                                    <div ng-messages="form_survey.category.$dirty && form_survey.category.$error"
+                                                         role="alert" class="error_messages">
+                                                        <label ng-message="required" class="error">Please select a
+                                                            category.</label>
                                                     </div>
                                                     <label ng-if="flags.val_errors.category" class="error">
                                                         {$ flags.val_errors.category.join(", ") $}
@@ -244,14 +280,22 @@
 
                                             <div class="hr-line-dashed hr_line_dashed_m10"></div>
                                             <div class="form-group">
-                                                <label class="col-sm-2 control-label">Title<span class="required">*</span>:</label>
+                                                <label class="col-sm-2 control-label">Title<span
+                                                        class="required">*</span>:</label>
+
                                                 <div class="col-sm-8">
-                                                    <input type="text" class="form-control" name="title" ng-model="survey.title" ng-class="{'error': form_survey.title.$invalid}" required>
+                                                    <input type="text" class="form-control" name="title"
+                                                           ng-model="survey.title"
+                                                           ng-class="{'error': form_survey.title.$invalid}" required>
+
                                                     <p class="help-block m-b-none">
                                                         Catchy title for your survey.
                                                     </p>
-                                                    <div ng-messages="form_survey.title.$dirty && form_survey.title.$error" role="alert" class="error_messages">
-                                                        <label ng-message="required" class="error">Please enter a title.</label>
+
+                                                    <div ng-messages="form_survey.title.$dirty && form_survey.title.$error"
+                                                         role="alert" class="error_messages">
+                                                        <label ng-message="required" class="error">Please enter a
+                                                            title.</label>
                                                     </div>
                                                     <label ng-if="flags.val_errors.title" class="error">
                                                         {$ flags.val_errors.title.join(", ") $}
@@ -262,14 +306,23 @@
                                             <div class="hr-line-dashed hr_line_dashed_m10"></div>
                                             <div class="form-group">
                                                 <label class="col-sm-2 control-label">Description<span class="required">*</span>:</label>
+
                                                 <div class="col-sm-8">
-                                                    <textarea summernote name="description" ng-model="survey.description" config="summernote_config" required></textarea>
+                                                    <textarea summernote name="description"
+                                                              ng-model="survey.description" config="summernote_config"
+                                                              required></textarea>
+
                                                     <p class="help-block m-b-none">
-                                                        Detailed description about your survey. Use this area to explain what your survey is all about and
-                                                        purpose you want to achieve. Your description provides authenticity about your survey to the participants.
+                                                        Detailed description about your survey. Use this area to explain
+                                                        what your survey is all about and
+                                                        purpose you want to achieve. Your description provides
+                                                        authenticity about your survey to the participants.
                                                     </p>
-                                                    <div ng-messages="form_survey.description.$dirty && form_survey.description.$error" role="alert" class="error_messages">
-                                                        <label ng-message="required" class="error">Please write something about your survey.</label>
+
+                                                    <div ng-messages="form_survey.description.$dirty && form_survey.description.$error"
+                                                         role="alert" class="error_messages">
+                                                        <label ng-message="required" class="error">Please write
+                                                            something about your survey.</label>
                                                     </div>
                                                     <label ng-if="flags.val_errors.description" class="error">
                                                         {$ flags.val_errors.description.join(", ") $}
@@ -290,22 +343,30 @@
                                                     <p class="help-block" style="margin-top: 0px;">
                                                         Date range for which this survey will be live.
                                                     </p>
+
                                                     <div ng-class="{'input-group':survey.duration.endDate && survey.duration.startDate}">
-                                                        <input date-range-picker name="duration" class="form-control date-picker" type="text" ng-model="survey.duration"
-                                                           min="daterange_opt.min"
-                                                           options="{separator: '  to  ', format: 'DD-MMM-YYYY'}"
-                                                           required
+                                                        <input date-range-picker name="duration"
+                                                               class="form-control date-picker" type="text"
+                                                               ng-model="survey.duration"
+                                                               min="daterange_opt.min"
+                                                               options="{separator: '  to  ', format: 'DD-MMM-YYYY'}"
+                                                               required
                                                         />
-                                                        <span class="input-group-addon" ng-if="survey.duration.endDate && survey.duration.startDate">
+                                                        <span class="input-group-addon"
+                                                              ng-if="survey.duration.endDate && survey.duration.startDate">
 {#                                                            {$ ((survey.duration.endDate - survey.duration.startDate)/(1000*60*60*24))|number:0 $} day/s#}
                                                             {$ survey.duration.endDate.diff(survey.duration.startDate, 'days')+1 $} day/s
                                                         </span>
                                                     </div>
-                                                    <div ng-messages="form_survey.duration.$dirty && form_survey.duration.$error" role="alert" class="error_messages">
-                                                        <label ng-message="required" class="error">Please select date range.</label>
+                                                    <div ng-messages="form_survey.duration.$dirty && form_survey.duration.$error"
+                                                         role="alert" class="error_messages">
+                                                        <label ng-message="required" class="error">Please select date
+                                                            range.</label>
                                                     </div>
-                                                    <label ng-if="flags.val_errors.start_date || flags.val_errors.end_date" class="error">
-                                                        {$ flags.val_errors.start_date.join(", ") $} {$ flags.val_errors.end_date.join(", ") $}
+                                                    <label ng-if="flags.val_errors.start_date || flags.val_errors.end_date"
+                                                           class="error">
+                                                        {$ flags.val_errors.start_date.join(", ") $} {$
+                                                        flags.val_errors.end_date.join(", ") $}
                                                     </label>
                                                 </div>
                                             </div>
@@ -319,31 +380,44 @@
                                             </h3>
                                             <hr style="margin: 15px 0px;"/>
                                             <div class="form-group">
-                                                <label class="col-sm-2 control-label">Audience type<span class="required">*</span>:</label>
+                                                <label class="col-sm-2 control-label">Audience type<span
+                                                        class="required">*</span>:</label>
+
                                                 <div class="col-sm-8" style="padding-top: 7px;">
                                                     <p>
-                                                        Select the following types of audience that can participate this survey:
+                                                        Select the following types of audience that can participate this
+                                                        survey:
                                                     </p>
+
                                                     <div>
                                                         <div class="radio radio-primary">
-                                                            <input type="radio" id="chk_audtype_public" value="public" name="audience_type" ng-model="survey.audience_type" required >
+                                                            <input type="radio" id="chk_audtype_public" value="public"
+                                                                   name="audience_type" ng-model="survey.audience_type"
+                                                                   required>
                                                             <label for="chk_audtype_public">
                                                                 <span class="semi_bold">Public</span> <br/>
-                                                                <small>Survey will be open to public and anyone can respond to it.</small>
-                                                            </label>
-                                                        </div>
-                                                        <div class="radio radio-primary">
-                                                            <input type="radio" id="chk_audtype_invited" value="invited" name="audience_type" ng-model="survey.audience_type" required>
-                                                            <label for="chk_audtype_invited">
-                                                                <span class="semi_bold">Invited</span> <br/>
-                                                                <small>
-                                                                    Survey will not be visible to public. Only those who have Survey-UID or qrcode can
+                                                                <small>Survey will be open to public and anyone can
                                                                     respond to it.
                                                                 </small>
                                                             </label>
                                                         </div>
                                                         <div class="radio radio-primary">
-                                                            <input type="radio" id="chk_audtype_self" value="self" name="audience_type" ng-model="survey.audience_type" required >
+                                                            <input type="radio" id="chk_audtype_invited" value="invited"
+                                                                   name="audience_type" ng-model="survey.audience_type"
+                                                                   required>
+                                                            <label for="chk_audtype_invited">
+                                                                <span class="semi_bold">Invited</span> <br/>
+                                                                <small>
+                                                                    Survey will not be visible to public. Only those who
+                                                                    have Survey-UID or qrcode can
+                                                                    respond to it.
+                                                                </small>
+                                                            </label>
+                                                        </div>
+                                                        <div class="radio radio-primary">
+                                                            <input type="radio" id="chk_audtype_self" value="self"
+                                                                   name="audience_type" ng-model="survey.audience_type"
+                                                                   required>
                                                             <label for="chk_audtype_self">
                                                                 <span class="semi_bold">Self</span> <br/>
                                                                 <small>
@@ -354,8 +428,10 @@
                                                         </div>
                                                     </div>
 
-                                                    <div ng-messages="form_survey.audience_type.$dirty && form_survey.audience_type.$error" role="alert" class="error_messages">
-                                                        <label ng-message="required" class="error">Please select an audience type.</label>
+                                                    <div ng-messages="form_survey.audience_type.$dirty && form_survey.audience_type.$error"
+                                                         role="alert" class="error_messages">
+                                                        <label ng-message="required" class="error">Please select an
+                                                            audience type.</label>
                                                     </div>
                                                     <label ng-if="flags.val_errors.audience_type" class="error">
                                                         {$ flags.val_errors.audience_type.join(", ") $}
@@ -369,14 +445,23 @@
                                         <div class="hr-line-dashed"></div>
                                         <div class="form-group" style="margin-bottom: 0px !important;">
                                             <div class="col-sm-7">
-                                                <div ng-if="flags.error_msg" class="alert alert-danger alert-dismissable" style="padding: 10px 30px 10px 10px;margin-bottom: 20px;">
-                                                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                                                <div ng-if="flags.error_msg"
+                                                     class="alert alert-danger alert-dismissable"
+                                                     style="padding: 10px 30px 10px 10px;margin-bottom: 20px;">
+                                                    <button aria-hidden="true" data-dismiss="alert" class="close"
+                                                            type="button">×
+                                                    </button>
                                                     <i class="fa fa-exclamation-triangle"></i>&nbsp;
                                                     {$ flags.error_msg $}
                                                 </div>
 
-                                                <button ladda="flags.submitting" class="btn btn-primary ladda-button" type="button" ng-disabled="form_survey.$invalid" ng-click="submit(form_survey)" data-style="zoom-in">Save</button>
-                                                <button class="btn btn-link" type="button" onclick="location.href = location.pathname;">Cancel</button>
+                                                <button ladda="flags.submitting" class="btn btn-primary ladda-button"
+                                                        type="button" ng-disabled="form_survey.$invalid"
+                                                        ng-click="submit(form_survey)" data-style="zoom-in">Save
+                                                </button>
+                                                <button class="btn btn-link" type="button"
+                                                        onclick="location.href = location.pathname;">Cancel
+                                                </button>
                                             </div>
                                         </div>
 
@@ -388,12 +473,16 @@
                                 <div id="tab_edit_form" class="tab-pane">
                                     <div class="panel-body">
                                         <p>
-                                            Review or edit questionnaire associated with your survey. Please be save your
+                                            Review or edit questionnaire associated with your survey. Please be save
+                                            your
                                             changes before proceeding and be careful will updating your questionnaire
                                             as the changes cannot be reverted.
                                         </p>
+
                                         <p>
-                                            <a class="btn btn-primary" href="{% url 'console_survey_simple_form_editor' survey.survey_uid %}" onclick="return confirm('Are you sure you want to leave this page?');">
+                                            <a class="btn btn-primary"
+                                               href="{% url 'console_survey_simple_form_editor' survey.survey_uid %}"
+                                               onclick="return confirm('Are you sure you want to leave this page?');">
                                                 Edit questionnaire
                                             </a>
                                         </p>
@@ -405,9 +494,11 @@
                                         <p>
                                             Survey workflow
                                         </p>
+
                                         <p>
                                             {% for ph in survey.surveyphase_set.all %}
-                                                <a href="{% url 'console_survey_phase_form_editor' survey.survey_uid ph.id %}">Edit Phase-{{ forloop.counter }}</a><br/>
+                                                <a href="{% url 'console_survey_phase_form_editor' survey.survey_uid ph.id %}">Edit
+                                                    Phase-{{ forloop.counter }}</a><br/>
                                             {% endfor %}
                                         </p>
                                     </div>
@@ -505,16 +596,19 @@
         <table class="table_tab_admin">
             <tr>
                 <td class="admin_tabs" valign="top">
-                    <div class="list-group list_group_tabs" >
-                        <a ui-sref="summary" class="list-group-item" ng-class="{'active': $state.current.name=='summary'}">
+                    <div class="list-group list_group_tabs">
+                        <a ui-sref="summary" class="list-group-item"
+                           ng-class="{'active': $state.current.name=='summary'}">
                             <i class="fa fa-bar-chart-o list_md_icon"></i>
                             Summary
                         </a>
-                        <a ui-sref="responses" class="list-group-item" ng-class="{'active': $state.current.name=='responses'}">
+                        <a ui-sref="responses" class="list-group-item"
+                           ng-class="{'active': $state.current.name=='responses'}">
                             <i class="fa fa-twitch list_md_icon"></i>
                             Responses
                         </a>
-                        <a ui-sref="visualize" class="list-group-item" ng-class="{'active': $state.current.name=='visualize'}">
+                        <a ui-sref="visualize" class="list-group-item"
+                           ng-class="{'active': $state.current.name=='visualize'}">
                             <i class="fa fa-pie-chart list_md_icon"></i>
                             Visualize
                         </a>
@@ -540,225 +634,272 @@
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
 
+    <!-- jqGrid -->
+    <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/i18n/grid.locale-en.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/jquery.jqGrid.min.js"></script>
+
+    <script src="{% get_static_prefix %}apps/surveys/surveys.js"></script>
     <script>
         'use strict';
 
-        var APP = angular.module('{{ app_name }}',[
-            'feedvay.uiapp',
-            'feedvay.common',
-            'feedvay.watchdog',
+        var APP = angular.module('{{ app_name }}', [
+                    'feedvay.uiapp',
+                    'feedvay.common',
+                    'feedvay.watchdog',
+                    'feedvay.surveys',
 
-            'ngCookies',
-            'ngMessages',
-            'ngSanitize',
-            'ui.router',                    // Routing
-            'oc.lazyLoad',                  // ocLazyLoad
-            'ui.bootstrap',
-            'angular-ladda',
-            'oitozero.ngSweetAlert'
-        ])
-        .config(function($interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
-            $interpolateProvider.startSymbol('{$');
-            $interpolateProvider.endSymbol('$}');
+                    'ngCookies',
+                    'ngMessages',
+                    'ngSanitize',
+                    'ui.router',                    // Routing
+                    'oc.lazyLoad',                  // ocLazyLoad
+                    'ui.bootstrap',
+                    'angular-ladda',
+                    'oitozero.ngSweetAlert'
+                ])
+                .config(function ($interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
+                    $interpolateProvider.startSymbol('{$');
+                    $interpolateProvider.endSymbol('$}');
 
-            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+                    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+                    $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
 
-            // ----- Routing -----
-            $urlRouterProvider.otherwise("/summary");   // Default state to load
+                    // ----- Routing -----
+                    $urlRouterProvider.otherwise("/summary");   // Default state to load
 
-            $ocLazyLoadProvider.config({
-                // Set to true if you want to see what and when is dynamically loaded
-                debug: false
-            });
-
-            $stateProvider
-                .state('summary', {
-                    url: "/summary",
-                    templateUrl: "tmpl_summary",
-                    data: { pageTitle: 'Summary - {{ survey.title }}' },
-                    controller: SummaryCtrl,
-                    resolve: {
-                        loadPlugin: function ($ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                {
-                                    serie: true,
-                                    name: 'angular-flot',
-                                    files: [
-                                        '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.js',
-                                        '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.time.js',
-                                        '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.tooltip.min.js',
-                                        '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.spline.js',
-                                        '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.resize.js',
-                                        '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.pie.js',
-                                        '{% get_static_prefix %}ui/js/plugins/flot/curvedLines.js',
-                                        '{% get_static_prefix %}ui/js/plugins/flot/angular-flot.js'
-                                    ]
-                                }
-                            ]);
-                        }
-                    }
-                })
-                .state('responses', {
-                    url: "/responses",
-                    templateUrl: "tmpl_responses",
-                    data: { pageTitle: 'Responses - {{ survey.title }}' },
-{#                    controller: OwnershipCtrl,#}
-                })
-                .state('visualize', {
-                    url: "/visualize",
-                    templateUrl: "tmpl_visualize",
-                    data: { pageTitle: 'Visualize - {{ survey.title }}' },
-{#                    controller: ControlsCtrl,#}
-                })
-                .state('edit', {
-                    url: "/edit",
-                    templateUrl: "tmpl_edit",
-                    data: { pageTitle: 'Review/Edit - {{ survey.title }}' },
-                    controller: ReviewEditCtrl,
-                    resolve: {
-                        loadPlugin: function ($ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                {
-                                    serie: true,
-                                    files: [
-                                        '{% get_static_prefix %}ui/js/plugins/daterangepicker/daterangepicker.js',
-                                        '{% get_static_prefix %}ui/css/plugins/daterangepicker/daterangepicker-bs3.css'
-                                    ]
-                                },
-                                {
-                                    name: 'daterangepicker',
-                                    files: ['{% get_static_prefix %}ui/js/plugins/daterangepicker/angular-daterangepicker.js']
-                                }
-                            ]);
-                        }
-                    }
-                })
-
-
-
-        })
-        .run(function($rootScope, $http, $cookies, $state) {
-            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-
-            $http.defaults.xsrfCookieName = 'csrftoken';
-            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
-
-            // ----- Routing -----
-            $rootScope.$state = $state;
-
-            $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
-                event.preventDefault();
-                //console.log(error);
-
-                if(error.status == -1){
-                    $.growl.error({
-                        title: '<i class="fa fa-signal"></i> Network error!',
-                        message: "Please check your internet connection."
+                    $ocLazyLoadProvider.config({
+                        // Set to true if you want to see what and when is dynamically loaded
+                        debug: false
                     });
-                }else{
-                    $.growl.error({
-                        title: '<i class="fa fa-exclamation-triangle"></i> Error!',
-                        message: "Something went wrong. Our engineers will be informed."
+
+                    $stateProvider
+                            .state('summary', {
+                                url: "/summary",
+                                templateUrl: "tmpl_summary",
+                                data: {pageTitle: 'Summary - {{ survey.title }}'},
+                                controller: SummaryCtrl,
+                                resolve: {
+                                    loadPlugin: function ($ocLazyLoad) {
+                                        return $ocLazyLoad.load([
+                                            {
+                                                serie: true,
+                                                name: 'angular-flot',
+                                                files: [
+                                                    '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.js',
+                                                    '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.time.js',
+                                                    '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.tooltip.min.js',
+                                                    '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.spline.js',
+                                                    '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.resize.js',
+                                                    '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.pie.js',
+                                                    '{% get_static_prefix %}ui/js/plugins/flot/curvedLines.js',
+                                                    '{% get_static_prefix %}ui/js/plugins/flot/angular-flot.js'
+                                                ]
+                                            }
+                                        ]);
+                                    }
+                                }
+                            })
+                            .state('responses', {
+                                url: "/responses",
+                                templateUrl: "tmpl_responses",
+                                data: {pageTitle: 'Responses - {{ survey.title }}'},
+                                controller: ResponsesCtrl,
+                            })
+                            .state('visualize', {
+                                url: "/visualize",
+                                templateUrl: "tmpl_visualize",
+                                data: {pageTitle: 'Visualize - {{ survey.title }}'},
+                                {#                    controller: ControlsCtrl,#}
+                            })
+                            .state('edit', {
+                                url: "/edit",
+                                templateUrl: "tmpl_edit",
+                                data: {pageTitle: 'Review/Edit - {{ survey.title }}'},
+                                controller: ReviewEditCtrl,
+                                resolve: {
+                                    loadPlugin: function ($ocLazyLoad) {
+                                        return $ocLazyLoad.load([
+                                            {
+                                                serie: true,
+                                                files: [
+                                                    '{% get_static_prefix %}ui/js/plugins/daterangepicker/daterangepicker.js',
+                                                    '{% get_static_prefix %}ui/css/plugins/daterangepicker/daterangepicker-bs3.css'
+                                                ]
+                                            },
+                                            {
+                                                name: 'daterangepicker',
+                                                files: ['{% get_static_prefix %}ui/js/plugins/daterangepicker/angular-daterangepicker.js']
+                                            }
+                                        ]);
+                                    }
+                                }
+                            })
+
+
+                })
+                .run(function ($rootScope, $http, $cookies, $state) {
+                    $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+                    $http.defaults.xsrfCookieName = 'csrftoken';
+                    $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+                    // ----- Routing -----
+                    $rootScope.$state = $state;
+
+                    $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
+                        event.preventDefault();
+                        //console.log(error);
+
+                        if (error.status == -1) {
+                            $.growl.error({
+                                title: '<i class="fa fa-signal"></i> Network error!',
+                                message: "Please check your internet connection."
+                            });
+                        } else {
+                            $.growl.error({
+                                title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                message: "Something went wrong. Our engineers will be informed."
+                            });
+                        }
+
+                    });
+
+                    // ----- Survey -----
+                    $rootScope.survey = {
+                        type: "{{ survey.type }}",
+                        category: "{{ survey.category_id }}",
+                        title: "{{ survey.title }}",
+                        description: "{{ survey.description|safe }}",
+                        duration: {
+                            startDate: moment('{{ survey.start_date|date:"Y-m-d" }}', 'YYYY-MM-DD'),
+                            endDate: moment('{{ survey.end_date|date:"Y-m-d" }}', 'YYYY-MM-DD'),
+                        },
+                        audience_type: "{{ survey.audience_type }}",
+                    };
+
+                    $rootScope.summernote_config = SUMMERNOTE_CONFIG;
+
+                });
+
+
+        APP.controller('MainCtrl', function ($scope) {
+
+        });
+
+        // ++++++++++++++++++++
+        APP.directive('ngJqGrid', function () {
+            return {
+                restrict: 'E',
+                scope: {
+                    config: '=',
+                    data: '=',
+                },
+                link: function (scope, element, attrs) {
+                    var table;
+
+                    scope.$watch('config', function (newValue) {
+                        element.children().empty();
+                        table = angular.element('<table></table>');
+                        element.append(table);
+                        $(table).jqGrid(newValue);
+                    });
+
+                    scope.$watch('data', function (newValue, oldValue) {
+                        var i;
+                        for (i = oldValue.length - 1; i >= 0; i--) {
+                            $(table).jqGrid('delRowData', i);
+                        }
+                        for (i = 0; i < newValue.length; i++) {
+                            $(table).jqGrid('addRowData', i, newValue[i]);
+                        }
                     });
                 }
-
-            });
-
-            // ----- Survey -----
-            $rootScope.survey = {
-                type: "{{ survey.type }}",
-                category: "{{ survey.category_id }}",
-                title: "{{ survey.title }}",
-                description: "{{ survey.description|safe }}",
-                duration: {
-                    startDate: moment('{{ survey.start_date|date:"Y-m-d" }}', 'YYYY-MM-DD'),
-                    endDate: moment('{{ survey.end_date|date:"Y-m-d" }}', 'YYYY-MM-DD'),
-                },
-                audience_type: "{{ survey.audience_type }}",
             };
-
-            $rootScope.summernote_config = SUMMERNOTE_CONFIG;
-
         });
-
-
-        APP.controller('MainCtrl', function($scope){
-
-        });
+        // ++++++++++++++++++++
 
         // ========== State Controllers ==========
         // ----- Summary -----
-        function SummaryCtrl($rootScope, $scope, $http, $window, SweetAlert){
+        function SummaryCtrl($rootScope, $scope, $http, $window, SweetAlert) {
 
-            $scope.survey_transit = function(action){
+            $scope.survey_transit = function (action) {
 
                 var text = null;
                 var type = 'warning';
-                switch(action){
-                    case 'ready': {
+                switch (action) {
+                    case 'ready':
+                    {
                         text = 'Do you want to make this survey live?';
                         type = 'info';
-                    } break;
-                    case 'pause': { text='Do you want to pause this survey?';} break;
-                    case 'resume': {
+                    }
+                        break;
+                    case 'pause':
+                    {
+                        text = 'Do you want to pause this survey?';
+                    }
+                        break;
+                    case 'resume':
+                    {
                         text = 'Do you want to resume this survey and go live again?';
                         type = 'info';
-                    } break;
-                    case 'stop': {
-                        text='This will permanently stop your survey and you will not be able to resume it!';
-                    } break;
+                    }
+                        break;
+                    case 'stop':
+                    {
+                        text = 'This will permanently stop your survey and you will not be able to resume it!';
+                    }
+                        break;
                 }
 
                 SweetAlert.swal({
-                    title: "Are you sure?",
-                    text: text,
-                    type: type,
-                    showCancelButton: true,
-{#                    confirmButtonColor: "#DD6B55",#}
-                    confirmButtonText: "Yes, confirm!",
-                    cancelButtonText: "No, cancel!",
-                    closeOnConfirm: false,
-                    closeOnCancel: true,
-                    allowEscapeKey: false
-                },
-                function (isConfirm) {
-                    if (isConfirm) {
+                            title: "Are you sure?",
+                            text: text,
+                            type: type,
+                            showCancelButton: true,
+                            {#                    confirmButtonColor: "#DD6B55",#}
+                            confirmButtonText: "Yes, confirm!",
+                            cancelButtonText: "No, cancel!",
+                            closeOnConfirm: false,
+                            closeOnCancel: true,
+                            allowEscapeKey: false
+                        },
+                        function (isConfirm) {
+                            if (isConfirm) {
 
-                        $http.post(
-                            "/console/surveys/{{ survey.survey_uid }}/transit/",
-                            $.param({
-                                "action": action
-                            })
-                        )
-                        .success(function (response, status, headers, config) {
-                            if(response.status=='success'){
-                                SweetAlert.swal("Done!", "Status of this survey has been changed.", "success");
-                                $window.location.reload();
-                            }else{
-                                swal.close();
-                                $.growl.error({
-                                    title: '<i class="fa fa-exclamation-triangle"></i> Error!',
-                                    message: response.message
-                                });
-                            }
-                        })
-                        .error(function (response, status, headers, config) {
-                            if(status != -1){
-                                $.growl.error({
-                                    title: '<i class="fa fa-exclamation-triangle"></i> Error!',
-                                    message: 'Something went wrong. Our engineers will be informed.'
-                                });
-                            }else{
-                                $.growl.error({
-                                    title: '<i class="fa fa-signal"></i> Network error!',
-                                    message: "Please check your internet connection."
-                                });
+                                $http.post(
+                                        "/console/surveys/{{ survey.survey_uid }}/transit/",
+                                        $.param({
+                                            "action": action
+                                        })
+                                        )
+                                        .success(function (response, status, headers, config) {
+                                            if (response.status == 'success') {
+                                                SweetAlert.swal("Done!", "Status of this survey has been changed.", "success");
+                                                $window.location.reload();
+                                            } else {
+                                                swal.close();
+                                                $.growl.error({
+                                                    title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                                    message: response.message
+                                                });
+                                            }
+                                        })
+                                        .error(function (response, status, headers, config) {
+                                            if (status != -1) {
+                                                $.growl.error({
+                                                    title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                                    message: 'Something went wrong. Our engineers will be informed.'
+                                                });
+                                            } else {
+                                                $.growl.error({
+                                                    title: '<i class="fa fa-signal"></i> Network error!',
+                                                    message: "Please check your internet connection."
+                                                });
+                                            }
+                                        });
+
                             }
                         });
-
-                    }
-                });
 
 
             }
@@ -820,9 +961,9 @@
                         show: true
                     },
                     shadowSize: 2,
-                    grow: {stepMode:"linear",stepDirection:"up",steps:80}
+                    grow: {stepMode: "linear", stepDirection: "up", steps: 80}
                 },
-                grow: {stepMode:"linear",stepDirection:"up",steps:80},
+                grow: {stepMode: "linear", stepDirection: "up", steps: 80},
                 grid: {
                     hoverable: true,
                     clickable: true,
@@ -831,8 +972,7 @@
                     color: '#d5d5d5'
                 },
                 colors: ["#2a94db", "#1C84C6"],
-                xaxis: {
-                },
+                xaxis: {},
                 yaxis: {
                     ticks: 4
                 },
@@ -848,8 +988,66 @@
             // ----- delete -----
         }
 
+        // ----- Responses -----
+        function ResponsesCtrl($rootScope, $scope, ServiceSurveyResponses) {
+            $scope.config_jq = {
+                datatype: "local",
+                colNames: ['ID', 'Respondent Name', 'Respondent Contact'],
+                colModel: [
+                    {name: 'id', index: 'id', width: 60},
+                    {name: 'user.user_fullname', index: 'user.user_fullname', width: 100},
+                    {name: 'user.username', index: 'user.username', width: 80},
+                ],
+                viewrecords: true,
+                rowNum: 50,
+                rowList: [10, 50, 100,100000],
+                autowidth : true,
+                height: '250px',
+                shrinkToFit: true,
+                hidegrid: false,
+                ignoreCase:true
+            };
+            $scope.responses = null;
+
+            $scope.responses = ServiceSurveyResponses.get('{{ survey.survey_uid }}').then(function (data) {
+                $scope.responses = data;
+
+                // Create grid
+{#                $("#grid_responses").GridUnload();#}
+{#                $("#grid_responses").jqGrid({#}
+{#                    data: data.objects,#}
+{#                    datatype: "local",#}
+{#                    colNames: ['ID', 'Respondent Name', 'Respondent Contact'],#}
+{#                    colModel: [#}
+{#                        {name: 'id', index: 'id', width: 60},#}
+{#                        {name: 'user.user_fullname', index: 'user.user_fullname', width: 100},#}
+{#                        {name: 'user.username', index: 'user.username', width: 80},#}
+{#                    ],#}
+{#                    rowNum: 50,#}
+{#                    rowList: [10, 50, 100,100000],#}
+{#                    pager: '#grid_responses_pager',#}
+{#                    sortname: 'created_on',#}
+{#                    sortorder: "desc",#}
+{#                    viewrecords: true,#}
+{#                            caption: 'Translations <span class="pull-right">Last Sync On : '+dt_stamp+'</span>',#}
+{#                    autowidth : true,#}
+{#                    height: '250px',#}
+{#                    shrinkToFit: true,#}
+{#                    hidegrid: false,#}
+{#                    ignoreCase:true#}
+{#                });#}
+{##}
+{#                $("#grid_responses_pager option[value='100000']").text('All');#}
+{##}
+{#                jQuery("#grid_responses").jqGrid('navGrid', '#grid_responses_pager', { edit: false, add: false, del: false });#}
+{#                jQuery("#grid_responses").jqGrid('filterToolbar', { stringResult: true, searchOnEnter: false, defaultSearch: "cn" });#}
+
+
+            });
+        }
+
         // ----- Review/Edit -----
-        function ReviewEditCtrl($rootScope, $scope, $http, $window){
+        function ReviewEditCtrl($rootScope, $scope, $http, $window) {
             $scope.daterange_opt = {
                 min: moment.min(moment('{{ survey.start_date|date:"Y-m-d" }}', 'YYYY-MM-DD'), moment()).format('YYYY-MM-DD')
             };
@@ -860,8 +1058,8 @@
                 val_errors: null
             };
 
-            $scope.submit = function(form_obj){
-                if(form_obj.$invalid) {
+            $scope.submit = function (form_obj) {
+                if (form_obj.$invalid) {
                     return false;
                 }
 
@@ -875,30 +1073,30 @@
                 delete data['duration'];
 
                 $http.post(
-                    "/console/surveys/{{ survey.survey_uid }}/save/",
-                    $.param(data)
-                )
-                .success(function (response, status, headers, config) {
-                    if(response.status=='success'){
-                        $window.location.reload();
-                    }else{
-                        $scope.flags.submitting = false;
-                        $scope.flags.error_msg = response.message;
-                        $scope.flags.val_errors = response.errors;
-                    }
-                })
-                .error(function (response, status, headers, config) {
-                    $scope.flags.submitting = false;
+                        "/console/surveys/{{ survey.survey_uid }}/save/",
+                        $.param(data)
+                        )
+                        .success(function (response, status, headers, config) {
+                            if (response.status == 'success') {
+                                $window.location.reload();
+                            } else {
+                                $scope.flags.submitting = false;
+                                $scope.flags.error_msg = response.message;
+                                $scope.flags.val_errors = response.errors;
+                            }
+                        })
+                        .error(function (response, status, headers, config) {
+                            $scope.flags.submitting = false;
 
-                    if(status != -1){
-                        $scope.flags.error_msg = 'Something went wrong. Our engineers will be informed.'
-                    }else{
-                        $.growl.error({
-                            title: '<i class="fa fa-signal"></i> Network error!',
-                            message: "Please check your internet connection."
+                            if (status != -1) {
+                                $scope.flags.error_msg = 'Something went wrong. Our engineers will be informed.'
+                            } else {
+                                $.growl.error({
+                                    title: '<i class="fa fa-signal"></i> Network error!',
+                                    message: "Please check your internet connection."
+                                });
+                            }
                         });
-                    }
-                });
 
             }
         }

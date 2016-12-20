@@ -15,7 +15,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta name="description" content="{% if form.description %}{{ lookup_translations|get_trans_from_lookup:form.description|get_translation_text|striptags|truncatechars:"140" }}{% else %}Form Builder{% endif %}">
+    {% if form.description %}<meta name="description" content="{{ lookup_translations|get_trans_from_lookup:form.description|get_translation_text|striptags|truncatechars:"140" }}">{% endif %}
 
     <!-- ==== Browser Customization ==== -->
     <!-- Chrome, Firefox OS and Opera -->
@@ -28,7 +28,7 @@
     {# <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> #}
     <!-- ==== /Browser Customization ==== -->
 
-    <title>{{ form.title }}</title>
+    <title>{{ title }}</title>
 
     <!-- CSS -->
     <link href="{% get_static_prefix %}lib/bootstrap_3/css/bootstrap.min.css" rel="stylesheet">
@@ -107,7 +107,7 @@
                 <nav class="navbar navbar-default navbar-fixed-top">
                     <div class="container">
                         <div class="navbar-header" style="width: 100% !important;">
-                            <a class="navbar-brand" href="#">{{ form.title }}</a>
+                            <a class="navbar-brand" href="javascript: void(0);">{{ title }}</a>
 
                             <div class="navbar-text pull-right" >
                                 <div class="dropdown">
@@ -902,11 +902,19 @@
                         var END_TIME = moment();
                         var DURATION_SEC = (END_TIME - START_TIME) / 1000;
                         var RESPONSE = {
+                            {% if context == 'SURVEY' %}
+                                survey_uid: '{{ survey.survey_uid }}',
+                                phase_id: '{{ phase.id }}',
+                            {% endif %}
                             form_id : '{{ form.id }}',
                             form_version : '{{ form.version }}',
 
                             app_version: MobileAPI.app_version(),
-                            user : null,
+                            user : {
+                                "user_id": "{{ reg_user.id }}",
+                                "username": "{{ reg_user.user.username }}",
+                                "user_fullname": "{{ reg_user.user.first_name }} {{ reg_user.user.last_name }}"
+                            },
                             end_point_info: END_POINT_INFO,
                             language_code: $scope.CURRENT_LANGUAGE,
 
@@ -916,7 +924,7 @@
                             answers_other : final_other_answers, //$scope.answers_other,
                             calculated_fields : $scope.calculated_fields,
 
-                            timezone : TIMEZONE,
+                            timezone_offset : TIMEZONE,
                             response_date : format_datetime(START_TIME),
                             start_time : format_datetime(START_TIME),
                             end_time : format_datetime(END_TIME),
@@ -929,7 +937,7 @@
 
 {#                        console.log("RESPONSE: ",RESPONSE);#}
 
-                        MobileAPI.submit_response(JSON.stringify(RESPONSE));
+                        MobileAPI.submit_response('{{ context }}' ,JSON.stringify(RESPONSE));
 
                     }else{
                         alert("Please complete the form!");

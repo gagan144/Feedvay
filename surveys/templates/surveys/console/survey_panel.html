@@ -182,7 +182,17 @@
             </h2>
             <hr style="margin-top: 15px;"/>
 
-            <ng-jq-grid config="config_jq" data="responses.objects||[]"></ng-jq-grid>
+{#            <ng-jq-grid config="config_jq" data="responses.objects||[]"></ng-jq-grid>#}
+
+            <ng-jqgrid
+                    config="grid_responses.config"
+                    modeldata="list_responses"
+                    gridid="{$ grid_responses.gridid $}"
+                    pagerid="{$ grid_responses.pagerid $}"
+                    api="grid_responses.gridapi"
+                    filtertoolbar="{stringResult: true, searchOnEnter: false, defaultSearch: 'cn'}"
+            ></ng-jqgrid>
+
 {#            <div>#}
 {#                <table id="grid_responses"><tr><td></td></tr></table>#}
 {#                <div id="grid_responses_pager"></div>#}
@@ -190,7 +200,7 @@
 
             <hr/>
 
-            {$ responses $}
+            {$ list_responses $}
 
         </div>
     </script>
@@ -638,6 +648,8 @@
     <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/i18n/grid.locale-en.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/jquery.jqGrid.min.js"></script>
 
+    <script src="{% get_static_prefix %}lib/angular/angular-jqgrid/angular-jqgrid.js"></script>
+
     <script src="{% get_static_prefix %}apps/surveys/surveys.js"></script>
     <script>
         'use strict';
@@ -655,7 +667,8 @@
                     'oc.lazyLoad',                  // ocLazyLoad
                     'ui.bootstrap',
                     'angular-ladda',
-                    'oitozero.ngSweetAlert'
+                    'oitozero.ngSweetAlert',
+                    'angular-jqgrid'
                 ])
                 .config(function ($interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
                     $interpolateProvider.startSymbol('{$');
@@ -787,35 +800,35 @@
         });
 
         // ++++++++++++++++++++
-        APP.directive('ngJqGrid', function () {
-            return {
-                restrict: 'E',
-                scope: {
-                    config: '=',
-                    data: '=',
-                },
-                link: function (scope, element, attrs) {
-                    var table;
-
-                    scope.$watch('config', function (newValue) {
-                        element.children().empty();
-                        table = angular.element('<table></table>');
-                        element.append(table);
-                        $(table).jqGrid(newValue);
-                    });
-
-                    scope.$watch('data', function (newValue, oldValue) {
-                        var i;
-                        for (i = oldValue.length - 1; i >= 0; i--) {
-                            $(table).jqGrid('delRowData', i);
-                        }
-                        for (i = 0; i < newValue.length; i++) {
-                            $(table).jqGrid('addRowData', i, newValue[i]);
-                        }
-                    });
-                }
-            };
-        });
+{#        APP.directive('ngJqGrid', function () {#}
+{#            return {#}
+{#                restrict: 'E',#}
+{#                scope: {#}
+{#                    config: '=',#}
+{#                    data: '=',#}
+{#                },#}
+{#                link: function (scope, element, attrs) {#}
+{#                    var table;#}
+{##}
+{#                    scope.$watch('config', function (newValue) {#}
+{#                        element.children().empty();#}
+{#                        table = angular.element('<table></table>');#}
+{#                        element.append(table);#}
+{#                        $(table).jqGrid(newValue);#}
+{#                    });#}
+{##}
+{#                    scope.$watch('data', function (newValue, oldValue) {#}
+{#                        var i;#}
+{#                        for (i = oldValue.length - 1; i >= 0; i--) {#}
+{#                            $(table).jqGrid('delRowData', i);#}
+{#                        }#}
+{#                        for (i = 0; i < newValue.length; i++) {#}
+{#                            $(table).jqGrid('addRowData', i, newValue[i]);#}
+{#                        }#}
+{#                    });#}
+{#                }#}
+{#            };#}
+{#        });#}
         // ++++++++++++++++++++
 
         // ========== State Controllers ==========
@@ -990,27 +1003,36 @@
 
         // ----- Responses -----
         function ResponsesCtrl($rootScope, $scope, ServiceSurveyResponses) {
-            $scope.config_jq = {
-                datatype: "local",
-                colNames: ['ID', 'Respondent Name', 'Respondent Contact'],
-                colModel: [
-                    {name: 'id', index: 'id', width: 60},
-                    {name: 'user.user_fullname', index: 'user.user_fullname', width: 100},
-                    {name: 'user.username', index: 'user.username', width: 80},
-                ],
-                viewrecords: true,
-                rowNum: 50,
-                rowList: [10, 50, 100,100000],
-                autowidth : true,
-                height: '250px',
-                shrinkToFit: true,
-                hidegrid: false,
-                ignoreCase:true
+            $scope.grid_responses = {
+                gridid: "grid_response",
+                pagerid: "grid_response_pager",
+                config: {
+                    datatype: "local",
+                    colNames: ['ID', 'Respondent Name', 'Respondent Contact'],
+                    colModel: [
+                        {name: 'id', index: 'id', width: 60},
+                        {name: 'user.user_fullname', index: 'user.user_fullname', width: 100},
+                        {name: 'user.username', index: 'user.username', width: 80},
+                    ],
+                    viewrecords: true,
+                    caption:"Responses",
+                    rowNum: 50,
+                    rowList: [10, 50, 100, 100000],
+                    autowidth : true,
+                    height: '250px',
+                    shrinkToFit: true,
+                    hidegrid: false,
+                    ignoreCase:true
+                },
+                filtertoolbar: {stringResult: true, searchOnEnter: false, defaultSearch: 'cn'},
+                gridapi: {}
             };
-            $scope.responses = null;
 
-            $scope.responses = ServiceSurveyResponses.get('{{ survey.survey_uid }}').then(function (data) {
-                $scope.responses = data;
+
+            $scope.list_responses = [];
+            ServiceSurveyResponses.get('{{ survey.survey_uid }}').then(function (data) {
+                $scope.list_responses = data.objects;
+                $scope.grid_responses.gridapi.insert($scope.list_responses);
 
                 // Create grid
 {#                $("#grid_responses").GridUnload();#}

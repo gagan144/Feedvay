@@ -12,9 +12,12 @@
     <title page-title></title>
 
     <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+
     <!-- JqGrid -->
-    {#    <link href="{% get_static_prefix %}ui/css/plugins/jQueryUI/jquery-ui-1.10.4.custom.min.css" rel="stylesheet">#}
     <link href="{% get_static_prefix %}ui/css/plugins/jqGrid/ui.jqgrid.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}css/jqueryui_theme/feedvay/jquery-ui.css" rel="stylesheet">
+    {#    <link href="{% get_static_prefix %}ui/js/plugins/jquery-ui/jquery-ui.min.css" rel="stylesheet">#}
+
 
     <style>
         .survey_state {
@@ -644,7 +647,7 @@
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
 
-    <!-- jqGrid -->
+{#    <!-- jqGrid -->#}
     <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/i18n/grid.locale-en.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/jquery.jqGrid.min.js"></script>
 
@@ -1032,39 +1035,9 @@
             $scope.list_responses = [];
             ServiceSurveyResponses.get('{{ survey.survey_uid }}').then(function (data) {
                 $scope.list_responses = data.objects;
+
+                $scope.grid_responses.gridapi.clear();
                 $scope.grid_responses.gridapi.insert($scope.list_responses);
-
-                // Create grid
-{#                $("#grid_responses").GridUnload();#}
-{#                $("#grid_responses").jqGrid({#}
-{#                    data: data.objects,#}
-{#                    datatype: "local",#}
-{#                    colNames: ['ID', 'Respondent Name', 'Respondent Contact'],#}
-{#                    colModel: [#}
-{#                        {name: 'id', index: 'id', width: 60},#}
-{#                        {name: 'user.user_fullname', index: 'user.user_fullname', width: 100},#}
-{#                        {name: 'user.username', index: 'user.username', width: 80},#}
-{#                    ],#}
-{#                    rowNum: 50,#}
-{#                    rowList: [10, 50, 100,100000],#}
-{#                    pager: '#grid_responses_pager',#}
-{#                    sortname: 'created_on',#}
-{#                    sortorder: "desc",#}
-{#                    viewrecords: true,#}
-{#                            caption: 'Translations <span class="pull-right">Last Sync On : '+dt_stamp+'</span>',#}
-{#                    autowidth : true,#}
-{#                    height: '250px',#}
-{#                    shrinkToFit: true,#}
-{#                    hidegrid: false,#}
-{#                    ignoreCase:true#}
-{#                });#}
-{##}
-{#                $("#grid_responses_pager option[value='100000']").text('All');#}
-{##}
-{#                jQuery("#grid_responses").jqGrid('navGrid', '#grid_responses_pager', { edit: false, add: false, del: false });#}
-{#                jQuery("#grid_responses").jqGrid('filterToolbar', { stringResult: true, searchOnEnter: false, defaultSearch: "cn" });#}
-
-
             });
         }
 

@@ -8503,3 +8503,116 @@ div.error{
   background-color: {{ PRIMARY }};
 }
 /* ----- /Bootstrap radio/checkbox ----- */
+
+/* ------ JqGrid & jQuery UI-------- */
+.ui-jqgrid-primary{
+    border-color: {{ PRIMARY }};
+}
+
+.ui-jqgrid-primary > .ui-jqgrid-view > .ui-jqgrid-titlebar{
+    background-color: {{ PRIMARY }};
+    color: #ffffff;
+    border-bottom-color: {{ PRIMARY }};
+}
+
+.ui-widget {
+    font-family: "Segoe UI", Helvetica, Verdana !important;
+}
+
+.ui-corner-all{
+    border-radius: 3px;
+}
+
+.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight {
+    background: #e2e2e2;
+}
+
+.ui-jqgrid .ui-jqgrid-titlebar{
+    padding: 11px 15px;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    color: #333;
+    background-color: #f3f3f3;
+}
+
+.ui-jqgrid .ui-jqgrid-title{
+    margin: 0px;
+    font-size: 13px;
+    font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    color: inherit;
+    line-height: inherit;
+    text-shadow: none;
+    text-transform: none;
+}
+
+.ui-jqgrid tr.ui-search-toolbar th {
+    border-top: solid 1px #e7eaec !important;
+}
+
+.ui-search-toolbar input[type="text"] {
+    font-size: 11px;
+    min-height: 23px;
+    border: 1px solid #CCCCCC;
+    border-radius: 2px;
+    font-weight: normal;
+    font-family: inherit;
+    padding: 3px 5px !important;
+}
+
+.ui-search-clear{
+    width: 15px;
+    text-align: right;
+}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default{
+    border-bottom-color: #c1c1c1;
+}
+
+.ui-jqgrid .ui-jqgrid-pager {
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.ui-jqgrid .ui-pager-control {
+    position: relative;
+    height: 100%;
+}
+
+.ui-jqgrid .ui-pg-input {
+    width: 50px;
+    border: 1px solid #CCCCCC;
+    height: 21px;
+    font-size: 11px;
+    border-radius: 2px;
+    padding: 3px 5px;
+}
+
+.ui-jqgrid .ui-pg-selbox {
+    display: block;
+    font-size: 11px;
+    height: 21px;
+    line-height: 18px;
+    margin: 0;
+    width: auto;
+    border-radius: 2px;
+    border: 1px solid #CCCCCC;
+}
+
+/* -- jqgry ui -- */
+.ui-th-column, .ui-jqgrid .ui-jqgrid-htable th.ui-th-column {
+    padding: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: normal;
+    background-color: #f6f6f6;
+}
+
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
+    background-color: #ececec !important;
+}
+
+.ui-jqgrid .ui-paging-info{
+    margin-right: 7px !important;
+}
+/* ------ /JqGrid & jQuery UI-------- */

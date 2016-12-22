@@ -12,13 +12,6 @@
     <title page-title></title>
 
     <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
-
-    <!-- JqGrid -->
-    <link href="{% get_static_prefix %}ui/css/plugins/jqGrid/ui.jqgrid.css" rel="stylesheet">
-    <link href="{% get_static_prefix %}css/jqueryui_theme/feedvay/jquery-ui.css" rel="stylesheet">
-    {#    <link href="{% get_static_prefix %}ui/js/plugins/jquery-ui/jquery-ui.min.css" rel="stylesheet">#}
-
-
     <style>
         .survey_state {
             line-height: 0;
@@ -185,8 +178,6 @@
             </h2>
             <hr style="margin-top: 15px;"/>
 
-{#            <ng-jq-grid config="config_jq" data="responses.objects||[]"></ng-jq-grid>#}
-
             <ng-jqgrid
                     config="grid_responses.config"
                     modeldata="list_responses"
@@ -195,16 +186,6 @@
                     api="grid_responses.gridapi"
                     filtertoolbar="{stringResult: true, searchOnEnter: false, defaultSearch: 'cn'}"
             ></ng-jqgrid>
-
-{#            <div>#}
-{#                <table id="grid_responses"><tr><td></td></tr></table>#}
-{#                <div id="grid_responses_pager"></div>#}
-{#            </div>#}
-
-            <hr/>
-
-            {$ list_responses $}
-
         </div>
     </script>
 
@@ -802,38 +783,6 @@
 
         });
 
-        // ++++++++++++++++++++
-{#        APP.directive('ngJqGrid', function () {#}
-{#            return {#}
-{#                restrict: 'E',#}
-{#                scope: {#}
-{#                    config: '=',#}
-{#                    data: '=',#}
-{#                },#}
-{#                link: function (scope, element, attrs) {#}
-{#                    var table;#}
-{##}
-{#                    scope.$watch('config', function (newValue) {#}
-{#                        element.children().empty();#}
-{#                        table = angular.element('<table></table>');#}
-{#                        element.append(table);#}
-{#                        $(table).jqGrid(newValue);#}
-{#                    });#}
-{##}
-{#                    scope.$watch('data', function (newValue, oldValue) {#}
-{#                        var i;#}
-{#                        for (i = oldValue.length - 1; i >= 0; i--) {#}
-{#                            $(table).jqGrid('delRowData', i);#}
-{#                        }#}
-{#                        for (i = 0; i < newValue.length; i++) {#}
-{#                            $(table).jqGrid('addRowData', i, newValue[i]);#}
-{#                        }#}
-{#                    });#}
-{#                }#}
-{#            };#}
-{#        });#}
-        // ++++++++++++++++++++
-
         // ========== State Controllers ==========
         // ----- Summary -----
         function SummaryCtrl($rootScope, $scope, $http, $window, SweetAlert) {
@@ -1018,7 +967,7 @@
                         {name: 'user.username', index: 'user.username', width: 80},
                     ],
                     viewrecords: true,
-                    caption:"Responses",
+{#                    caption:"Responses",#}
                     rowNum: 50,
                     rowList: [10, 50, 100, 100000],
                     autowidth : true,

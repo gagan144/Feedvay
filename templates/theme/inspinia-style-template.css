@@ -8552,12 +8552,21 @@ div.error{
 
 .ui-search-toolbar input[type="text"] {
     font-size: 11px;
-    min-height: 23px;
+    height: 23px;
     border: 1px solid #CCCCCC;
     border-radius: 2px;
     font-weight: normal;
     font-family: inherit;
     padding: 3px 5px !important;
+}
+
+.ui-jqgrid .ui-search-table .ui-search-input>select{
+  font-size: 11px;
+  height: 22px;
+  border: 1px solid #CCCCCC;
+  border-radius: 2px;
+  font-weight: normal;
+  font-family: inherit;
 }
 
 .ui-search-clear{
@@ -8614,5 +8623,9 @@ div.error{
 
 .ui-jqgrid .ui-paging-info{
     margin-right: 7px !important;
+}
+
+a.g-menu-item, a.soptclass, a.clearsearchclass {
+    color: #929292 !important;
 }
 /* ------ /JqGrid & jQuery UI-------- */

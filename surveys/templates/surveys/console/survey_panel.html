@@ -12,6 +12,7 @@
     <title page-title></title>
 
     <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/css/plugins/datapicker/datepicker3.css" rel="stylesheet">
     <style>
         .survey_state {
             line-height: 0;
@@ -21,6 +22,10 @@
 
         .form_section {
             margin-bottom: 30px;
+        }
+
+        .meta_icons{
+            cursor: pointer;
         }
     </style>
 
@@ -627,6 +632,7 @@
     <script src="{% get_static_prefix %}ui/js/ui-router/angular-ui-router.min.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/datapicker/bootstrap-datepicker.js"></script>
 
 {#    <!-- jqGrid -->#}
     <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/i18n/grid.locale-en.js"></script>
@@ -955,19 +961,58 @@
 
         // ----- Responses -----
         function ResponsesCtrl($rootScope, $scope, ServiceSurveyResponses) {
+
+
             $scope.grid_responses = {
                 gridid: "grid_response",
                 pagerid: "grid_response_pager",
                 config: {
                     datatype: "local",
-                    colNames: ['ID', 'Respondent Name', 'Respondent Contact'],
+                    colNames: [
+                        'ResponseUID',
+                        'DateTime',
+                        'Respondent Name',
+                        'Respondent Contact',
+                        'Is suspect',
+                        'Suspect reasons',
+                        'Metadata',
+                        ' '
+                    ],
                     colModel: [
-                        {name: 'id', index: 'id', width: 60},
-                        {name: 'user.user_fullname', index: 'user.user_fullname', width: 100},
-                        {name: 'user.username', index: 'user.username', width: 80},
+                        { name: 'response_uid', index: 'response_uid', width: 40, hidden:true },
+                        { name: 'response_date', index: 'response_date', width: 40,
+                            sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-dTH:i:s', newformat: 'd-M-Y H:i A' },
+{#                            searchoptions:{attr:{placeholder:'yyyy-mm-dd'}},#}
+                            searchoptions: {
+{#                                attr:{placeholder:'yyyy-mm-dd', readonly:'readonly'},#}
+                                attr:{ placeholder: 'Select date', readonly:'readonly'},
+                                dataInit: function (elem) {
+                                    $(elem).datepicker({
+{#                                        format: 'dd-M-yyyy',#}
+                                        format: 'yyyy-mm-dd',
+                                        keyboardNavigation: false,
+                                        autoclose: true,
+                                        todayHighlight: true,
+                                    }).on('changeDate', function(e) {
+                                        $('#grid_response')[0].triggerToolbar();
+                                    });
+                                }
+                            }
+                        },
+                        { name: 'user.user_fullname', index: 'user.user_fullname', width: 30 },
+                        { name: 'user.username', index: 'user.username', width: 30 },
+                        { name: 'suspect_html', index: 'flags.suspect', width: 15, align:"center",
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;true:Yes;false:No", clearSearch: false}
+                        },
+                        { name: 'flags.suspect_reasons', index: 'flags.suspect_reasons', width: 50 },
+                        { name: 'meta_icons', index: 'meta_icons', width: 30, search:false, sortable:false },
+                        { name: 'actions', index: 'actions', width: 10, search:false, sortable:false },
+
                     ],
                     viewrecords: true,
 {#                    caption:"Responses",#}
+                    sortname: 'response_date',
+                    sortorder: "desc",
                     rowNum: 50,
                     rowList: [10, 50, 100, 100000],
                     autowidth : true,
@@ -982,11 +1027,39 @@
 
 
             $scope.list_responses = [];
-            ServiceSurveyResponses.get('{{ survey.survey_uid }}').then(function (data) {
-                $scope.list_responses = data.objects;
+            ServiceSurveyResponses.get('{{ survey.survey_uid }}').then(function (response_data) {
+                var records = response_data.objects;
+
+                // --- Process data ---
+                var ENUM_META_ICO = {
+                    "map": '<i class="fa fa-map-marker list_md_icon meta_icons" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Has location"></i>',
+                    "description_read": '<i class="fa fa-eye list_md_icon meta_icons" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Description was read"></i>',
+                    "instructions_read": '<i class="fa fa-book list_md_icon meta_icons" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Instructions were read"></i>',
+                    "none": '<label class="list_md_icon" style="margin-bottom:0px;">&nbsp;</label>'
+                };
+
+                for(var i=0;i<records.length;i++){
+                    var row = records[i];
+                    var flags = row['flags'];
+
+                    records[i]["suspect_html"] = flags['suspect']?'<i class="fa fa-question text-danger"></i>':'';
+
+                    var meta_icons = (row['location']['coordinates']?ENUM_META_ICO["map"]:ENUM_META_ICO["none"]) +
+                            (flags['description_read']?ENUM_META_ICO["description_read"]:ENUM_META_ICO["none"])
+                            + (flags['instructions_read']?ENUM_META_ICO["instructions_read"]:ENUM_META_ICO["none"]);
+                    records[i]["meta_icons"] = meta_icons;
+
+                    records[i]['actions'] = '<a class="btn btn-primary btn-xs btn-outline grid_btn" href="#">View</a>';
+                }
+
+                // --- /Process data ---
+
+                $scope.list_responses = records;
 
                 $scope.grid_responses.gridapi.clear();
-                $scope.grid_responses.gridapi.insert($scope.list_responses);
+                $scope.grid_responses.gridapi.insert(records);
+
+                $('.meta_icons').tooltip();
             });
         }
 

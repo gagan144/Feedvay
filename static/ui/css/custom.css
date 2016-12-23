@@ -62,6 +62,12 @@
     margin-right: 2px;
 }
 
+.grid_btn{
+    margin: 0px !important;
+    padding: 2px 6px !important;
+    font-size: 9px !important;
+}
+
 /* ----- form loader ----- */
 .form-loading, .ps-container:hover.ps-in-scrolling.ps-in-scrolling, .ps-in-scrolling {
     pointer-events: none

@@ -208,7 +208,7 @@
 
             <!-- Map -->
             <section id="map" style="margin-top: 30px;">
-                <div ui-map="MAP_RESPONSES" ui-options="mapOptions" class="google-map" style="height: 450px;"></div>
+                <div ui-map="MAP_RESPONSES" ui-options="mapOptions" class="google-map" style="height: 550px;"></div>
             </section>
             <!-- /Map -->
 
@@ -540,6 +540,42 @@
         </div>
     </script>
     <!-- /Templates -->
+
+    <!-- Jquery templates -->
+    <script id="jqtmpl_map_response_dialogue" type="text/x-jquery-tmpl">
+        <div>
+            <table style="width: 220px;margin-top:7px;">
+                <tr>
+                    <td style="width: 55px;" valign="top">
+                        <i class="fa fa fa-twitch text-primary" style="font-size: 50px;"></i>
+                    </td>
+                    <td valign="top" style="padding-left:10px;">
+                        <h3 style="margin-top: 0px;">
+                            ${user.user_fullname}<br/>
+                            <small>${user.username}</small>
+                        </h3>
+
+                        <div style="font-size: 11px;">
+                            <div style="margin-bottom:15px;">
+                                On ${moment(response_date).format("DD-MMM-YYYY hh:mm A")}
+                            </div>
+
+                            {% templatetag openvariable %}if flags.suspect{% templatetag closevariable %}
+                                <div class="text-danger" style="margin-bottom:15px;">
+                                    <i class="fa fa-question text-danger"></i> <span >Suspect</span>
+                                </div>
+                            {% templatetag openvariable %}/if{% templatetag closevariable %}
+
+                            <a href="#" target="_blank" class="btn btn-primary btn-xs">View</a>
+                        </div>
+
+                    </td>
+                </tr>
+            </table>
+{#            {% templatetag openvariable %}response_uid{% templatetag closevariable %}#}
+        </div>
+    </script>
+    <!-- /Jquery templates -->
 {% endblock %}
 
 {% block page_header %}
@@ -657,6 +693,7 @@
 {#    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQTpXj82d8UpCi97wzo_nKXL7nYrd4G70"></script>#}
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}lib/maps/markerwithlabel_1_1_10.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}lib/jquery-tmpl/jquery.tmpl.min.js"></script>
 
 {#    <!-- jqGrid -->#}
     <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/i18n/grid.locale-en.js"></script>
@@ -1117,6 +1154,7 @@
 
                 $scope.grid_responses.gridapi.clear();
                 $scope.grid_responses.gridapi.insert(records);
+                $("#grid_response").jqGrid('setCaption', '<b>'+records.length+'</b> Responses');
 
                 $('.meta_icons').tooltip();
 
@@ -1153,7 +1191,9 @@
                             content: " "
                         });
                         google.maps.event.addListener(marker, 'click', function () {
-                            infowindow.setContent(this.data['response_uid']);
+                            var content = $("#jqtmpl_map_response_dialogue").tmpl(this.data).html();
+
+                            infowindow.setContent(content);
                             infowindow.open($scope.MAP_RESPONSES, this);
                         });
 

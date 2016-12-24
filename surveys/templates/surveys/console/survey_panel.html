@@ -183,6 +183,7 @@
             </h2>
             <hr style="margin-top: 15px;"/>
 
+            <!-- Response grid -->
             <ng-jqgrid
                     config="grid_responses.config"
                     modeldata="list_responses"
@@ -191,6 +192,14 @@
                     api="grid_responses.gridapi"
                     filtertoolbar="{stringResult: true, searchOnEnter: false, defaultSearch: 'cn'}"
             ></ng-jqgrid>
+            <!-- /Response grid -->
+
+            <!-- Map -->
+            <section id="map" style="margin-top: 30px;">
+                <div ui-map="MAP_RESPONSES" ui-options="mapOptions" class="google-map" style="height: 450px;"></div>
+            </section>
+            <!-- /Map -->
+
         </div>
     </script>
 
@@ -633,6 +642,8 @@
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/datapicker/bootstrap-datepicker.js"></script>
+{#    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQTpXj82d8UpCi97wzo_nKXL7nYrd4G70"></script>#}
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
 
 {#    <!-- jqGrid -->#}
     <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/i18n/grid.locale-en.js"></script>
@@ -707,6 +718,20 @@
                                 templateUrl: "tmpl_responses",
                                 data: {pageTitle: 'Responses - {{ survey.title }}'},
                                 controller: ResponsesCtrl,
+                                resolve: {
+                                    loadPlugin: function ($ocLazyLoad) {
+                                        return $ocLazyLoad.load([
+                                            {
+                                                name: 'ui.event',
+                                                files: ['{% get_static_prefix %}ui/js/plugins/uievents/event.js']
+                                            },
+                                            {
+                                                name: 'ui.map',
+                                                files: ['{% get_static_prefix %}ui/js/plugins/uimaps/ui-map.js']
+                                            },
+                                        ]);
+                                    }
+                                }
                             })
                             .state('visualize', {
                                 url: "/visualize",
@@ -961,8 +986,7 @@
 
         // ----- Responses -----
         function ResponsesCtrl($rootScope, $scope, ServiceSurveyResponses) {
-
-
+            // Jqgrid
             $scope.grid_responses = {
                 gridid: "grid_response",
                 pagerid: "grid_response_pager",
@@ -971,15 +995,15 @@
                     colNames: [
                         'ResponseUID',
                         'DateTime',
-                        'Respondent Name',
-                        'Respondent Contact',
+                        'Respondent name',
+                        'Respondent contact',
                         'Is suspect',
                         'Suspect reasons',
                         'Metadata',
                         ' '
                     ],
                     colModel: [
-                        { name: 'response_uid', index: 'response_uid', width: 40, hidden:true },
+                        { name: 'response_uid', index: 'response_uid', width: 40, key:true, hidden:true },
                         { name: 'response_date', index: 'response_date', width: 40,
                             sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-dTH:i:s', newformat: 'd-M-Y H:i A' },
 {#                            searchoptions:{attr:{placeholder:'yyyy-mm-dd'}},#}
@@ -1019,11 +1043,28 @@
                     height: '250px',
                     shrinkToFit: true,
                     hidegrid: false,
-                    ignoreCase:true
+                    ignoreCase:true,
+                    onSelectRow: function(response_uid) {
+                        google.maps.event.trigger($scope.map_markers[response_uid], 'click');
+                    }
                 },
                 filtertoolbar: {stringResult: true, searchOnEnter: false, defaultSearch: 'cn'},
                 gridapi: {}
             };
+
+            // Map
+            $scope.mapOptions = {
+                zoom: 4,
+                center: new google.maps.LatLng(21, 78),
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                zoomControl:true,
+                scaleControl:true,
+                streetViewControl:true,
+                overviewMapControl:true,
+                rotateControl:true,
+
+            };
+            $scope.map_markers = {};
 
 
             $scope.list_responses = [];
@@ -1060,6 +1101,41 @@
                 $scope.grid_responses.gridapi.insert(records);
 
                 $('.meta_icons').tooltip();
+
+                // --- Map ---
+                var map_bounds = new google.maps.LatLngBounds();
+                for(var i=0;i<records.length;i++){
+                    var row = records[i];
+
+                    // Create markers
+                    var coord = row['location']['coordinates']; //Long, Lat
+                    if(coord){
+                        var point = new google.maps.LatLng(coord[1], coord[0]);
+                        var marker = new google.maps.Marker({
+                            position: point,
+{#                            icon: "/static/images/marker_here.png",#}
+                            map: $scope.MAP_RESPONSES,
+                            data: $.extend({}, row),
+                        });
+
+                        // Marker events
+                        var infowindow = new google.maps.InfoWindow({
+                            content: " "
+                        });
+                        google.maps.event.addListener(marker, 'click', function () {
+                            infowindow.setContent(this.data['response_uid']);
+                            infowindow.open($scope.MAP_RESPONSES, this);
+                        });
+
+
+                        $scope.map_markers[row['response_uid']] = marker;
+                        map_bounds.extend(point);
+
+                    }
+                }
+                $scope.MAP_RESPONSES.fitBounds(map_bounds);
+
+                // --- Map ---
             });
         }
 

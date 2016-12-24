@@ -27,6 +27,18 @@
         .meta_icons{
             cursor: pointer;
         }
+
+        .marker_label {
+            color: #ffffff;
+            font-family: "Lucida Grande", "Arial", sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            width: 30px;
+            padding-top: 3px;
+{#            border: solid 1px red;#}
+        }
+
     </style>
 
     <!-- Templates -->
@@ -644,6 +656,7 @@
     <script src="{% get_static_prefix %}ui/js/plugins/datapicker/bootstrap-datepicker.js"></script>
 {#    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQTpXj82d8UpCi97wzo_nKXL7nYrd4G70"></script>#}
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}lib/maps/markerwithlabel_1_1_10.js"></script>
 
 {#    <!-- jqGrid -->#}
     <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/i18n/grid.locale-en.js"></script>
@@ -993,6 +1006,7 @@
                 config: {
                     datatype: "local",
                     colNames: [
+                        '',
                         'ResponseUID',
                         'DateTime',
                         'Respondent name',
@@ -1000,9 +1014,10 @@
                         'Is suspect',
                         'Suspect reasons',
                         'Metadata',
-                        ' '
+                        ''
                     ],
                     colModel: [
+                        { name: 'row_id', index: 'row_id', width: 10, search:false },
                         { name: 'response_uid', index: 'response_uid', width: 40, key:true, hidden:true },
                         { name: 'response_date', index: 'response_date', width: 40,
                             sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-dTH:i:s', newformat: 'd-M-Y H:i A' },
@@ -1048,7 +1063,9 @@
                         google.maps.event.trigger($scope.map_markers[response_uid], 'click');
                     }
                 },
-                filtertoolbar: {stringResult: true, searchOnEnter: false, defaultSearch: 'cn'},
+                filtertoolbar: {
+                    stringResult: true, searchOnEnter: false, defaultSearch: 'cn',
+                },
                 gridapi: {}
             };
 
@@ -1083,6 +1100,7 @@
                     var row = records[i];
                     var flags = row['flags'];
 
+                    records[i]["row_id"] = (i+1)+"";
                     records[i]["suspect_html"] = flags['suspect']?'<i class="fa fa-question text-danger"></i>':'';
 
                     var meta_icons = (row['location']['coordinates']?ENUM_META_ICO["map"]:ENUM_META_ICO["none"]) +
@@ -1111,12 +1129,24 @@
                     var coord = row['location']['coordinates']; //Long, Lat
                     if(coord){
                         var point = new google.maps.LatLng(coord[1], coord[0]);
-                        var marker = new google.maps.Marker({
+{#                        var marker = new google.maps.Marker({#}
+{#                            position: point,#}
+{#                            icon: "{% get_static_prefix %}images/markers/marker_response.png",#}
+{#                            map: $scope.MAP_RESPONSES,#}
+{#                            data: $.extend({}, row),#}
+{#                        });#}
+                        var marker = new MarkerWithLabel({
                             position: point,
-{#                            icon: "/static/images/marker_here.png",#}
                             map: $scope.MAP_RESPONSES,
                             data: $.extend({}, row),
+                            icon: "{% get_static_prefix %}images/markers/marker_response.png",
+                            labelContent: row["row_id"],
+                            labelAnchor: new google.maps.Point(15, 36),
+                            labelClass: "marker_label", // the CSS class for the label
+                            labelInBackground: false,
+                            labelVisible: true
                         });
+
 
                         // Marker events
                         var infowindow = new google.maps.InfoWindow({

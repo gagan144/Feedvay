@@ -8536,6 +8536,7 @@ div.error{
 }
 
 .ui-jqgrid .ui-jqgrid-title{
+    width: 100% !important;
     margin: 0px;
     font-size: 13px;
     font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;

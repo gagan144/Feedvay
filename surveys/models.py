@@ -319,6 +319,15 @@ class Survey(models.Model):
             self.save()
 
 
+    def has_gps_enabled(self):
+        """
+        Method to tell if this survey has any survey phase that has gps enabled.
+        :return: True/False
+
+        **Authors**: Gagandeep Singh
+        """
+        return Form.objects.filter(gps_enabled=True, id__in=SurveyPhase.objects.filter(survey_id=self.id).values_list('form', flat=True)).exists()
+
     def clean(self):
         """
         Method to clean & validate data fields.

@@ -13,6 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from surveys.models import Survey, SurveyPhase, SurveyCategory, SurveyResponse
 from surveys.decorators import *
 from languages.models import Language
+from form_builder.models import Form
 from form_builder.utils import GeoLocation
 from accounts.models import RegisteredUser
 from utilities.decorators import registered_user_only
@@ -198,6 +199,7 @@ def console_survey_panel(request, survey_uid):
         data ={
             'SURVEY': Survey,
             'survey': survey,
+            'has_gps_enabled': survey.has_gps_enabled(),
             'now': timezone.now(),
             'app_name': 'app_survey_panel',
             'list_categories': SurveyCategory.objects.filter(Q(active=True)|Q(id=survey.category_id)).only('id', 'name')

@@ -32,7 +32,6 @@
             color: #ffffff;
             font-family: "Lucida Grande", "Arial", sans-serif;
             font-size: 14px;
-            font-weight: bold;
             text-align: center;
             width: 30px;
             padding-top: 3px;
@@ -195,6 +194,44 @@
             </h2>
             <hr style="margin-top: 15px;"/>
 
+            <!-- Filters -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-filter"></i> Filters
+                </div>
+                <div class="panel-body">
+                    <form role="form" class="form-horizontal" novalidate>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">View type:</label>
+                            <div class="col-sm-4">
+                                <div class="radio radio-primary radio-inline">
+                                    <input type="radio" id="rd_type_summary" value="summary" name="report_type" checked="">
+                                    <label for="rd_type_summary">
+                                        Summary<br/>
+                                        <small>Report with basic information</small>
+                                    </label>
+                                </div>
+                                <div class="radio radio-primary radio-inline">
+                                    <input type="radio" id="rd_type_detailed" value="detailed" name="report_type">
+                                    <label for="rd_type_detailed">
+                                        Detailed<br/>
+                                        <small>Report with detailed information</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Date:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control input-sm">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- /Filters -->
+
             <!-- Response grid -->
             <ng-jqgrid
                     config="grid_responses.config"
@@ -206,11 +243,13 @@
             ></ng-jqgrid>
             <!-- /Response grid -->
 
-            <!-- Map -->
-            <section id="map" style="margin-top: 30px;">
-                <div ui-map="MAP_RESPONSES" ui-options="mapOptions" class="google-map" style="height: 550px;"></div>
-            </section>
-            <!-- /Map -->
+            {% if has_gps_enabled %}
+                <!-- Map -->
+                <section id="map" style="margin-top: 30px;">
+                    <div ui-map="MAP_RESPONSES" ui-options="mapOptions" class="google-map" style="height: 550px;"></div>
+                </section>
+                <!-- /Map -->
+            {% endif %}
 
         </div>
     </script>
@@ -542,43 +581,45 @@
     <!-- /Templates -->
 
     <!-- Jquery templates -->
-    <script id="jqtmpl_map_response_dialogue" type="text/x-jquery-tmpl">
-        <div>
-            <table style="width: 220px;margin-top:7px;">
-                <tr>
-                    <td style="width: 55px;" valign="top">
-                        <i class="fa fa fa-twitch text-primary" style="font-size: 50px;"></i>
-                    </td>
-                    <td valign="top" style="padding-left:10px;">
-                        <h3 style="margin-top: 0px;">
-                            ${user.user_fullname}<br/>
-                            <small>${user.username}</small>
-                        </h3>
+    {% if has_gps_enabled %}
+        <script id="jqtmpl_map_response_dialogue" type="text/x-jquery-tmpl">
+            <div>
+                <table style="width: 220px;margin-top:7px;">
+                    <tr>
+                        <td style="width: 55px;" valign="top">
+                            <i class="fa fa fa-twitch text-primary" style="font-size: 50px;"></i>
+                        </td>
+                        <td valign="top" style="padding-left:10px;">
+                            <h3 style="margin-top: 0px;">
+                                ${user.user_fullname}<br/>
+                                <small>${user.username}</small>
+                            </h3>
 
-                        <div style="font-size: 11px;">
-                            <div style="margin-bottom:15px;">
-                                On ${moment(response_date).format("DD-MMM-YYYY hh:mm A")}
+                            <div style="font-size: 11px;">
+                                <div style="margin-bottom:15px;">
+                                    On ${moment(response_date).format("DD-MMM-YYYY hh:mm A")}
+                                </div>
+
+                                {% templatetag openvariable %}if flags.suspect{% templatetag closevariable %}
+                                    <div class="text-danger" style="margin-bottom:15px;">
+                                        <i class="fa fa-question text-danger"></i> <span >Suspect</span>
+                                    </div>
+                                {% templatetag openvariable %}/if{% templatetag closevariable %}
+
+                                <a href="#" target="_blank" class="btn btn-primary btn-xs">View</a>
                             </div>
 
-                            {% templatetag openvariable %}if flags.suspect{% templatetag closevariable %}
-                                <div class="text-danger" style="margin-bottom:15px;">
-                                    <i class="fa fa-question text-danger"></i> <span >Suspect</span>
-                                </div>
-                            {% templatetag openvariable %}/if{% templatetag closevariable %}
-
-                            <a href="#" target="_blank" class="btn btn-primary btn-xs">View</a>
-                        </div>
-
-                    </td>
-                </tr>
-            </table>
-{#            {% templatetag openvariable %}response_uid{% templatetag closevariable %}#}
-        </div>
-    </script>
+                        </td>
+                    </tr>
+                </table>
+    {#            {% templatetag openvariable %}response_uid{% templatetag closevariable %}#}
+            </div>
+        </script>
+    {% endif %}
 
     <script id="jqtmpl_grip_response_caption" type="text/x-jquery-tmpl">
         <div>
-            <b>${length}</b> Responses
+            <b class="text-primary">${length}</b>&nbsp;&nbsp;Responses
             <a href="${url.csv}" target="_blank" class="pull-right btn btn-primary btn-xs tool_tip" style="color: #ffffff !important;"
                 data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Download CSV"
             >
@@ -701,9 +742,11 @@
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/datapicker/bootstrap-datepicker.js"></script>
+    {% if has_gps_enabled %}
 {#    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQTpXj82d8UpCi97wzo_nKXL7nYrd4G70"></script>#}
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}lib/maps/markerwithlabel_1_1_10.js"></script>
+    {% endif %}
     <script type="text/javascript" src="{% get_static_prefix %}lib/jquery-tmpl/jquery.tmpl.min.js"></script>
 
 {#    <!-- jqGrid -->#}
@@ -782,14 +825,16 @@
                                 resolve: {
                                     loadPlugin: function ($ocLazyLoad) {
                                         return $ocLazyLoad.load([
-                                            {
-                                                name: 'ui.event',
-                                                files: ['{% get_static_prefix %}ui/js/plugins/uievents/event.js']
-                                            },
-                                            {
-                                                name: 'ui.map',
-                                                files: ['{% get_static_prefix %}ui/js/plugins/uimaps/ui-map.js']
-                                            },
+                                            {% if has_gps_enabled %}
+                                                {
+                                                    name: 'ui.event',
+                                                    files: ['{% get_static_prefix %}ui/js/plugins/uievents/event.js']
+                                                },
+                                                {
+                                                    name: 'ui.map',
+                                                    files: ['{% get_static_prefix %}ui/js/plugins/uimaps/ui-map.js']
+                                                },
+                                            {% endif %}
                                         ]);
                                     }
                                 }
@@ -1065,9 +1110,9 @@
                         ''
                     ],
                     colModel: [
-                        { name: 'row_id', index: 'row_id', width: 10, search:false },
+                        { name: 'row_id', index: 'row_id', width: 50, search:false },
                         { name: 'response_uid', index: 'response_uid', width: 40, key:true, hidden:true },
-                        { name: 'response_date', index: 'response_date', width: 40,
+                        { name: 'response_date', index: 'response_date', width: 150,
                             sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-dTH:i:s', newformat: 'd-M-Y H:i A' },
 {#                            searchoptions:{attr:{placeholder:'yyyy-mm-dd'}},#}
                             searchoptions: {
@@ -1086,14 +1131,14 @@
                                 }
                             }
                         },
-                        { name: 'user.user_fullname', index: 'user.user_fullname', width: 30 },
-                        { name: 'user.username', index: 'user.username', width: 30 },
-                        { name: 'suspect_html', index: 'flags.suspect', width: 15, align:"center",
+                        { name: 'user.user_fullname', index: 'user.user_fullname', width: 170 },
+                        { name: 'user.username', index: 'user.username', width: 170 },
+                        { name: 'suspect_html', index: 'flags.suspect', width: 90, align:"center",
                             stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;true:Yes;false:No", clearSearch: false}
                         },
-                        { name: 'flags.suspect_reasons', index: 'flags.suspect_reasons', width: 50 },
-                        { name: 'meta_icons', index: 'meta_icons', width: 30, search:false, sortable:false },
-                        { name: 'actions', index: 'actions', width: 10, search:false, sortable:false },
+                        { name: 'flags.suspect_reasons', index: 'flags.suspect_reasons', width: 300 },
+                        { name: 'meta_icons', index: 'meta_icons', width: 170, search:false, sortable:false },
+                        { name: 'actions', index: 'actions', width: 50, search:false, sortable:false },
 
                     ],
                     viewrecords: true,
@@ -1108,7 +1153,9 @@
                     hidegrid: false,
                     ignoreCase:true,
                     onSelectRow: function(response_uid) {
-                        google.maps.event.trigger($scope.map_markers[response_uid], 'click');
+                        {% if has_gps_enabled %}
+                            google.maps.event.trigger($scope.map_markers[response_uid], 'click');
+                        {% endif %}
                     }
                 },
                 filtertoolbar: {
@@ -1117,19 +1164,21 @@
                 gridapi: {}
             };
 
-            // Map
-            $scope.mapOptions = {
-                zoom: 4,
-                center: new google.maps.LatLng(21, 78),
-                mapTypeId: google.maps.MapTypeId.ROADMAP,
-                zoomControl:true,
-                scaleControl:true,
-                streetViewControl:true,
-                overviewMapControl:true,
-                rotateControl:true,
+            {% if has_gps_enabled %}
+                // Map
+                $scope.mapOptions = {
+                    zoom: 4,
+                    center: new google.maps.LatLng(21, 78),
+                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    zoomControl:true,
+                    scaleControl:true,
+                    streetViewControl:true,
+                    overviewMapControl:true,
+                    rotateControl:true,
 
-            };
-            $scope.map_markers = {};
+                };
+                $scope.map_markers = {};
+            {% endif %}
 
 
             $scope.list_responses = [];
@@ -1149,9 +1198,9 @@
                     var flags = row['flags'];
 
                     records[i]["row_id"] = (i+1)+"";
-                    records[i]["suspect_html"] = flags['suspect']?'<i class="fa fa-question text-danger"></i>':'';
+                    records[i]["suspect_html"] = flags['suspect']?'<span class="text-danger"><i class="fa fa-question"></i> Suspect</span>':'';
 
-                    var meta_icons = (row['location']['coordinates']?ENUM_META_ICO["map"]:ENUM_META_ICO["none"]) +
+                    var meta_icons = {% if has_gps_enabled %}(row['location']['coordinates']?ENUM_META_ICO["map"]:ENUM_META_ICO["none"])+{% endif %}
                             (flags['description_read']?ENUM_META_ICO["description_read"]:ENUM_META_ICO["none"])
                             + (flags['instructions_read']?ENUM_META_ICO["instructions_read"]:ENUM_META_ICO["none"]);
                     records[i]["meta_icons"] = meta_icons;
@@ -1177,54 +1226,55 @@
                 $('.meta_icons').tooltip();
                 $('.tool_tip').tooltip();
 
-                // --- Map ---
-                var map_bounds = new google.maps.LatLngBounds();
-                for(var i=0;i<records.length;i++){
-                    var row = records[i];
+                {% if has_gps_enabled %}
+                    // --- Map ---
+                    var map_bounds = new google.maps.LatLngBounds();
+                    for(var i=0;i<records.length;i++){
+                        var row = records[i];
 
-                    // Create markers
-                    var coord = row['location']['coordinates']; //Long, Lat
-                    if(coord){
-                        var point = new google.maps.LatLng(coord[1], coord[0]);
-{#                        var marker = new google.maps.Marker({#}
-{#                            position: point,#}
-{#                            icon: "{% get_static_prefix %}images/markers/marker_response.png",#}
-{#                            map: $scope.MAP_RESPONSES,#}
-{#                            data: $.extend({}, row),#}
-{#                        });#}
-                        var marker = new MarkerWithLabel({
-                            position: point,
-                            map: $scope.MAP_RESPONSES,
-                            data: $.extend({}, row),
-                            icon: "{% get_static_prefix %}images/markers/marker_response.png",
-                            labelContent: row["row_id"],
-                            labelAnchor: new google.maps.Point(15, 36),
-                            labelClass: "marker_label", // the CSS class for the label
-                            labelInBackground: false,
-                            labelVisible: true
-                        });
-
-
-                        // Marker events
-                        var infowindow = new google.maps.InfoWindow({
-                            content: " "
-                        });
-                        google.maps.event.addListener(marker, 'click', function () {
-                            var content = $("#jqtmpl_map_response_dialogue").tmpl(this.data).html();
-
-                            infowindow.setContent(content);
-                            infowindow.open($scope.MAP_RESPONSES, this);
-                        });
+                        // Create markers
+                        var coord = row['location']['coordinates']; //Long, Lat
+                        if(coord){
+                            var point = new google.maps.LatLng(coord[1], coord[0]);
+    {#                        var marker = new google.maps.Marker({#}
+    {#                            position: point,#}
+    {#                            icon: "{% get_static_prefix %}images/markers/marker_response.png",#}
+    {#                            map: $scope.MAP_RESPONSES,#}
+    {#                            data: $.extend({}, row),#}
+    {#                        });#}
+                            var marker = new MarkerWithLabel({
+                                position: point,
+                                map: $scope.MAP_RESPONSES,
+                                data: $.extend({}, row),
+                                icon: "{% get_static_prefix %}images/markers/marker_response.png",
+                                labelContent: row["row_id"],
+                                labelAnchor: new google.maps.Point(15, 36),
+                                labelClass: "marker_label", // the CSS class for the label
+                                labelInBackground: false,
+                                labelVisible: true
+                            });
 
 
-                        $scope.map_markers[row['response_uid']] = marker;
-                        map_bounds.extend(point);
+                            // Marker events
+                            var infowindow = new google.maps.InfoWindow({
+                                content: " "
+                            });
+                            google.maps.event.addListener(marker, 'click', function () {
+                                var content = $("#jqtmpl_map_response_dialogue").tmpl(this.data).html();
 
+                                infowindow.setContent(content);
+                                infowindow.open($scope.MAP_RESPONSES, this);
+                            });
+
+
+                            $scope.map_markers[row['response_uid']] = marker;
+                            map_bounds.extend(point);
+
+                        }
                     }
-                }
-                $scope.MAP_RESPONSES.fitBounds(map_bounds);
-
-                // --- Map ---
+                    $scope.MAP_RESPONSES.fitBounds(map_bounds);
+                    // --- Map ---
+                {% endif %}
             });
         }
 

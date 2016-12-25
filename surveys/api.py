@@ -5,6 +5,7 @@ from tastypie.resources import ModelResource, Resource, ALL, ALL_WITH_RELATIONS
 from tastypie.authentication import SessionAuthentication
 from tastypie_mongoengine import resources
 from tastypie_mongoengine import fields
+from datetime import datetime
 
 from surveys.models import Survey, SurveyResponse
 
@@ -30,13 +31,20 @@ class SurveyResponsesAPI(resources.MongoEngineResource):
         authentication = SessionAuthentication()    #TODO: Survey access authentication
 
     def apply_filters(self, request, applicable_filters):
-        object_list_filtered = self._meta.queryset.filter(**applicable_filters)
+        # object_list_filtered = self._meta.queryset.filter(**applicable_filters)
 
         survey_uid = request.GET['survey_uid']
         if not Survey.objects.filter(survey_uid=survey_uid).exists():
             raise Exception("Invalid survey.")
 
-        object_list_filtered = object_list_filtered.filter(survey_uid=survey_uid).order_by('-created_on')
+        # Suspect
+        is_suspect = request.GET.get('flags.suspect', None)
+        if is_suspect is not None:
+            applicable_filters['flags__suspect'] = bool(int(is_suspect))
+
+        # object_list_filtered = object_list_filtered.filter(survey_uid=survey_uid).order_by('-created_on')
+        # 'survey_uid__exact' filter is already in applicable_filters; so no need to add
+        object_list_filtered = self._meta.queryset.filter(**applicable_filters).order_by('-created_on')
 
         return object_list_filtered
 

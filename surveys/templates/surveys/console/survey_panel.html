@@ -12,7 +12,9 @@
     <title page-title></title>
 
     <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/css/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet">
     <link href="{% get_static_prefix %}ui/css/plugins/datapicker/datepicker3.css" rel="stylesheet">
+
     <style>
         .survey_state {
             line-height: 0;
@@ -202,54 +204,95 @@
                 <div class="panel-body">
                     <form role="form" class="form-horizontal" novalidate>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">View type:</label>
-                            <div class="col-sm-4">
+                            <label class="col-sm-2 control-label">Report type:</label>
+                            <div class="col-sm-10">
                                 <div class="radio radio-primary radio-inline">
-                                    <input type="radio" id="rd_type_summary" value="summary" name="report_type" checked="">
-                                    <label for="rd_type_summary">
-                                        Summary<br/>
-                                        <small>Report with basic information</small>
+                                    <input type="radio" id="rd_type_basic" value="basic" name="report_type" ng-model="filters_response.report_type" required>
+                                    <label for="rd_type_basic">
+                                        Basic<br/>
+                                        <small>Report with basic information.</small>
                                     </label>
                                 </div>
                                 <div class="radio radio-primary radio-inline">
-                                    <input type="radio" id="rd_type_detailed" value="detailed" name="report_type">
-                                    <label for="rd_type_detailed">
-                                        Detailed<br/>
-                                        <small>Report with detailed information</small>
+                                    <input type="radio" id="rd_type_data_dump" value="data_dump" name="report_type" ng-model="filters_response.report_type" required>
+                                    <label for="rd_type_data_dump">
+                                        Data dump<br/>
+                                        <small>Detailed report with all information.</small>
                                     </label>
                                 </div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">Date:</label>
+                            <label class="col-sm-2 control-label">Date range:</label>
                             <div class="col-sm-4">
-                                <input type="text" class="form-control input-sm">
+{#                                <input type="text" class="form-control input-sm">#}
+                                <input date-range-picker name="response_date"
+                                       class="form-control input-sm date-picker" type="text"
+                                       ng-model="filters_response.response_date"
+                                       options="{separator: '  to  ', format: 'DD-MMM-YYYY'}"
+                                       required
+                                />
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Suspect:</label>
+                            <div class="col-sm-10">
+                                <div class="radio radio-primary radio-inline">
+                                    <input type="radio" id="rd_suspect_all" value="" name="flags__suspect" ng-model="filters_response.flags__suspect" required>
+                                    <label for="rd_suspect_all">All</label>
+                                </div>
+                                <div class="radio radio-primary radio-inline">
+                                    <input type="radio" id="rd_suspect_true" value="1" name="flags__suspect" ng-model="filters_response.flags__suspect" required>
+                                    <label for="rd_suspect_true">Yes</label>
+                                </div>
+                                <div class="radio radio-primary radio-inline">
+                                    <input type="radio" id="rd_suspect_false" value="0" name="flags__suspect" ng-model="filters_response.flags__suspect" required>
+                                    <label for="rd_suspect_false">No</label>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-10 col-sm-offset-2">
+                                <button class="btn btn-primary btn-sm ladda-button" ng-click="view_response_report()" ladda="ui_flags.loading" data-style="zoom-in">
+                                    <i class="fa fa-search"></i>&nbsp;&nbsp;View
+                                </button>
+                                <button ng-show="filters_response.report_type=='data_dump'" class="btn btn-default btn-sm tool_tip" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Directly download report without viewing it.">
+                                    <i class="fa fa-download"></i>&nbsp;&nbsp;Download
+                                </button>
+                            </div>
+                        </div>
+
+
                     </form>
                 </div>
             </div>
             <!-- /Filters -->
 
-            <!-- Response grid -->
-            <ng-jqgrid
-                    config="grid_responses.config"
-                    modeldata="list_responses"
-                    gridid="{$ grid_responses.gridid $}"
-                    pagerid="{$ grid_responses.pagerid $}"
-                    api="grid_responses.gridapi"
-                    filtertoolbar="{stringResult: true, searchOnEnter: false, defaultSearch: 'cn'}"
-            ></ng-jqgrid>
-            <!-- /Response grid -->
+            <div ng-if="report_type">
+                <!-- Response grid -->
+                <ng-jqgrid
+                        config="grid_responses.config"
+                        modeldata="list_responses"
+                        gridid="{$ grid_responses.gridid $}"
+                        pagerid="{$ grid_responses.pagerid $}"
+                        api="grid_responses.gridapi"
+                        filtertoolbar="{stringResult: true, searchOnEnter: false, defaultSearch: 'cn'}"
+                ></ng-jqgrid>
+                <!-- /Response grid -->
+            </div>
 
             {% if has_gps_enabled %}
                 <!-- Map -->
-                <section id="map" style="margin-top: 30px;">
-                    <div ui-map="MAP_RESPONSES" ui-options="mapOptions" class="google-map" style="height: 550px;"></div>
+                <section id="map" style="margin-top: 30px;" >
+                    <div ui-map="MAP_RESPONSES" ui-options="mapOptions" class="google-map" style="height: 550px;" ng-show="report_type"></div>
                 </section>
                 <!-- /Map -->
             {% endif %}
+
 
         </div>
     </script>
@@ -620,11 +663,7 @@
     <script id="jqtmpl_grip_response_caption" type="text/x-jquery-tmpl">
         <div>
             <b class="text-primary">${length}</b>&nbsp;&nbsp;Responses
-            <a href="${url.csv}" target="_blank" class="pull-right btn btn-primary btn-xs tool_tip" style="color: #ffffff !important;"
-                data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Download CSV"
-            >
-                CSV
-            </a>
+            <span class="pull-right">${report_type}</span>
         </div>
     </script>
     <!-- /Jquery templates -->
@@ -754,6 +793,9 @@
     <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/jquery.jqGrid.min.js"></script>
 
     <script src="{% get_static_prefix %}lib/angular/angular-jqgrid/angular-jqgrid.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/daterangepicker/daterangepicker.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/daterangepicker/angular-daterangepicker.js"></script>
+
 
     <script src="{% get_static_prefix %}apps/surveys/surveys.js"></script>
     <script>
@@ -773,7 +815,8 @@
                     'ui.bootstrap',
                     'angular-ladda',
                     'oitozero.ngSweetAlert',
-                    'angular-jqgrid'
+                    'daterangepicker',
+                    'angular-jqgrid',
                 ])
                 .config(function ($interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
                     $interpolateProvider.startSymbol('{$');
@@ -850,23 +893,23 @@
                                 templateUrl: "tmpl_edit",
                                 data: {pageTitle: 'Review/Edit - {{ survey.title }}'},
                                 controller: ReviewEditCtrl,
-                                resolve: {
-                                    loadPlugin: function ($ocLazyLoad) {
-                                        return $ocLazyLoad.load([
-                                            {
-                                                serie: true,
-                                                files: [
-                                                    '{% get_static_prefix %}ui/js/plugins/daterangepicker/daterangepicker.js',
-                                                    '{% get_static_prefix %}ui/css/plugins/daterangepicker/daterangepicker-bs3.css'
-                                                ]
-                                            },
-                                            {
-                                                name: 'daterangepicker',
-                                                files: ['{% get_static_prefix %}ui/js/plugins/daterangepicker/angular-daterangepicker.js']
-                                            }
-                                        ]);
-                                    }
-                                }
+{#                                resolve: {#}
+{#                                    loadPlugin: function ($ocLazyLoad) {#}
+{#                                        return $ocLazyLoad.load([#}
+{#                                            {#}
+{#                                                serie: true,#}
+{#                                                files: [#}
+{#                                                    '',#}
+{#                                                    ''#}
+{#                                                ]#}
+{#                                            },#}
+{#                                            {#}
+{#                                                name: '',#}
+{#                                                files: ['']#}
+{#                                            }#}
+{#                                        ]);#}
+{#                                    }#}
+{#                                }#}
                             })
 
 
@@ -1092,6 +1135,16 @@
 
         // ----- Responses -----
         function ResponsesCtrl($rootScope, $scope, ServiceSurveyResponses) {
+            // filters
+            $scope.report_type = null;
+            $scope.filters_response = {
+                report_type: 'basic',
+{#                flags__suspect: ''#}
+            };
+            $scope.ui_flags = {
+                loading: false
+            }
+
             // Jqgrid
             $scope.grid_responses = {
                 gridid: "grid_response",
@@ -1113,7 +1166,7 @@
                         { name: 'row_id', index: 'row_id', width: 50, search:false },
                         { name: 'response_uid', index: 'response_uid', width: 40, key:true, hidden:true },
                         { name: 'response_date', index: 'response_date', width: 150,
-                            sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-dTH:i:s', newformat: 'd-M-Y H:i A' },
+                            sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-dTH:i:s', newformat: 'd-M-Y h:i A' },
 {#                            searchoptions:{attr:{placeholder:'yyyy-mm-dd'}},#}
                             searchoptions: {
 {#                                attr:{placeholder:'yyyy-mm-dd', readonly:'readonly'},#}
@@ -1180,102 +1233,161 @@
                 $scope.map_markers = {};
             {% endif %}
 
-
             $scope.list_responses = [];
-            ServiceSurveyResponses.get('{{ survey.survey_uid }}').then(function (response_data) {
-                var records = response_data.objects;
+            $scope.view_response_report = function(){
 
-                // --- Process data ---
-                var ENUM_META_ICO = {
-                    "map": '<i class="fa fa-map-marker list_md_icon meta_icons" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Has location"></i>',
-                    "description_read": '<i class="fa fa-eye list_md_icon meta_icons" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Description was read"></i>',
-                    "instructions_read": '<i class="fa fa-book list_md_icon meta_icons" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Instructions were read"></i>',
-                    "none": '<label class="list_md_icon" style="margin-bottom:0px;">&nbsp;</label>'
-                };
+                var filters = angular.copy($scope.filters_response);
 
-                for(var i=0;i<records.length;i++){
-                    var row = records[i];
-                    var flags = row['flags'];
+                $scope.report_type = angular.copy(filters['report_type']);
+                delete filters['report_type'];
 
-                    records[i]["row_id"] = (i+1)+"";
-                    records[i]["suspect_html"] = flags['suspect']?'<span class="text-danger"><i class="fa fa-question"></i> Suspect</span>':'';
-
-                    var meta_icons = {% if has_gps_enabled %}(row['location']['coordinates']?ENUM_META_ICO["map"]:ENUM_META_ICO["none"])+{% endif %}
-                            (flags['description_read']?ENUM_META_ICO["description_read"]:ENUM_META_ICO["none"])
-                            + (flags['instructions_read']?ENUM_META_ICO["instructions_read"]:ENUM_META_ICO["none"]);
-                    records[i]["meta_icons"] = meta_icons;
-
-                    records[i]['actions'] = '<a class="btn btn-primary btn-xs btn-outline grid_btn" href="#">View</a>';
+                // Correct parameters
+                for(var key in filters){
+                    if(key.includes('__')){
+                        var val = filters[key];
+                        var new_key = key.replace(/__/g,'.');
+                        delete filters[key];
+                        filters[new_key] = val;
+                    }
                 }
 
-                // --- /Process data ---
+                if(filters['response_date']){
+                    filters['response_date__gte'] =  filters['response_date']['startDate'].format('YYYY-MM-DD');
+                    filters['response_date__lte'] =  filters['response_date']['endDate'].add(1, 'days').format('YYYY-MM-DD');
+                    delete filters['response_date'];
+                }
 
-                $scope.list_responses = records;
+{#                alert(JSON.stringify(filters));#}
+                if($scope.report_type == 'basic'){
+                    $scope.ui_flags.loading = true;
 
-                $scope.grid_responses.gridapi.clear();
-                $scope.grid_responses.gridapi.insert(records);
-                $("#grid_response").jqGrid('setCaption',
-                    $("#jqtmpl_grip_response_caption").tmpl({
-                        "length": records.length,
-                        "url":{
-                            "csv": '#'
+                    // Get data & display
+                    ServiceSurveyResponses.get('{{ survey.survey_uid }}', filters).then(function (response_data) {
+                        $scope.ui_flags.loading = false;
+
+                        var records = response_data.objects;
+
+                        // --- Process data ---
+                        var ENUM_META_ICO = {
+                            "map": '<i class="fa fa-map-marker list_md_icon meta_icons" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Has location"></i>',
+                            "description_read": '<i class="fa fa-eye list_md_icon meta_icons" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Description was read"></i>',
+                            "instructions_read": '<i class="fa fa-book list_md_icon meta_icons" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Instructions were read"></i>',
+                            "none": '<label class="list_md_icon" style="margin-bottom:0px;">&nbsp;</label>'
+                        };
+
+                        for(var i=0;i<records.length;i++){
+                            var row = records[i];
+                            var flags = row['flags'];
+
+                            records[i]["row_id"] = (i+1)+"";
+                            records[i]["suspect_html"] = flags['suspect']?'<span class="text-danger"><i class="fa fa-question"></i> Suspect</span>':'';
+
+                            var meta_icons = {% if has_gps_enabled %}(row['location']['coordinates']?ENUM_META_ICO["map"]:ENUM_META_ICO["none"])+{% endif %}
+                                    (flags['description_read']?ENUM_META_ICO["description_read"]:ENUM_META_ICO["none"])
+                                    + (flags['instructions_read']?ENUM_META_ICO["instructions_read"]:ENUM_META_ICO["none"]);
+                            records[i]["meta_icons"] = meta_icons;
+
+                            records[i]['actions'] = '<a class="btn btn-primary btn-xs btn-outline grid_btn" href="#">View</a>';
                         }
-                    }).html()
-                );
 
-                $('.meta_icons').tooltip();
-                $('.tool_tip').tooltip();
+                        // --- /Process data ---
 
-                {% if has_gps_enabled %}
-                    // --- Map ---
-                    var map_bounds = new google.maps.LatLngBounds();
-                    for(var i=0;i<records.length;i++){
-                        var row = records[i];
+                        $scope.list_responses = records;
 
-                        // Create markers
-                        var coord = row['location']['coordinates']; //Long, Lat
-                        if(coord){
-                            var point = new google.maps.LatLng(coord[1], coord[0]);
-    {#                        var marker = new google.maps.Marker({#}
-    {#                            position: point,#}
-    {#                            icon: "{% get_static_prefix %}images/markers/marker_response.png",#}
-    {#                            map: $scope.MAP_RESPONSES,#}
-    {#                            data: $.extend({}, row),#}
-    {#                        });#}
-                            var marker = new MarkerWithLabel({
-                                position: point,
-                                map: $scope.MAP_RESPONSES,
-                                data: $.extend({}, row),
-                                icon: "{% get_static_prefix %}images/markers/marker_response.png",
-                                labelContent: row["row_id"],
-                                labelAnchor: new google.maps.Point(15, 36),
-                                labelClass: "marker_label", // the CSS class for the label
-                                labelInBackground: false,
-                                labelVisible: true
+                        $scope.grid_responses.gridapi.clear();
+                        $scope.grid_responses.gridapi.insert(records);
+                        $("#grid_response").jqGrid('setCaption',
+                            $("#jqtmpl_grip_response_caption").tmpl({
+                                "length": records.length,
+                                "report_type": 'Basic report'
+                            }).html()
+                        );
+
+                        $('.meta_icons').tooltip();
+                        $('.tool_tip').tooltip();
+
+                        {% if has_gps_enabled %}
+                            // --- Map ---
+                            google.maps.event.trigger($scope.MAP_RESPONSES, 'resize');
+
+                            // Clear map
+                            for(var r_uid in $scope.map_markers){
+                                var mrkr = $scope.map_markers[r_uid];
+                                mrkr.setMap(null);
+                            }
+                            $scope.map_markers = {};
+
+                            // Create map
+                            var map_bounds = new google.maps.LatLngBounds();
+                            for(var i=0;i<records.length;i++){
+                                var row = records[i];
+
+                                // Create markers
+                                var coord = row['location']['coordinates']; //Long, Lat
+                                if(coord){
+                                    var point = new google.maps.LatLng(coord[1], coord[0]);
+            {#                        var marker = new google.maps.Marker({#}
+            {#                            position: point,#}
+            {#                            icon: "{% get_static_prefix %}images/markers/marker_response.png",#}
+            {#                            map: $scope.MAP_RESPONSES,#}
+            {#                            data: $.extend({}, row),#}
+            {#                        });#}
+                                    var marker = new MarkerWithLabel({
+                                        position: point,
+                                        map: $scope.MAP_RESPONSES,
+                                        data: $.extend({}, row),
+                                        icon: "{% get_static_prefix %}images/markers/marker_response.png",
+                                        labelContent: row["row_id"],
+                                        labelAnchor: new google.maps.Point(15, 36),
+                                        labelClass: "marker_label", // the CSS class for the label
+                                        labelInBackground: false,
+                                        labelVisible: true
+                                    });
+
+
+                                    // Marker events
+                                    var infowindow = new google.maps.InfoWindow({
+                                        content: " "
+                                    });
+                                    google.maps.event.addListener(marker, 'click', function () {
+                                        var content = $("#jqtmpl_map_response_dialogue").tmpl(this.data).html();
+
+                                        infowindow.setContent(content);
+                                        infowindow.open($scope.MAP_RESPONSES, this);
+                                    });
+
+
+                                    $scope.map_markers[row['response_uid']] = marker;
+                                    map_bounds.extend(point);
+
+                                }
+                            }
+                            $scope.MAP_RESPONSES.fitBounds(map_bounds);
+                            // --- Map ---
+                        {% endif %}
+                    },
+                    function(response){
+                        $scope.ui_flags.loading = false;
+
+                        if(response.status != -1){
+                            $.growl.error({
+                                title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                message: "Something went wrong. Our engineers will be informed."
                             });
-
-
-                            // Marker events
-                            var infowindow = new google.maps.InfoWindow({
-                                content: " "
+                        }else{
+                            $.growl.error({
+                                title: '<i class="fa fa-signal"></i> Network error!',
+                                message: "Please check your internet connection."
                             });
-                            google.maps.event.addListener(marker, 'click', function () {
-                                var content = $("#jqtmpl_map_response_dialogue").tmpl(this.data).html();
-
-                                infowindow.setContent(content);
-                                infowindow.open($scope.MAP_RESPONSES, this);
-                            });
-
-
-                            $scope.map_markers[row['response_uid']] = marker;
-                            map_bounds.extend(point);
-
                         }
+
                     }
-                    $scope.MAP_RESPONSES.fitBounds(map_bounds);
-                    // --- Map ---
-                {% endif %}
-            });
+                    );
+                }
+                else if($scope.report_type == 'data_dump'){
+                    alert("Not implemented");
+                }
+            };
         }
 
         // ----- Review/Edit -----

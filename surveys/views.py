@@ -9,6 +9,7 @@ from django_fsm import TransitionNotAllowed
 
 import json
 from django.views.decorators.csrf import csrf_exempt
+from mongoengine.errors import DoesNotExist as DoesNotExist_mongo
 
 from surveys.models import Survey, SurveyPhase, SurveyCategory, SurveyResponse
 from surveys.decorators import *
@@ -181,7 +182,8 @@ def console_surveys(request):
     return render(request, 'surveys/console/surveys.html', data)
 
 @registered_user_only
-def console_survey_panel(request, survey_uid):
+@survey_access_firewall
+def console_survey_panel(request, survey):
     """
     View to open control panel for a survey.
 
@@ -194,7 +196,7 @@ def console_survey_panel(request, survey_uid):
     reg_user = request.user.registereduser
 
     try:
-        survey = Survey.objects.get(survey_uid=survey_uid, created_by_id=reg_user.id)
+        #survey = Survey.objects.get(survey_uid=survey_uid, created_by_id=reg_user.id)
 
         data ={
             'SURVEY': Survey,
@@ -319,4 +321,26 @@ def console_survey_phase_form_editor(request, survey_uid, phase_id=None):
         raise Http404("Invalid survey.")
     except SurveyPhase.DoesNotExist:
         raise Http404("Invalid survey phase.")
+
+@registered_user_only
+@survey_access_firewall
+def console_survey_response(request, survey, response_uid):
+    """
+    Django view to view a response of the survey.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    try:
+        response = SurveyResponse.objects.get(survey_uid=survey.survey_uid, response_uid=response_uid)
+
+        data = {
+            "survey": survey,
+            "response": response
+        }
+        return render(request, 'surveys/console/survey_response.html', data)
+    except DoesNotExist_mongo:
+        raise Http404("Invalid link.")
+
 # ==================== /Console ====================

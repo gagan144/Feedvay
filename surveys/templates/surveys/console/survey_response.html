@@ -1,0 +1,43 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'console/base.html' %}
+{% load static commontags %}
+
+{% block head %}
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="
+            {% if request.curr_brand %}{{ request.curr_brand.icon.url }}{% else %}{% get_static_prefix %}images/favicon.png{% endif %}"/>
+
+    <title>Response - {{ survey.title }}</title>
+{% endblock %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-12">
+            <h2>{{ survey.title }}</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{% url 'console_home' %}">Home</a>
+                </li>
+                <li>
+                    <a href="{% url 'console_surveys' %}">Surveys</a>
+                </li>
+                <li>
+                    <a href="{% url 'console_survey_panel' survey.survey_uid %}#/responses">Responses</a>
+                </li>
+                <li class="active">
+                    Response
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="wrapper wrapper-content">
+        <div class="container">
+            sdgsag
+        </div>
+    </div>
+{% endblock %}

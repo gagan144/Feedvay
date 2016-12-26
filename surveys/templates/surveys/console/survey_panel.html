@@ -1269,7 +1269,7 @@
                                     + (flags['instructions_read']?ENUM_META_ICO["instructions_read"]["ok"]:ENUM_META_ICO["instructions_read"]["none"]);
                             records[i]["meta_icons"] = meta_icons;
 
-                            records[i]['actions'] = '<a class="btn btn-primary btn-xs btn-outline grid_btn" href="#">View</a>';
+                            records[i]['actions'] = '<a href="/console/surveys/{{ survey.survey_uid }}/response/'+row['response_uid']+'/" class="btn btn-primary btn-xs btn-outline grid_btn" target="_blank">View</a>';
                         }
 
                         // --- /Process data ---

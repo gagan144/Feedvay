@@ -177,7 +177,9 @@
                                         <tbody>
                                             <tr>
                                                 <td class="td_legend" valign="top">
-                                                    Device ID:
+                                                    <span tooltip-placement="bottom" uib-tooltip="Unique device ID">
+                                                        Device ID:
+                                                    </span>
                                                 </td>
                                                 <td valign="top">
                                                     {{ endpoint.uuid|default_if_none:"-" }}
@@ -185,7 +187,9 @@
                                             </tr>
                                             <tr>
                                                 <td class="td_legend" valign="top">
-                                                    Platform:
+                                                    <span tooltip-placement="bottom" uib-tooltip="Device platform/operating system">
+                                                        Platform:
+                                                    </span>
                                                 </td>
                                                 <td valign="top">
                                                     {% if endpoint.platform|lower == 'android' %}
@@ -201,7 +205,9 @@
                                             </tr>
                                             <tr>
                                                 <td class="td_legend" valign="top">
-                                                    OS version:
+                                                    <span tooltip-placement="bottom" uib-tooltip="OS version running in the device">
+                                                        OS version:
+                                                    </span>
                                                 </td>
                                                 <td valign="top">
                                                     {{ endpoint.os_version|default_if_none:"-" }}
@@ -210,7 +216,9 @@
 
                                             <tr>
                                                 <td class="td_legend" valign="top">
-                                                    Brand:
+                                                    <span tooltip-placement="bottom" uib-tooltip="The consumer-visible brand of the device">
+                                                        Brand:
+                                                    </span>
                                                 </td>
                                                 <td valign="top">
                                                     {{ endpoint.brand|default_if_none:"-" }}
@@ -218,7 +226,9 @@
                                             </tr>
                                             <tr>
                                                 <td class="td_legend" valign="top">
-                                                    Model:
+                                                    <span tooltip-placement="bottom" uib-tooltip="Name of the device.">
+                                                        Model:
+                                                    </span>
                                                 </td>
                                                 <td valign="top">
                                                     {{ endpoint.model|default_if_none:"-" }}
@@ -226,7 +236,9 @@
                                             </tr>
                                             <tr>
                                                 <td class="td_legend" valign="top">
-                                                    Manufacturer:
+                                                    <span tooltip-placement="bottom" uib-tooltip="The manufacturer of the device">
+                                                        Manufacturer:
+                                                    </span>
                                                 </td>
                                                 <td valign="top">
                                                     {{ endpoint.manufacturer|default_if_none:"-" }}
@@ -234,15 +246,9 @@
                                             </tr>
                                             <tr>
                                                 <td class="td_legend" valign="top">
-                                                    Hardware:
-                                                </td>
-                                                <td valign="top">
-                                                    {{ endpoint.hardware|default_if_none:"-" }}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="td_legend" valign="top">
-                                                    IMEI:
+                                                    <span tooltip-placement="bottom" uib-tooltip="International Mobile Equipment Identity number of the device">
+                                                        IMEI:
+                                                    </span>
                                                 </td>
                                                 <td valign="top">
                                                     {{ endpoint.imei|default_if_none:"-" }}
@@ -250,7 +256,9 @@
                                             </tr>
                                             <tr>
                                                 <td class="td_legend" valign="top">
-                                                    IMSI:
+                                                    <span tooltip-placement="bottom" uib-tooltip="International Mobile Subscriber Identity of the SIM used in the device">
+                                                        IMSI:
+                                                    </span>
                                                 </td>
                                                 <td valign="top">
                                                     {{ endpoint.imsi|default_if_none:"-" }}
@@ -258,7 +266,9 @@
                                             </tr>
                                             <tr>
                                                 <td class="td_legend" valign="top">
-                                                    Service provider:
+                                                    <span tooltip-placement="bottom" uib-tooltip="Name of the network service provider">
+                                                        Service provider:
+                                                    </span>
                                                 </td>
                                                 <td valign="top">
                                                     {{ endpoint.service_provider|default_if_none:"-" }}

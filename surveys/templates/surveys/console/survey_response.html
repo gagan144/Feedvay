@@ -66,7 +66,7 @@
                                             <li>
                                                 {{ rsn.text }}
                                                 {% if rsn.type == 'user_defined' %}
-                                                    <small style="margin-left: 20px;">- {{ rsn.user_id }}</small>
+                                                    <small style="margin-left: 15px;font-style:italic;">- {{ rsn.user_id|get_user_readable:"full_name" }}</small>
                                                 {% endif %}
                                             </li>
                                         {% endfor %}

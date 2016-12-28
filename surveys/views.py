@@ -337,7 +337,8 @@ def console_survey_response(request, survey, response_uid):
 
         data = {
             "survey": survey,
-            "response": response
+            "response": response,
+            "app_name": "app_survey_response"
         }
         return render(request, 'surveys/console/survey_response.html', data)
     except DoesNotExist_mongo:

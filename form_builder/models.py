@@ -24,6 +24,7 @@ from django.conf import settings
 import random
 from django.forms.models import model_to_dict
 
+from accounts.models import RegisteredUser
 from form_builder import form_schema
 from form_builder.form_exceptions import DuplicateVariableName, ExpressionCompileError
 from languages.models import Language, Translation
@@ -483,7 +484,7 @@ class BaseResponse(Document):
 
         **Authors**: Gagandeep Singh
         """
-        user_id         = StringField(help_text='Primary key of user.')
+        user_id         = StringField(help_text='Primary key of auth.models.user.')
         username        = StringField(help_text='User login username.')
         user_fullname   = StringField(help_text='User full name.')
 
@@ -507,6 +508,21 @@ class BaseResponse(Document):
         accuracy        = FloatField(required=True, help_text='Accuracy (in meters) at which GPS coordinates where captured.')
         timestamp       = LongField(help_text='Timestamp at which gps was taken.')
 
+    class SuspectReason(EmbeddedDocument):
+        """
+        Response embedded document to record reasons for suspected response.
+        **Authors**: Gagandeep Singh
+        """
+        TYPE_USER_DEFINED = 'user_defined'
+        CH_TYPE = (
+            (TYPE_USER_DEFINED, 'User defined'),
+        )
+
+        type    = StringField(required=True, choices=CH_TYPE, help_text='Type of reason.')
+        text    = StringField(required=True, help_text="Text describing the reason")
+        user_id = StringField(help_text='Primary key of auth.models.user who marked this as suspicious. Empty if marked by the system.')
+
+
     class ResponseFlags(EmbeddedDocument):
         """
         Response embedded document to capture various types of flags related to the response.
@@ -515,7 +531,7 @@ class BaseResponse(Document):
         """
         description_read    = BooleanField(default=False, required=True, help_text='Determines if the description was read by the user')
         instructions_read   = BooleanField(default=False, required=True, help_text='Determines if the instructions were read by the user.')
-        suspect             = BooleanField(default=False, required=True, help_text='Determins if this reponse is a suspect. If true, reason must be specified.')
+        suspect             = BooleanField(default=False, required=True, help_text='Determines if this reponse is a suspect. If true, reason must be specified.')
         suspect_reasons     = ListField(help_text='List of reasons is to why this response is a suspect.')
 
     class EndPointInformation(EmbeddedDocument):
@@ -633,6 +649,14 @@ class BaseResponse(Document):
 
     def __unicode__(self):
         return "{} - {}".format(self.form_id, str(self.pk))
+
+    def get_respondent(self):
+        """
+        Method to get respondent that is, :class:`accounts.models.RegisteredUser` instance.
+
+        **Authors**: Gagandeep Singh
+        """
+        return RegisteredUser.objects.get(user__username=self.user.username)
 
     def save(self, deep_save=True, *args, **kwargs):
         """

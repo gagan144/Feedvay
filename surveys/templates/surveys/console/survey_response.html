@@ -48,36 +48,39 @@
 {% block content %}
     <div class="wrapper wrapper-content" style="padding-top: 20px;" ng-controller="MainCtrl">
         <div class="container">
-            <div class="alert alert-danger">
-                <table style="width: 100%">
-                    <tr>
-                        <td valign="top" style="width: 60px;">
-                            <i class="fa fa-question-circle" style="font-size: 50px;"></i>
-                        </td>
-                        <td valign="top">
-                            <h3 style="margin-top: 0px;">
-                                Response Suspicious!
-                            </h3>
-                            <div>
-                                This response has been identified as suspicious due to following reasons:
-                                <ul style="margin-top: 5px">
-                                    {% for rsn in response.flags.suspect_reasons %}
-                                        <li>
-                                            {{ rsn.text }}
-                                            {% if rsn.type == 'user_defined' %}
-                                                <small style="margin-left: 20px;">- {{ rsn.user_id }}</small>
-                                            {% endif %}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
+            {% if response.flags.suspect %}
+                <div class="alert alert-danger">
+                    <table style="width: 100%">
+                        <tr>
+                            <td valign="top" style="width: 60px;">
+                                <i class="fa fa-question-circle" style="font-size: 50px;"></i>
+                            </td>
+                            <td valign="top">
+                                <h3 style="margin-top: 0px;">
+                                    Response Suspicious!
+                                </h3>
+                                <div>
+                                    This response has been identified as suspicious due to following reasons:
+                                    <ul style="margin-top: 5px">
+                                        {% for rsn in response.flags.suspect_reasons %}
+                                            <li>
+                                                {{ rsn.text }}
+                                                {% if rsn.type == 'user_defined' %}
+                                                    <small style="margin-left: 20px;">- {{ rsn.user_id }}</small>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
 
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            {% endif %}
 
             <div class="row">
+                <!-- Info Cards -->
                 <div class="col-sm-3">
                     <!-- Respondent -->
                     {% with reg_user=response.get_respondent %}
@@ -159,7 +162,7 @@
                             <div class="panel-heading panel_heading_white ">
                                 <i class="fa fa-rss"></i>&nbsp;&nbsp;Source device
                             </div>
-                            <div class="panel-body">
+                            <div class="panel-body" style="max-height: 300px; overflow-y: auto">
                                 {% if endpoint.type == 'web_client' %}
                                     <div>
                                         <i class="fa fa-globe list_md_icon"></i>
@@ -269,7 +272,31 @@
                     {% endwith %}
                     <!-- /Endpoint -->
                 </div>
-                <div class="col-sm-9">Questions</div>
+                <!-- /Info Cards -->
+
+                <!-- Answer sheet -->
+                <div class="col-sm-9">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h2 style="margin-top: 0px;">
+                                <i class="fa fa-twitch"></i>&nbsp;
+                                Response
+
+                                <span class="pull-right">
+                                    {{ response.response_date|date:"d-M-Y" }}
+                                </span>
+                            </h2>
+                            <hr style="margin-top: 15px;" />
+
+                            <!-- Answers -->
+                            <div>
+                                {{ response.answers }}
+                            </div>
+                            <!-- /Answers -->
+                        </div>
+                    </div>
+                </div>
+                <!-- /Answer sheet -->
             </div>
 
         </div>
@@ -326,6 +353,7 @@
                         scaleControl:true,
                         overviewMapControl:true,
                         rotateControl:true,
+                        streetViewControl:false,
                     };
 
                     $scope.$watch('MAP_RESPONSE', function(map) {

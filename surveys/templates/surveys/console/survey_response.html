@@ -488,7 +488,7 @@
             $http.defaults.xsrfHeaderName = 'X-CSRFToken';
         });
 
-        APP.controller('MainCtrl', function ($scope, SweetAlert, ServiceSurveyResponses) {
+        APP.controller('MainCtrl', function ($scope, $window, SweetAlert, ServiceSurveyResponses) {
             // Suspicion
             $scope.add_suspicion = function(){
                 SweetAlert.swal({
@@ -515,6 +515,7 @@
                         function(response_data){
                             if(response_data.status=='success') {
                                 SweetAlert.swal("Success!", "This response has been marke suspicious.", "success");
+                                $window.location.reload();
                             }else{
                                 $.growl.error({
                                     title: '<i class="fa fa-exclamation-triangle"></i> Denied!',

@@ -703,16 +703,21 @@ class BaseResponse(Document):
         """
 
         success = False
+        item = None
         for idx, rsn in enumerate(self.flags.suspect_reasons):
             if rsn.id == reason_id:
-                del self.flags.suspect_reasons[idx] # TODO: Not removing, adding null
-                success = True
+                item = rsn
                 break
 
-        if len(self.flags.suspect_reasons) == 0:
-            self.flags.suspect = False
+        if item:
+            self.flags.suspect_reasons.remove(item)
 
-        self.save()
+            if len(self.flags.suspect_reasons) == 0:
+                self.flags.suspect = False
+
+            self.save()
+
+            success = True
 
         return success
 

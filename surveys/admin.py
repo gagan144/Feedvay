@@ -94,8 +94,8 @@ class SurveyAdmin(admin.ModelAdmin):
         readonly_fields.append('status')
         return readonly_fields
 
-    # def has_add_permission(self, request):    #TODO: uncomment
-    #     return False
+    def has_add_permission(self, request):
+        return False
 
     def has_delete_permission(self, request, obj=None):
         return False

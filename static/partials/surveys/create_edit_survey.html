@@ -17,7 +17,7 @@
         <div class="col-sm-8">
             <select class="form-control" name="category"
                     ng-model="survey.category"
-                    ng-class="{'error': form_survey.category.$invalid}"
+                    ng-class="{'error': (form_survey.category.$dirty && form_survey.category.$invalid)}"
                     required>
                 <option value="">Please Select</option>
                 <option ng-repeat="c in list_categories" value="{$ c.id $}">{$ c.name $}</option>
@@ -46,7 +46,7 @@
         <div class="col-sm-8">
             <input type="text" class="form-control" name="title"
                    ng-model="survey.title"
-                   ng-class="{'error': form_survey.title.$invalid}" required>
+                   ng-class="{'error': (form_survey.title.$dirty && form_survey.title.$invalid)}" required>
 
             <p class="help-block m-b-none">
                 Catchy title for your survey.
@@ -67,7 +67,7 @@
     <div class="form-group">
         <label class="col-sm-2 control-label">Description<span class="required">*</span>:</label>
 
-        <div class="col-sm-10">
+        <div class="col-sm-9">
             <textarea summernote name="description"
                       ng-model="survey.description" config="summernote_config"
                       required></textarea>
@@ -216,7 +216,8 @@
 
         <button ladda="flags.submitting" class="btn btn-primary ladda-button"
                 type="button" ng-disabled="form_survey.$invalid"
-                ng-click="submit(form_survey)" data-style="zoom-in">Save
+                ng-click="submit(form_survey)" data-style="zoom-in">
+            {$ ACTION=='edit'?'Save':'Create' $}
         </button>
         <button class="btn btn-link" type="button"
                 onclick="location.href = location.pathname;">Cancel

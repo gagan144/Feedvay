@@ -182,6 +182,24 @@ def console_surveys(request):
     return render(request, 'surveys/console/surveys.html', data)
 
 @registered_user_only
+def console_survey_new(request):
+    """
+    View to create new survey
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+
+    reg_user = request.user.registereduser
+    data ={
+        'list_categories': SurveyCategory.objects.filter(active=True),
+        'app_name': 'app_survey_create'
+    }
+
+    return render(request, 'surveys/console/create_survey.html', data)
+
+@registered_user_only
 @survey_access_firewall
 def console_survey_panel(request, survey):
     """

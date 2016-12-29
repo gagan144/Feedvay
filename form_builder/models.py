@@ -178,7 +178,7 @@ class Form(Model):
     languages       = models.ManyToManyField(Language, help_text='Languages that are available to the form. English is by default.')
 
     constants       = JSONField(null=True, blank=True, help_text='List of constants used in this form.')
-    schema          = JSONField(help_text='Form schema in json format.')
+    schema          = JSONField(default=[], help_text='Form schema in json format.')
     calculated_fields = JSONField(null=True, blank=True, help_text='List of fields whoes values are calculated dynamically in the form based on a expression. These are calculated in the order of declaration.')
 
     # Form settings
@@ -291,21 +291,22 @@ class Form(Model):
                 set_translation_ids.add(const.text_translation_id)
 
         # (2) Parse schema JSON & obtain schema obj. This will check any schema errors.
-        schema_obj = self.schema_obj
+        if self.schema_obj is not None and len(self.schema_obj) != 0:
+            schema_obj = self.schema_obj
 
-        # Check if randomization is allowed: There must be no component other than 'fields' if randomize is true
-        if self.randomize:
-            for comp in schema_obj:
-                if not isinstance(comp, BasicFormField):
-                    raise ValidationError("You cannot use randomize since the form contains conditions & layouts.")
+            # Check if randomization is allowed: There must be no component other than 'fields' if randomize is true
+            if self.randomize:
+                for comp in schema_obj:
+                    if not isinstance(comp, BasicFormField):
+                        raise ValidationError("You cannot use randomize since the form contains conditions & layouts.")
 
-        # Prepare field lookup for further use
-        lookupDict_fields = {}      # { "<label>": <Field Object>, "<label>":<Field Object>, ...}
-        for field in iterate_form_fields(schema_obj):
-            label = str(field.label)
-            push_list_varnames(label)
-            lookupDict_fields[label] = field
-            set_translation_ids.update(field.get_translation_ids())
+            # Prepare field lookup for further use
+            lookupDict_fields = {}      # { "<label>": <Field Object>, "<label>":<Field Object>, ...}
+            for field in iterate_form_fields(schema_obj):
+                label = str(field.label)
+                push_list_varnames(label)
+                lookupDict_fields[label] = field
+                set_translation_ids.update(field.get_translation_ids())
 
         # (3) Parse calculated fields & obtains object form.
         # Check that all calculated fields are using only constants or mandatory form variables.
@@ -399,21 +400,22 @@ class Form(Model):
 
     @classmethod
     def post_save(cls, sender, instance, **kwargs):
-        for fld in iterate_form_fields(instance.schema_obj):
-            print "\tPushing :" , fld.label
-            FormFieldMetaData.objects(
-                form_id = str(instance.id),
-                label = fld.label,
-                field_class = fld._cls
-            ).update_one(
-                form_version = str(instance.version),
-                text_ref = fld.text_ref,
-                text_translation_id = fld.text_translation_id,
-                required = fld.required,
-                request_response = fld.request_response,
-                dated = datetime.now(),
-                upsert = True
-            )
+        if instance.schema_obj is not None and len(instance.schema_obj) != 0:
+            for fld in iterate_form_fields(instance.schema_obj):
+                print "\tPushing :" , fld.label
+                FormFieldMetaData.objects(
+                    form_id = str(instance.id),
+                    label = fld.label,
+                    field_class = fld._cls
+                ).update_one(
+                    form_version = str(instance.version),
+                    text_ref = fld.text_ref,
+                    text_translation_id = fld.text_translation_id,
+                    required = fld.required,
+                    request_response = fld.request_response,
+                    dated = datetime.now(),
+                    upsert = True
+                )
 post_save.connect(Form.post_save, sender=Form)
 
 class FormFieldMetaData(Document):

@@ -83,14 +83,14 @@
             $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
             $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
         })
-        .run(function ($rootScope, $http, $cookies) {
+        .run(function ($http, $cookies) {
             $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 
             $http.defaults.xsrfCookieName = 'csrftoken';
             $http.defaults.xsrfHeaderName = 'X-CSRFToken';
         });
 
-        APP.controller('CreateSurveyCtrl', function ($scope, $window, ServiceSurveyResponses) {
+        APP.controller('CreateSurveyCtrl', function ($scope, $window, $http, ServiceSurveyResponses) {
             $scope.summernote_config = SUMMERNOTE_CONFIG;
             $scope.list_categories = [
                 {% for c in list_categories %}
@@ -109,6 +109,58 @@
             };
 
             $scope.survey = {};
+
+            $scope.submit = function (form_obj) {
+                if (form_obj.$invalid) {
+                    return false;
+                }
+
+                $scope.flags.submitting = true;
+                $scope.flags.error_msg = null;
+                $scope.flags.val_errors = null;
+
+                var data = angular.copy($scope.survey);
+                data['start_date'] = data['duration']['startDate'].format('YYYY-MM-DD');
+                data['end_date'] = data['duration']['endDate'].format('YYYY-MM-DD');
+                delete data['duration'];
+
+                $http.post(
+                    "/console/surveys/create/",
+                    $.param(data)
+                )
+                .success(function (response, status, headers, config) {
+                    if (response.status == 'success') {
+                        var url = "{% url 'console_surveys' %}";
+                        var type = response.survey_type;
+
+                        if(type=='simple'){
+                            url = "{% url 'console_survey_simple_form_editor' 'SURVEY_UID' %}".replace('SURVEY_UID', response.survey_uid);
+                        }
+                        else if(type=='complex'){
+                            url='{% url 'console_survey_panel' 'SURVEY_UID' %}#/edit'.replace('SURVEY_UID', response.survey_uid);
+                        }
+
+                        $window.location.href = url;
+                    } else {
+                        $scope.flags.submitting = false;
+                        $scope.flags.error_msg = response.message;
+                        $scope.flags.val_errors = response.errors;
+                    }
+                })
+                .error(function (response, status, headers, config) {
+                    $scope.flags.submitting = false;
+
+                    if (status != -1) {
+                        $scope.flags.error_msg = 'Something went wrong. Our engineers will be informed.'
+                    } else {
+                        $.growl.error({
+                            title: '<i class="fa fa-signal"></i> Network error!',
+                            message: "Please check your internet connection."
+                        });
+                    }
+                });
+            }
+
         });
     </script>
 {% endblock %}

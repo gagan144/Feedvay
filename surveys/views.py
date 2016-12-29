@@ -184,7 +184,7 @@ def console_surveys(request):
 @registered_user_only
 def console_survey_new(request):
     """
-    View to create new survey
+    View to open form to create a survey.
 
     **Type**: GET
 
@@ -198,6 +198,44 @@ def console_survey_new(request):
     }
 
     return render(request, 'surveys/console/create_survey.html', data)
+
+@registered_user_only
+def console_survey_create(request):
+    """
+    API view to create new survey.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    # Current only for individual
+    reg_user = request.user.registereduser
+
+    if request.method.lower() == 'post':
+        try:
+            from surveys.forms import SurveyCreateForm
+            post_data = request.POST.copy()
+            post_data['type'] = Survey.TYPE_SIMPLE
+            post_data['surveyor_type'] = Survey.SURVYR_INDIVIDUAL
+
+            form_survey = SurveyCreateForm(post_data)
+
+            if form_survey.is_valid():
+                new_survey = form_survey.save(created_by=reg_user)
+                return ApiResponse(
+                    status=ApiResponse.ST_SUCCESS,
+                    message='Ok',
+                    survey_uid=new_survey.survey_uid,
+                    survey_type=new_survey.type
+                ).gen_http_response()
+            else:
+                errors = dict(form_survey.errors)
+                return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()
+        except Survey.DoesNotExist:
+            return ApiResponse(status=ApiResponse.ST_UNAUTHORIZED, message='Invalid survey.').gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
 @registered_user_only
 @survey_access_firewall
@@ -266,9 +304,13 @@ def console_survey_transit(request, survey):
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
 @registered_user_only
-def console_survey_save(request, survey_uid=None):
+@survey_access_firewall
+def console_survey_save(request, survey):
     """
-    API view to save survey information. If survey_uid is ``None``, it means create new survey.
+    API view to save survey information.
+
+    .. warning::
+        Do not use this view to create new survey.
 
     **Type**: POST
 
@@ -279,8 +321,6 @@ def console_survey_save(request, survey_uid=None):
 
     if request.method.lower() == 'post':
         try:
-            survey = Survey.objects.get(survey_uid=survey_uid, created_by_id=reg_user.id)
-
             from surveys.forms import SurveyEditForm
             form_survey = SurveyEditForm(request.POST, instance=survey)
 
@@ -299,7 +339,8 @@ def console_survey_save(request, survey_uid=None):
 
 
 @registered_user_only
-def console_survey_phase_form_editor(request, survey_uid, phase_id=None):
+@survey_access_firewall
+def console_survey_phase_form_editor(request, survey, phase_id=None):
     """
     View to open form editor for a survey phase.
 
@@ -317,11 +358,11 @@ def console_survey_phase_form_editor(request, survey_uid, phase_id=None):
     try:
         if phase_id is None:
             # Simple survey
-            survey = Survey.objects.get(type=Survey.TYPE_SIMPLE, survey_uid=survey_uid, created_by_id=reg_user.id)
+            # survey = Survey.objects.get(type=Survey.TYPE_SIMPLE, survey_uid=survey_uid, created_by_id=reg_user.id)
             phase = survey.surveyphase_set.all()[0]
         else:
             # Complex survey
-            survey = Survey.objects.get(survey_uid=survey_uid, created_by_id=reg_user.id)
+            # survey = Survey.objects.get(survey_uid=survey_uid, created_by_id=reg_user.id)
             phase = survey.surveyphase_set.get(id=int(phase_id))
 
         data ={

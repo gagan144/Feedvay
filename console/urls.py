@@ -35,7 +35,8 @@ url_brands = [
 api_survey_responses = api_surveys.SurveyResponsesAPI()
 url_surveys = [
     url(r'^$', views_surveys.console_surveys, name='console_surveys'),
-    url(r'^create/$', views_surveys.console_survey_new, name='console_survey_new'),
+    url(r'^new/$', views_surveys.console_survey_new, name='console_survey_new'),
+    url(r'^create/$', views_surveys.console_survey_create, name='console_survey_create'),
 
     url(r'^(?P<survey_uid>\w+)/$', views_surveys.console_survey_panel, name='console_survey_panel'),
     url(r'^(?P<survey_uid>\w+)/save/$', views_surveys.console_survey_save, name='console_survey_save'),

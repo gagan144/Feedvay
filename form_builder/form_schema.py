@@ -56,7 +56,7 @@ def load_form_schema(schema):
 
     schema_object = None
 
-    if isinstance(schema, str):
+    if isinstance(schema, str) or isinstance(schema, unicode):
         schema = json.loads(schema)
     elif isinstance(schema, dict) or isinstance(schema, list):
         pass

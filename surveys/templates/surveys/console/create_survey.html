@@ -42,7 +42,6 @@
     <div class="wrapper wrapper-content" ng-controller="CreateSurveyCtrl" ng-cloak>
         <div class="container">
             <div class="content_box" style="padding: 20px 40px 20px 40px;">
-                {$ survey $}
                 <form name="form_survey" class="form-horizontal" novalidate>
                     <div ng-include="'{% get_static_prefix %}partials/surveys/create_edit_survey.html'" ng-init="ACTION='create'"></div>
                 </form>

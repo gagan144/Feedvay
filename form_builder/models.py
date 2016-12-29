@@ -175,10 +175,10 @@ class Form(Model):
     user_notes      = tinymce_models.HTMLField(null=True, blank=True, help_text='Notes for use use only.')
 
     theme_skin      = models.ForeignKey(ThemeSkin, on_delete=models.PROTECT, help_text='Theme to be used for this form.')
-    languages       = models.ManyToManyField(Language, help_text='Languages that are available to the form. English is by default.')
+    languages       = models.ManyToManyField(Language, blank=True, help_text='Languages that are available to the form. English is by default.')
 
     constants       = JSONField(null=True, blank=True, help_text='List of constants used in this form.')
-    schema          = JSONField(default=[], help_text='Form schema in json format.')
+    schema          = JSONField(default=[], blank=True, help_text='Form schema in json format.')
     calculated_fields = JSONField(null=True, blank=True, help_text='List of fields whoes values are calculated dynamically in the form based on a expression. These are calculated in the order of declaration.')
 
     # Form settings
@@ -291,9 +291,8 @@ class Form(Model):
                 set_translation_ids.add(const.text_translation_id)
 
         # (2) Parse schema JSON & obtain schema obj. This will check any schema errors.
-        if self.schema_obj is not None and len(self.schema_obj) != 0:
-            schema_obj = self.schema_obj
-
+        schema_obj = self.schema_obj
+        if schema_obj is not None and len(schema_obj) != 0:
             # Check if randomization is allowed: There must be no component other than 'fields' if randomize is true
             if self.randomize:
                 for comp in schema_obj:
@@ -400,8 +399,9 @@ class Form(Model):
 
     @classmethod
     def post_save(cls, sender, instance, **kwargs):
-        if instance.schema_obj is not None and len(instance.schema_obj) != 0:
-            for fld in iterate_form_fields(instance.schema_obj):
+        schema_obj = instance.schema_obj
+        if schema_obj is not None and len(schema_obj) != 0:
+            for fld in iterate_form_fields(schema_obj):
                 print "\tPushing :" , fld.label
                 FormFieldMetaData.objects(
                     form_id = str(instance.id),

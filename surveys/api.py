@@ -51,5 +51,12 @@ class SurveyResponsesAPI(resources.MongoEngineResource):
     def dehydrate(self, bundle):
         bundle.data["user"] = bundle.obj.user.to_mongo()
         bundle.data["location"] = bundle.obj.location.to_mongo()
-        bundle.data["flags"] = bundle.obj.flags.to_mongo()
+
+        flags = bundle.obj.flags.to_mongo()
+        suspect_reasons = []
+        for s in flags['suspect_reasons']:
+            suspect_reasons.append(s['text'])
+        flags['suspect_reasons'] = suspect_reasons
+        bundle.data["flags"] = flags
+
         return bundle

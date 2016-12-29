@@ -14,50 +14,6 @@ from form_builder import conditions
 from form_builder import widgets
 from languages.models import Language
 
-# ----- Delete -----
-def testing(request):
-    from form_builder.utils import JsCompilerTool
-    comp = JsCompilerTool("$scope.constants.const_int_2 + $scope.data.fld_num_2 + $scope.data.fld_decimal_2_1");
-    result = comp.extract_variables()
-    return HttpResponse("Done! Use debug mode.")
-# ----- /Delete -----
-
-def update_test(request):
-    from test_schema import upsert_test_schema
-    from django.http import HttpResponse
-
-    form = upsert_test_schema()
-    return HttpResponse("Form '{}' updated to version '{}'.".format(form.id, form.version))
-
-def open_form(request, id):
-    form = Form.objects.get(id=id)
-    template = 'themes/{}/form_base.html'.format(form.theme_skin.theme.code)
-    data = {
-        'title': form.title,
-        'theme': form.theme_skin.theme,
-        'skin': form.theme_skin,
-        'form': form,
-        'lookup_translations': form.get_translation_lookup(),
-        'DEFAULT_LANGUAGE_CODE': Language.DEFAULT_LANGUAGE_CODE,    # Fallback language incase translation not found
-        'USER_DEFAULT_LANG_CODE': 'hin' #Language.DEFAULT_LANGUAGE_CODE  # Use preferred language
-    }
-    return render(request, template, data)
-
-# ----- Form Designer -----
-@login_required
-def form_designer(request, id=None):
-    data = {
-        'list_languages': Language.objects.filter(active=True),
-        'GeoLocation': GeoLocation
-    }
-
-    if id:
-        form = Form.objects.get(id=id)
-        data['form'] = form
-    return render(request, 'form_builder/form_designer.html', data)
-# ----- /Form Designer -----
-
-
 # ----- Partials -----
 def partials_form_field(request, class_name):
     fieldclass = getattr(fields, class_name)

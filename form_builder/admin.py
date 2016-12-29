@@ -36,11 +36,17 @@ class FormAdmin(admin.ModelAdmin):
     """
     Django admin for :class:`form_builder.models.Form`.
     """
-    list_display = ('title', 'version', 'theme_skin', 'created_on', 'updated_on')
+    list_display = ('title', 'version', 'theme_skin', 'is_ready', 'created_on', 'updated_on')
     list_filter = ('theme_skin', 'languages', 'created_on')
     search_fields = ('title',)
     filter_horizontal = ('languages',)
     readonly_fields = ('translations', 'version', 'created_on', 'updated_on')
     form = select2_modelform(Form, attrs={'width': '250px'})
     list_per_page = 20
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = self.readonly_fields
+        readonly_fields += tuple([field.name for field in self.model._meta.fields if not field.editable])
+
+        return readonly_fields
 

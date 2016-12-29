@@ -236,6 +236,9 @@ class Survey(models.Model):
         if not self.surveyphase_set.all().count():
             raise Exception("Denied! This survey must have atleast one phase.")
 
+        if self.surveyphase_set.filter(form__is_ready=False).exists():
+            raise Exception("Denied! Please complete your questionnaire(s).")
+
     @fsm_log_by
     @transition(field=status, source=ST_READY, target=ST_PAUSED)
     def trans_pause(self):
@@ -255,7 +258,11 @@ class Survey(models.Model):
 
         **Authors**: Gagandeep Singh
         """
-        pass
+        if not self.surveyphase_set.all().count():
+            raise Exception("Denied! This survey must have atleast one phase.")
+
+        if self.surveyphase_set.filter(form__is_ready=False).exists():
+            raise Exception("Denied! Please complete your questionnaire(s).")
 
     @fsm_log_by
     @transition(field=status, source=[ST_READY,ST_PAUSED], target=ST_STOPPED)

@@ -193,6 +193,7 @@ class Form(Model):
 
     # Meta
     translations    = ListTextField(base_field=models.CharField(max_length=128), null=False, blank=True, help_text="Comma seperated list of translations (languages.Translation) ids.")
+    is_ready        = models.BooleanField(default=False, editable=False, help_text='Tells if form is ready to be executed. This is verified on the fact that schema is not empty or [].')
     version         = models.UUIDField(default=uuid.uuid4, db_index=True, help_text='Auto generated form version.')
     created_on      = CreationDateTimeField(db_index=True, help_text='Date on which this form was created.')
     updated_on      = ModificationDateTimeField(auto_now=False, null=True, blank=True, db_index=True, help_text='Date on which this form was last updated.')
@@ -307,6 +308,10 @@ class Form(Model):
                 lookupDict_fields[label] = field
                 set_translation_ids.update(field.get_translation_ids())
 
+                self.is_ready = True
+        else:
+            self.is_ready = False
+
         # (3) Parse calculated fields & obtains object form.
         # Check that all calculated fields are using only constants or mandatory form variables.
         calc_flds = self.calculated_fields_obj
@@ -402,7 +407,7 @@ class Form(Model):
         schema_obj = instance.schema_obj
         if schema_obj is not None and len(schema_obj) != 0:
             for fld in iterate_form_fields(schema_obj):
-                print "\tPushing :" , fld.label
+                # print "\tPushing :" , fld.label
                 FormFieldMetaData.objects(
                     form_id = str(instance.id),
                     label = fld.label,

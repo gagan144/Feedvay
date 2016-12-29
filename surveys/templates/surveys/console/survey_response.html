@@ -20,6 +20,19 @@
             font-weight: 600;
             width: 70px;
         }
+
+        .question{
+            font-weight: 600;
+        }
+
+        .answer{
+            padding-left: 10px;
+        }
+
+        .other_question{
+            margin-top: 10px;
+            padding-left: 10px;
+        }
     </style>
 {% endblock %}
 
@@ -298,11 +311,37 @@
                             </h2>
                             <hr style="margin-top: 15px;" />
 
-                            <!-- Answers -->
-                            <div>
-                                {{ response.answers }}
-                            </div>
-                            <!-- /Answers -->
+                            {% with response_data=answer_sheet|get_item:response.phase_id %}
+                                <!-- Answers -->
+                                <div>
+                                    {% for ques in response_data.answers %}
+                                        <div class="form-group">
+                                            <label class="question">{{ ques.question_text }}</label>
+                                            <div class="answer">
+                                                {% if ques.answer|get_python_type:"name" == 'BaseList' %}
+                                                    <ul>
+                                                        {% for a in ques.answer %}
+                                                            <li>{{ a }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                {% else %}
+                                                    {{ ques.answer|default_if_none:"-" }}
+                                                {% endif %}
+                                            </div>
+
+                                            {% if ques.other_answer %}
+                                                <div class="other_question">
+                                                    <label class="question">{{ ques.other_answer.question_text }}</label>
+                                                    <div class="answer">{{ ques.other_answer.answer|default_if_none:"-" }}</div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                                    {% endfor %}
+                                </div>
+                                <!-- /Answers -->
+                            {% endwith %}
+
                         </div>
                     </div>
                 </div>

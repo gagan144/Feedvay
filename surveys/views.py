@@ -13,8 +13,8 @@ from mongoengine.errors import DoesNotExist as DoesNotExist_mongo
 
 from surveys.models import Survey, SurveyPhase, SurveyCategory, SurveyResponse
 from surveys.decorators import *
-from languages.models import Language
-from form_builder.models import Form
+from languages.models import Language, Translation
+from form_builder.models import Form, iterate_form_fields
 from form_builder.utils import GeoLocation
 from accounts.models import RegisteredUser
 from utilities.decorators import registered_user_only
@@ -335,9 +335,51 @@ def console_survey_response(request, survey, response_uid):
     try:
         response = SurveyResponse.objects.get(survey_uid=survey.survey_uid, response_uid=response_uid)
 
+        # --- Create answer sheet JSON ---
+        answer_sheet = {}
+
+        # For every phase response
+        form = response.phase.form
+
+        lookup_translation = form.get_translation_lookup()
+        response_ans_done = []
+        answer_sheet[response.phase_id] = {
+            "answers":[],
+            "obsolete_answers": [],
+            "constants": [],
+            "calculated":[]
+        }
+
+
+        # Set answers that are currently in the questionnaire
+        for node in iterate_form_fields(form.schema_obj):
+            data = {
+                "question_text": lookup_translation[node.text_translation_id].sentence,
+                "answer": response.answers.get(node.label)
+            }
+            other_answer = response.answers_other.get(node.label)
+            if other_answer:
+                data['other_answer'] = {
+                    "question_text": node.other_question, #lookup_translation[node.text_translation_id].sentence,
+                    "answer": other_answer
+                }
+
+            answer_sheet[response.phase_id]["answers"].append(data)
+            response_ans_done.append(node.label)
+
+        # Set answers that have been removed
+
+        # Set Constants
+
+        # Set calculated fields
+
+        # --- /Create answer sheet JSON ---
+
+
         data = {
             "survey": survey,
             "response": response,
+            "answer_sheet": answer_sheet,
             "app_name": "app_survey_response"
         }
         return render(request, 'surveys/console/survey_response.html', data)

@@ -465,3 +465,7 @@ class SurveyResponse(BaseResponse):
             'phase_id'
         ]
     }
+
+    @property
+    def phase(self):
+        return SurveyPhase.objects.get(id=self.phase_id)

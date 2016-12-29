@@ -40,6 +40,8 @@ def get_user_readable(user_id, display_format):
     :param user_id: :class:`django.contrib.auth.models.User` instance id
     :param display_format: Display format: *, username, full_name, first_name
     :return: Display string
+
+    **Authors**: Gagandeep Singh
     """
 
     s = ''
@@ -58,3 +60,17 @@ def get_user_readable(user_id, display_format):
         pass
 
     return s
+
+@register.filter
+def get_python_type(obj, format_type):
+    """
+    Returns python type of the object.
+    :param obj: Object
+    :param format_type: None- Python class, 'name'- string name
+    :return: Python type
+
+    **Authors**: Gagandeep Singh
+    """
+    t = type(obj)
+
+    return t if format_type is None else t.__name__

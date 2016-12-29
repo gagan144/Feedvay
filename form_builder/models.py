@@ -525,6 +525,7 @@ class BaseResponse(Document):
             (TYPE_USER_DEFINED, 'User defined'),
         )
 
+        id      = StringField(required=True, help_text="GUID for this reason.")
         type    = StringField(required=True, choices=CH_TYPE, help_text='Type of reason.')
         text    = StringField(required=True, help_text="Text describing the reason")
         user_id = StringField(help_text='Primary key of auth.models.user who marked this as suspicious. Empty if marked by the system.')
@@ -673,6 +674,48 @@ class BaseResponse(Document):
         """
         time_format = str(timedelta(seconds=self.duration)).split('.')[0]
         return time_format
+
+    def suspicion_add(self, type, text, user_id):
+        """
+        Method to add suspicion to this response.
+        :param type: Type of suspicion
+        :param text: text of suspicion
+        """
+
+        suspicion = BaseResponse.SuspectReason(
+            id =str(uuid.uuid4()),
+            type = type,
+            text = text,
+            user_id = str(user_id)
+        )
+        self.flags.suspect_reasons.append(suspicion)
+        self.flags.suspect = True
+        self.save()
+
+    def suspicion_remove(self, reason_id):
+        """
+        Method to remove a suspicion reason.
+
+        :param reason_id: Reason id to be removed
+        :return: True if successful, False if id not found
+
+        **Authors**: Gagandeep Singh
+        """
+
+        success = False
+        for idx, rsn in enumerate(self.flags.suspect_reasons):
+            if rsn.id == reason_id:
+                del self.flags.suspect_reasons[idx] # TODO: Not removing, adding null
+                success = True
+                break
+
+        if len(self.flags.suspect_reasons) == 0:
+            self.flags.suspect = False
+
+        self.save()
+
+        return success
+
 
     def save(self, deep_save=True, *args, **kwargs):
         """

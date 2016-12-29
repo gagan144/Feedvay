@@ -418,4 +418,66 @@ def console_survey_response(request, survey, response_uid):
     except DoesNotExist_mongo:
         raise Http404("Invalid link.")
 
+
+@registered_user_only
+@survey_access_firewall
+def console_remove_response_suspicion(request, survey):
+    """
+    API view to remove suspicion reason from a response.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        try:
+            response_uid = request.POST['response_uid']
+            reason_id = request.POST['reason_id']
+
+            response = SurveyResponse.objects.get(survey_uid=survey.survey_uid, response_uid=response_uid)
+
+            success = response.suspicion_remove(reason_id)
+            if not success:
+                raise IndexError('Invalid reason id.')
+
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok').gen_http_response()
+        except KeyError:
+            return ApiResponse(status=ApiResponse.ST_BAD_REQUEST, message='Missing parameters.').gen_http_response()
+        except (DoesNotExist_mongo, IndexError, ValueError):
+            return ApiResponse(status=ApiResponse.ST_UNAUTHORIZED, message='Invalid parameters.').gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+@registered_user_only
+@survey_access_firewall
+def console_add_response_suspicion(request, survey):
+    """
+    API view to add suspicion reason from a response.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        try:
+            response_uid = request.POST['response_uid']
+            text = request.POST['text']
+
+            response = SurveyResponse.objects.get(survey_uid=survey.survey_uid, response_uid=response_uid)
+
+            response.suspicion_add(
+                type = SurveyResponse.SuspectReason.TYPE_USER_DEFINED,
+                text = text,
+                user_id = request.user.id
+            )
+
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok').gen_http_response()
+        except KeyError:
+            return ApiResponse(status=ApiResponse.ST_BAD_REQUEST, message='Missing parameters.').gen_http_response()
+        except (DoesNotExist_mongo, IndexError, ValueError):
+            return ApiResponse(status=ApiResponse.ST_UNAUTHORIZED, message='Invalid parameters.').gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 # ==================== /Console ====================

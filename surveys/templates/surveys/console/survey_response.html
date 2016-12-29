@@ -11,6 +11,7 @@
 
     <title>Response - {{ survey.title }}</title>
 
+    <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
     <style>
         .panel_heading_white{
             background-color: #ffffff !important;
@@ -32,6 +33,12 @@
         .other_question{
             margin-top: 10px;
             padding-left: 10px;
+        }
+
+        .btn_close{
+            font-size: 16px;
+            line-height: inherit !important;
+            float: inherit !important;
         }
     </style>
 {% endblock %}
@@ -76,10 +83,11 @@
                                     This response has been identified as suspicious due to following reasons:
                                     <ul style="margin-top: 5px">
                                         {% for rsn in response.flags.suspect_reasons %}
-                                            <li>
+                                            <li id="suspicion_{{ rsn.id }}">
                                                 {{ rsn.text }}
                                                 {% if rsn.type == 'user_defined' %}
                                                     <small style="margin-left: 15px;font-style:italic;">- {{ rsn.user_id|get_user_readable:"full_name" }}</small>
+                                                    <button class="close btn_close" type="button" ng-click="remove_suspicion('{{ rsn.id }}');">×</button>
                                                 {% endif %}
                                             </li>
                                         {% endfor %}
@@ -417,6 +425,16 @@
                                 {% endif %}
                             {% endwith %}
 
+                            <!-- Actions -->
+                            <div >
+                                <hr/>
+                                <button class="btn btn-danger" type="button" ng-click="add_suspicion()">
+                                    <i class="fa fa-question"></i>&nbsp;
+                                    Mark suspicious
+                                </button>
+                            </div>
+                            <!-- /Actions -->
+
                         </div>
                     </div>
                 </div>
@@ -431,8 +449,12 @@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}lib/maps/markerwithlabel_1_1_10.js"></script>
 
+    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/uievents/event.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/uimaps/ui-map.js"></script>
+
+    <script type="text/javascript" src="{% get_static_prefix %}apps/surveys/surveys.js"></script>
 
     <script>
         'use strict';
@@ -441,12 +463,14 @@
             'feedvay.uiapp',
             'feedvay.common',
             'feedvay.watchdog',
+            'feedvay.surveys',
 
             'ngCookies',
             'ngMessages',
             'ngSanitize',
             'ui.bootstrap',
             'angular-ladda',
+            'oitozero.ngSweetAlert',
             'ui.event',
             'ui.map'
         ])
@@ -464,7 +488,102 @@
             $http.defaults.xsrfHeaderName = 'X-CSRFToken';
         });
 
-        APP.controller('MainCtrl', function ($scope) {
+        APP.controller('MainCtrl', function ($scope, SweetAlert, ServiceSurveyResponses) {
+            // Suspicion
+            $scope.add_suspicion = function(){
+                SweetAlert.swal({
+                    title: "Mark suspicious!",
+                    text: "Please enter reason for marking this response as suspicious",
+                    type: 'input',
+                    inputPlaceholder: "Write reason",
+                    confirmButtonColor: "#DD6B55",
+                    showCancelButton: true,
+                    confirmButtonText: "Ok, mark!",
+                    cancelButtonText: "No, cancel!",
+                    closeOnConfirm: false,
+                    closeOnCancel: true,
+                    allowEscapeKey: true
+                },
+                function (inputValue) {
+                    if (inputValue === false) return false;
+                    if (inputValue === "") {
+                        swal.showInputError("You need to write something!");
+                        return false
+                    }
+
+                    ServiceSurveyResponses.response_suspicion_add('{{ survey.survey_uid }}', '{{ response.response_uid }}', inputValue).then(
+                        function(response_data){
+                            if(response_data.status=='success') {
+                                SweetAlert.swal("Success!", "This response has been marke suspicious.", "success");
+                            }else{
+                                $.growl.error({
+                                    title: '<i class="fa fa-exclamation-triangle"></i> Denied!',
+                                    message: 'Enable to mark suspicious.'
+                                });
+                            }
+                        },
+                        function(response_data){
+                            if (response_data.status != -1) {
+                                $.growl.error({
+                                    title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                    message: 'Something went wrong. Our engineers will be informed.'
+                                });
+                            } else {
+                                $.growl.error({
+                                    title: '<i class="fa fa-signal"></i> Network error!',
+                                    message: "Please check your internet connection."
+                                });
+                            }
+                        }
+                    )
+                });
+            };
+
+            $scope.remove_suspicion = function(reason_id){
+                SweetAlert.swal({
+                    title: "Are you sure?",
+                    text: "Do you want to remove this suspicion?",
+                    type: 'warning',
+                    confirmButtonColor: "#DD6B55",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, remove!",
+                    cancelButtonText: "No, cancel!",
+                    closeOnConfirm: false,
+                    closeOnCancel: true,
+                    allowEscapeKey: true
+                },
+                function (isConfirm) {
+                    if (isConfirm) {
+                        ServiceSurveyResponses.response_suspicion_remove('{{ survey.survey_uid }}', '{{ response.response_uid }}', reason_id).then(
+                            function(response_data){
+                                if(response_data.status=='success') {
+                                    swal.close();
+                                    $("#suspicion_" + reason_id).remove();
+                                }else{
+                                    $.growl.error({
+                                        title: '<i class="fa fa-exclamation-triangle"></i> Denied!',
+                                        message: 'Enable to remove suspicion.'
+                                    });
+                                }
+                            },
+                            function(response_data){
+                                if (response_data.status != -1) {
+                                    $.growl.error({
+                                        title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                        message: 'Something went wrong. Our engineers will be informed.'
+                                    });
+                                } else {
+                                    $.growl.error({
+                                        title: '<i class="fa fa-signal"></i> Network error!',
+                                        message: "Please check your internet connection."
+                                    });
+                                }
+                            }
+                        )
+                    }
+                });
+            };
+
             {% if response.location.coordinates %}
                 // --- Map ---
                 {% with location=response.location %}

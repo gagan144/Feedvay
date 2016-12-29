@@ -14,5 +14,32 @@ angular.module('feedvay.surveys', [])
             return response.data;
         });
     }
+
+    this.response_suspicion_remove = function(survey_uid, response_uid, reason_id){
+        return $http.post(
+            '/console/surveys/response/suspicion/remove/',
+            $.param({
+                'survey_uid': survey_uid,
+                'response_uid': response_uid,
+                'reason_id': reason_id
+            })
+        ).then(function (response) {
+            return response.data;
+        });
+    }
+
+    this.response_suspicion_add = function(survey_uid, response_uid, text){
+        return $http.post(
+            '/console/surveys/response/suspicion/add/',
+            $.param({
+                'survey_uid': survey_uid,
+                'response_uid': response_uid,
+                'text': text
+            })
+        ).then(function (response) {
+            return response.data;
+        });
+    }
+
 })
 // ---------- /Services ----------

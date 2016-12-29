@@ -18,7 +18,7 @@ from mongoengine.base.fields import BaseField
 
 from django.core.exceptions import ValidationError
 import uuid
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from django.template.defaultfilters import slugify
 from django.conf import settings
 import random
@@ -365,6 +365,13 @@ class Form(Model):
                 data_dict[key] = val.isoformat()
         return data_dict
 
+    def get_all_formfields(self):
+        """
+        Method that returns all form fields (current & removed) for this form.
+        :return: List<:class:`form_builder.models.FormFieldMetaData`>
+        """
+        return FormFieldMetaData.objects.filter(form_id=str(self.id))
+
 
     # --- Clean & Save ---
     def clean(self):
@@ -657,6 +664,15 @@ class BaseResponse(Document):
         **Authors**: Gagandeep Singh
         """
         return RegisteredUser.objects.get(user__username=self.user.username)
+
+    def get_duration_time(self):
+        """
+        Method to return duration in time format HH:MM:SS.
+
+        **Authors**: Gagandeep Singh
+        """
+        time_format = str(timedelta(seconds=self.duration)).split('.')[0]
+        return time_format
 
     def save(self, deep_save=True, *args, **kwargs):
         """

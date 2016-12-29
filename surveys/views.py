@@ -14,7 +14,7 @@ from mongoengine.errors import DoesNotExist as DoesNotExist_mongo
 from surveys.models import Survey, SurveyPhase, SurveyCategory, SurveyResponse
 from surveys.decorators import *
 from languages.models import Language, Translation
-from form_builder.models import Form, iterate_form_fields
+from form_builder.models import Form, FormFieldMetaData, iterate_form_fields
 from form_builder.utils import GeoLocation
 from accounts.models import RegisteredUser
 from utilities.decorators import registered_user_only
@@ -347,7 +347,7 @@ def console_survey_response(request, survey, response_uid):
             "answers":[],
             "obsolete_answers": [],
             "constants": [],
-            "calculated":[]
+            "calculated_fields":[]
         }
 
 
@@ -355,7 +355,7 @@ def console_survey_response(request, survey, response_uid):
         for node in iterate_form_fields(form.schema_obj):
             data = {
                 "question_text": lookup_translation[node.text_translation_id].sentence,
-                "answer": response.answers.get(node.label)
+                "answer": response.answers.get(node.label, None)
             }
             other_answer = response.answers_other.get(node.label)
             if other_answer:
@@ -368,10 +368,42 @@ def console_survey_response(request, survey, response_uid):
             response_ans_done.append(node.label)
 
         # Set answers that have been removed
+        for label in response.answers.iteritems():
+            if label not in response_ans_done:
+                try:
+                    node = form.get_all_formfields().filter(label=label)[0]
+
+                    data = {
+                        "question_text": Translation.objects.get(pk=node.text_translation_id).sentence,
+                        "answer": response.answers.get(node.label, None)
+                    }
+                    other_answer = response.answers_other.get(node.label)
+                    if other_answer:
+                        data['other_answer'] = {
+                            "question_text": "Response for other option:",
+                            "answer": other_answer
+                        }
+
+                    answer_sheet[response.phase_id]["obsolete_answers"].append(data)
+                except IndexError:
+                    pass
 
         # Set Constants
+        for const in form.constants_obj:
+            data = {
+                "question_text": lookup_translation[const.text_translation_id].sentence,
+                "answer": response.calculated_fields.get(const.label, None)
+            }
+            answer_sheet[response.phase_id]["constants"].append(data)
 
         # Set calculated fields
+        for calcFld in form.calculated_fields_obj:
+            data = {
+                "question_text": lookup_translation[calcFld.text_translation_id].sentence,
+                "answer": response.calculated_fields.get(calcFld.label, None)
+            }
+            answer_sheet[response.phase_id]["calculated_fields"].append(data)
+
 
         # --- /Create answer sheet JSON ---
 

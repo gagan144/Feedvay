@@ -2,7 +2,7 @@
 {# Content in this document can not be copied and/or distributed without the express #}
 {# permission of Gagandeep Singh. #}
 {% extends 'console/base.html' %}
-{% load static commontags %}
+{% load static commontags humanize %}
 
 {% block head %}
     <!-- Favicon -->
@@ -124,6 +124,19 @@
                             <i class="fa fa-tags"></i>&nbsp;&nbsp;Metadata
                         </div>
                         <div class="panel-body" style="line-height: 1.6">
+                            <div>
+                                <i class="fa fa-play list_md_icon"></i>
+                                <span class="semi_bold">Started at:</span> {{ response.start_time|date:"h:i A" }}
+                            </div>
+                            <div>
+                                <i class="fa fa-stop list_md_icon"></i>
+                                <span class="semi_bold">Finished at:</span> {{ response.end_time|date:"h:i A" }}
+                            </div>
+                            <div>
+                                <i class="fa fa-clock-o list_md_icon"></i>
+                                <span class="semi_bold">Duration:</span> {{ response.get_duration_time }}
+                            </div>
+
                             {% with flags=response.flags %}
                                 {% if flags.description_read %}
                                     <div>
@@ -336,10 +349,72 @@
                                                 </div>
                                             {% endif %}
                                         </div>
-                                        <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                                        {% if not forloop.last %}
+                                            <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                                        {% endif %}
                                     {% endfor %}
                                 </div>
                                 <!-- /Answers -->
+
+                                {% if response_data.obsolete_answers|length %}
+                                    <!-- Obsolete Answers -->
+                                    <div class="gray-bg" style="padding: 10px;margin-top: 30px;">
+                                        <div style="font-style: italic; font-weight: 600;margin-bottom: 10px;">
+                                            Since your questionnaire was changed, this response contains answers to some
+                                            questions that have been removed:
+                                        </div>
+
+                                        {% for ques in response_data.obsolete_answers %}
+                                            <div class="form-group">
+                                                <label class="question">{{ ques.question_text }}</label>
+                                                <div class="answer">
+                                                    {% if ques.answer|get_python_type:"name" == 'BaseList' %}
+                                                        <ul>
+                                                            {% for a in ques.answer %}
+                                                                <li>{{ a }}</li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    {% else %}
+                                                        {{ ques.answer|default_if_none:"-" }}
+                                                    {% endif %}
+                                                </div>
+
+                                                {% if ques.other_answer %}
+                                                    <div class="other_question">
+                                                        <label class="question">{{ ques.other_answer.question_text }}</label>
+                                                        <div class="answer">{{ ques.other_answer.answer|default_if_none:"-" }}</div>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            {% if not forloop.last %}
+                                                <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <!-- /Obsolete Answers -->
+                                {% endif %}
+
+
+                                {% if response_data.calculated_fields|length %}
+                                    <!-- CalculatedFields -->
+                                    <div class="panel panel-default" style="margin-top: 30px;">
+                                        <div class="panel-heading">
+                                            <i class="fa fa-calculator"></i>&nbsp;&nbsp;Calculated fields
+                                        </div>
+                                        <div class="panel-body">
+                                            {% for ques in response_data.calculated_fields %}
+                                                <div class="form-group">
+                                                    <label class="question">{{ ques.question_text }}</label>
+                                                    <div class="answer">{{ ques.answer|default_if_none:"-" }}</div>
+                                                </div>
+                                                {% if not forloop.last %}
+                                                    <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <!-- /CalculatedFields -->
+                                {% endif %}
                             {% endwith %}
 
                         </div>

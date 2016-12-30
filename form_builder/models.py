@@ -289,7 +289,8 @@ class Form(Model):
         if constants:
             for const in constants:
                 push_list_varnames(str(const.label))
-                set_translation_ids.add(const.text_translation_id)
+                if const.text_translation_id is not None:
+                    set_translation_ids.add(const.text_translation_id)
 
         # (2) Parse schema JSON & obtain schema obj. This will check any schema errors.
         schema_obj = self.schema_obj
@@ -319,7 +320,8 @@ class Form(Model):
             for calcfld in calc_flds:
                 push_list_varnames(str(calcfld.label))
                 list_vars_in_expr = calcfld.get_expression_variables()
-                set_translation_ids.add(calcfld.text_translation_id)
+                if calcfld.text_translation_id is not None:
+                    set_translation_ids.add(calcfld.text_translation_id)
 
                 for absolute_var in list_vars_in_expr:
                     varname = absolute_var.replace("$scope.", "").replace("data.", "").replace("constants.", "")

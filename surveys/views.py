@@ -402,7 +402,34 @@ def console_survey_phase_form_save(request, survey, phase_id):
             translation = json.loads(request.POST['translations'])
 
             with transaction.atomic():
-                # Form save
+                # --- Translation ---
+                lookup_trans_id = {}    # Lookup for UI id to actual db id
+                for tid, trans_data in translation.iteritems():
+                    if tid.startswith('NEW'):
+                        new_trans = Translation.objects.create(
+                            is_paragraph = trans_data.get('is_paragraph', False),
+                            sentence = trans_data['sentence'],
+                            translations = trans_data.get('translations', {}),
+                            always_include_in_form = True
+                        )
+                        lookup_trans_id[tid] = str(new_trans.pk)
+                    else:
+                        print "Update old"
+                        lookup_trans_id[tid] = tid
+                        Translation.objects(
+                            id = tid
+                        ).update_one(
+                            set__is_paragraph = trans_data.get('is_paragraph', False),
+                            set__sentence = trans_data['sentence'],
+                            set__translations = trans_data.get('translations', {}),
+                            set__always_include_in_form = True,
+
+                            upsert=True
+                        )
+
+                # --- Form save ---
+                form.description = lookup_trans_id.get(form_data.get('description', None), None)
+                form.instructions = lookup_trans_id.get(form_data.get('instructions', None), None)
                 form.user_notes = form_data.get('user_notes', None)
 
                 # languages
@@ -416,10 +443,21 @@ def console_survey_phase_form_save(request, survey, phase_id):
                 else:
                     form.languages.remove()
 
+                # Constants
+                constants_corrected =  form_data.get('constants', [])
+                for cons in constants_corrected:
+                    if cons.has_key('text_translation_id'):
+                        cons['text_translation_id'] = lookup_trans_id.get(cons['text_translation_id'], None)
+                form.constants = constants_corrected
 
-                # form.constants = form_data.get('constants', [])
                 # form.schema = form_data.get('schema', [])
-                # form.calculated_fields = form_data.get('calculated_fields', [])
+
+                # CalculatedFields
+                calc_flds_corrected =  form_data.get('calculated_fields', [])
+                for calFld in calc_flds_corrected:
+                    if calFld.has_key('text_translation_id'):
+                        calFld['text_translation_id'] = lookup_trans_id.get(calFld['text_translation_id'], None)
+                form.calculated_fields = calc_flds_corrected
 
                 timeout = form_data.get('timeout', None)
                 if timeout == '':
@@ -435,7 +473,7 @@ def console_survey_phase_form_save(request, survey, phase_id):
 
                 form.save()
 
-            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok').gen_http_response()
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok', is_ready=True).gen_http_response()
         except SurveyPhase.DoesNotExist:
             return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Invalid/unauthorized access.').gen_http_response()
     else:

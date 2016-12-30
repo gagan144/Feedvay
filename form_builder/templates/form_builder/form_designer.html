@@ -233,7 +233,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="wrapper wrapper-content">
+    <div class="wrapper wrapper-content" style="padding-top: 20px;">
         <div class="container">
                 <div ng-cloak>
                 <!-- Modals Templates -->
@@ -405,6 +405,25 @@
                     </form>
                 </script>
                 <!-- /Modals Templates -->
+
+
+                <div class="alert alert-warning" ng-if="!IS_READY" ng-controller="MsgController">
+                    <table style="width: 100%">
+                        <tr>
+                            <td valign="top" style="width: 60px;">
+                                <i class="fa fa-exclamation-triangle" style="font-size: 40px;"></i>
+                            </td>
+                            <td valign="top">
+                                <h3 style="margin-top: 0px;margin-bottom: 5px;">
+                                    Your questionnaire is not ready!
+                                </h3>
+                                <div>
+                                    Please add atleast one question to this questionnaire.
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
 
                 <div class="tabs-container animated fadeInRight">
                     <ul class="nav nav-tabs">
@@ -1255,6 +1274,7 @@
                     {% endfor %}
                 }
                 {% else %}{}{% endif %};
+                $rootScope.IS_READY = {% if form.is_ready %}true{% else %}false{% endif %};
                 $rootScope.FormData = {% if form %}{{ form.to_json|jsonify|safe }}{% else %}{schema:[]}{% endif %};
 
                 $rootScope.META_QUESTIONS = [];
@@ -1550,7 +1570,11 @@
         });
 
         // ---------- SaveController ----------
-        app.controller('SaveController', function($scope, $rootScope, $http){
+        app.controller('MsgController', function($scope, $rootScope){
+
+        });
+
+        app.controller('SaveController', function($scope, $rootScope, $http, $window){
             $scope.flags = {
                 loading: false
             };
@@ -1573,10 +1597,12 @@
                             console.log(response);
 
                             if (response.data.status == 'success') {
+                                $rootScope.IS_READY = response.data.is_ready;
                                 $.growl.notice({
                                     title: '<i class="fa fa-check"></i> Success!',
                                     message: 'Your questionnaire has been saved.'
                                 });
+                                $window.location.reload();
                             }else{
                                 $.growl.error({
                                     title: '<i class="fa fa-exclamation-triangle"></i> Error!',
@@ -1585,7 +1611,7 @@
                             }
                         },
                         function (response){
-                            $scope.flags.loading = false;
+{#                            $scope.flags.loading = false;#}
                             if (response.status != -1) {
                                 $.growl.error({
                                     title: '<i class="fa fa-exclamation-triangle"></i> Error!',

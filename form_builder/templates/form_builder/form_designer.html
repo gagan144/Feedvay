@@ -1574,7 +1574,7 @@
 
         });
 
-        app.controller('SaveController', function($scope, $rootScope, $http, $window){
+        app.controller('SaveController', function($scope, $rootScope, $http, $window, SweetAlert){
             $scope.flags = {
                 loading: false
             };
@@ -1598,15 +1598,22 @@
 
                             if (response.data.status == 'success') {
                                 $rootScope.IS_READY = response.data.is_ready;
-                                $.growl.notice({
-                                    title: '<i class="fa fa-check"></i> Success!',
-                                    message: 'Your questionnaire has been saved.'
+
+                                SweetAlert.swal({
+                                    title: "Saved!",
+                                    text: "Your questionnaire has been saved. <br/>Refreshing now ...",
+                                    type: "success",
+                                    html: true,
+                                    showConfirmButton: false
                                 });
+
                                 $window.location.reload();
                             }else{
-                                $.growl.error({
-                                    title: '<i class="fa fa-exclamation-triangle"></i> Error!',
-                                    message: response.data.message
+                                SweetAlert.swal({
+                                    title: "Unable to save changes!",
+                                    text: response.data.message,
+                                    type: "error",
+                                    html: true,
                                 });
                             }
                         },

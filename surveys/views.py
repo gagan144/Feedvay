@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.db.models import Q
 from django.utils import timezone
 from django_fsm import TransitionNotAllowed
+from django.db import transaction
 
 import json
 from django.views.decorators.csrf import csrf_exempt
@@ -366,6 +367,7 @@ def console_survey_phase_form_editor(request, survey, phase_id=None):
             phase = survey.surveyphase_set.get(id=int(phase_id))
 
         data ={
+            'TYPE': 'SURVEY',
             'survey': survey,
             'phase': phase,
             'form': phase.form,
@@ -380,6 +382,65 @@ def console_survey_phase_form_editor(request, survey, phase_id=None):
         raise Http404("Invalid survey.")
     except SurveyPhase.DoesNotExist:
         raise Http404("Invalid survey phase.")
+
+@registered_user_only
+@survey_access_firewall
+def console_survey_phase_form_save(request, survey, phase_id):
+    """
+    API view to save survey form.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        try:
+            phase = survey.surveyphase_set.get(id=phase_id)
+
+            form = phase.form
+            form_data = json.loads(request.POST['form_data'])
+            translation = json.loads(request.POST['translations'])
+
+            with transaction.atomic():
+                # Form save
+                form.user_notes = form_data.get('user_notes', None)
+
+                # languages
+                language_codes = form_data['language_codes']
+                if len(language_codes):
+                    list_langs = []
+                    for code in language_codes:
+                        lang = Language.objects.get(code=code)
+                        list_langs.append(lang)
+                    form.languages = list_langs
+                else:
+                    form.languages.remove()
+
+
+                # form.constants = form_data.get('constants', [])
+                # form.schema = form_data.get('schema', [])
+                # form.calculated_fields = form_data.get('calculated_fields', [])
+
+                timeout = form_data.get('timeout', None)
+                if timeout == '':
+                    timeout = None
+                form.timeout = timeout
+                form.show_timer = form_data.get('show_timer', None)
+                form.randomize = form_data.get('randomize', None)
+                form.gps_enabled = form_data.get('gps_enabled', None)
+                form.gps_required = form_data.get('gps_required', None)
+                form.gps_high_accuracy = form_data.get('gps_high_accuracy', None)
+                form.gps_max_radius = form_data.get('gps_max_radius', None)
+                form.gps_max_age_allowed = form_data.get('gps_max_age_allowed', None)
+
+                form.save()
+
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok').gen_http_response()
+        except SurveyPhase.DoesNotExist:
+            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Invalid/unauthorized access.').gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
 @registered_user_only
 @survey_access_firewall

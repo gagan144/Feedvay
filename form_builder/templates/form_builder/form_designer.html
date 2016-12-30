@@ -200,18 +200,34 @@
 {% endblock %}
 
 {% block page_header %}
-    <div class="row wrapper border-bottom white-bg page-heading">
-        <div class="col-xs-12">
-            <h2>Design Form</h2>
-            <ol class="breadcrumb">
-                <li>
-                    <a href="{% url 'console_home' %}">Home</a>
-                </li>
-                <li>Forms</li>
-                <li class="active">
-                    Design
-                </li>
-            </ol>
+    <div class="row wrapper border-bottom white-bg page-heading" ng-controller="SaveController">
+        <div class="col-xs-10">
+            {% if TYPE == 'SURVEY' %}
+                <h2>{{ survey.title }}</h2>
+
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="{% url 'console_home' %}">Home</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'console_surveys' %}">Surveys</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'console_survey_panel' survey.survey_uid %}">{{ survey.title }}</a>
+                    </li>
+                    <li class="active">
+                        Questionnaire
+                    </li>
+                </ol>
+            {% endif %}
+        </div>
+        <div class="col-xs-2">
+            <div class="title-action" style="padding-top: 20px !important;">
+                <button class="btn btn-primary ladda-button" ladda="flags.loading" data-style="zoom-in" ng-click="save_continue()">
+{#                    <i class="fa fa-save"></i>&nbsp;&nbsp;#}
+                    Save & continue
+                </button>
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -1162,7 +1178,8 @@
             'ui.sortable',
             'ui.tree',
             'hljs',
-            'oitozero.ngSweetAlert'
+            'oitozero.ngSweetAlert',
+            'angular-ladda',
         ]).config(function($interpolateProvider, $httpProvider, hljsServiceProvider) {
                 $interpolateProvider.startSymbol('{$');
                 $interpolateProvider.endSymbol('$}');
@@ -1530,6 +1547,61 @@
                     ngModel.$formatters.push(validate_func);   // For model -> DOM validation
                 }
             };
+        });
+
+        // ---------- SaveController ----------
+        app.controller('SaveController', function($scope, $rootScope, $http){
+            $scope.flags = {
+                loading: false
+            };
+
+            $scope.save_continue = function(){
+                var data_form_data = angular.copy($rootScope.FormData);
+                var data_translation = angular.copy($rootScope.Translations);
+
+                {% if TYPE == 'SURVEY' %}
+                    $scope.flags.loading = true;
+                    return $http.post(
+                        '{% url 'console_survey_phase_form_save' survey.survey_uid phase.id %}',
+                        $.param({
+                            'form_data': JSON.stringify(data_form_data),
+                            'translations': JSON.stringify(data_translation)
+                        })
+                    ).then(
+                        function (response) {
+                            $scope.flags.loading = false;
+                            console.log(response);
+
+                            if (response.data.status == 'success') {
+                                $.growl.notice({
+                                    title: '<i class="fa fa-check"></i> Success!',
+                                    message: 'Your questionnaire has been saved.'
+                                });
+                            }else{
+                                $.growl.error({
+                                    title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                    message: response.data.message
+                                });
+                            }
+                        },
+                        function (response){
+                            $scope.flags.loading = false;
+                            if (response.status != -1) {
+                                $.growl.error({
+                                    title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                    message: 'Something went wrong. Our engineers will be informed.'
+                                });
+                            } else {
+                                $.growl.error({
+                                    title: '<i class="fa fa-signal"></i> Network error!',
+                                    message: "Please check your internet connection."
+                                });
+                            }
+                        }
+                    );
+                {% endif %}
+
+            }
         });
 
         // ---------- GeneralController ----------

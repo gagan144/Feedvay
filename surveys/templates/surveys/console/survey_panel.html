@@ -424,7 +424,10 @@
 {% block page_header %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-xs-11">
-            <h2>{{ survey.title }}</h2>
+            <h2>
+                {{ survey.title }}
+                <small style="font-size: 12px;margin-left: 10px;">({{ survey.start_date|date:"d-M-Y" }} to {{ survey.end_date|date:"d-M-Y" }})</small>
+            </h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{% url 'console_home' %}">Home</a>

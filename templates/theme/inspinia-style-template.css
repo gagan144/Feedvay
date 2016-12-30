@@ -3772,6 +3772,7 @@ img.circle-border {
   background-color: #ffffff;
   padding: 0;
   margin-bottom: 0;
+  font-size: 11px;
 }
 .breadcrumb > li a {
   color: inherit;

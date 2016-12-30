@@ -177,9 +177,9 @@ class Form(Model):
     theme_skin      = models.ForeignKey(ThemeSkin, on_delete=models.PROTECT, help_text='Theme to be used for this form.')
     languages       = models.ManyToManyField(Language, blank=True, help_text='Languages that are available to the form. English is by default.')
 
-    constants       = JSONField(null=True, blank=True, help_text='List of constants used in this form.')
+    constants       = JSONField(default=[], null=True, blank=True, help_text='List of constants used in this form.')
     schema          = JSONField(default=[], blank=True, help_text='Form schema in json format.')
-    calculated_fields = JSONField(null=True, blank=True, help_text='List of fields whoes values are calculated dynamically in the form based on a expression. These are calculated in the order of declaration.')
+    calculated_fields = JSONField(default=[], null=True, blank=True, help_text='List of fields whoes values are calculated dynamically in the form based on a expression. These are calculated in the order of declaration.')
 
     # Form settings
     timeout         = models.IntegerField(default=None, null=True, blank=True, help_text='Defines the number of seconds after which form expires.')

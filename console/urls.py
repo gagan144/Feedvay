@@ -44,6 +44,7 @@ url_surveys = [
 
     url(r'^(?P<survey_uid>\w+)/edit/$', views_surveys.console_survey_phase_form_editor, name='console_survey_simple_form_editor'),
     url(r'^(?P<survey_uid>\w+)/edit/(?P<phase_id>[0-9]+)/$', views_surveys.console_survey_phase_form_editor, name='console_survey_phase_form_editor'),
+    url(r'^(?P<survey_uid>\w+)/(?P<phase_id>[0-9]+)/save/$', views_surveys.console_survey_phase_form_save, name='console_survey_phase_form_save'),
 
     url(r'^(?P<survey_uid>\w+)/response/(?P<response_uid>.*)/$', views_surveys.console_survey_response, name='console_survey_response'),
     url(r'^response/suspicion/remove/$', views_surveys.console_remove_response_suspicion, name='console_survey_remove_response_suspicion'),

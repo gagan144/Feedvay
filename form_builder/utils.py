@@ -32,6 +32,14 @@ class GeoLocation:
     COARSE = 'coarse'
     PASSABLE = 'passable'
 
+    choices = (
+        (PRECISE, 'Precise'),
+        (HIGH, 'High'),
+        (FINE, 'Fine'),
+        (COARSE, 'Coarse'),
+        (PASSABLE, 'Passable')
+    )
+
     choice_order = [PRECISE, HIGH, FINE, COARSE, PASSABLE]
 
     # Config Parameters for each option

@@ -703,8 +703,8 @@
                                                             </div>
                                                             <div class="form-group">
                                                                 <div class="checkbox checkbox-primary checkbox-inline">
-                                                                    <input id="fld_gps_required" type="checkbox" ng-model="FormData.gps_required" ng-disabled="!FormData.gps_enabled">
-                                                                    <label for="fld_gps_required">
+                                                                    <input id="fld_gps_mandatory" type="checkbox" ng-model="FormData.gps_mandatory" ng-disabled="!FormData.gps_enabled">
+                                                                    <label for="fld_gps_mandatory">
                                                                         Make location mandatory.
                                                                         <br/>
                                                                         <small>
@@ -718,32 +718,32 @@
                                                             <div class="form-group">
                                                                 <label ng-class="{'disabled_text': !FormData.gps_enabled }">Precision:</label>
                                                                 <div style="margin-left: 20px;">
-                                                                    <div class="radio radio-primary radio-inline" ng-repeat="choice in gps_choices">
-                                                                        <input type="radio" id="rd_gps_{$ choice.id $}" name="gps_choice" ng-value="choice.id" ng-disabled="!FormData.gps_enabled" ng-model="FormData.gps_choice">
+                                                                    <div class="radio radio-primary radio-inline" ng-repeat="choice in gps_precision_choices">
+                                                                        <input type="radio" id="rd_gps_{$ choice.id $}" name="gps_precision" ng-value="choice.id" ng-disabled="!FormData.gps_enabled" ng-model="FormData.gps_precision">
                                                                         <label for="rd_gps_{$ choice.id $}">
                                                                             {$ choice.name $}
                                                                             <br><small>{$ choice.description $}</small>
                                                                         </label>
                                                                     </div>
 
-                                                                    <div ng-if="FormData.gps_choice" class="well" style="margin: 20px 0px 0px 0px;width: auto !important;" >
+                                                                    <div ng-if="FormData.gps_precision" class="well" style="margin: 20px 0px 0px 0px;width: auto !important;" >
                                                                         <div style="font-weight: 600;font-size: large;">
-                                                                            {$ selected_gps_choice.name $}
+                                                                            {$ selected_gps_precision.name $}
                                                                         </div>
-                                                                        <small>{$ selected_gps_choice.remarks $}</small>
+                                                                        <small>{$ selected_gps_precision.remarks $}</small>
                                                                         <hr style="margin: 5px 0px;"/>
                                                                         <div style="padding-left: 15px;">
                                                                             <p style="margin-bottom: 5px;">
-                                                                                <i class="fa  text-navy" ng-class="{'fa-location-arrow': selected_gps_choice.high_accuracy, 'fa-signal':!selected_gps_choice.high_accuracy }"></i>&nbsp;&nbsp;
-                                                                                Use <b>{$ selected_gps_choice.high_accuracy?'Satellite based methods':'Network based methods' $}</b> to retrieve location.
+                                                                                <i class="fa  text-navy" ng-class="{'fa-location-arrow': selected_gps_precision.high_accuracy, 'fa-signal':!selected_gps_precision.high_accuracy }"></i>&nbsp;&nbsp;
+                                                                                Use <b>{$ selected_gps_precision.high_accuracy?'Satellite based methods':'Network based methods' $}</b> to retrieve location.
                                                                             </p>
-                                                                            <p style="margin-bottom: 5px;" ng-if="selected_gps_choice.max_radius">
+                                                                            <p style="margin-bottom: 5px;" ng-if="selected_gps_precision.max_radius">
                                                                                 <i class="fa fa-street-view text-navy"></i>&nbsp;&nbsp;
-                                                                                Location must be within <b>{$ selected_gps_choice.max_radius $} meters</b> of radius.
+                                                                                Location must be within <b>{$ selected_gps_precision.max_radius $} meters</b> of radius.
                                                                             </p>
                                                                             <p style="margin-bottom: 5px;">
                                                                                 <i class="fa fa-history text-navy"></i>&nbsp;&nbsp;
-                                                                                Location must not be older than <b>{$ selected_gps_choice.max_age/1000 $} seconds</b>.
+                                                                                Location must not be older than <b>{$ selected_gps_precision.max_age/1000 $} seconds</b>.
                                                                             </p>
                                                                         </div>
                                                                     </div>
@@ -1687,13 +1687,13 @@
                 mousewheel: false,
             };
 
-            $scope.gps_choices = {{ GeoLocation.get_choices|jsonify|safe }};
-            $scope.selected_gps_choice = null;
+            $scope.gps_precision_choices = {{ GeoLocation.get_choices|jsonify|safe }};
+            $scope.selected_gps_precision = null;
 
-            $rootScope.$watch('FormData.gps_choice', function(newValue, oldValue) {
-                for(var i in $scope.gps_choices){
-                    if($scope.gps_choices[i]["id"]==newValue){
-                        $scope.selected_gps_choice = $scope.gps_choices[i];
+            $rootScope.$watch('FormData.gps_precision', function(newValue, oldValue) {
+                for(var i in $scope.gps_precision_choices){
+                    if($scope.gps_precision_choices[i]["id"]==newValue){
+                        $scope.selected_gps_precision = $scope.gps_precision_choices[i];
                     }
                 }
             });

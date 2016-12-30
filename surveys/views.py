@@ -466,10 +466,8 @@ def console_survey_phase_form_save(request, survey, phase_id):
                 form.show_timer = form_data.get('show_timer', None)
                 form.randomize = form_data.get('randomize', None)
                 form.gps_enabled = form_data.get('gps_enabled', None)
-                form.gps_required = form_data.get('gps_required', None)
-                form.gps_high_accuracy = form_data.get('gps_high_accuracy', None)
-                form.gps_max_radius = form_data.get('gps_max_radius', None)
-                form.gps_max_age_allowed = form_data.get('gps_max_age_allowed', None)
+                form.gps_mandatory = form_data.get('gps_mandatory', None)
+                form.gps_precision = form_data.get('gps_precision', None)
 
                 form.save()
 

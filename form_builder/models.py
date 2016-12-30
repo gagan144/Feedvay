@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 import tinymce.models as tinymce_models
-from django_mysql.models import Model, ListTextField
+from django_mysql import models as models57
 from django_extensions.db.fields.json import JSONField
 from django_extensions.db.fields import CreationDateTimeField, ModificationDateTimeField
 from colorful.fields import RGBColorField
@@ -27,6 +27,7 @@ from django.forms.models import model_to_dict
 from accounts.models import RegisteredUser
 from form_builder import form_schema
 from form_builder.form_exceptions import DuplicateVariableName, ExpressionCompileError
+from form_builder.utils import GeoLocation
 from languages.models import Language, Translation
 from utilities.timezone_utils import validate_timezone_offset_string
 
@@ -163,7 +164,7 @@ class ThemeSkin(models.Model):
 
 # ---------- Form ----------
 
-class Form(Model):
+class Form(models57.Model):
     """
     Model to define a form.
 
@@ -186,13 +187,12 @@ class Form(Model):
     show_timer      = models.BooleanField(default=False, help_text='In case \'timeout\' is set, this define whether to show timer or not.')
     randomize       = models.BooleanField(default=False, help_text='Randomize field order. ONLY applicable when there are no conditions.')
     gps_enabled     = models.BooleanField(default=True, help_text="Capture user location while filling form.")
-    gps_required    = models.BooleanField(default=False, help_text="If true, the gps location is madatory before form starts.")
-    gps_high_accuracy = models.BooleanField(default=True, help_text="If true, attempts to retrieve position using device gps otherwise, uses network-based methods.")
-    gps_max_radius  = models.IntegerField(null=True, blank=True, help_text='Max radius (in meters) that is acceptable for captured location.')
-    gps_max_age_allowed = models.IntegerField(default=10000, null=True, blank=True, help_text="Max age (in milliseconds) of GPS allowed to be used if capturing fails.")
+    gps_mandatory   = models.BooleanField(default=False, help_text="If true, the gps location is madatory before form starts.")
+    gps_precision   = models.CharField(max_length=16, choices=GeoLocation.choices, default=GeoLocation.FINE, help_text='GPS precision choice. This will automatically set gps config.')
+    gps_config      = models57.JSONField(default=None, blank=True, help_text='Gps configurations according to `gps_precision` choice resolved by :class:`form_builder.utils.GeoLocation`.')
 
     # Meta
-    translations    = ListTextField(base_field=models.CharField(max_length=128), null=False, blank=True, help_text="Comma seperated list of translations (languages.Translation) ids.")
+    translations    = models57.ListTextField(base_field=models.CharField(max_length=128), null=False, blank=True, help_text="Comma seperated list of translations (languages.Translation) ids.")
     is_ready        = models.BooleanField(default=False, editable=False, help_text='Tells if form is ready to be executed. This is verified on the fact that schema is not empty or [].')
     version         = models.UUIDField(default=uuid.uuid4, db_index=True, help_text='Auto generated form version.')
     created_on      = CreationDateTimeField(db_index=True, help_text='Date on which this form was created.')
@@ -387,7 +387,8 @@ class Form(Model):
         self.translations = list_translation_ids
 
         # Gps Settings
-        if self.gps_enabled == False and self.gps_required == True:
+        self.gps_config = GeoLocation.config[self.gps_precision]
+        if self.gps_enabled == False and self.gps_mandatory == True:
             raise ValidationError("GPS must be enabled before it is marked as mandatory.")
 
         if self.id:

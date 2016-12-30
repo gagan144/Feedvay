@@ -49,7 +49,7 @@
     </div>
 
     <div ng-controller="FormController" ng-cloak>
-        {% if form.gps_enabled and form.gps_required %}
+        {% if form.gps_enabled and form.gps_mandatory %}
             <div ng-if="!form_started" class="overlay" align="center" >
                 <div class="context" >
                     <i class="fa fa-map-marker text-primary" style="font-size: 90px;"></i>
@@ -685,9 +685,9 @@
                 var END_POINT_INFO = JSON.parse(MobileAPI.device_information());
 
                 // ---------- $scope variables ----------
-                $scope.form_started = {% if form.gps_enabled and form.gps_required %}false{% else %}true{% endif %};
+                $scope.form_started = {% if form.gps_enabled and form.gps_mandatory %}false{% else %}true{% endif %};
 
-                {% if form.gps_enabled and form.gps_required %}
+                {% if form.gps_enabled and form.gps_mandatory %}
                     $scope.finding_gps = true;
                 {% endif %}
 

@@ -463,11 +463,11 @@ def console_survey_phase_form_save(request, survey, phase_id):
                 if timeout == '':
                     timeout = None
                 form.timeout = timeout
-                form.show_timer = form_data.get('show_timer', None)
-                form.randomize = form_data.get('randomize', None)
-                form.gps_enabled = form_data.get('gps_enabled', None)
-                form.gps_mandatory = form_data.get('gps_mandatory', None)
-                form.gps_precision = form_data.get('gps_precision', None)
+                form.show_timer = form_data.get('show_timer', False)
+                form.randomize = form_data.get('randomize', False)
+                form.gps_enabled = form_data.get('gps_enabled', False)
+                form.gps_mandatory = form_data.get('gps_mandatory', False)
+                form.gps_precision = form_data.get('gps_precision', GeoLocation.FINE)
 
                 form.save()
 

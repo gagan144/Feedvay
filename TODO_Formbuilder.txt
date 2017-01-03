@@ -3,10 +3,7 @@
     - Correct unique label logic
     - Remove constant: Check for references in conditions & calcl fields befor delete
     - TouchSpin to start at 30 instead of 5
-    - FormDesigner: Use wizard instead of tab
     - What if constant translation is removed, how to remove translation from backend
-* Console
-    - Standardize all date formats
 
 * Form:
     * MCMS: Please select atleast choices. count missing
@@ -15,6 +12,7 @@
         * html_checkbox.html
         * Datepicker
         * switcher
+        * Rating lengend
     * Loader is not in center in Mobile web view: Mobile WebView issue; working fine in chrome
 
 

@@ -5,7 +5,11 @@
 {% load static commontags %}
 
 {% block head %}
-    <title>{% if form %}Edit{% else %}New{% endif %} Form | FormPOC</title>
+    <title>
+        {% if TYPE == 'SURVEY' %}
+            Edit {{ survey.title }} | Feedvay
+        {% endif %}
+    </title>
 
     <link href="{% get_static_prefix %}lib/bootstrap_3/css/bootstrap-addons.css" rel="stylesheet">
     <link href="{% get_static_prefix %}lib/select2/css/select2.css" rel="stylesheet">

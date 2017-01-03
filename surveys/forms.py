@@ -67,8 +67,7 @@ class SurveyCreateForm(forms.ModelForm):
                 # Since it is mongo, it is not rolled back on failure
                 trans_description = Translation.objects.create(
                     is_paragraph = True,
-                    sentence = new_survey.description,
-                    always_include_in_form = True
+                    sentence = new_survey.description
                 )
 
                 # Create form

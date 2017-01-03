@@ -4,6 +4,9 @@
     - Remove constant: Check for references in conditions & calcl fields befor delete
     - TouchSpin to start at 30 instead of 5
     - What if constant translation is removed, how to remove translation from backend
+    - Component UI:
+        - MCMSFormField template
+        - BinaryCondition template
 
 * Form:
     * MCMS: Please select atleast choices. count missing

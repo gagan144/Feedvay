@@ -33,9 +33,6 @@
 - Logo
 - SMS Gateway service classes
 
-- Form builder
-    - Select2 correction
-
 ------------- Low priority --------------
 
 - Brands

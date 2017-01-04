@@ -74,4 +74,5 @@ Contents
        decorators
        forms
        views
+       api
 

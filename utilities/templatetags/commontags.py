@@ -37,13 +37,13 @@ def get_item(dictionary, key):
 def get_user_readable(user_id, display_format):
     """
     Django templatetag that converts user id into readable user name.
+
     :param user_id: :class:`django.contrib.auth.models.User` instance id
-    :param display_format: Display format: *, username, full_name, first_name
+    :param display_format: Display format: \*, username, full_name, first_name
     :return: Display string
 
     **Authors**: Gagandeep Singh
     """
-
     s = ''
     try:
         user = User.objects.get(id=user_id)

@@ -5,6 +5,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.utils import timezone
 import tinymce.models as tinymce_models
 from django_mysql import models as models57
 from django_extensions.db.fields.json import JSONField
@@ -375,9 +376,10 @@ class Form(models57.Model):
     def get_all_formfields(self):
         """
         Method that returns all form fields (current & removed) for this form.
-        :return: List<:class:`form_builder.models.FormFieldMetaData`>
+        :return: List<:class:`form_builder.models.FormQuestion`>
         """
-        return FormFieldMetaData.objects.filter(form_id=str(self.id))
+        # return FormFieldMetaData.objects.filter(form_id=str(self.id))
+        return self.formquestion_set.all()
 
 
     # --- Clean & Save ---
@@ -410,22 +412,86 @@ class Form(models57.Model):
         schema_obj = instance.schema_obj
         if schema_obj is not None and len(schema_obj) != 0:
             for fld in iterate_form_fields(schema_obj):
-                # print "\tPushing :" , fld.label
-                FormFieldMetaData.objects(
-                    form_id = str(instance.id),
+                print "\tPushing :" , fld.label
+                FormQuestion.objects.update_or_create(
+                    form_id = instance.id,
                     label = fld.label,
-                    field_class = fld._cls
-                ).update_one(
-                    form_version = str(instance.version),
-                    text_ref = fld.text_ref,
-                    text_translation_id = fld.text_translation_id,
-                    required = fld.required,
-                    request_response = fld.request_response,
-                    dated = datetime.now(),
-                    upsert = True
+                    field_class = fld._cls,
+                    defaults = {
+                        "form_version": instance.version,
+                        "text_translation_id": fld.text_translation_id,
+                        "schema_json": fld.to_json(),
+                        "dated": timezone.now()
+                    }
                 )
+
+                # FormFieldMetaData.objects(
+                #     form_id = str(instance.id),
+                #     label = fld.label,
+                #     field_class = fld._cls
+                # ).update_one(
+                #     form_version = str(instance.version),
+                #     text_ref = fld.text_ref,
+                #     text_translation_id = fld.text_translation_id,
+                #     required = fld.required,
+                #     request_response = fld.request_response,
+                #     dated = datetime.now(),
+                #     upsert = True
+                # )
 post_save.connect(Form.post_save, sender=Form)
 
+class FormQuestion(models57.Model):
+    """
+    Model to store all form questions(fields) irrespective of order or conditions.
+    Thus, this model provides flat list of all fields used in the form.
+
+    Moreover, it also keeps a track of previous fields that have been either updated or removed.
+    But this model cannot be used as audit trail since, it overrides fields to latest configurations
+    if its label & data type class has not been changed.
+
+    **Uniqueness:**
+
+        ``form_id``, ``label``, ``field_class``
+
+    **Logic**:
+
+        - Before inserting new record, table it looked up form any previous record with
+          key consisting of (form_id, label, field_class).
+        - If found, this record is updated with new configurations settings.
+        - If not found, new entry is made. Old one automatically get obsolete as there
+          is new record with latest form_version.
+
+    **Points**:
+
+        - To obtains list of all fields currently present in the form, query with
+          key (``form_id``, ``form_version``)
+        - To obtains list of all fields that are or were in the form, query with
+          ``form_id``.
+
+    **Authors**: Gagandeep Singh
+    """
+
+    form        = models.ForeignKey(Form, db_index=True, help_text='Form to which this question field belongs to')
+    form_version = models.UUIDField(default=uuid.uuid4, db_index=True, help_text='Form version to which this version of field belongs.')
+    label       = models.CharField(max_length=255, help_text='Label of the form field.')
+    field_class = models.CharField(max_length=128, help_text='Field class of this question.  This must be exactly same as the field class name.')
+    text_translation_id = models.CharField(max_length=128, help_text="Raw id of text translation :class:`languages.models.Translation`.")
+    schema_json = models57.JSONField(help_text='Json schema of question field as per field class.')
+
+    dated       = models.DateTimeField(db_index=True, help_text='Date on which this record was created/updated.')
+
+    @property
+    def translation(self):
+        return Translation.objects.with_id(self.text_translation_id)
+
+    class Meta:
+        unique_together = ('form', 'label', 'field_class')
+        ordering = ['form', 'dated']
+
+    def __unicode__(self):
+        return "{}: {}".format(self.form_id, self.label)
+
+'''
 class FormFieldMetaData(Document):
     """
     This model maintains the basic information of fields used in a form.
@@ -440,7 +506,7 @@ class FormFieldMetaData(Document):
         - Before inserting new record, collection it looked up form any previous record with
           key consisting of (form_id, label, field_class).
         - If found, this record is updated with remaining information.
-        - If not found, new entry is made. Old one automatically get obselete as there is new
+        - If not found, new entry is made. Old one automatically get obsolete as there is new
           is new record with latest form_version.
 
     .. note::
@@ -481,7 +547,7 @@ class FormFieldMetaData(Document):
 
     def __unicode__(self):
         return "{}: {}".format(self.form_id, self.label)
-
+'''
 
 # ------------ Form Response -----------
 class BaseResponse(Document):
@@ -625,7 +691,7 @@ class BaseResponse(Document):
     constants       = DictField(help_text='Dictionary of all constants & their values as used in form.')
     answers         = DictField(required=True, help_text='Dictionary containing answer for questions asked in the form.')
     answers_other   = DictField(help_text='Dictionary containing answer for other option of the questions.')
-    list_answers    = EmbeddedDocumentListField(Answer, help_text="List of answers and other answer along with their meta details. These are indexed.")
+    list_answers    = EmbeddedDocumentListField(Answer, help_text="List of answers and other answer along with their meta details. These are indexed. These are populated by 'answers'.")
     calculated_fields = DictField(help_text='Dictionary of calculated fields as evaluated by the form.')
 
     # Time Dimension

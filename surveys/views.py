@@ -15,7 +15,7 @@ from mongoengine.errors import DoesNotExist as DoesNotExist_mongo
 from surveys.models import Survey, SurveyPhase, SurveyCategory, SurveyResponse
 from surveys.decorators import *
 from languages.models import Language, Translation
-from form_builder.models import Form, FormFieldMetaData, iterate_form_fields
+from form_builder.models import Form, iterate_form_fields
 from form_builder.utils import GeoLocation
 from accounts.models import RegisteredUser
 from utilities.decorators import registered_user_only

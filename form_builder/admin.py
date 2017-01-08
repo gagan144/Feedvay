@@ -31,6 +31,21 @@ class ThemeAdmin(admin.ModelAdmin):
     inlines = [ThemeSkinInline]
     list_per_page = 20
 
+
+class FormQuestionInline(admin.TabularInline):
+    """
+    Django admin inline for form questions.
+    """
+    model = FormQuestion
+    can_delete = False
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = [field.name for field in self.model._meta.fields]
+        return readonly_fields
+
+    def has_add_permission(self, request):
+        return False
+
 @admin.register(Form)
 class FormAdmin(admin.ModelAdmin):
     """
@@ -43,6 +58,7 @@ class FormAdmin(admin.ModelAdmin):
     readonly_fields = ('translations', 'version', 'created_on', 'updated_on')
     form = select2_modelform(Form, attrs={'width': '250px'})
     list_per_page = 20
+    inlines = [FormQuestionInline]
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = self.readonly_fields

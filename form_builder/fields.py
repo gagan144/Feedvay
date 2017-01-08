@@ -139,6 +139,35 @@ class Choice(JsonObject):
     text = StringProperty(required=True)    # Text displayed for the option o the user
 
 
+class AiTextDirectives(JsonObject):
+    """
+    Defines AI(text analysis) directives to applied on an answer.
+
+    .. note::
+        Only applicable on answer type of type text.
+
+    **Authors**: Gagandeep Singh
+    """
+    _allow_dynamic_properties = False
+
+    text_sentiment   = BooleanProperty(default=False, required=True)     # Determine if text is positive or negative.
+    text_emotion     = BooleanProperty(default=False, required=True)     # Predict emotion expressed in the answer.
+    text_personality = BooleanProperty(default=False, required=True)     # Predict personality traits.
+    text_personas    = BooleanProperty(default=False, required=True)     # Predicts the Myers Briggs persona
+
+class AiImageDirectives(JsonObject):
+    """
+    Defines AI(Image analysis) directives to applied on an photo answer.
+
+    .. note::
+       Only applicable for answer types of type photo.
+
+    **Authors**: Gagandeep Singh
+    """
+    _allow_dynamic_properties = False
+
+    img_object_and_scene_detection  = BooleanProperty(default=False, required=True)     # Identifies thousands of objects in captured image
+
 # ---------- Generic Field ----------
 # Points:
 #   * Add new field:
@@ -361,6 +390,7 @@ class TextAreaFormField(BasicFormField):
     min_length = IntegerProperty(default=0)                 # Minimum number of letters allowed.
     max_length = IntegerProperty(default=1000)              # Maximum number of letters allowed.
     widget = StringProperty(required=True, choices=FieldWidgets.choices_textarea, default=FieldWidgets.HTML_TEXTAREA)
+    ai_directives = ObjectProperty(AiTextDirectives)    # AI directives for an answer to this question
 
     def __init__(self, _obj=None, **kwargs):
         super(TextAreaFormField, self).__init__(_obj=_obj, **kwargs)

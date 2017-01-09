@@ -4,7 +4,7 @@
 from jsonobject import *
 from datetime import datetime, date, time
 import random
-import copy
+import copy, json
 
 from jsonobject.base_properties import DefaultProperty
 
@@ -293,8 +293,18 @@ class BasicFormField(JsonObject):
 
         **Authors**: Gagandeep Singh
         """
-
         self.text_ref = self.translation.sentence
+
+        # ----- Hack -----
+        # self._obj for all fields inside layouts contains contains `_obj`, `_type_config`, `_wrapper` from nowhere
+        # removing these causes schema load error. The `to_json()` function uses `_obj` to create json which throws errors
+        # when these attributes are found.
+        if hasattr(self._obj, '_wrapper'):
+            self.validate()
+            field_dict = dict(self._obj)
+            return json.loads(json.dumps(field_dict))
+        # ----- /Hack -----
+
         return super(BasicFormField, self).to_json()
 
 # ---------- /Generic Field ----------

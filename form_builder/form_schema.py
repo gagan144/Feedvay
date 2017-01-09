@@ -23,8 +23,17 @@ def load_form_class(node_dict):
     """
 
     class_name = node_dict['_cls']
-    node_obj = None
 
+    if node_dict['_cls_base'] == 'BasicFormField':
+        node_obj = create_field_obj(node_dict)
+    elif node_dict['_cls_base'] == 'BaseCondition':
+        node_obj = create_condition_obj(node_dict)
+    elif node_dict['_cls_base'] == 'BaseLayout':
+        node_obj = create_layout_obj(node_dict)
+    else:
+        raise InvalidFormClass("Unknown class {}".format(class_name))
+
+    """
     # Try as field
     try:
         node_obj = create_field_obj(node_dict)
@@ -38,6 +47,7 @@ def load_form_class(node_dict):
                 node_obj = create_layout_obj(node_dict)
             except InvalidFormClass:
                 raise InvalidFormClass("Unknown class {}".format(class_name))
+    """
 
     return node_obj
 

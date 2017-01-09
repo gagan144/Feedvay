@@ -45,6 +45,15 @@ class BaseLayout(JsonObject):
         from conditions import create_condition_obj
         list_obj = []
         for node_dict in self.children:
+
+            if node_dict['_cls_base'] == 'BasicFormField':
+                node_obj = create_field_obj(node_dict)
+            elif node_dict['_cls_base'] == 'BaseCondition':
+                node_obj = create_condition_obj(node_dict)
+            else:
+                raise InvalidFormClass("Unknown field or condition class {}".format(node_dict['_cls']))
+
+            """
             # Try as field
             try:
                 node_obj = create_field_obj(node_dict)
@@ -54,6 +63,8 @@ class BaseLayout(JsonObject):
                     node_obj = create_condition_obj(node_dict)
                 except InvalidFormClass:
                     raise InvalidFormClass("Unknown field or condition class {}".format(node_dict['_cls']))
+            """
+
             list_obj.append(node_obj)
 
         return list_obj

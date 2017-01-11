@@ -134,7 +134,7 @@ def submit_survey_response(request):
                     answers_other   = response_json['answers_other'],
                     calculated_fields = response_json['calculated_fields'],
 
-                    timezone_offset        = response_json['timezone_offset'],
+                    timezone_offset = response_json['timezone_offset'],
                     response_date   = timezone.datetime.strptime(response_json['response_date'],"%Y-%m-%dT%H:%M:%S"), # parse(response_json['response_date']),
                     start_time      = timezone.datetime.strptime(response_json['start_time'],"%Y-%m-%dT%H:%M:%S"), # parse(response_json['start_time']),
                     end_time        = timezone.datetime.strptime(response_json['end_time'],"%Y-%m-%dT%H:%M:%S"), # parse(response_json['end_time']),
@@ -530,7 +530,7 @@ def console_survey_response(request, survey, response_uid):
         for label in response.answers.iteritems():
             if label not in response_ans_done:
                 try:
-                    node = form.get_all_formfields().filter(label=label)[0]
+                    node = form.get_formquestions(only_current=False).filter(label=label)[0]
 
                     data = {
                         "question_text": Translation.objects.get(pk=node.text_translation_id).sentence,

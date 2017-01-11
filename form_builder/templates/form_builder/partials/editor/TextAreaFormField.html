@@ -178,6 +178,94 @@
                 <!--- /Question customization -->
             </div>
         </div>
+
+        <!-- Artificial Intelligence -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Artificial Intelligence
+            </div>
+            <div class="panel-body">
+                <p>
+                    Based on the respondent's answer to this question, you can apply following artificial intelligence to
+                    analyze the text:
+                </p>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                        Sentiment:
+                    </label>
+                    <div class="col-sm-9">
+                        <div class="checkbox checkbox-primary">
+                            <input id="fld_ai_text_sentiment" type="checkbox" ng-model="question.ai_directives.text_sentiment">
+                            <label for="fld_ai_text_sentiment">
+                                Quickly and efficiently determine if text is positive or negative.
+                            </label>
+                        </div>
+                        <!--
+                        <div style="font-size:11px;margin-left: 26px;">
+                            Sentiment analysis aims to determine the attitude of the respondent with respect to overall contextual
+                            polarity of the answer.
+
+                            <p>
+                                <span class="semi_bold">Common Use Cases:</span><br/>
+                                Social Media Monitoring, Brand Equity, Market Research, Customer Service, identifying detractors and promoters, analysis of freeform survey answers.
+                            </p>
+
+                            <p>
+                                <span class="semi_bold">Output:</span><br/>
+                                The analysis returns two output:<br/>
+                                <code>Probability</code>: A number between 0 and 1 representing the likelihood that the analyzed text is positive or negative, 1 being positive.<br/>
+                                <code>Sentiment</code>: Based on probability - <code>Negative</code>(0 <= P <= 0.4) or <code>Neutral</code>(0.4 < P <= 0.6) or <code>Positive</code>(0.6 < P <= 1.0).
+
+                            </p>
+                        </div>
+                        -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                        Emotion:
+                    </label>
+                    <div class="col-sm-9">
+                        <div class="checkbox checkbox-primary">
+                            <input id="fld_ai_text_emotion" type="checkbox" ng-model="question.ai_directives.text_emotion">
+                            <label for="fld_ai_text_emotion">
+                                Predicts the emotion expressed by the respondent in the answer.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                        Personality:
+                    </label>
+                    <div class="col-sm-9">
+                        <div class="checkbox checkbox-primary">
+                            <input id="fld_ai_text_personality" type="checkbox" ng-model="question.ai_directives.text_personality">
+                            <label for="fld_ai_text_personality">
+                                Predicts the personality traits of the respondent based on his answers.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                        Personas:
+                    </label>
+                    <div class="col-sm-9">
+                        <div class="checkbox checkbox-primary">
+                            <input id="fld_ai_text_personas" type="checkbox" ng-model="question.ai_directives.text_personas">
+                            <label for="fld_ai_text_personas">
+                                Predicts the Myers Briggs persona of the respondent
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        <!-- /Artificial Intelligence -->
     </div>
 </div>
 

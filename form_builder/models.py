@@ -373,13 +373,19 @@ class Form(models57.Model):
                 data_dict[key] = val.isoformat()
         return data_dict
 
-    def get_all_formfields(self):
+    def get_formquestions(self, only_current=True):
         """
-        Method that returns all form fields (current & removed) for this form.
+        Method to return form questions for this form.
+        :param only_current: If True, returns only those questions which are currently in the form.
+            Otherwise returns all questions including those which have been changed.
         :return: List<:class:`form_builder.models.FormQuestion`>
         """
-        # return FormFieldMetaData.objects.filter(form_id=str(self.id))
-        return self.formquestion_set.all()
+
+        if only_current:
+            qry = self.formquestion_set.filter(form_version=self.version)
+        else:
+            qry = self.formquestion_set.all()
+        return qry
 
 
     # --- Clean & Save ---
@@ -667,11 +673,45 @@ class BaseResponse(Document):
         Response embedded document to an answer to the question in details. This includes
         various meta information for an answer.
 
+        Specifications for ``ai`` field:
+
+            Structure:
+            {
+                "<algo_key>":{
+                    "pending": True/False,
+                    "results": {
+                        --- result json ---
+                    }
+                }
+            }
+
+            ** Points**:
+                - The structure is created during response creation after analyzing corresponding FormField.
+                - All process looks for its ``algo_key`` to check if this answer must be analyzed or not. This happens
+                  when the process gets a green light to proceed after checking in ``response.process_flags``.
+                - If ``algo_key.pending`` is true, it means answer is yet to be procceed, so process it.
+                  Otherwise, if false, it means answer must have already been processed.
+                - Results are store in ``algo_key.results`` mostly in form of json. Structure varies as per the algorithm result.
+
         **Authors**: Gagandeep Singh
         """
         question_label  = StringField(required=True, help_text='Label of the question to which this answer is related')
         answer          = BaseField(required=True, help_text='Answer to the question.')
         is_other        = BooleanField(required=True, default=False, help_text='If true, it means the answer of the question belongs to other part of the question.')
+        ai              = DictField(default=None, required=False, help_text='AI instructions and result.')
+
+    class ProcessFlags(EmbeddedDocument):
+        """
+        Response embedded document to log pending process that are yet to be applied on this response.
+        Please note that this is not process logger. It simply specifies what process are still pending.
+        Each process search for its key and uses its value to decide whether it must be applied on this response
+        or not.
+
+        **Authors**: Gagandeep Singh
+        """
+        text_analysis   = BooleanField(default=None, required=False, help_text="Used by processes related to text analyzes. If true, it means 'text analysis' is still pending.")
+
+
 
     # --- /Embedded Documents ---
 
@@ -704,8 +744,11 @@ class BaseResponse(Document):
     # Space Dimension
     location        = EmbeddedDocumentField(LocationInformation, help_text='Location related data.')
 
-    # Flags
+    # Metadata
     flags = EmbeddedDocumentField(ResponseFlags, required=True, help_text='Various information signalizing something related to this response.')
+
+    # Process
+    process_flags   = EmbeddedDocumentField(ProcessFlags, help_text='Flags containing logs for process that are yet to be applied.As the process get completed, key is marked false.')
 
     # Dates
     created_on      = DateTimeField(default=datetime.now, required=True, help_text='Date on which this record was created in the database.')
@@ -715,9 +758,9 @@ class BaseResponse(Document):
         'abstract': True,
         'indexes':[
             'form_id',
-            'version_obsolete',
+            # 'version_obsolete',
             'app_version',
-            'user.user_id',
+            # 'user.user_id',
             'user.username',
             'end_point_info.type',
             'response_uid',
@@ -725,9 +768,14 @@ class BaseResponse(Document):
             'list_answers.answer',
             'list_answers.is_other',
             'flags.suspect',
-            'timezone_offset',
+            # 'timezone_offset',
             '-response_date',
             '-created_on',
+            {
+                'fields': ['process_flags.text_analysis'],
+                'sparse': True,
+                'cls': False
+            }
         ]
     }
 
@@ -741,6 +789,9 @@ class BaseResponse(Document):
         **Authors**: Gagandeep Singh
         """
         return RegisteredUser.objects.get(user__username=self.user.username)
+
+    def get_form(self):
+        return Form.objects.get(id=self.form_id)
 
     def get_duration_time(self):
         """
@@ -817,11 +868,37 @@ class BaseResponse(Document):
         if self.flags.suspect and len(self.flags.suspect_reasons) == 0:
             raise Exception('Please specify atleast one reason is to why this response is a suspect.')
 
+        # Cache all form questions
+        cache_questions = {}
+        form = self.get_form()
+        for fq in form.get_formquestions(only_current=True): # Current questions
+            cache_questions[fq.label] = fq
+        if str(form.version) != self.form_version:
+            for fq in form.formquestion_set.filter(form_version=self.form_version): # Replace, as per this response form version
+                cache_questions[fq.label] = fq
+
+        # Process flags
+        text_analysis = False
+
         if deep_save:
             list_answers = []
 
             # (a) Add answers to list_answers
             for ques_label,answer in self.answers.iteritems():
+                fq = cache_questions.get(ques_label, None)  # None in case contants or calculated_fields were included in the answers
+
+                # Check all AI that are to be applied on this field
+                has_ai = False
+                if fq and fq.schema_json.get('ai_directives', None):
+                    ai = {}
+                    for algo_key, val in fq.schema_json['ai_directives'].iteritems():
+                        if val is True:
+                            ai[algo_key] = {
+                                "pending": True
+                            }
+                            has_ai = True
+                            text_analysis = True    # TODO: Check process type (text/image) before setting this
+
                 if isinstance(answer, list):
                     # Answer is an arra of value
                     list_values = answer
@@ -831,25 +908,37 @@ class BaseResponse(Document):
 
                 # Add separate entry for each value of the answer.
                 for ans in list_values:
-                    list_answers.append(
-                        BaseResponse.Answer(
-                            question_label = ques_label,
-                            answer = ans
-                        )
+                    answer_doc = BaseResponse.Answer(
+                        question_label = ques_label,
+                        answer = ans
                     )
+                    if has_ai:
+                        answer_doc.ai = ai
+
+                    list_answers.append(answer_doc)
 
             # (b) Add 'other' answers to list_answers
             for ques_label, ans in self.answers_other.iteritems():
-                list_answers.append(
-                    BaseResponse.Answer(
-                        question_label = ques_label,
-                        answer = ans,
-                        is_other = True
-                    )
+                answer_doc = BaseResponse.Answer(
+                    question_label = ques_label,
+                    answer = ans,
+                    is_other = True
                 )
+
+                if has_ai:
+                        answer_doc.ai = ai
+
+                list_answers.append(answer_doc)
 
             # Update variable
             self.list_answers = list_answers
+
+        # Set process flags
+        if text_analysis:
+            process_flags = BaseResponse.ProcessFlags(
+                text_analysis = text_analysis
+            )
+            self.process_flags = process_flags
 
         return super(BaseResponse, self).save(*args, **kwargs)
 

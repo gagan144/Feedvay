@@ -48,6 +48,10 @@
     border-color: #b4b8ba;
 }
 
+.hr_m10{
+    margin: 10px 0px !important;
+}
+
 .image_loading{
     background-image: url('/static/images/loading/spinner_1.gif');
     background-size: 32px;

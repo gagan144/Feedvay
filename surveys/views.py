@@ -493,6 +493,7 @@ def console_survey_response(request, survey, response_uid):
     """
     try:
         response = SurveyResponse.objects.get(survey_uid=survey.survey_uid, response_uid=response_uid)
+        lookup_answers = response.get_answers_lookup() # Detailed answer data
 
         # --- Create answer sheet JSON ---
         answer_sheet = {}
@@ -522,6 +523,10 @@ def console_survey_response(request, survey, response_uid):
                     "question_text": node.other_question, #lookup_translation[node.text_translation_id].sentence,
                     "answer": other_answer
                 }
+            # AI
+            ans = lookup_answers.get(node.label, None)  # None because, schema might contain new question that was not earlier present
+            if ans and ans.ai:
+                data["ai"] = ans.ai
 
             answer_sheet[response.phase_id]["answers"].append(data)
             response_ans_done.append(node.label)
@@ -542,6 +547,10 @@ def console_survey_response(request, survey, response_uid):
                             "question_text": "Response for other option:",
                             "answer": other_answer
                         }
+                    # AI
+                    ans = lookup_answers.get(node.label, None)  # None because, schema might contain new question that was not earlier present
+                    if ans and ans.ai:
+                        data["ai"] = ans.ai
 
                     answer_sheet[response.phase_id]["obsolete_answers"].append(data)
                 except IndexError:

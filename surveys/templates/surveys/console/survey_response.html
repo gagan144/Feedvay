@@ -27,12 +27,12 @@
         }
 
         .answer{
-            padding-left: 10px;
+            padding-left: 20px;
         }
 
         .other_question{
             margin-top: 10px;
-            padding-left: 10px;
+            padding-left: 20px;
         }
 
         .btn_close{
@@ -340,7 +340,7 @@
                                 <div>
                                     {% for ques in response_data.answers %}
                                         <div class="form-group">
-                                            <label class="question">{{ ques.question_text }}</label>
+                                            <label class="question">Q. {{ ques.question_text }}</label>
                                             <div class="answer">
                                                 {% if ques.answer|get_python_type:"name" == 'BaseList' %}
                                                     <ul>
@@ -359,6 +359,15 @@
                                                     <div class="answer">{{ ques.other_answer.answer|default_if_none:"-" }}</div>
                                                 </div>
                                             {% endif %}
+
+                                            {% if ques.ai %}
+                                                <div class="panel panel-warning" style="margin: 15px 0px 10px 20px;">
+                                                    <div class="panel-body">
+                                                        {% include 'surveys/console/survey_response_ai.html' with ai=ques.ai %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+
                                         </div>
                                         {% if not forloop.last %}
                                             <div class="hr-line-dashed hr_line_dashed_m10"></div>

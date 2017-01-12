@@ -707,6 +707,10 @@ class BaseResponse(Document):
         Each process search for its key and uses its value to decide whether it must be applied on this response
         or not.
 
+        .. warning::
+            This document only contains pending process keys. When the process has been applied, it
+            removes its key from this document.
+
         **Authors**: Gagandeep Singh
         """
         text_analysis   = BooleanField(default=None, required=False, help_text="Used by processes related to text analyzes. If true, it means 'text analysis' is still pending.")
@@ -791,6 +795,10 @@ class BaseResponse(Document):
         return RegisteredUser.objects.get(user__username=self.user.username)
 
     def get_form(self):
+        """
+        Method to get form to which this response belongs to.
+        :return: Instance of :class:`form_builder.models.Form`
+        """
         return Form.objects.get(id=self.form_id)
 
     def get_duration_time(self):
@@ -801,6 +809,16 @@ class BaseResponse(Document):
         """
         time_format = str(timedelta(seconds=self.duration)).split('.')[0]
         return time_format
+
+    def get_answers_lookup(self):
+        """
+        Method to get answer lookup dictionary that contains each answer information in detail.
+        This uses ``response.list_answers`` to create lookup dict.
+        :return: Lookup dict for format: { "<label>": { <Answer embedded doc> } }
+        """
+
+        lookup_dict = {ans.question_label:ans for ans in self.list_answers}
+        return lookup_dict
 
     def suspicion_add(self, type, text, user_id):
         """
@@ -868,14 +886,15 @@ class BaseResponse(Document):
         if self.flags.suspect and len(self.flags.suspect_reasons) == 0:
             raise Exception('Please specify atleast one reason is to why this response is a suspect.')
 
-        # Cache all form questions
-        cache_questions = {}
+        # Cache all current form questions
+        cache_curr_questions = {}
         form = self.get_form()
         for fq in form.get_formquestions(only_current=True): # Current questions
-            cache_questions[fq.label] = fq
-        if str(form.version) != self.form_version:
-            for fq in form.formquestion_set.filter(form_version=self.form_version): # Replace, as per this response form version
-                cache_questions[fq.label] = fq
+            cache_curr_questions[fq.label] = fq
+        # Old questions must not be included since processing for them has now been turned off.
+        # if str(form.version) != self.form_version:
+        #     for fq in form.formquestion_set.filter(form_version=self.form_version): # Replace, as per this response form version
+        #         cache_curr_questions[fq.label] = fq
 
         # Process flags
         text_analysis = False
@@ -885,9 +904,10 @@ class BaseResponse(Document):
 
             # (a) Add answers to list_answers
             for ques_label,answer in self.answers.iteritems():
-                fq = cache_questions.get(ques_label, None)  # None in case contants or calculated_fields were included in the answers
+                fq = cache_curr_questions.get(ques_label, None)  # None in case contants or calculated_fields were included in the answers
 
-                # Check all AI that are to be applied on this field
+                # Check all AI that are to be applied on this field.
+                # This is completely based on current questions only.
                 has_ai = False
                 if fq and fq.schema_json.get('ai_directives', None):
                     ai = {}

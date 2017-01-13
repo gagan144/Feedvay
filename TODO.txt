@@ -14,6 +14,7 @@
     - Suggestions Display view
 
 - Survey
+    - Response save: deep_save overrides ai results
     - Create: survey title already existing - autocomplete type options
 
 - All models

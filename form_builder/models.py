@@ -679,7 +679,7 @@ class BaseResponse(Document):
             {
                 "<algo_key>":{
                     "pending": True/False,
-                    "results": {
+                    "result": {
                         --- result json ---
                     }
                 }
@@ -699,6 +699,9 @@ class BaseResponse(Document):
         answer          = BaseField(required=True, help_text='Answer to the question.')
         is_other        = BooleanField(required=True, default=False, help_text='If true, it means the answer of the question belongs to other part of the question.')
         ai              = DictField(default=None, required=False, help_text='AI instructions and result.')
+
+        def __unicode__(self):
+            return self.question_label
 
     class ProcessFlags(EmbeddedDocument):
         """

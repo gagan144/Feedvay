@@ -28,6 +28,10 @@ django-tree-tag
 qrcode
 indicoio
 
+pyopenssl
+ndg-httpsclient
+pyasn1
+
 
 
 # ----- Documentation -----

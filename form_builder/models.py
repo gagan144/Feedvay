@@ -623,6 +623,7 @@ class BaseResponse(Document):
         instructions_read   = BooleanField(default=False, required=True, help_text='Determines if the instructions were read by the user.')
         suspect             = BooleanField(default=False, required=True, help_text='Determines if this reponse is a suspect. If true, reason must be specified.')
         suspect_reasons     = ListField(help_text='List of reasons is to why this response is a suspect.')
+        has_ai              = BooleanField(default=False, help_text='If true, it means this response artifical intelligence applied.')
 
     class EndPointInformation(EmbeddedDocument):
         """

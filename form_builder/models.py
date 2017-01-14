@@ -964,6 +964,8 @@ class BaseResponse(Document):
             )
             self.process_flags = process_flags
 
+            self.flags.has_ai = True
+
         return super(BaseResponse, self).save(*args, **kwargs)
 
 

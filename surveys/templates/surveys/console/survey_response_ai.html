@@ -39,10 +39,26 @@
                                 <i class="fa fa-thumbs-o-down"></i> Negative
                             </h2>
                         {% endif %}
-                        <span tooltip-placement="bottom" uib-tooltip="Likelyhood of the sentiment, 0 being negative and 1 being positive.">
-                            <span class="semi_bold">Score: </span>&nbsp;
-                            {{ result.score }}
-                        </span>
+                        <div style="margin-top: 20px;">
+                            <span class="semi_bold" tooltip-placement="bottom" uib-tooltip="Likelyhood of the sentiment, 0 being negative and 1 being positive.">
+                                Score:
+                            </span>
+                            <div style="margin: 5px 0px 0px 10px;">
+                                <table style="width: 100%;font-size: smaller;">
+                                    <tr>
+                                        <td align="left">0-Negative</td>
+                                        <td align="center">Neutral</td>
+                                        <td align="right">1-Postive</td>
+                                    </tr>
+                                </table>
+                                <div class="progress progress-mini">
+                                    <div style="width: {{ result.score|multiply:100|floatformat:0 }}%;" class="progress-bar"></div>
+                                </div>
+                                <div style="margin-top: 5px;">
+                                    {{ result.score }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     {% endwith %}
                 {% endif %}

@@ -136,9 +136,20 @@
     {% with ai_text_personas=ai.text_personas %}
         <!-- Persona Analysis -->
         <style>
+            .trait_group{
+                font-size: 15px;
+                margin-bottom: 2px;
+            }
+
+            .tbl_traits{
+                margin-left: 10px;
+            }
+
             .personas_trait{
                 width: 100px;
             }
+
+
         </style>
         <div class="">
             <h4 style="margin-top: 0px;">Persona Analysis</h4>
@@ -154,7 +165,8 @@
                 {% with result=ai_text_personas.result %}
                     <div class="row">
                         <div class="col-md-6">
-                            <table style="margin-bottom: 0px;" class="table table-condensed table-nobordered">
+                            <div class="trait_group">Analysts</div>
+                            <table style="margin-bottom: 0px;" class="tbl_traits table table-condensed table-nobordered">
                                 {% with prob_per=result.architect|multiply:100|floatformat:2 %}
                                     <tr>
                                         <td class="semi_bold personas_trait">Architect</td>
@@ -211,7 +223,8 @@
                         </div>
 
                         <div class="col-md-6">
-                            <table style="margin-bottom: 0px;" class="table table-condensed table-nobordered">
+                            <div class="trait_group">Diplomats</div>
+                            <table style="margin-bottom: 0px;" class="tbl_traits table table-condensed table-nobordered">
                                 {% with prob_per=result.advocate|multiply:100|floatformat:2 %}
                                     <tr>
                                         <td class="semi_bold personas_trait">Advocate</td>
@@ -269,7 +282,8 @@
                     </div>
                     <div class="row" style="margin-top: 10px;">
                         <div class="col-md-6">
-                            <table style="margin-bottom: 0px;" class="table table-condensed table-nobordered">
+                            <div class="trait_group">Sentinels</div>
+                            <table style="margin-bottom: 0px;" class="tbl_traits table table-condensed table-nobordered">
                                 {% with prob_per=result.logistician|multiply:100|floatformat:2 %}
                                     <tr>
                                         <td class="semi_bold personas_trait">Logistician</td>
@@ -326,7 +340,8 @@
                         </div>
 
                         <div class="col-md-6">
-                            <table style="margin-bottom: 0px;" class="table table-condensed table-nobordered">
+                            <div class="trait_group">Explorers</div>
+                            <table style="margin-bottom: 0px;" class="tbl_traits table table-condensed table-nobordered">
                                 {% with prob_per=result.virtuoso|multiply:100|floatformat:2 %}
                                     <tr>
                                         <td class="semi_bold personas_trait">Virtuoso</td>

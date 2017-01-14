@@ -74,3 +74,15 @@ def get_python_type(obj, format_type):
     t = type(obj)
 
     return t if format_type is None else t.__name__
+
+@register.filter
+def multiply(value, multiplier):
+    """
+    Returns multiplication value and multiplier.
+    :param value: Value
+    :param multiplier: None- Python class, 'name'- string name
+    :return: value*multiplier
+
+    **Authors**: Gagandeep Singh
+    """
+    return value*multiplier

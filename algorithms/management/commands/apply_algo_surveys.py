@@ -58,7 +58,7 @@ class Command(BaseCommand):
                 # Save
                 print response.process_flags.text_analysis
                 print response.list_answers[8].ai
-                response.save(deep_save=False)
+                response.save()
 
                 # Update summary
                 summary['text_analyis'] += 1

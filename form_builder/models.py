@@ -871,10 +871,9 @@ class BaseResponse(Document):
         return success
 
 
-    def save(self, deep_save=True, *args, **kwargs):
+    def save(self, *args, **kwargs):
         """
         Save method for a response.
-        :param deep_save: If True, re-evaluates/update ``list_answers``.
 
         **Authors**: Gagandeep Singh
         """
@@ -890,20 +889,20 @@ class BaseResponse(Document):
         if self.flags.suspect and len(self.flags.suspect_reasons) == 0:
             raise Exception('Please specify atleast one reason is to why this response is a suspect.')
 
-        # Cache all current form questions
-        cache_curr_questions = {}
-        form = self.get_form()
-        for fq in form.get_formquestions(only_current=True): # Current questions
-            cache_curr_questions[fq.label] = fq
-        # Old questions must not be included since processing for them has now been turned off.
-        # if str(form.version) != self.form_version:
-        #     for fq in form.formquestion_set.filter(form_version=self.form_version): # Replace, as per this response form version
-        #         cache_curr_questions[fq.label] = fq
+        if self.pk is None:
+            # Cache all current form questions
+            cache_curr_questions = {}
+            form = self.get_form()
+            for fq in form.get_formquestions(only_current=True): # Current questions
+                cache_curr_questions[fq.label] = fq
+            # Old questions must not be included since processing for them has now been turned off.
+            # if str(form.version) != self.form_version:
+            #     for fq in form.formquestion_set.filter(form_version=self.form_version): # Replace, as per this response form version
+            #         cache_curr_questions[fq.label] = fq
 
-        # Process flags
-        text_analysis = False
+            # Process flags
+            text_analysis = False
 
-        if deep_save:
             list_answers = []
 
             # (a) Add answers to list_answers
@@ -957,14 +956,14 @@ class BaseResponse(Document):
             # Update variable
             self.list_answers = list_answers
 
-        # Set process flags
-        if text_analysis:
-            process_flags = BaseResponse.ProcessFlags(
-                text_analysis = text_analysis
-            )
-            self.process_flags = process_flags
+            # Set process flags
+            if text_analysis:
+                process_flags = BaseResponse.ProcessFlags(
+                    text_analysis = text_analysis
+                )
+                self.process_flags = process_flags
 
-            self.flags.has_ai = True
+                self.flags.has_ai = True
 
         return super(BaseResponse, self).save(*args, **kwargs)
 

@@ -90,7 +90,7 @@ class TextSentimentAnalysis:
 
         if score <= TextSentimentAnalysis.thres_max_neg:
             sentiment = TextSentimentAnalysis.SENTI_NEGATIVE
-        elif TextSentimentAnalysis.thres_max_neutral < score <= TextSentimentAnalysis.thres_max_neutral:
+        elif TextSentimentAnalysis.thres_max_neg < score <= TextSentimentAnalysis.thres_max_neutral:
             sentiment = TextSentimentAnalysis.SENTI_NEUTRAL
         else:
             sentiment = TextSentimentAnalysis.SENTI_POSITIVE

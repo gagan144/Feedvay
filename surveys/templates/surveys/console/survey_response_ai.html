@@ -26,13 +26,13 @@
                 {% else %}
                     {% with result=ai_text_sentiment.result %}
                     <div class="div_result">
-                        {% if result.sentiment == 'positve' %}
+                        {% if result.sentiment == 'positive' %}
                             <h2 class="text-success" style="margin-top: 0px;">
                                 <i class="fa fa-thumbs-o-up"></i> Positive
                             </h2>
                         {% elif result.sentiment == 'neutral' %}
                             <h2 class="text-muted" style="margin-top: 0px;">
-                                <i class="fa fa-hand-stop-o"></i> Neutral
+                                <i class="fa fa-leaf"></i> Neutral
                             </h2>
                         {% elif result.sentiment == 'negative' %}
                             <h2 class="text-danger" style="margin-top: 0px;">

@@ -15,6 +15,7 @@
 
 - Survey
     - Create: survey title already existing - autocomplete type options
+    - API - Access authentication
 
 - All models
     - If CharField/TextField 'default=None' as well

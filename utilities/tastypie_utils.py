@@ -4,6 +4,29 @@
 from tastypie.authentication import SessionAuthentication
 from tastypie.paginator import Paginator
 
+class GenericTastypieObject(object):
+    """
+    Generic object to shove data in/get data for tastypie resources.
+
+    Link: http://django-tastypie.readthedocs.io/en/latest/non_orm_data_sources.html
+
+    **Authors**: Gagandeep Singh
+    """
+    def __init__(self, initial=None):
+        self.__dict__['_data'] = {}
+
+        if hasattr(initial, 'items'):
+            self.__dict__['_data'] = initial
+
+    def __getattr__(self, name):
+        return self._data.get(name, None)
+
+    def __setattr__(self, name, value):
+        self.__dict__['_data'][name] = value
+
+    def to_dict(self):
+        return self._data
+
 class BrandConsoleSessionAuthentication(SessionAuthentication):
     """
     Django tastypie session authentication for resources used in brand console.
@@ -74,3 +97,13 @@ class NoPaginator(Paginator):
             self.collection_name: objects,
             'meta': meta,
         }
+
+class SurveySessionAuthentication(SessionAuthentication):
+    """
+    Django tastypie session authentication to allow access to permissible survey resources.
+
+    TODO: Implementation pending
+
+    **Authors**: Gagandeep Singh
+    """
+    pass

@@ -91,9 +91,18 @@
                         <!-- /Alert -->
 
                         <!-- Responses chart -->
-                        <div class="flot-chart">
-                            <div flot class="flot-chart-content" dataset="flotData" options="flotOptions"></div>
+{#                        <div class="flot-chart">#}
+{#                            <div flot class="flot-chart-content" dataset="flotData" options="flotOptions"></div>#}
+{#                        </div>#}
+
+                        <div>
+                            <canvas linechart options="data_dashboard.trend_chart.options" data="data_dashboard.trend_chart.data" height="70" responsive=true ></canvas>
                         </div>
+
+                        <div style="overflow: auto; width: 400px;">
+                            {$ data_dashboard $}
+                        </div>
+
                         <!-- Responses chart -->
                     </td>
                     <td style="width: 220px; padding: 0px 10px 10px 10px;" valign="top">
@@ -598,18 +607,11 @@
                                     loadPlugin: function ($ocLazyLoad) {
                                         return $ocLazyLoad.load([
                                             {
-                                                serie: true,
-                                                name: 'angular-flot',
-                                                files: [
-                                                    '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.js',
-                                                    '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.time.js',
-                                                    '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.tooltip.min.js',
-                                                    '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.spline.js',
-                                                    '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.resize.js',
-                                                    '{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.pie.js',
-                                                    '{% get_static_prefix %}ui/js/plugins/flot/curvedLines.js',
-                                                    '{% get_static_prefix %}ui/js/plugins/flot/angular-flot.js'
-                                                ]
+                                                files: ['{% get_static_prefix %}ui/js/plugins/chartJs/Chart.min.js']
+                                            },
+                                            {
+                                                name: 'angles',
+                                                files: ['{% get_static_prefix %}ui/js/plugins/chartJs/angles.js']
                                             }
                                         ]);
                                     }
@@ -719,7 +721,7 @@
 
         // ========== State Controllers ==========
         // ----- Summary -----
-        function SummaryCtrl($rootScope, $scope, $http, $window, SweetAlert) {
+        function SummaryCtrl($rootScope, $scope, $http, $window, SweetAlert, ServiceSurveyAPI) {
 
             $scope.survey_transit = function (action) {
 
@@ -799,91 +801,133 @@
 
                             }
                         });
-
-
-            }
-
-            // ----- delete -----
-            var data1 = [
-                [0, 4],
-                [1, 8],
-                [2, 5],
-                [3, 10],
-                [4, 4],
-                [5, 16],
-                [6, 5],
-                [7, 11],
-                [8, 6],
-                [9, 11],
-                [10, 30],
-                [11, 10],
-                [12, 13],
-                [13, 4],
-                [14, 3],
-                [15, 3],
-                [16, 6]
-            ];
-            var data2 = [
-                [0, 1],
-                [1, 0],
-                [2, 2],
-                [3, 0],
-                [4, 1],
-                [5, 3],
-                [6, 1],
-                [7, 5],
-                [8, 2],
-                [9, 3],
-                [10, 2],
-                [11, 1],
-                [12, 0],
-                [13, 2],
-                [14, 8],
-                [15, 0],
-                [16, 0]
-            ];
-
-            var options = {
-                series: {
-                    lines: {
-                        show: false,
-                        fill: true
-                    },
-                    splines: {
-                        show: true,
-                        tension: 0.4,
-                        lineWidth: 1,
-                        fill: 0.4
-                    },
-                    points: {
-                        radius: 0,
-                        show: true
-                    },
-                    shadowSize: 2,
-                    grow: {stepMode: "linear", stepDirection: "up", steps: 80}
-                },
-                grow: {stepMode: "linear", stepDirection: "up", steps: 80},
-                grid: {
-                    hoverable: true,
-                    clickable: true,
-                    tickColor: "#d5d5d5",
-                    borderWidth: 1,
-                    color: '#d5d5d5'
-                },
-                colors: ["#2a94db", "#1C84C6"],
-                xaxis: {},
-                yaxis: {
-                    ticks: 4
-                },
-                tooltip: false
             };
 
-            /**
-             * Definition of variables
-             * Flot chart
-             */
-            $scope.flotData = [data1, data2];
-            $scope.flotOptions = options;
+            $scope.ui_flags = {
+                loading: false
+            };
+            $scope.data_dashboard = {
+                total: 0,
+                count_suspects: 0,
+                trend_chart: {
+                    options: {
+                        scaleShowGridLines : true,
+                        scaleGridLineColor : "rgba(0,0,0,.05)",
+                        scaleGridLineWidth : 1,
+                        bezierCurve : true,
+                        bezierCurveTension : 0.4,
+                        pointDot : true,
+                        pointDotRadius : 4,
+                        pointDotStrokeWidth : 1,
+                        pointHitDetectionRadius : 20,
+                        datasetStroke : true,
+                        datasetStrokeWidth : 2,
+                        datasetFill : true,
+                    },
+                    data: null
+                }
+            };
+            $scope.get_response_trend = function(){
+                $scope.ui_flags.loading = true;
+
+                ServiceSurveyAPI.get_response_trend('{{ survey.survey_uid }}', null).then(
+                    function (response_data) {
+                        var data_response_trend = response_data.objects;
+
+                        var total = 0;
+                        var count_suspects = 0;
+                        var chart_data_dict = {};
+
+                        for(var i=0;i<data_response_trend.length;i++){
+                            var row = data_response_trend[i];
+
+                            if(row['suspect']){
+                                count_suspects++;
+                            }
+
+                            total += row['count'];
+
+                            // --- Chart data ---
+                            var response_date = row['response_date'];
+                            if(chart_data_dict[response_date] == undefined){
+                                chart_data_dict[response_date] = {
+                                    "suspects": 0,
+                                    "non_suspects": 0
+                                }
+                            }
+
+                            if(row['suspect']){
+                               chart_data_dict[response_date]["suspects"] += row['count'];
+                            }else{
+                                chart_data_dict[response_date]["non_suspects"] += row['count'];
+                            }
+                            // --- /Chart data ---
+                        }
+
+                        // Set dashboard data
+                        $scope.data_dashboard.total = total;
+                        $scope.data_dashboard.count_suspects = count_suspects;
+
+                        // --- Chart data ---
+                        var labels = [];
+                        var series_non_suspects = [];
+                        var series_suspects = [];
+                        for(var dt in chart_data_dict){
+                            labels.push(moment(dt, 'YYYYY-MM-DD').format('DD-MMM-YYYY'));
+
+                            series_non_suspects.push(chart_data_dict[dt]['non_suspects']);
+                            series_suspects.push(chart_data_dict[dt]['suspects']);
+                        }
+
+                        $scope.data_dashboard.trend_chart.data = {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: "Responses",
+                                    fillColor: "rgba(42, 148, 219, 0.5)",
+                                    strokeColor: "rgba(42, 148, 219, 0.7)",
+                                    pointColor: "rgba(42, 148, 219, 1)",
+                                    pointStrokeColor: "#fff",
+                                    pointHighlightFill: "#fff",
+                                    pointHighlightStroke: "rgba(42, 148, 219, 1)",
+                                    data: series_non_suspects
+                                },
+                                {
+                                    label: "Suspects",
+                                    fillColor: "rgba(237, 85, 101, 0.5)",
+                                    strokeColor: "rgba(237, 85, 101, 1)",
+                                    pointColor: "rgba(237, 85, 101, 1)",
+                                    pointStrokeColor: "#fff",
+                                    pointHighlightFill: "#fff",
+                                    pointHighlightStroke: "rgba(237, 85, 101, 1)",
+                                    data: series_suspects
+                                },
+                            ]
+                        }
+                        // --- Chart data ---
+                    },
+                    function(response){
+                        $scope.ui_flags.loading = false;
+
+                        if(response.status != -1){
+                            $.growl.error({
+                                title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                message: "Something went wrong. Our engineers will be informed."
+                            });
+                        }else{
+                            $.growl.error({
+                                title: '<i class="fa fa-signal"></i> Network error!',
+                                message: "Please check your internet connection."
+                            });
+                        }
+
+                    }
+                );
+            };
+
+            $scope.get_response_trend();
+
+            // ----- delete -----
             // ----- delete -----
         }
 

@@ -33,6 +33,7 @@ url_brands = [
 ]
 
 api_survey_responses = api_surveys.SurveyResponsesAPI()
+api_survey_response_trend = api_surveys.SurveyResponseTrendAPI()
 url_surveys = [
     url(r'^$', views_surveys.console_surveys, name='console_surveys'),
     url(r'^new/$', views_surveys.console_survey_new, name='console_survey_new'),
@@ -52,6 +53,7 @@ url_surveys = [
 
     # Api
     url(r'^api/', include(api_survey_responses.urls)),
+    url(r'^api/', include(api_survey_response_trend.urls)),
 ]
 
 urlpatterns = [

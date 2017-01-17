@@ -59,7 +59,7 @@
                                 <table style="width: 100%;">
                                     <tr>
                                         <td style="width: 50px" valign="top">
-                                            <i class="fa fa-exclamation-triangle" style="font-size: 35px;"></i>
+                                            <i class="fa fa-exclamation-circle" style="font-size: 35px;"></i>
                                         </td>
                                         <td>
                                             <strong>Caution!</strong>
@@ -90,68 +90,101 @@
                         {% endif %}
                         <!-- /Alert -->
 
+                        {% if survey.status != SURVEY.ST_DRAFT %}
+                        <!-- Summary -->
                         <div ng-if="ui_flags.loading" align="center" valign="middle" style="height: 200px;border: dashed 1px;padding-top: 50px;">
                             <img src="{% get_static_prefix %}images/loading/spinner_1.gif" style="height: 40px">
                             <h3 style="margin-top: 20px;font-weight: normal;">Loading summary ...</h3>
                         </div>
-                        <div ng-if="!ui_flags.loading">
-                            <!-- Responses chart -->
-                            <div>
-                                <canvas linechart options="data_dashboard.trend_chart.options" data="data_dashboard.trend_chart.data" height="70" responsive=true ></canvas>
-                            </div>
-                            <!-- /Responses chart -->
 
-                            <!-- Metrics -->
-                            <div style="margin-top: 20px;">
-
-                                <div class="alert alert-info" ng-if="data_dashboard.total==0">
-                                    <i class="fa fa-comments-o"></i>&nbsp;
-                                    This survey has no responses yet!
-                                </div>
-                                <div class="row" ng-if="data_dashboard.total">
-                                    <div class="col-md-4">
-                                        <div class="widget style1 text-default border-top-bottom border-left-right border-size-sm">
-                                            <div class="row">
-                                                <div class="col-xs-4">
-                                                    <i class="fa fa-calendar-o fa-4x"></i>
-                                                </div>
-                                                <div class="col-xs-8 text-right">
-                                                    <span> Today responses </span>
-                                                    <h2 class="font-bold">{$ data_dashboard.count_today|number $}</h2>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="widget style1 text-primary border_primary">
-                                            <div class="row">
-                                                <div class="col-xs-4">
-                                                    <i class="fa fa-comments-o fa-4x"></i>
-                                                </div>
-                                                <div class="col-xs-8 text-right">
-                                                    <span> Total responses </span>
-                                                    <h2 class="font-bold">{$ data_dashboard.total|number $}</h2>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="widget style1 text-danger border_danger">
-                                            <div class="row">
-                                                <div class="col-xs-4">
-                                                    <i class="fa fa-question fa-4x"></i>
-                                                </div>
-                                                <div class="col-xs-8 text-right">
-                                                    <span> Total suspects </span>
-                                                    <h2 class="font-bold">{$ data_dashboard.count_suspects|number $}</h2>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- /Metrics -->
+                        <div class="alert alert-danger" ng-if="ui_flags.error">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="width: 50px" valign="top">
+                                        <i class="fa fa-exclamation-triangle" style="font-size: 35px;"></i>
+                                    </td>
+                                    <td valign="middle">
+                                        {$ ui_flags.error_msg $}
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
+
+                        <div ng-if="!ui_flags.loading && !ui_flags.error">
+
+                            <div class="alert alert-info" ng-if="data_dashboard.total==0">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td style="width: 50px" valign="top">
+                                            <i class="fa fa-comments-o" style="font-size: 35px;"></i>
+                                        </td>
+                                        <td valign="middle">
+                                            <strong>No response!</strong>
+                                            <br/>No responses has been submitted yet for this survey. The summary will
+                                            be visible once the responses are recieved.
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div ng-if="data_dashboard.total">
+                                <!-- Responses chart -->
+                                <div id="div_chart">
+                                    <canvas linechart options="data_dashboard.trend_chart.options" data="data_dashboard.trend_chart.data" height="70" responsive=true ></canvas>
+                                </div>
+                                <!-- /Responses chart -->
+
+                                <!-- Metrics -->
+                                <div style="margin-top: 20px;">
+                                    <div class="row" ng-if="data_dashboard.total">
+                                        <div class="col-md-4">
+                                            <div class="widget style1 text-default border-top-bottom border-left-right border-size-sm">
+                                                <div class="row">
+                                                    <div class="col-xs-4">
+                                                        <i class="fa fa-calendar-o fa-4x"></i>
+                                                    </div>
+                                                    <div class="col-xs-8 text-right">
+                                                        <span> Today responses </span>
+                                                        <h2 class="font-bold">{$ data_dashboard.count_today|number $}</h2>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="widget style1 text-primary border_primary">
+                                                <div class="row">
+                                                    <div class="col-xs-4">
+                                                        <i class="fa fa-comments-o fa-4x"></i>
+                                                    </div>
+                                                    <div class="col-xs-8 text-right">
+                                                        <span> Total responses </span>
+                                                        <h2 class="font-bold">{$ data_dashboard.total|number $}</h2>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="widget style1 text-danger border_danger">
+                                                <div class="row">
+                                                    <div class="col-xs-4">
+                                                        <i class="fa fa-question fa-4x"></i>
+                                                    </div>
+                                                    <div class="col-xs-8 text-right">
+                                                        <span> Total suspects </span>
+                                                        <h2 class="font-bold">{$ data_dashboard.count_suspects|number $}</h2>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /Metrics -->
+                            </div>
+
+                        </div>
+                        <!-- /Summary -->
+                        {% endif %}
+
                     </td>
                     <td style="width: 220px; padding: 0px 10px 10px 10px;" valign="top">
                         {% if survey.status == SURVEY.ST_STOPPED %}
@@ -849,8 +882,11 @@
                         });
             };
 
+            {% if survey.status != SURVEY.ST_DRAFT %}
             $scope.ui_flags = {
-                loading: false
+                loading: false,
+                error: false,
+                error_msg: null
             };
             $scope.data_dashboard = {
                 count_today: 0,
@@ -876,6 +912,8 @@
             };
             $scope.get_response_trend = function(){
                 $scope.ui_flags.loading = true;
+                $scope.ui_flags.error = false;
+                $scope.ui_flags.error_msg = null;
 
                 ServiceSurveyAPI.get_response_trend('{{ survey.survey_uid }}', null).then(
                     function (response_data) {
@@ -964,24 +1002,19 @@
                     },
                     function(response){
                         $scope.ui_flags.loading = false;
+                        $scope.ui_flags.error = true;
 
                         if(response.status != -1){
-                            $.growl.error({
-                                title: '<i class="fa fa-exclamation-triangle"></i> Error!',
-                                message: "Something went wrong. Our engineers will be informed."
-                            });
+                            $scope.ui_flags.error_msg = "Something went wrong. Our engineers will be informed.";
                         }else{
-                            $.growl.error({
-                                title: '<i class="fa fa-signal"></i> Network error!',
-                                message: "Please check your internet connection."
-                            });
+                            $scope.ui_flags.error_msg = "Please check your internet connection.";
                         }
-
                     }
                 );
             };
 
             $scope.get_response_trend();
+            {% endif %}
         }
 
         // ----- Responses -----

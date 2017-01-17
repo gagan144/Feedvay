@@ -490,10 +490,8 @@
                     <a href="{% url 'console_home' %}">Home</a>
                 </li>
                 <li>
-                    <a href="{% url 'console_surveys' %}">Surveys</a>
-                </li>
-                <li class="active">
-                    {{ survey.title }}
+                    <a href="{% url 'console_surveys' %}">Surveys</a>:
+                    &nbsp;<span class="text-primary">{{ survey.title }}</span>
                 </li>
             </ol>
         </div>

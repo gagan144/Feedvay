@@ -90,20 +90,68 @@
                         {% endif %}
                         <!-- /Alert -->
 
-                        <!-- Responses chart -->
-{#                        <div class="flot-chart">#}
-{#                            <div flot class="flot-chart-content" dataset="flotData" options="flotOptions"></div>#}
-{#                        </div>#}
-
-                        <div>
-                            <canvas linechart options="data_dashboard.trend_chart.options" data="data_dashboard.trend_chart.data" height="70" responsive=true ></canvas>
+                        <div ng-if="ui_flags.loading" align="center" valign="middle" style="height: 200px;border: dashed 1px;padding-top: 50px;">
+                            <img src="{% get_static_prefix %}images/loading/spinner_1.gif" style="height: 40px">
+                            <h3 style="margin-top: 20px;font-weight: normal;">Loading summary ...</h3>
                         </div>
+                        <div ng-if="!ui_flags.loading">
+                            <!-- Responses chart -->
+                            <div>
+                                <canvas linechart options="data_dashboard.trend_chart.options" data="data_dashboard.trend_chart.data" height="70" responsive=true ></canvas>
+                            </div>
+                            <!-- /Responses chart -->
 
-                        <div style="overflow: auto; width: 400px;">
-                            {$ data_dashboard $}
+                            <!-- Metrics -->
+                            <div style="margin-top: 20px;">
+
+                                <div class="alert alert-info" ng-if="data_dashboard.total==0">
+                                    <i class="fa fa-comments-o"></i>&nbsp;
+                                    This survey has no responses yet!
+                                </div>
+                                <div class="row" ng-if="data_dashboard.total">
+                                    <div class="col-md-4">
+                                        <div class="widget style1 text-default border-top-bottom border-left-right border-size-sm">
+                                            <div class="row">
+                                                <div class="col-xs-4">
+                                                    <i class="fa fa-calendar-o fa-4x"></i>
+                                                </div>
+                                                <div class="col-xs-8 text-right">
+                                                    <span> Today responses </span>
+                                                    <h2 class="font-bold">{$ data_dashboard.count_today $}</h2>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="widget style1 text-primary border_primary">
+                                            <div class="row">
+                                                <div class="col-xs-4">
+                                                    <i class="fa fa-comments-o fa-4x"></i>
+                                                </div>
+                                                <div class="col-xs-8 text-right">
+                                                    <span> Total responses </span>
+                                                    <h2 class="font-bold">{$ data_dashboard.total $}</h2>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="widget style1 text-danger border_danger">
+                                            <div class="row">
+                                                <div class="col-xs-4">
+                                                    <i class="fa fa-question fa-4x"></i>
+                                                </div>
+                                                <div class="col-xs-8 text-right">
+                                                    <span> Total suspects </span>
+                                                    <h2 class="font-bold">{$ data_dashboard.count_suspects $}</h2>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /Metrics -->
                         </div>
-
-                        <!-- Responses chart -->
                     </td>
                     <td style="width: 220px; padding: 0px 10px 10px 10px;" valign="top">
                         {% if survey.status == SURVEY.ST_STOPPED %}
@@ -199,7 +247,7 @@
     <script type="text/ng-template" id="tmpl_responses">
         <div>
             <h2 style="margin-top: 0px;">
-                <i class="fa fa-twitch"></i>&nbsp;
+                <i class="fa fa-comments-o"></i>&nbsp;
                 Responses
             </h2>
             <hr style="margin-top: 15px;"/>
@@ -389,7 +437,7 @@
                 <table style="width: 220px;margin-top:7px;">
                     <tr>
                         <td style="width: 55px;" valign="top">
-                            <i class="fa fa fa-twitch text-primary" style="font-size: 50px;"></i>
+                            <i class="fa fa fa-comments-o text-primary" style="font-size: 50px;"></i>
                         </td>
                         <td valign="top" style="padding-left:10px;">
                             <h3 style="margin-top: 0px;">
@@ -515,7 +563,7 @@
                         </a>
                         <a ui-sref="responses" class="list-group-item"
                            ng-class="{'active': $state.current.name=='responses'}">
-                            <i class="fa fa-twitch list_md_icon"></i>
+                            <i class="fa fa-comments-o list_md_icon"></i>
                             Responses
                         </a>
                         <a ui-sref="visualize" class="list-group-item"
@@ -807,6 +855,7 @@
                 loading: false
             };
             $scope.data_dashboard = {
+                count_today: 0,
                 total: 0,
                 count_suspects: 0,
                 trend_chart: {
@@ -832,14 +881,21 @@
 
                 ServiceSurveyAPI.get_response_trend('{{ survey.survey_uid }}', null).then(
                     function (response_data) {
+                        $scope.ui_flags.loading = false;
+
                         var data_response_trend = response_data.objects;
 
+                        var count_today = 0;
                         var total = 0;
                         var count_suspects = 0;
                         var chart_data_dict = {};
 
                         for(var i=0;i<data_response_trend.length;i++){
                             var row = data_response_trend[i];
+
+                            if(row['response_date'] == moment().format('YYY-MM-DD')){
+                                count_today++;
+                            }
 
                             if(row['suspect']){
                                 count_suspects++;
@@ -865,6 +921,7 @@
                         }
 
                         // Set dashboard data
+                        $scope.data_dashboard.count_today = count_today;
                         $scope.data_dashboard.total = total;
                         $scope.data_dashboard.count_suspects = count_suspects;
 
@@ -926,9 +983,6 @@
             };
 
             $scope.get_response_trend();
-
-            // ----- delete -----
-            // ----- delete -----
         }
 
         // ----- Responses -----
@@ -986,7 +1040,7 @@
                         },
                         { name: 'flags.suspect_reasons', index: 'flags.suspect_reasons', width: 300 },
                         { name: 'meta_icons', index: 'meta_icons', width: 170, search:false, sortable:false },
-                        { name: 'actions', index: 'actions', width: 50, search:false, sortable:false },
+                        { name: 'actions', index: 'actions', width: 80, search:false, sortable:false },
 
                     ],
                     viewrecords: true,
@@ -996,7 +1050,7 @@
                     rowNum: 50,
                     rowList: [10, 50, 100, 100000],
                     autowidth : true,
-                    height: '250px',
+                    height: '300px',
                     shrinkToFit: true,
                     hidegrid: false,
                     ignoreCase:true,

@@ -3,7 +3,7 @@
 /*
  *   Feedvay UI Theme
  *   UI version: INSP - 2.6.2
- *   Created on: 30-12-2016 07:27:56 0
+ *   Created on: 17-01-2017 15:12:18 0
 */
 h1,
 h2,
@@ -8503,6 +8503,28 @@ div.error{
   background-color: #2a94db;
 }
 /* ----- /Bootstrap radio/checkbox ----- */
+
+/* ------ Borders ------ */
+.border_primary{
+  border: solid 1px #2a94db;
+}
+
+.border_success{
+  border: solid 1px #4eae4e;
+}
+
+.border_warning{
+  border: solid 1px #f8ac59;
+}
+
+.border_danger{
+  border: solid 1px #ed5565;
+}
+
+.border_info{
+  border: solid 1px #5bc0de;
+}
+/* ------ Borders ------ */
 
 /* ------ JqGrid & jQuery UI-------- */
 .ui-jqgrid-primary{

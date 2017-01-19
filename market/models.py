@@ -109,6 +109,11 @@ class BspProfile(Document):
     **Points**:
 
         - ``name``, ``slug``, ``status`` field is updated automatically from :class:`market.models.BusinessServicePoint`.
+        - Field ``list_attributes``:
+            - Contains list of all attributes from various fields in form of list of name-value dict.
+            - Useful for analytics and querying since it has indexes.
+            - This field must not be changed directly as it will be overridden during save.
+            - Fields that populate this are: ``attributes``, ``address`` (Prefix: address__),
 
     **Authors**: Gagandeep Singh
     """
@@ -125,6 +130,46 @@ class BspProfile(Document):
 
         def __unicode__(self):
             return self.name
+
+
+    class DayTiming(EmbeddedDocument):
+        """
+        Mongodb embedded document to store a week day timings.
+        """
+        SUN = 'Sun'
+        MON = 'Mon'
+        TUE = 'Tue'
+        WED = 'Wed'
+        THU = 'Thu'
+        FRI = 'Fri'
+        SAT = 'Sat'
+        CH_DAY = (
+            (SUN, SUN),
+            (MON, MON),
+            (TUE, TUE),
+            (WED, WED),
+            (THU, THU),
+            (FRI, FRI),
+            (SAT, SAT)
+        )
+
+        day = StringField(required=True, choices=CH_DAY, help_text="Day of the week in three letters as per datetime '%a'.")
+        start_time = IntField(help_text='Start time in 24-hour format as HHMM. Example: 0930 (9:30 AM)')
+        end_time = IntField(help_text='End time in 24-hour format as HHMM. Example: 1800 (6 PM)')
+        closed  = BooleanField(default=None, help_text='If true, it means BSP is closed on that day.')
+        full_day = BooleanField(default=None, help_text='If true, it means open for 24-hours. This will update start-end to 0000-2400')
+
+        def __init__(self, *args, **kwargs):
+            if not self.closed:
+                if self.start_time is None or self.end_time:
+                    raise ValidationError("Please enter start time & end time for the day timing.")
+
+            if self.full_day:
+                self.start_time = 0000
+                self.end_time = 2400
+
+            super(BspProfile.DayTiming, self).__init__(*args, **kwargs)
+
 
     class SocialMedia(EmbeddedDocument):
         """
@@ -155,20 +200,24 @@ class BspProfile(Document):
     # Attributes
     attributes  = DictField(required=True, help_text='Attributes of BSP according to BspType. Use this for reporting or display.')
     avg_rating  = FloatField(default=None, help_text="Average rating.")
-    list_attributes = EmbeddedDocumentListField(Attribute, required=True, help_text="List of attributes. These are populated by 'attributes' so do not update here. Use this for analytics.")
+
+    list_attributes = EmbeddedDocumentListField(Attribute, required=True, help_text="List of all attributes from various fields. These are populated by 'attributes' so do not update here. Use this for analytics.")
 
     # Contact
+    # contacts
+    # address
     emails      = ListField(help_text='Email ids')
     website     = URLField(help_text='Website url if any.')
 
     # Statuses
     verification_status = StringField(required=True, help_text='Verification status of the BSP.')
     open_status = StringField(required=True, default=ST_OPN_OPEN, choices=CH_OPEN_STATUS, help_text='Open status of BSP.')
+    timings     = EmbeddedDocumentListField(DayTiming, required=True, help_text='Week day wise timings. This can hav multiple timings for a day.')
 
     # Misc
     tags        = ListField(help_text='Tags related to this BSP.')
     social      = EmbeddedDocumentField(SocialMedia, help_text='Social media page links.')
-    other_details = StringField(help_text='Any details regarding this BSP.')
+    other_details = StringField(help_text='Any other details regarding this BSP.')
 
     # Dates
     created_on  = DateTimeField(default=timezone.now, required=True, help_text='Date on which this record was created in the database.')
@@ -177,12 +226,21 @@ class BspProfile(Document):
     meta = {
         'indexes':[
             'bsp_id',
-            'name'
+            '$name',
+            'slug',
+            { 'fields':['avg_rating'], 'cls':False, 'sparse': True },
+            ('list_attributes.name', 'list_attributes.value'),
+            'verification_status',
+            'open_status',
+            { 'fields':['timings.day', 'timings.start_time', 'timings.end_time'], 'cls':False, 'sparse': True },
+            { 'fields':['timings.day', 'timings.closed'], 'cls':False, 'sparse': True },
+            { 'fields':['tags'], 'cls':False, 'sparse': True },
+            'created_on'
         ]
     }
 
 
-    def save(self, *args, **kwargs):
+    def save(self, update_attr=True, *args, **kwargs):
         """
         Save method for a response.
 
@@ -191,5 +249,23 @@ class BspProfile(Document):
 
         if self.pk:
             self.modified_on = timezone.now()
+
+        # --- Validate timings ---
+        list_timings = []
+        for day_tmng in self.timings:
+            if day_tmng.closed:
+                day_tmng.start_time = None
+                day_tmng.end_time = None
+
+            if day_tmng.full_day:
+                self.start_time = 0000
+                self.end_time = 2400
+
+            list_timings.append(day_tmng)
+        self.timings = list_timings
+
+        # Update Attributes
+        if update_attr:
+            pass
 
         return super(BspProfile, self).save(*args, **kwargs)

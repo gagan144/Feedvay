@@ -14,6 +14,7 @@ class AddressEmbDoc(EmbeddedDocument):
     location_id = StringField(required=True, help_text='Instance id of Location model.')
 
     street_address = StringField(required=True, help_text="Street address that mostly includes house/flat number.")
+    landmark    = StringField(help_text='Landmarks for this address.')
 
     locality    = StringField(required=True, help_text="As per location model instance.")
     city        = StringField(required=True, help_text="As per location model instance.")

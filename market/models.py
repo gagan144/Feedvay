@@ -16,6 +16,7 @@ from mongoengine.base.fields import BaseField
 from django.contrib.auth.models import User
 
 from accounts.models import RegisteredUser
+from utilities.abstract_models.mongodb import AddressEmbDoc, ContactEmbDoc
 
 # ---------- Business or Service Point ----------
 class BusinessServicePoint(models57.Model):
@@ -113,12 +114,23 @@ class BspProfile(Document):
             - Contains list of all attributes from various fields in form of list of name-value dict.
             - Useful for analytics and querying since it has indexes.
             - This field must not be changed directly as it will be overridden during save.
-            - Fields that populate this are: ``attributes``, ``address`` (Prefix: address__),
+            - Fields that populate this are: ``attributes``, ``address`` (Prefix: address__).
+            - Address can be None in case of some BSP such as doctor who works at a clinic.
 
     **Authors**: Gagandeep Singh
     """
 
     # --- Embedded documents ---
+    class ImageDoc(EmbeddedDocument):
+        """
+        Mongodb embedded document to store photo urls for a BSP.
+
+        **Authors**: Gagandeep Singh
+        """
+        url     = URLField(required=True, help_text='Absolute url of the image where the image is stored.')
+        title   = StringField(help_text="Title of the image.")
+        description = StringField(help_text='Any description regarding this image.')
+
     class Attribute(EmbeddedDocument):
         """
         Mongodb embedded document to store BSP attribute.
@@ -199,25 +211,35 @@ class BspProfile(Document):
 
     # Attributes
     attributes  = DictField(required=True, help_text='Attributes of BSP according to BspType. Use this for reporting or display.')
-    avg_rating  = FloatField(default=None, help_text="Average rating.")
+    timings     = EmbeddedDocumentListField(DayTiming, help_text='Week day wise timings. This can hav multiple timings for a day.')
+
 
     list_attributes = EmbeddedDocumentListField(Attribute, required=True, help_text="List of all attributes from various fields. These are populated by 'attributes' so do not update here. Use this for analytics.")
 
+    # Media
+    cover_photo = EmbeddedDocumentField(ImageDoc, help_text='Cover photo of this BSP.')
+    photos      = EmbeddedDocumentListField(ImageDoc, help_text='Multiple images for this BSP.')
+
+
     # Contact
-    # contacts
-    # address
+    contacts    = EmbeddedDocumentListField(ContactEmbDoc, help_text="Contact number list for this BSP.")
+    address     = EmbeddedDocumentField(AddressEmbDoc, help_text="Address of this BSP.")
     emails      = ListField(help_text='Email ids')
     website     = URLField(help_text='Website url if any.')
 
-    # Statuses
-    verification_status = StringField(required=True, help_text='Verification status of the BSP.')
-    open_status = StringField(required=True, default=ST_OPN_OPEN, choices=CH_OPEN_STATUS, help_text='Open status of BSP.')
-    timings     = EmbeddedDocumentListField(DayTiming, required=True, help_text='Week day wise timings. This can hav multiple timings for a day.')
+    # Stats
+    avg_rating  = FloatField(default=None, help_text="Average rating.")
+    total_views = IntField(default=0, help_text="Total views for this bsp.")
 
     # Misc
     tags        = ListField(help_text='Tags related to this BSP.')
     social      = EmbeddedDocumentField(SocialMedia, help_text='Social media page links.')
     other_details = StringField(help_text='Any other details regarding this BSP.')
+
+    # Statuses
+    verification_status = StringField(required=True, help_text='Verification status of the BSP.')
+    open_status = StringField(required=True, default=ST_OPN_OPEN, choices=CH_OPEN_STATUS, help_text='Open status of BSP.')
+    active      = BooleanField(default=True, required=True, help_text='Set false, to temporarily deactive/hide this bsp.')
 
     # Dates
     created_on  = DateTimeField(default=timezone.now, required=True, help_text='Date on which this record was created in the database.')
@@ -228,14 +250,22 @@ class BspProfile(Document):
             'bsp_id',
             '$name',
             'slug',
-            { 'fields':['avg_rating'], 'cls':False, 'sparse': True },
+
             ('list_attributes.name', 'list_attributes.value'),
-            'verification_status',
-            'open_status',
             { 'fields':['timings.day', 'timings.start_time', 'timings.end_time'], 'cls':False, 'sparse': True },
             { 'fields':['timings.day', 'timings.closed'], 'cls':False, 'sparse': True },
+
+            { 'fields':['address.coordinates'], 'cls':False, 'sparse': True },
+            { 'fields':['address.location_id'], 'cls':False, 'sparse': True },
+
+            { 'fields':['avg_rating'], 'cls':False, 'sparse': True },
             { 'fields':['tags'], 'cls':False, 'sparse': True },
-            'created_on'
+
+            'verification_status',
+            'open_status',
+            'active',
+
+            # 'created_on'
         ]
     }
 

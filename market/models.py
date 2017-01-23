@@ -18,6 +18,60 @@ from django.contrib.auth.models import User
 from accounts.models import RegisteredUser
 from utilities.abstract_models.mongodb import AddressEmbDoc, ContactEmbDoc
 
+# ----- General -----
+class BspTags(Document):
+    """
+    Mongodb collection to store various tag for all types of BSP.
+
+    **Authors**: Gagandeep Singh
+    """
+    name    = StringField(required=True, max_length=64, unique=True, help_text='Name of the tag. These will be visible to users.')
+    list_bsp_types = ListField(required=True, help_text='List of BSP on which this type will be applicable.')
+    active  = BooleanField(required=True, default=True, help_text="If false, this tag will not be visible. Deactive will not affect associated BSPs.")
+
+    meta = {
+        'ordering': 'name',
+        'indexes':[
+            'name',
+            'list_bsp_types'
+        ]
+    }
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self, update_attr=True, *args, **kwargs):
+        """
+        Save method for a response.
+
+        **Authors**: Gagandeep Singh
+        """
+        self.list_bsp_types = list(set(self.list_bsp_types))
+        return super(BspTags, self).save(*args, **kwargs)
+
+    def delete(self, **write_concern):
+        raise ValidationError("You cannot delete a BSP tag. Instead mark 'active' as false.")
+
+# ----- BSP related models -----
+class RestaurantCuisines(models.Model):
+    """
+    Model to store various types of restaurant cuisines.
+
+    **Authors**: Gagandeep Singh
+    """
+    name    = models.CharField(max_length=64, unique=True, db_index=True, help_text='Name/title of the cuisines.')
+    active  = models.BooleanField(default=True, db_index=True, help_text='If false, this will not be visible. Deactivating will not affect currently associated restaurants.')
+
+    class Meta:
+        ordering = 'name'
+
+    def __unicode__(self):
+        return self.name
+
+    def delete(self, **write_concern):
+        raise ValidationError("You cannot delete a restaurant cuisines. Instead mark 'active' as false.")
+
+
 # ---------- Business or Service Point ----------
 class BusinessServicePoint(Document):
     """
@@ -233,12 +287,13 @@ class BusinessServicePoint(Document):
         if update_attr:
             list_attr = []
             for key, val in self.attributes.iteritems():
-                list_attr.append(
-                    BusinessServicePoint.Attribute(
-                        name = key,
-                        value = val
+                if not isinstance(val, dict):
+                    list_attr.append(
+                        BusinessServicePoint.Attribute(
+                            name = key,
+                            value = val
+                        )
                     )
-                )
             self.list_attributes = list_attr
 
         return super(BusinessServicePoint, self).save(*args, **kwargs)

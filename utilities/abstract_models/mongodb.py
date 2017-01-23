@@ -20,6 +20,7 @@ class AddressEmbDoc(EmbeddedDocument):
     city        = StringField(required=True, help_text="As per location model instance.")
     state       = StringField(required=True, help_text="As per location model instance.")
     country     = StringField(required=True, help_text="As per location model instance.")
+    pincode     = IntField(min_value=100000, max_value=999999, help_text="As per location model instance.")
 
     coordinates = GeoPointField(sparse=True)
 

@@ -19,7 +19,7 @@ from accounts.models import RegisteredUser
 from utilities.abstract_models.mongodb import AddressEmbDoc, ContactEmbDoc
 
 # ----- General -----
-class BspTags(Document):
+class BspTag(Document):
     """
     Mongodb collection to store various tag for all types of BSP.
 
@@ -47,13 +47,13 @@ class BspTags(Document):
         **Authors**: Gagandeep Singh
         """
         self.list_bsp_types = list(set(self.list_bsp_types))
-        return super(BspTags, self).save(*args, **kwargs)
+        return super(BspTag, self).save(*args, **kwargs)
 
     def delete(self, **write_concern):
         raise ValidationError("You cannot delete a BSP tag. Instead mark 'active' as false.")
 
 # ----- BSP related models -----
-class RestaurantCuisines(models.Model):
+class RestaurantCuisine(models.Model):
     """
     Model to store various types of restaurant cuisines.
 

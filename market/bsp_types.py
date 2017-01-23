@@ -47,12 +47,11 @@ class Restaurant(JsonObject):
     """
     _allow_dynamic_properties = False
 
-    # --- Cuisines ---
-
-    # --- Highlights ---
-
 
     class ENUMS:
+        # --- Cuisines ---
+        # From market.models.RestaurantCuisine
+
         # --- Categories ---
         CTG_BAKERIES = 'bakeries'
         CTG_BEVERAGE_SHOPS = 'beverage shops'

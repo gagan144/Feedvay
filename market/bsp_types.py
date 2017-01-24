@@ -13,14 +13,17 @@ class BspTypes:
 
     **Authors**: Gagandeep Singh
     """
-    ATM = 'atm'
-    BANK = 'bank'
-    DOCTOR = 'doctor'   # <<-- category
-    TOILET = 'toilet'
-    MOBILE_APP = 'app'
+    # ATM = 'atm'
+    # BANK = 'bank'
+    # DOCTOR = 'doctor'   # <<-- category
+    # TOILET = 'toilet'
+    # MOBILE_APP = 'app'
     RESTAURANT = 'restaurant'
-    WEBSITE = 'website'
+    # WEBSITE = 'website'
 
+    choices = (
+        (RESTAURANT, 'Restaurant'),
+    )
 
 class PaymentMethods:
     """
@@ -126,6 +129,7 @@ class Restaurant(JsonObject):
 
 
 
+"""
 # ---------- Delete -----------
 
 r = Restaurant(
@@ -144,3 +148,4 @@ print r.ENUMS.CH_FOOD_TYPE
 
 # new_r = Eatery(r.to_json())
 # print new_r.payment_methods
+"""

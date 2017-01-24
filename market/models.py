@@ -62,11 +62,35 @@ class RestaurantCuisine(models.Model):
     name    = models.CharField(max_length=64, unique=True, db_index=True, help_text='Name/title of the cuisines.')
     active  = models.BooleanField(default=True, db_index=True, help_text='If false, this will not be visible. Deactivating will not affect currently associated restaurants.')
 
+    created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
+    modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
+
     class Meta:
-        ordering = 'name'
+        ordering = ('name', )
 
     def __unicode__(self):
         return self.name
+
+    def clean(self):
+        """
+        Method to clean & validate data fields.
+
+        **Authors**: Gagandeep Singh
+        """
+        if self.pk:
+            # Update modified date
+            self.modified_on = timezone.now()
+
+        super(self.__class__, self).clean()
+
+    def save(self, update_theme=False, *args, **kwargs):
+        """
+        Pre-save method for this model.
+
+        **Authors**: Gagandeep Singh
+        """
+        self.clean()
+        super(self.__class__, self).save(*args, **kwargs)
 
     def delete(self, **write_concern):
         raise ValidationError("You cannot delete a restaurant cuisines. Instead mark 'active' as false.")

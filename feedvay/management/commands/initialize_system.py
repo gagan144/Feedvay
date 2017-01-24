@@ -31,6 +31,7 @@ class Command(BaseCommand):
 
         **Authors**: Gagandeep Singh
         """
+        self.stdout.write('* Creating database entries for languages & translations (App:languages)...')
         from languages.models import Language, Translation
 
         # (a) Set 'Language' database
@@ -84,6 +85,7 @@ class Command(BaseCommand):
 
         **Authors**: Gagandeep Singh
         """
+        self.stdout.write('* Creating database entries for Theme,ThemeSkin (App:form_builder)...')
         from form_builder.models import Theme, ThemeSkin
 
         self.stdout.write("\tTheme: preparing data...")
@@ -134,17 +136,70 @@ class Command(BaseCommand):
                 count += 1
         self.stdout.write('\tThemes: {} themes inserted.'.format(count))
 
+    def db_market(self):
+        """
+        Initializes all tables in market app
+
+        **Authors**: Gagandeep Singh
+        """
+        self.stdout.write("* Creating database entries for 'market' app...")
+        from market.models import RestaurantCuisine, BspTag
+
+        # --- (a) Restaurants Cuisines ---
+        self.stdout.write("\tRestaurant Cuisine: preparing data...")
+
+        # Read json database
+        f = open(os.path.join(DIR_DB, "db_market_restaurant_cuisines.json"), 'r')
+        data_cuisines = json.loads(f.read())
+        f.close()
+
+        count = 0
+        for row in data_cuisines:
+            cus, is_new = RestaurantCuisine.objects.get_or_create(
+                name = row['name'],
+                defaults = {
+                    "active": row["active"]
+                }
+            )
+
+            if is_new:
+                count +=1
+
+        self.stdout.write("\tRestaurant Cuisine: {} cuisies inserted.".format(count))
+
+        # --- (b) BSP Tags ---
+        self.stdout.write("\n\tBSP Tags: preparing data...")
+
+        # Read json database
+        f = open(os.path.join(DIR_DB, "db_market_bsptags.json"), 'r')
+        data_tags = json.loads(f.read())
+        f.close()
+
+        count = 0
+        for row in data_tags:
+            BspTag.objects(
+                name = row['name']
+            ).update_one(
+                set__list_bsp_types = row["list_bsp_types"],
+                set__active = row["active"],
+                upsert = True
+            )
+
+            count +=1
+
+        self.stdout.write("\tBSP Tags: {} tags upserted.".format(count))
 
     def handle(self, *args, **options):
         self.stdout.write('Initializing Feedvay system, please wait...')
 
         # (1) Create database entries for language & translations
-        self.stdout.write('* Creating database entries for languages & translations (App:languages)...')
         self.db_languages()
 
         # (2) Create database entries for themes
-        self.stdout.write('* Creating database entries for Theme,ThemeSkin (App:form_builder)...')
         self.db_themes()
+
+        # (3) Market
+        self.db_market()
 
         # Completed!
         self.stdout.write("Done! All initialization completed. You are now good to go.")

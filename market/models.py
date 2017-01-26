@@ -100,6 +100,7 @@ class Organization(models57.Model):
             - ``frozen``: Means all operations of this organization have been ceased. No one can add update or create
             anything. Only viewing is allowed. This can be unfreeze to ``verified`` state.
             - ``deleted``: Means this organization has been permanently deleted from the system. It cannot be revived now.
+        - Please call save after all transition method calls.
         - If verification fails, it is mandatory to provide reason. This reason will be shown to the user.
         - **Claims** on the organization can disabled if organization is known such as top organization or contracted clients. This can
           **ONLY** be done by staff user. Owner do not have rights to set this property.
@@ -193,6 +194,48 @@ class Organization(models57.Model):
         **Authors**: Gagandeep Singh
         """
         self.staff_remarks = remarks
+
+    @fsm_log_by
+    @transition(field=status, source=ST_VERF_PENDING, target=ST_VERF_FAILED)
+    def trans_verification_failure(self, reason):
+        """
+        Transition edge for organization verification failed. A reason must be provided stating
+        why verification was failed.
+
+        **Authors**: Gagandeep Singh
+        """
+        self.failed_reason = reason
+
+    @fsm_log_by
+    @transition(field=status, source=ST_VERF_FAILED, target=ST_VERF_PENDING)
+    def trans_revise_verification(self):
+        """
+        Transition edge to revise organization verification. This means organization has been edited and
+        now again queued for verification.
+
+        **Authors**: Gagandeep Singh
+        """
+        pass
+
+    @fsm_log_by
+    @transition(field=status, source=ST_VERIFIED, target=ST_FROZEN)
+    def trans_freeze(self):
+        """
+        Transition edge to freeze organization. This is done to cease all organization's operations.
+
+        **Authors**: Gagandeep Singh
+        """
+        pass
+
+    @fsm_log_by
+    @transition(field=status, source=ST_FROZEN, target=ST_VERIFIED)
+    def trans_unfreeze(self):
+        """
+        Transition edge to unfreeze organization. This is done to restore all organization's operations.
+
+        **Authors**: Gagandeep Singh
+        """
+        pass
     # --- /Transitions ---
 
     def update_theme_files(self, auto_save=True):
@@ -432,12 +475,182 @@ class OrganizationMember(models.Model):
 # ========== /Organization ==========
 
 # ========== Brand ==========
+def upload_brand_logo_to(instance, filename):
+    id = str(uuid.uuid4())
+    fname, ext = os.path.splitext(filename)
+    new_filename = "{}.{}".format(id, ext.replace('.',''))
+
+    return "organizations/{org_uid}/brands/{brand_uid}/lg-{filename}".format(
+        org_uid = str(instance.organization.org_uid),
+        brand_uid = str(instance.brand_uid),
+        filename = new_filename #filename.replace(" ","_")
+    )
+def upload_brand_icon_to(instance, filename):
+    id = str(uuid.uuid4())
+    fname, ext = os.path.splitext(filename)
+    new_filename = "{}.{}".format(id, ext.replace('.',''))
+
+    return "organizations/{org_uid}/brands/{brand_uid}/ic-{filename}".format(
+        org_uid = str(instance.organization.org_uid),
+        brand_uid = str(instance.brand_uid),
+        filename = new_filename #filename.replace(" ","_")
+    )
+def upload_brand_theme_file_to(instance, filename):
+    id = str(shortuuid.ShortUUID().random(length=10))
+    fname, ext = os.path.splitext(filename)
+    new_filename = "theme_{}.{}".format(id, ext.replace('.',''))
+
+    return "organizations/{org_uid}/brands/{brand_uid}/{filename}".format(
+        org_uid = str(instance.organization.org_uid),
+        brand_uid = str(instance.brand_uid),
+        filename = new_filename #filename.replace(" ","_")
+    )
 class Brand(models57.Model):
     """
-    Model to store brand of an organization.
+    Model to store brand of an organization. A brand is any name, design, style, words or symbols used
+    singularly or in combination that distinguish one product from another in the eyes of the customer.
 
     **Authors**: Gagandeep Singh
     """
+    # --- Enums ---
+    LOGO_DIM = (300, 100)
+    LOGO_MAX_SIZE = 30*1024 # in bytes
+
+    ICON_DIM = (64, 64)
+    ICON_MAX_SIZE = 15*1024 # in bytes
+
+    # --- Fields ---
+    organization = models.ForeignKey(Organization, db_index=True, editable=False, help_text='Organization to which this brand belongs to.')
+    brand_uid   = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True, editable=False, help_text='Unique ID of a brand which are hard to guess and can be used in urls. ')
+    name        = models.CharField(max_length=255, unique=True, db_index=True, help_text='Name of the brand.')
+    slug        = models.SlugField(unique=True, blank=True, db_index=True, help_text='Slug of the name used for url referencing and dedupe matching.')
+    description = models.TextField(max_length=512, help_text='Short description about the brand. Include keywords for better SEO and keep characters between 150-160.')
+
+    logo        = models.ImageField(upload_to=upload_brand_logo_to, help_text='Brand logo of size 300x100 pixels.')
+    icon        = models.ImageField(upload_to=upload_brand_icon_to, help_text='Brand icon of size 64x64 px.')
+
+    # Customization
+    ui_theme    = models57.JSONField(default=None, blank=True, null=True, help_text="Custom UI theme for this brand. This must be of format 'utilities.theme.UiTheme'")
+    theme_file  = models.FileField(upload_to=upload_brand_theme_file_to, editable=False, help_text='Theme file link which is automatically generated if ui_theme is defined')
+
+    active      = models.BooleanField(default=False, db_index=True, help_text='If true, it means brand currenlt inactive.')
+
+    created_by  = models.ForeignKey(User, editable=False, related_name='created_by', help_text='User that created this brand. This can be a staff or registered user.')
+
+    # Dates
+    created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
+    modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
+
+    class Meta:
+        ordering = ('name', )
+
+    def __unicode__(self):
+        return "{} ({})".format(self.name, self.organization.name)
+
+
+    def update_theme_files(self, auto_save=True):
+        """
+        Method to update all theme files only if ui_theme is defined.
+
+        :return: (bool) True if file was created and set to the field (irrespective of save), False if ui_theme was not set.
+
+        **Authors**: Gagandeep Singh
+        """
+        if self.ui_theme:
+            ui_theme = UiTheme(self.ui_theme)
+
+            # render file
+            content = render_skin(
+                custom=True,
+                clr_primary = ui_theme.primary,
+                clr_prim_hover = ui_theme.primary_dark,
+                clr_prim_disabled = ui_theme.primary_disabled
+            )
+
+            # Create InMemoryUploadObject
+            f_io = StringIO.StringIO(content)
+            mem_file_css = InMemoryUploadedFile(
+                f_io,
+                u'file',
+                'theme.css',
+                u'text/css',
+                f_io.len,
+                None
+            )
+
+            self.theme_file = mem_file_css
+
+            if auto_save:
+                self.save()
+
+            return True
+        else:
+            return False
+
+    def clean(self):
+        """
+        Method to clean & validate data fields.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        if self.pk:
+            # Update modified date
+            self.modified_on = timezone.now()
+
+        # Name slug
+        if not self.slug:
+            self.slug = slugify(self.name)
+
+        # Images
+        if not Brand.validate_logo_image(self.logo):
+            raise ValidationError('Logo must be {}x{} and less than {} KB.'.format(
+                Brand.LOGO_DIM[0],
+                Brand.LOGO_DIM[1],
+                Brand.LOGO_MAX_SIZE/1024
+            ))
+        if not Brand.validate_icon_image(self.icon):
+            raise ValidationError('Icon must be {}x{} and less than {} KB.'.format(
+                Brand.ICON_DIM[0],
+                Brand.ICON_DIM[1],
+                Brand.ICON_MAX_SIZE/1024
+            ))
+
+        # Check UI Theme
+        if self.ui_theme is not None:
+            if self.ui_theme == {}:
+                self.ui_theme = None
+            else:
+                try:
+                    theme_obj = UiTheme(self.ui_theme)
+                except Exception as ex:
+                    raise ValidationError("ui_theme: " + ex.message)
+
+        super(self.__class__, self).clean()
+
+    def save(self, update_theme=False, *args, **kwargs):
+        """
+        Pre-save method for this model.
+
+        **Authors**: Gagandeep Singh
+        """
+        self.clean()
+
+        # Update theme
+        if update_theme:
+            # Theme errors have been checked in clean()
+            self.update_theme_files(auto_save=False)
+
+        super(self.__class__, self).save(*args, **kwargs)
+
+    def delete(self, using=None, keep_parents=False):
+        """
+        Pre-delete method. (Not allowed)
+
+        **Authors**: Gagandeep Singh
+        """
+        raise ValidationError("You cannot delete a brand. Mark 'active' false instead.")
+
 # ========== /Brand ==========
 
 
@@ -483,6 +696,11 @@ class RestaurantCuisine(models.Model):
         super(self.__class__, self).save(*args, **kwargs)
 
     def delete(self, **write_concern):
+        """
+        Pre-delete method. (Not allowed)
+
+        **Authors**: Gagandeep Singh
+        """
         raise ValidationError("You cannot delete a restaurant cuisines. Instead mark 'active' as false.")
 # --- /BSP related models ---
 
@@ -603,10 +821,10 @@ class BusinessServicePoint(Document):
     name        = StringField(required=True, help_text="Name of the business or service point. Thius can be duplicates.")
     description = StringField(help_text='Description about this BSP.')
 
-    # TODO: type, brand, members
+    # TODO: type, members
     # type        = models
     organization_id = IntField(required=True, help_text="Instance id of the organization to which this BSP belongs to.")
-    # brand         =
+    brand_id    = IntField(help_text="(Optional) Instance id of the brand to which this BSP belongs to.")
     # members
 
     # Attributes
@@ -651,6 +869,7 @@ class BusinessServicePoint(Document):
             'bsp_uid',
             '$name',
             'organization_id',
+            { 'fields':['brand_id'], 'cls':False, 'sparse': True },
 
             ('list_attributes.name', 'list_attributes.value'),
             { 'fields':['timings.day', 'timings.start_time', 'timings.end_time'], 'cls':False, 'sparse': True },
@@ -674,6 +893,10 @@ class BusinessServicePoint(Document):
     @property
     def organization(self):
         return Organization.objects.get(id=self.organization_id)
+
+    @property
+    def brand(self):
+        return Brand.objects.get(id=self.brand_id)
 
     def save(self, update_attr=True, *args, **kwargs):
         """
@@ -717,4 +940,9 @@ class BusinessServicePoint(Document):
         return super(BusinessServicePoint, self).save(*args, **kwargs)
 
     def delete(self, **write_concern):
+        """
+        Pre-delete method. (Not allowed)
+
+        **Authors**: Gagandeep Singh
+        """
         raise ValidationError("You cannot delete a BSP. Instead mark 'active' as false.")

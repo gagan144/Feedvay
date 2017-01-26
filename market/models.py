@@ -94,6 +94,10 @@ class Organization(models57.Model):
     """
     An organization is an legal registered entity such as Company, Firm, Agency, Government or non-government organization, NGO etc.
 
+    **State chart diagram for organization status**:
+
+        .. image:: ../../_static/market/organization_status_statechart.jpg
+
     **Points**:
 
         - **Status**:
@@ -187,7 +191,7 @@ class Organization(models57.Model):
     # --- Transitions ---
     @fsm_log_by
     @transition(field=status, source=ST_VERF_PENDING, target=ST_VERIFIED)
-    def trans_verify(self, remarks=None):
+    def trans_verification_success(self, remarks=None):
         """
         Transition edge to transit organization status to verified.
 
@@ -232,6 +236,18 @@ class Organization(models57.Model):
     def trans_unfreeze(self):
         """
         Transition edge to unfreeze organization. This is done to restore all organization's operations.
+
+        **Authors**: Gagandeep Singh
+        """
+        pass
+
+    @fsm_log_by
+    @transition(field=status, source=[ST_VERF_PENDING, ST_VERIFIED, ST_VERF_FAILED, ST_FROZEN], target=ST_DELETED)
+    def trans_delete(self):
+        """
+        Transition edge to mark this organization as deleted. Use this method with caution.
+        Once marked, all operations on the organization are stopped and everything is freezed.
+        You cannot edit this organization and its entities however, you can view them.
 
         **Authors**: Gagandeep Singh
         """

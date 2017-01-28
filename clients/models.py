@@ -486,9 +486,17 @@ class OrgInvitation(models.Model):
         (ST_DELETED, 'Deleted')
     )
 
+    HIER_SIBLING = 'sibling'
+    HIER_CHILD = 'child'
+    CH_HIER_LINK = (
+        (HIER_SIBLING, 'Sibling'),
+        (HIER_CHILD, 'Child')
+    )
+
     # --- Fields ---
     organisation = models.ForeignKey(Organization, blank=True, editable=False, help_text='Organization to which invited user which attach.')
     invitee     = models.ForeignKey(RegisteredUser, editable=False, db_index=True, help_text='RegisteredUser who is invited.')
+    org_hier_link = models.CharField(null=True, blank=True, default=None, choices=CH_HIER_LINK, help_text='Relative attachment of invitee according to inviter in the org hierarchy. If None, means do not attach.')
 
     status      = FSMField(default=ST_NEW, choices=CH_STATUS, protected=True, db_index=True, editable=False, help_text='Status of the invitation.')
     delete_reason = tinymce_models.HTMLField(null=True, blank=True, editable=False, help_text="Reason for deletion incase status is 'deleted'.")

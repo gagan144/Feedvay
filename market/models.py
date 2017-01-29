@@ -108,12 +108,13 @@ class Brand(models57.Model):
     ICON_MAX_SIZE = 15*1024 # in bytes
 
     # --- Fields ---
-    organization = models.ForeignKey(Organization, db_index=True, editable=False, help_text='Organization to which this brand belongs to.')
+    organization = models.ForeignKey(Organization, db_index=True, help_text='Organization to which this brand belongs to.')
     brand_uid   = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True, editable=False, help_text='Unique ID of a brand which are hard to guess and can be used in urls. ')
     name        = models.CharField(max_length=255, unique=True, db_index=True, help_text='Name of the brand.')
     slug        = models.SlugField(unique=True, blank=True, db_index=True, help_text='Slug of the name used for url referencing and dedupe matching.')
-    description = models.TextField(max_length=512, help_text='Short description about the brand. Include keywords for better SEO and keep characters between 150-160.')
 
+    # Settings
+    description = models.TextField(max_length=512, help_text='Short description about the brand. Include keywords for better SEO and keep characters between 150-160.')
     logo        = models.ImageField(upload_to=upload_brand_logo_to, help_text='Brand logo of size 300x100 pixels.')
     icon        = models.ImageField(upload_to=upload_brand_icon_to, help_text='Brand icon of size 64x64 px.')
 
@@ -121,11 +122,11 @@ class Brand(models57.Model):
     ui_theme    = models57.JSONField(default=None, blank=True, null=True, help_text="Custom UI theme for this brand. This must be of format 'utilities.theme.UiTheme'")
     theme_file  = models.FileField(upload_to=upload_brand_theme_file_to, editable=False, help_text='Theme file link which is automatically generated if ui_theme is defined')
 
+    # Status
     active      = models.BooleanField(default=False, db_index=True, help_text='If true, it means brand currenlt inactive.')
 
+    # Misc
     created_by  = models.ForeignKey(User, editable=False, related_name='created_by', help_text='User that created this brand. This can be a staff or registered user.')
-
-    # Dates
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
 
@@ -475,7 +476,8 @@ class BusinessServicePoint(Document):
 
             'created_by',
             'created_on'
-        ]
+        ],
+        'ordering': ['name']
     }
 
     @property

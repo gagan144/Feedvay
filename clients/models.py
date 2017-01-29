@@ -112,9 +112,10 @@ class Organization(models57.Model):
     # --- Fields ---
     org_uid     = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True, editable=False, help_text='Unique ID of an organization. This is mostly used in url in management console.')
     name        = models.CharField(max_length=255, unique=True, db_index=True, help_text='Name of the organization.')
-    slug        = models.SlugField(unique=True, blank=True, db_index=True, help_text='Slug of the name. Used in urls for public view.')
+    slug        = models.SlugField(unique=True, blank=True, db_index=True, editable=False, help_text='Slug of the name. Used in urls for public view.')
     acronym     = models.CharField(max_length=10, null=True, blank=True, help_text='Acronym of the organization if any.')
 
+    # Settings
     description = models.TextField(max_length=512, help_text='Short description about the organization. Include keywords for better SEO and keep characters between 150-160.')
     type        = models.CharField(max_length=32, choices=CH_TYPE, help_text='Type of the organization.')
     logo        = models.ImageField(upload_to=upload_organization_logo_to, help_text='Organization logo of size 300x100 pixels.')
@@ -133,12 +134,11 @@ class Organization(models57.Model):
     failed_reason = tinymce_models.HTMLField(null=True, blank=True, help_text='Reason stating why this organization was failed during verification. This is shown to the user.')
     disable_claim = models.BooleanField(default=False, help_text='Set true to stop any further claims on this organization. Only staff can set this property, user cannot.')
 
-    # Misc
+    # Other
     staff_remarks = tinymce_models.HTMLField(null=True, blank=True, help_text='Remarks filled by staff. This can be related to anything such as user interaction for verification.')
 
+    # Misc
     created_by  = models.ForeignKey(User, editable=False, help_text='User that created this organization. This can be a staff or registered user.')
-
-    # Dates
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
 
@@ -407,9 +407,9 @@ class OrganizationMember(models.Model):
     **Authors**: Gagandeep Singh
     """
     organization    = models.ForeignKey(Organization, help_text='Associated organization.')
-    registered_user = models.ForeignKey(RegisteredUser, help_text='User who is a memebr of the organization.')
+    registered_user = models.ForeignKey(RegisteredUser, db_index=True, help_text='User who is a memebr of the organization.')
     is_owner        = models.BooleanField(default=False, help_text='If true, it means this user is owner of this organization.')
-    deleted         = models.BooleanField(default=False, help_text="If true, it means user's membership is now removed.")
+    deleted         = models.BooleanField(default=False, editable=False, help_text="If true, it means user's membership is now removed.")
 
     created_on      = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
     modified_on     = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
@@ -494,9 +494,9 @@ class OrgInvitation(models.Model):
     )
 
     # --- Fields ---
-    organisation = models.ForeignKey(Organization, blank=True, editable=False, help_text='Organization to which invited user which attach.')
-    invitee     = models.ForeignKey(RegisteredUser, editable=False, db_index=True, help_text='RegisteredUser who is invited.')
-    org_hier_link = models.CharField(null=True, blank=True, default=None, choices=CH_HIER_LINK, help_text='Relative attachment of invitee according to inviter in the org hierarchy. If None, means do not attach.')
+    organization = models.ForeignKey(Organization, blank=True, editable=False, help_text='Organization to which invited user which attach.')
+    invitee     = models.ForeignKey(RegisteredUser, related_name='invitee', editable=False, db_index=True, help_text='RegisteredUser who is invited.')
+    org_hier_link = models.CharField(max_length=16, null=True, blank=True, default=None, editable=False, choices=CH_HIER_LINK, help_text='Relative attachment of invitee according to inviter in the org hierarchy. If None, means do not attach.')
 
     status      = FSMField(default=ST_NEW, choices=CH_STATUS, protected=True, db_index=True, editable=False, help_text='Status of the invitation.')
     delete_reason = tinymce_models.HTMLField(null=True, blank=True, editable=False, help_text="Reason for deletion incase status is 'deleted'.")
@@ -506,7 +506,7 @@ class OrgInvitation(models.Model):
     modified_on     = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
 
     class Meta:
-        index_together = ('organisation', 'inviter')
+        index_together = ('organization', 'inviter')
 
     def __unicode__(self):
         return "{} -> {}".format(self.inviter, self.invitee)
@@ -555,7 +555,7 @@ class OrgInvitation(models.Model):
         :return: True if exists else False.
         """
         if OrgInvitation.objects.filter(
-            organisation=self.organisation, invitee=self.invitee
+            organization=self.organization, invitee=self.invitee
         ).exclude(status__in=[OrgInvitation.ST_REJECTED, OrgInvitation.ST_DELETED]).exists():
             return True
         else:
@@ -576,11 +576,11 @@ class OrgInvitation(models.Model):
             # Update modified date
             self.modified_on = timezone.now()
 
-        # Validate inviter-organisation
+        # Validate inviter-organization
         try:
-            inviter_org = OrganizationMember.objects.get(organization=self.organisation, registered_user=self.inviter, deleted=False)
+            inviter_org = OrganizationMember.objects.get(organization_id=self.organization.id, registered_user=self.inviter, deleted=False)
         except OrganizationMember.DoesNotExist:
-            raise ValidationError("Inviter '{}' does not belongs to '{}'".format(self.inviter, self.organisation.name))
+            raise ValidationError("Inviter '{}' does not belongs to '{}'".format(self.inviter, self.organization.name))
 
         super(self.__class__, self).clean()
 

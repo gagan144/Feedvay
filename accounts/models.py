@@ -4,6 +4,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django_mysql import models as models57
 from django.utils import timezone
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
@@ -24,6 +25,8 @@ from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from fcm.models import AbstractDevice
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 
 from accounts.exceptions import *
 from owlery import owls
@@ -84,6 +87,11 @@ class RegisteredUser(models.Model):
     reg_count   = models.SmallIntegerField(default=1, editable=False, help_text='No of times this user registered himself.')
     last_reg_date = models.DateTimeField(auto_now_add=True, editable=False, help_text='Last registration datetime.')
     status      = FSMField(default=ST_LEAD, protected=True, db_index=True, editable=False, help_text='Status of user registration.')
+
+    # Permissions, Roles and DataAccess
+    roles       = models.ManyToManyField('Role', blank=True, help_text='Organizational roles for this user.')
+    permissions = models.ManyToManyField(Permission, through='UserPermission', blank=True, help_text='Organizational permissions for this user.')
+    # data access through query
 
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this user was made.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
@@ -155,6 +163,20 @@ class RegisteredUser(models.Model):
             owls.EmailOwl.send_password_change_success(user)
 
         # TODO: Logout user from all mobile devices
+
+
+    def get_data_access(self, organization_id=None):
+        """
+        Method to get all data access for this user.
+
+        :param organization_id: (Optional) If provides, filters by organization.
+        :return: List<:class:`accounts.models.UserDataAccess`>
+        """
+        qry = self.userdataaccess_set.all()
+        if organization_id:
+            qry = qry.filter(organization_id=organization_id)
+
+        return qry
 
     def clean(self):
         """
@@ -947,6 +969,169 @@ class UserProfile(Document):
             user.save()
 
 signals_mongo.post_save.connect(UserProfile.post_save, sender=UserProfile)
+
+# ----- User Permissions, Roles and Data Access -----
+class UserPermission(models.Model):
+    """
+    Model to associate user with permissions for an organization.
+    This model only defines what action a user is allowed on an entity. This **does not**
+    specifies on which instances of the entity user can perform that action.
+
+    **Points**:
+
+        - All user permissions are defined under organization to which he is part of.
+        - Currently permissions are applied on database entities only (not pages).
+        - To get list of permissions on entities we use :class:`django.contrib.auth.models.Permission`.
+        - Each permission relates to one of the CRUD operation allowed on that entity.
+        - **Uniqueness**: ``organization``, ``registered_user``, ``permission`` i.e under an organization,
+          a user can have only one permission for an action (CRUD) over an entity.
+
+    **Authors**: Gagandeep Singh
+    """
+    organization = models.ForeignKey('clients.Organization', help_text='Organization under which permission is granted.')
+    registered_user = models.ForeignKey(RegisteredUser, help_text='User to which permission is to be applied.')
+    permission  = models.ForeignKey(Permission, help_text='Permission allowing action on that entity.')
+
+    created_by  = models.ForeignKey(User, editable=False, help_text='User who assigned this permission.')
+    created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
+    modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
+
+    class Meta:
+        unique_together = ('organization', 'registered_user', 'permission')
+
+    def __unicode__(self):
+        return self.id
+
+    def clean(self):
+        """
+        Method to clean & validate data fields.
+
+        **Authors**: Gagandeep Singh
+        """
+        if self.pk:
+            # Update modified date
+            self.modified_on = timezone.now()
+
+        super(self.__class__, self).clean()
+
+    def save(self, *args, **kwargs):
+        """
+        Pre-save method for this model.
+
+        **Authors**: Gagandeep Singh
+        """
+        self.clean()
+        super(self.__class__, self).save(*args, **kwargs)
+
+class Role(models.Model):
+    """
+    Roles are a generic way of categorizing users to apply permissions. A user can belong to
+    any number of roles. Use role when you want to assign similar set of permission to group
+    of users.
+
+    **Points**:
+
+        - This model does not specifies data access. Only set of permissions.
+        - All roles are defined under an organization.
+        - **Uniqueness**: ``organization``, ``name``
+
+    **Authors**: Gagandeep Singh
+    """
+    organization = models.ForeignKey('clients.Organization', help_text='Organization in which this role can be used for users.')
+    name        = models.CharField(max_length=128, help_text='Name of the role.')
+    permissions = models.ManyToManyField(Permission, help_text='Permissions that belongs to this role.')
+
+    created_by  = models.ForeignKey(User, editable=False, help_text='User who created this role.')
+    created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
+    modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
+
+    class Meta:
+        unique_together = ('organization', 'name')
+
+    def __unicode__(self):
+        return "{} ({})".format(self.name, self.organization.name)
+
+    def clean(self):
+        """
+        Method to clean & validate data fields.
+
+        **Authors**: Gagandeep Singh
+        """
+        if self.pk:
+            # Update modified date
+            self.modified_on = timezone.now()
+
+        super(self.__class__, self).clean()
+
+    def save(self, *args, **kwargs):
+        """
+        Pre-save method for this model.
+
+        **Authors**: Gagandeep Singh
+        """
+        self.clean()
+        super(self.__class__, self).save(*args, **kwargs)
+
+class UserDataAccess(models57.Model):
+    """
+    Model to define what instances of an entity a user is allowed to perform actions.
+    Where, UserPermissions and Roles together specify set of action a user to allowed on
+    an entity, this model specifies sets of instances on which user can perform those actions.
+
+    **Points**:
+
+        - Instances are specified in terms of actual django orm query filters and not mostly list
+          of instance pk. These filters are in form of JSON as per the underline database (MySQL or MongoDb)
+        - To allow access over all instances, set ``all_access`` to True. This will ignore ``access_filter``.
+        - If ``all_access`` is ``False``, ``access_filter``` is mandatory.
+        - **Uniqueness**: ``organization``, ``registered_user``, ``content_type`` i.e. only one entry
+          for user in an organization that hass access over an entity.
+
+
+    **Authors**: Gagandeep Singh
+    """
+    organization    = models.ForeignKey('clients.Organization', help_text='Organization of which entities are accessible.')
+    registered_user = models.ForeignKey(RegisteredUser, help_text='User who has access to the instances.')
+    content_type    = models.ForeignKey(ContentType, help_text='Entity to which instances belongs to.')
+    all_access      = models.BooleanField(default=False, help_text='If true, ``access_filter`` is ignored and access is granted over all instances.')
+    access_filter   = models57.JSONField(default=None, blank=True, null=True, help_text='JSON query filter to filter instance on which access is granted.')
+
+    created_by  = models.ForeignKey(User, editable=False, help_text='User who granted this data aceess.')
+    created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
+    modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
+
+    class Meta:
+        unique_together = ('organization', 'registered_user', 'content_type')
+        verbose_name_plural = 'User data accesses'
+
+    def __unicode__(self):
+        return "{} ({})".format(self.name, self.organization.name)
+
+    def clean(self):
+        """
+        Method to clean & validate data fields.
+
+        **Authors**: Gagandeep Singh
+        """
+        if self.pk:
+            # Update modified date
+            self.modified_on = timezone.now()
+
+        if self.all_access is False and (self.access_filter in [None, {}]):
+            raise ValidationError("Please specify access filter.")
+
+        super(self.__class__, self).clean()
+
+    def save(self, *args, **kwargs):
+        """
+        Pre-save method for this model.
+
+        **Authors**: Gagandeep Singh
+        """
+        self.clean()
+        super(self.__class__, self).save(*args, **kwargs)
+
+# ----- /User Permissions, Roles and Data Access -----
 
 
 # ---------- Global Methods ----------

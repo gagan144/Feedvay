@@ -4,6 +4,7 @@
 from django.contrib import admin
 from django.contrib.auth import admin as auth_admin
 from django.db.models.query import Q
+from easy_select2 import select2_modelform
 
 from django.contrib.auth.models import User
 from accounts.models import *
@@ -16,6 +17,7 @@ class RegisteredUserInline(admin.StackedInline):
     """
     model = RegisteredUser
     verbose_name = 'Registration details'
+    raw_id_fields = ('roles', )
     can_delete = False
 
     def get_readonly_fields(self, request, obj=None):
@@ -31,13 +33,14 @@ class UserProxyForRegUser(User):
     **Authors**: Gagandeep Singh
     """
     class Meta:
-        verbose_name = 'Registered User'
+        verbose_name = 'RegisteredUser user'
         proxy = True
 
 @admin.register(UserProxyForRegUser)
 class RegisteredUserProxyAdmin(admin.ModelAdmin):
     """
-    Django admin for :class:`accounts.models.RegisteredUser`.
+    Django admin to manage django user who are registered user. This admin class
+    allows to change only those user who are registered users.
 
     **Authors**: Gagandeep Singh
     """
@@ -77,6 +80,42 @@ class RegisteredUserProxyAdmin(admin.ModelAdmin):
         qs = super(RegisteredUserProxyAdmin, self).get_queryset(request)
         return qs.filter(registereduser__isnull=False)
 
+@admin.register(RegisteredUser)
+class RegisteredUserAdmin(admin.ModelAdmin):
+    """
+    Django admin model to manage RegisteredUser.
+
+    **Authors**: Gagandeep Singh
+    """
+    fieldsets = (
+        (None,
+            {'fields': ('id', 'user', 'reg_method')}
+        ),
+        ('Status', {
+            'fields': ('reg_count', 'last_reg_date', 'status')
+        }),
+        ('Permissions and Roles', {
+            'fields': ('roles', )
+        }),
+        ('Dates', {'fields': ('created_on', 'modified_on')}),
+    )
+
+    list_display = ('user', 'reg_method', 'reg_count', 'last_reg_date', 'status', 'created_on')
+    list_filter = ('reg_method', 'status', 'last_reg_date', 'created_on')
+    search_fields = ('user__username', )
+    raw_id_fields = ('user', )
+    filter_horizontal = ('roles', )
+    list_per_page = 20
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = [field.name for field in obj.__class__._meta.fields]
+        return readonly_fields
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 @admin.register(UserToken)
 class UserTokenAdmin(admin.ModelAdmin):
@@ -121,6 +160,81 @@ class UserClaimAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+# --- User permissions, roles and data access
+@admin.register(UserPermission)
+class UserPermissionAdmin(admin.ModelAdmin):
+    """
+    Django admin for UserPermission.
+
+    **Authors**: Gagandeep Singh
+    """
+    list_display = ('registered_user', 'organization', 'permission', 'created_by', 'created_on')
+    list_filter = ('organization', 'created_on')
+    search_fields = ('registered_user__user__username', 'organization__name', 'permission__codename')
+    raw_id_fields = ('registered_user', 'created_by')
+    list_per_page = 20
+
+    form = select2_modelform(UserPermission, attrs={'width': '300px'})
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = [field.name for field in self.model._meta.fields if not field.editable]
+        return readonly_fields
+
+    def save_model(self, request, obj, form, change):
+        if obj.created_by is None:
+            obj.created_by = request.user
+        obj.save()
+
+
+@admin.register(Role)
+class RoleAdmin(admin.ModelAdmin):
+    """
+    Django admin for Role.
+
+    **Authors**: Gagandeep Singh
+    """
+    list_display = ('name', 'organization', 'created_by', 'created_on')
+    list_filter = ('organization', 'created_on')
+    search_fields = ('name', 'organization__name')
+    raw_id_fields = ('created_by',)
+    filter_horizontal = ('permissions', )
+    list_per_page = 20
+
+    form = select2_modelform(Role, attrs={'width': '300px'})
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = [field.name for field in self.model._meta.fields if not field.editable]
+        return readonly_fields
+
+    def save_model(self, request, obj, form, change):
+        if obj.created_by is None:
+            obj.created_by = request.user
+        obj.save()
+
+@admin.register(UserDataAccess)
+class UserDataAccessAdmin(admin.ModelAdmin):
+    """
+    Django admin for UserDataAccess.
+
+    **Authors**: Gagandeep Singh
+    """
+    list_display = ('registered_user', 'content_type', 'organization', 'all_access', 'created_by', 'created_on')
+    list_filter = ('all_access', 'organization', 'created_on')
+    search_fields = ('registered_user__user__username', 'organization__name', 'content_type__model')
+    raw_id_fields = ('registered_user', 'created_by')
+    list_per_page = 20
+
+    form = select2_modelform(UserDataAccess, attrs={'width': '300px'})
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = [field.name for field in self.model._meta.fields if not field.editable]
+        return readonly_fields
+
+    def save_model(self, request, obj, form, change):
+        if obj.created_by is None:
+            obj.created_by = request.user
+        obj.save()
 
 
 

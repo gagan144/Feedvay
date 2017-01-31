@@ -52,7 +52,8 @@ class OrganizationAdmin(admin.ModelAdmin):
         if change:
             if form.changed_data.__contains__('ui_theme'):
                 update_theme = True
-        else:
+
+        if obj.created_by is None:
             obj.created_by = request.user
 
         obj.save(update_theme=update_theme)

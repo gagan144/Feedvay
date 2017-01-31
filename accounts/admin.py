@@ -254,6 +254,26 @@ class UserAdminOverride(auth_admin.UserAdmin):
 admin.site.unregister(User)
 admin.site.register(User, UserAdminOverride)
 
+@admin.register(Permission)
+class PermissionAdmin(admin.ModelAdmin):
+    """
+    Django admin for :class:`django.contrib.auth.models.Permission`.
+    """
+    list_display = ('name', 'codename', 'content_type')
+    list_filter = ('content_type', )
+    search_fields = ('name', 'content_type__model')
+    list_per_page = 50
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = [field.name for field in self.model._meta.fields]
+        return readonly_fields
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 # ---------- Override FCM Device admin ----------
 from fcm.admin import Device, DeviceAdmin

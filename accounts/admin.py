@@ -182,7 +182,7 @@ class UserPermissionAdmin(admin.ModelAdmin):
         return readonly_fields
 
     def save_model(self, request, obj, form, change):
-        if obj.created_by is None:
+        if not change:
             obj.created_by = request.user
         obj.save()
 
@@ -208,7 +208,7 @@ class RoleAdmin(admin.ModelAdmin):
         return readonly_fields
 
     def save_model(self, request, obj, form, change):
-        if obj.created_by is None:
+        if not change:
             obj.created_by = request.user
         obj.save()
 
@@ -232,7 +232,7 @@ class UserDataAccessAdmin(admin.ModelAdmin):
         return readonly_fields
 
     def save_model(self, request, obj, form, change):
-        if obj.created_by is None:
+        if not change:
             obj.created_by = request.user
         obj.save()
 

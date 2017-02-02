@@ -31,7 +31,7 @@
         {% else %}
             <div class="col-md-12">
                 <h2 style="margin-bottom: 0px;">
-                    Management console
+                    Feedvay Management Console
                 </h2>
             </div>
         {% endif %}
@@ -41,18 +41,58 @@
 {% block content %}
     <div class="wrapper wrapper-content">
         <div class="container">
-            {{ perms.brands }}
+{#            {{ perms.brands }}#}
             <div ng-cloak>
                 <div ng-controller="MainCtrl">
-                    {$ msg $}
+                    {% if list_organizations %}
+                        <div align="center">
+                            <h2 style="margin-top: 0px;">Please select your organization</h2>
+                            <hr class="hr_dark hr_line_dashed_m15"/>
 
-                    <button class="btn btn-primary">Click me</button>
+                            {% for org in list_organizations %}
+                                <div class="panel_brand {% if org.status != Organization.ST_VERIFIED %}inactive{% endif %}">
+                                    {% if org.status == Organization.ST_DELETED %}
+                                        <span class="label label-danger label-ribbon right">
+                                            Deleted
+                                        </span>
+                                    {% endif %}
 
-                    Content <a class="text-primary">here</a> helloooo
-                    <span class="badge badge-success">here</span> helloooo
-                    <span class="text-info">here</span>
-
-
+                                    <div align="center" class="logo">
+                                        <a href="#">
+                                            <img src="{{ org.logo.url }}" class="image_loading">
+                                        </a>
+                                    </div>
+                                    <div class="panel_body">
+                                        <div>
+                                            <a class="title" href="">{{ org.name }}</a>
+                                        </div>
+                                        <div style="font-size: 85%;">
+                                            {{ org.description|truncatechars:150 }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td valign="top" style="width: 90px;">
+                                        <i class="fa fa-exclamation-circle" style="font-size: 80px;"></i>
+                                    </td>
+                                    <td valign="top">
+                                        <h2 style="margin-top: 0px;">No associated organization!</h2>
+                                        <div>
+                                            Your account is currently not related to any organization. Please ask your
+                                            supervisor or any other concerned person to invite you to join his organization.
+                                            <br/>
+                                            Use your account id '<strong>{{ user.username }}</strong>' for referencing.
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -2,6 +2,8 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from django.contrib import admin
+from easy_select2 import select2_modelform
+
 from clients.models import *
 
 @admin.register(Organization)
@@ -52,8 +54,7 @@ class OrganizationAdmin(admin.ModelAdmin):
         if change:
             if form.changed_data.__contains__('ui_theme'):
                 update_theme = True
-
-        if obj.created_by is None:
+        else:
             obj.created_by = request.user
 
         obj.save(update_theme=update_theme)
@@ -74,6 +75,8 @@ class OrganizationMemberAdmin(admin.ModelAdmin):
     list_filter = ('organization', 'is_owner', 'deleted', 'created_on')
     search_fields = ('registered_user__user__username', )
     raw_id_fields = ('registered_user', )
+
+    form = select2_modelform(OrganizationMember, attrs={'width': '300px'})
 
     def get_readonly_fields(self, request, obj=None):
         if obj:

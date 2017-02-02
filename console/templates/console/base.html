@@ -35,6 +35,7 @@
     <link href="{% get_static_prefix %}ui/css/custom.css" rel="stylesheet">
 
     {% block head %}
+        <link rel="shortcut icon" href="{% get_static_prefix %}images/favicon.png"/>
         <title>Feedvay Management Console</title>
     {% endblock %}
 
@@ -92,7 +93,7 @@
                                 <img src="{{ request.curr_brand.logo.url }}" style="height: 34px !important;" alt="{% if request.curr_brand.acronym %}{{ request.curr_brand.acronym }}{% else %}{{ request.curr_brand.name }}{% endif %}">
                             </a>
                         {% else %}
-                            <a href="{% url 'console_home' %}" class="navbar-brand navbar_brand_custom" title="Feedvay management console">
+                            <a href="{% url 'console_home' %}" class="navbar-brand navbar_brand_custom" title="Feedvay Management Console">
                                 <img src="{% get_static_prefix %}images/feedvay_logo.png" style="height: 34px !important;" alt="Feedvay">
                             </a>
                         {% endif %}

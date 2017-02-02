@@ -27,6 +27,7 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 from fcm.models import AbstractDevice
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
+from django.core.cache import cache
 
 from accounts.exceptions import *
 from owlery import owls
@@ -1105,7 +1106,7 @@ class UserDataAccess(models57.Model):
         verbose_name_plural = 'User data accesses'
 
     def __unicode__(self):
-        return "{} ({})".format(self.name, self.organization.name)
+        return "{}".format(self.id)
 
     def clean(self):
         """
@@ -1171,3 +1172,101 @@ def force_logout_user(user_id):
         list_user_sessions.delete()
 
     return count
+
+def get_all_reguser_permissions(reg_user, organization, upsert_cache=False):
+    """
+    Method to get all registered user's permissions in an organization.
+
+    :param reg_user: :class:`accounts.models.RegisteredUser` instance
+    :param organization: :class:`clients.models.Organization` instance
+    :param upsert_cache: If true, this will cache permission json in default cache with key as username
+        and expiry as ``settings.SESSION_COOKIE_AGE_PUBLIC``.
+    :return: Permissions JSON
+
+    **Permission JSON format**:
+
+    .. code-block:: json
+        {
+            "<app-label>.<model-name>"{
+                "permissions": ["add_<model-name>", "read_<model-name>", "change_<model-name>", "delete_<model-name>"],
+                "data_access": {
+
+                }
+            },
+
+        }
+
+    **data_access**:
+
+        - ``None``: No data access allowed on corresponding model
+        - ``{}``: All/complete access allowed on records of corresponding model in that organization
+        - data_access is only filled for those model are in permission json
+
+
+    **Authors**: Gagandeep Singh
+    """
+    KEY_PERMISSIONS = "permissions"
+    KEY_DATA_ACCESS = "data_access"
+
+    gen_app_n_model = lambda app_label, model_name: "{}.{}".format(app_label, model_name)
+
+    perm_json = {}
+
+    # (a) User direct permissions
+    list_perm = Permission.objects.filter(
+        userpermission__organization_id = organization.id,
+        userpermission__registered_user_id = reg_user
+    )
+
+    for perm in list_perm:
+        # Check app-model
+        app_n_model = gen_app_n_model(perm.content_type.app_label, perm.content_type.model)
+        if not perm_json.has_key(app_n_model):
+            perm_json[app_n_model] = {
+                KEY_PERMISSIONS: [],
+                KEY_DATA_ACCESS: None
+            }
+
+        # Set Param codename
+        perm_code = perm.codename
+        if not perm_json[app_n_model][KEY_PERMISSIONS].__contains__(perm_code):
+            perm_json[app_n_model][KEY_PERMISSIONS].append(perm_code)
+
+
+    # (b) On the basis of roles
+    list_perm = Permission.objects.filter(
+        role__organization_id = organization.id,
+        role__registereduser = reg_user
+    )
+
+    for perm in list_perm:
+        # Check app-model
+        app_n_model = gen_app_n_model(perm.content_type.app_label, perm.content_type.model)
+        if not perm_json.has_key(app_n_model):
+            perm_json[app_n_model] = {
+                KEY_PERMISSIONS: [],
+                KEY_DATA_ACCESS: None
+            }
+
+        # Set Param codename
+        perm_code = perm.codename
+        if not perm_json[app_n_model][KEY_PERMISSIONS].__contains__(perm_code):
+            perm_json[app_n_model][KEY_PERMISSIONS].append(perm_code)
+
+    # (c) Data access
+    list_data_access = UserDataAccess.objects.filter(
+        organization_id = organization.id,
+        registered_user_id = reg_user.id
+    )
+
+    for da in list_data_access:
+        app_n_model = gen_app_n_model(da.content_type.app_label, da.content_type.model)
+        if perm_json.has_key(app_n_model):
+            perm_json[app_n_model][KEY_DATA_ACCESS] = {} if da.all_access else da.access_filter
+
+
+    # Set/Update cache
+    if upsert_cache:
+        cache.set(reg_user.user.username, perm_json, settings.SESSION_COOKIE_AGE_PUBLIC)
+
+    return perm_json

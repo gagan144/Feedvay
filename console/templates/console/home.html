@@ -6,35 +6,18 @@
 
 {% block head %}
     <!-- Favicon -->
-    <link rel="shortcut icon"  href="{% if request.curr_brand %}{{ request.curr_brand.icon.url }}{% else %}{% get_static_prefix %}images/favicon.png{% endif %}" />
+    <link rel="shortcut icon"  href="{% get_static_prefix %}images/favicon.png" />
 
-    <title>{% if request.curr_brand %}{{ request.curr_brand.name }} - {% else %}Feedvay{% endif %} Management Console</title>
+    <title>Feedvay Management Console</title>
 {% endblock %}
 
 {% block page_header %}
     <div class="row wrapper border-bottom white-bg page-heading">
-        {% if request.curr_brand %}
-            <div class="col-xs-10">
-                <h2 class="m-b-none">
-                    {{ request.curr_brand.name }}<br/>
-                    <small>Management console</small>
-                </h2>
-            </div>
-            <div class="col-xs-2">
-                <div class="title-action">
-                    <a href="/console/b/{{ request.curr_brand.brand_uid }}/settings/" class="btn btn-primary">
-                        <i class="fa fa-cog"></i>
-                        <span class="mobile_hide">&nbsp;Settings</span>
-                    </a>
-                </div>
-            </div>
-        {% else %}
-            <div class="col-md-12">
-                <h2 style="margin-bottom: 0px;">
-                    Feedvay Management Console
-                </h2>
-            </div>
-        {% endif %}
+        <div class="col-md-12">
+            <h2 style="margin-bottom: 0px;">
+                Feedvay Management Console
+            </h2>
+        </div>
     </div>
 {% endblock %}
 
@@ -58,13 +41,13 @@
                                     {% endif %}
 
                                     <div align="center" class="logo">
-                                        <a href="#">
+                                        <a href="{% url 'console_home' %}?c={{ org.org_uid }}">
                                             <img src="{{ org.logo.url }}" class="image_loading">
                                         </a>
                                     </div>
                                     <div class="panel_body">
                                         <div>
-                                            <a class="title" href="">{{ org.name }}</a>
+                                            <a class="title" href="{% url 'console_home' %}?c={{ org.org_uid }}">{{ org.name }}</a>
                                         </div>
                                         <div style="font-size: 85%;">
                                             {{ org.description|truncatechars:150 }}

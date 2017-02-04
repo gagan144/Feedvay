@@ -27,8 +27,8 @@
 
     <!-- Theme -->
 {#    <link href="{% get_static_prefix %}ui/css/style.css" rel="stylesheet">#}
-    {% if request.curr_brand and request.curr_brand.theme_file %}
-        <link href="{{ request.curr_brand.theme_file.url }}" rel="stylesheet">
+    {% if request.curr_org and request.curr_org.theme_file %}
+        <link href="{{ request.curr_org.theme_file.url }}" rel="stylesheet">
     {% else %}
         <link href="{% get_static_prefix %}ui/css/style-default.css" rel="stylesheet">
     {% endif %}
@@ -88,9 +88,9 @@
                         <button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
                             <i class="fa fa-reorder"></i>
                         </button>
-                        {% if request.curr_brand %}
-                            <a href="{% url 'console_home' %}b/{{ request.curr_brand.brand_uid }}/" class="navbar-brand navbar_brand_custom" title="{% if request.curr_brand.acronym %}{{ request.curr_brand.acronym }}{% else %}{{ request.curr_brand.name }}{% endif %} management console">
-                                <img src="{{ request.curr_brand.logo.url }}" style="height: 34px !important;" alt="{% if request.curr_brand.acronym %}{{ request.curr_brand.acronym }}{% else %}{{ request.curr_brand.name }}{% endif %}">
+                        {% if request.curr_org %}
+                            <a href="{% url 'console_home' %}?c={{ request.curr_org.org_uid }}" class="navbar-brand navbar_brand_custom" title="{% if request.curr_org.acronym %}{{ request.curr_org.acronym }}{% else %}{{ request.curr_org.name }}{% endif %} management console">
+                                <img src="{{ request.curr_org.logo.url }}" style="height: 34px !important;" alt="{% if request.curr_org.acronym %}{{ request.curr_org.acronym }}{% else %}{{ request.curr_org.name }}{% endif %}">
                             </a>
                         {% else %}
                             <a href="{% url 'console_home' %}" class="navbar-brand navbar_brand_custom" title="Feedvay Management Console">
@@ -192,7 +192,7 @@
                                     <i class="caret"></i>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    {% if request.curr_brand %}
+                                    {% if request.curr_org %}
                                         <li><a href="{% url 'console_home' %}"><i class="fa fa-dashboard"></i>&nbsp;&nbsp;My console</a></li>
                                     {% endif %}
 {#                                    <li><a href="{% url 'console_accounts_settings' %}#/profile"><i class="fa fa-user"></i>&nbsp;&nbsp;My Account</a></li>#}

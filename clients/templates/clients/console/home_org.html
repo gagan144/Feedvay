@@ -1,0 +1,35 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'console/base.html' %}
+{% load static %}
+
+{% block head %}
+    <!-- Favicon -->
+    <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
+
+    <title>{{ request.curr_org.name }} management console</title>
+{% endblock %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-10">
+            <h2 class="m-b-none">
+                {{ request.curr_org.name }}<br/>
+                <small>Management console</small>
+            </h2>
+        </div>
+        <div class="col-xs-2">
+            <div class="title-action">
+                <a href="{% url 'console_org_settings' %}?c={{ request.curr_org.org_uid }}" class="btn btn-primary">
+                    <i class="fa fa-cog"></i>
+                    <span class="mobile_hide">&nbsp;Settings</span>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    {{ request.curr_org }}
+{% endblock %}

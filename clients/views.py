@@ -3,4 +3,16 @@
 # permission of Gagandeep Singh.
 from django.shortcuts import render
 
-# Create your views here.
+from utilities.decorators import registered_user_only, organization_console
+
+@registered_user_only
+@organization_console
+def console_org_settings(request, org):
+    """
+    View for organization settings. Only applicable for brand console.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    raise Exception("Yo yo yo yo yo")

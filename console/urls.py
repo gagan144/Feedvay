@@ -5,6 +5,8 @@ from django.conf.urls import url, include
 from console import views
 
 from accounts import views as views_accounts
+from clients import views as views_clients
+
 from brands import views as views_brands
 from brands import api as api_brands
 from surveys import views as views_surveys
@@ -16,6 +18,10 @@ url_account = [
     url(r'^settings/private-info/update/$', views_accounts.console_account_settings_privinfo_update, name='console_account_settings_privinfo_update'),
     url(r'^settings/email/change/$', views_accounts.console_account_settings_email_change, name='console_account_settings_email_change'),
     url(r'^password/change/$', views_accounts.console_password_change, name='console_password_change'),
+]
+
+url_org =[
+    url(r'^settings/$', views_clients.console_org_settings, name='console_org_settings'),
 ]
 
 api_brand_change_req = api_brands.BrandChangeRequestAPI()
@@ -62,6 +68,7 @@ urlpatterns = [
     url(r'^account/', include(url_account)),
     url(r'^settings/$', views_brands.console_brand_settings, name='console_brand_settings'),    # Only for brand console
 
+    url(r'^org/', include(url_org)),
     url(r'^brands/', include(url_brands)),
     url(r'^surveys/', include(url_surveys)),
 ]

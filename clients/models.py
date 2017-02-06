@@ -268,6 +268,9 @@ class Organization(models57.Model):
         if not self.slug:
             self.slug = slugify(self.name)
 
+        if self.acronym == '':
+            self.acronym = None
+
         # Images
         if not Organization.validate_logo_image(self.logo):
             raise ValidationError('Logo must be {}x{} and less than {} KB.'.format(

@@ -22,6 +22,7 @@ url_account = [
 
 url_org =[
     url(r'^settings/$', views_clients.console_org_settings, name='console_org_settings'),
+    url(r'^submit-changes/$', views_clients.console_org_submit_changes, name='console_org_submit_changes'),
 ]
 
 api_brand_change_req = api_brands.BrandChangeRequestAPI()

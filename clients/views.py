@@ -4,8 +4,11 @@
 from django.shortcuts import render
 
 from clients.models import Organization
+from clients import operations
 from utilities.decorators import registered_user_only, organization_console
+from utilities.api_utils import ApiResponse
 
+# ==================== Console ====================
 @registered_user_only
 @organization_console
 def console_org_settings(request, org):
@@ -21,3 +24,31 @@ def console_org_settings(request, org):
         "Organization": Organization
     }
     return render(request, 'clients/console/org_settings.html', data)
+
+@registered_user_only
+@organization_console
+def console_org_submit_changes(request, org):
+    """
+    An API view to submit changes in organization. This view receives only changed fields and are
+    updated immediately.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        # TODO: (a) Check edit permission
+
+        # (b) Update information
+        data = request.POST.copy()
+        del data['c']
+        try:
+            operations.update_organization(request.user, org, data, request.FILES)
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='All updates made successfully').gen_http_response()
+        except Exception as ex:
+            return ApiResponse(status=ApiResponse.ST_FAILED, message=ex.message).gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+# ==================== /Console ====================

@@ -27,7 +27,6 @@
 {% block content %}
     <div class="wrapper wrapper-content">
         <div class="container" ng-controller="DetailsCtrl" ng-cloak>
-            {$ data $}
 
             <form name="form_create_edit_org" class="form-horizontal" novalidate>
                 <div static-include="{% get_static_prefix %}partials/clients/create_edit_org.html"  ng-init="ACTION='edit'"></div>
@@ -42,7 +41,7 @@
                         <div class="form-group">
                             <label class="col-sm-3 control-label">Created by:</label>
                             <div class="col-sm-7" style="padding-top: 7px;">
-                                {{ org.created_by }}
+                                {{ org.created_by.first_name }} {{ org.created_by.last_name|default_if_none:"" }} ({{ org.created_by.username }})
                             </div>
                         </div>
 
@@ -71,10 +70,10 @@
                         <i class="fa fa-exclamation-triangle"></i> {$ flags.err_msg $}
                     </p>
 
-                    <button ladda="flags.submitting" class="btn btn-primary ladda-button" type="button" ng-disabled="form_create_edit_org.$invalid || form_create_edit_org.$pristine" ng-click="submit_org(form_create_edit_org);" data-style="zoom-in">
+                    <button ladda="flags.submitting" class="btn btn-primary ladda-button" type="button" ng-disabled="form_create_edit_org.$invalid || form_create_edit_org.$pristine" ng-click="submit_org_changes(form_create_edit_org);" data-style="zoom-in">
                         Save
                     </button>
-                    <a class="btn btn-link" href="{% url 'console_home' %}?c={{ request.curr_org.org_uid }}">
+                    <a ng-if="!flags.submitting" class="btn btn-link" href="{% url 'console_home' %}?c={{ request.curr_org.org_uid }}">
                         Cancel
                     </a>
 
@@ -122,7 +121,7 @@
         });
 
 
-        APP.controller('DetailsCtrl', function($scope, ServiceOrgExistence, $uibModal){
+        APP.controller('DetailsCtrl', function($scope, $http, $window, ServiceOrgExistence){
             $scope.pallets = [];
 
             {% with org=request.curr_org %}
@@ -141,6 +140,7 @@
             {% endwith %}
 
             $scope.flags = {
+                submitting: false,
                 error: false,
                 err_msg: null,
                 val_errors: null
@@ -186,6 +186,79 @@
                     reader.readAsDataURL(elem.files[0]);
                 }
             };
+
+            $scope.submit_org_changes = function(form_obj) {
+                if(form_obj.$invalid) {
+                    return false;
+                }
+
+                $scope.flags.submitting = true;
+                $scope.flags.error= false;
+                $scope.flags.err_msg = null;
+                $scope.flags.val_errors= null;
+
+
+                var data_updates = {};
+                for(var key in $scope.data){
+                    if($scope.data[key] != master_data[key]){
+                        data_updates[key] = $scope.data[key];
+                    }
+                }
+
+                if(!Object.keys(data_updates).length){
+                    alert("Nothing has changed!");
+                    return false;
+                }
+
+                // Prepare form data
+                var fd = new FormData();
+                fd.append('c', '{{ request.curr_org.org_uid }}');
+                for(var key in data_updates){
+                    if(!key.startsWith("file_") && data_updates[key]!=null) {
+                        fd.append(key, data_updates[key]);
+                    }
+                }
+                if($scope.file_logo) {
+                    fd.append('file_logo', $scope.file_logo);
+                    console.log($scope.file_logo)
+                }
+                if($scope.file_icon) {
+                    fd.append('file_icon', $scope.file_icon);
+                }
+
+                $http.post(
+                    "{% url 'console_org_submit_changes' %}",
+                    fd,
+                    {
+                        transformRequest: angular.identity,
+                        headers: {'Content-Type': undefined}
+                    }
+                )
+                .success(function (response, status, headers, config) {
+                    if(response.status=='success'){
+                        $window.location.reload();
+                    }else{
+                        $scope.flags.submitting = false;
+                        $scope.flags.error = true;
+
+                        $scope.flags.err_msg = response.message;
+                        $scope.flags.val_errors = response.errors;
+                    }
+                })
+                .error(function (response, status, headers, config) {
+                    $scope.flags.submitting = false;
+
+                    if(status != -1){
+                        $scope.flags.error = true;
+                    }else{
+                        $.growl.error({
+                            title: '<i class="fa fa-signal"></i> Network error!',
+                            message: "Please check your internet connection."
+                        });
+                    }
+                });
+
+            }
 
         });
     </script>

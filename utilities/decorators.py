@@ -9,6 +9,7 @@ from django.conf import settings
 from django.contrib import auth
 from functools import wraps
 import re
+from django.db.models import Q
 
 from accounts.utils import ClassifyRegisteredUser
 from clients.models import Organization, OrganizationMember
@@ -69,10 +70,12 @@ def organization_console(function):
     This decorator also authenticates if user is a member in that organization thus
     this decorator must be user after ``registered_user_only``.
 
-    This decorator expects the view to receive GET parameter ``c`` as organization
+    This decorator expects the view to receive GET/POST parameter ``c`` as organization
     unique id using which it finds user organization.
 
     Also, the view on which this decorator is used must except an argument ``org``.
+
+    Deleted organization and not included in the query.
 
     If everything is ok:
 
@@ -81,7 +84,7 @@ def organization_console(function):
 
     **Failure behavior:**
 
-        - If ``c`` is not present in GET params: returns Http404
+        - If ``c`` is not present in GET/POST params: returns Http404
         - If Organization not found: HttpResponseForbidden
         - If user is not a member of the organization: HttpResponseForbidden
 
@@ -92,15 +95,19 @@ def organization_console(function):
     **Authors**: Gagandeep Singh
     """
     def wrap(request, *args, **kwargs):
-
         try:
-            org_uid = request.GET['c']
+            # Fetch 'c' para, from GET or POST
+            if request.GET.get('c', None):
+                org_uid = request.GET['c']
+            else:
+                org_uid = request.POST['c']
+
             reg_user = request.user.registereduser
 
             # Get organization to which this user is a member
             org = Organization.objects.get(
-                organizationmember__organization__org_uid = org_uid,
-                organizationmember__registered_user = reg_user
+                Q(organizationmember__organization__org_uid = org_uid, organizationmember__registered_user = reg_user) &
+                ~Q(status=Organization.ST_DELETED)
             )
 
             request.curr_org = org

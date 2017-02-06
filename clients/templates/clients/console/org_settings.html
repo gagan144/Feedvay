@@ -1,0 +1,192 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'console/base.html' %}
+{% load static %}
+
+{% block head %}
+    <!-- Favicon -->
+    <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
+
+    <title>Settings | {{ request.curr_org.name }}</title>
+
+    <link href="{% get_static_prefix %}ui/css/plugins/colorpicker/colorpicker.css" rel="stylesheet">
+{% endblock %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-12">
+            <h2 class="m-b-none">
+                {{ request.curr_org.name }}<br/>
+                <small>Settings</small>
+            </h2>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="wrapper wrapper-content">
+        <div class="container" ng-controller="DetailsCtrl" ng-cloak>
+            {$ data $}
+
+            <form name="form_create_edit_org" class="form-horizontal" novalidate>
+                <div static-include="{% get_static_prefix %}partials/clients/create_edit_org.html"  ng-init="ACTION='edit'"></div>
+
+                {% with org=request.curr_org %}
+                <div class="panel panel-primary">
+                    <div class="panel-heading panel_heading_2">
+                        <i class="fa fa-exclamation-circle"></i>&nbsp;
+                        Other
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Created by:</label>
+                            <div class="col-sm-7" style="padding-top: 7px;">
+                                {{ org.created_by }}
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Created on:</label>
+                            <div class="col-sm-7" style="padding-top: 7px;">
+                                {{ org.created_on|date:"d-M-Y h:i A" }}
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Last modified on:</label>
+                            <div class="col-sm-7" style="padding-top: 7px;">
+                                {{ org.modified_on|date:"d-M-Y h:i A"|default_if_none:"None" }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+
+                <hr class="hr-line-dashed hr_dark"/>
+                <div style="margin-bottom: 25px;">
+                    <p ng-if="flags.error" class="text-danger">
+                        <i class="fa fa-exclamation-triangle"></i> {$ flags.err_msg $}
+                    </p>
+
+                    <button ladda="flags.submitting" class="btn btn-primary ladda-button" type="button" ng-disabled="form_create_edit_org.$invalid || form_create_edit_org.$pristine" ng-click="submit_org(form_create_edit_org);" data-style="zoom-in">
+                        Save
+                    </button>
+                    <a class="btn btn-link" href="{% url 'console_home' %}?c={{ request.curr_org.org_uid }}">
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% get_static_prefix %}lib/vibrantjs/Vibrant.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/colorpicker/bootstrap-colorpicker-module.js"></script>
+
+    <script src="{% get_static_prefix %}apps/clients/clients.js"></script>
+
+    <script>
+        'use strict';
+
+        var APP = angular.module('{{ app_name }}',[
+            'feedvay.uiapp',
+            'feedvay.common',
+            'feedvay.watchdog',
+            'feedvay.clients',
+
+            'ngCookies',
+            'ngMessages',
+            'ngSanitize',
+            'ui.bootstrap',
+            'angular-ladda',
+            'colorpicker.module'
+        ])
+        .config(function($interpolateProvider, $httpProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+
+            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+        })
+        .run(function($rootScope, $http, $cookies) {
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+            $http.defaults.xsrfCookieName = 'csrftoken';
+            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+        });
+
+
+        APP.controller('DetailsCtrl', function($scope, ServiceOrgExistence, $uibModal){
+            $scope.pallets = [];
+
+            {% with org=request.curr_org %}
+                $scope.logo_url = "{{ org.logo.url }}";
+                $scope.icon_url = "{{ org.icon.url }}";
+                var master_data = {
+                    id: {{ org.id }},
+                    name: "{{ org.name }}",
+                    acronym: {% if org.acronym %}"{{ org.acronym }}"{% else %}null{% endif %},
+                    description: "{{ org.description }}",
+                    type: "{{ org.type }}",
+
+                    ui_theme__primary: {% if org.ui_theme %}"{{ org.ui_theme.primary }}"{% else %}null{% endif %},
+                };
+                $scope.data = angular.copy(master_data);
+            {% endwith %}
+
+            $scope.flags = {
+                error: false,
+                err_msg: null,
+                val_errors: null
+            };
+
+            $scope.list_org_suggestions = [];
+            $scope.find_organization = function(value){
+                if(value) {
+                    $scope.list_org_suggestions = ServiceOrgExistence.find(value).then(function (response) {
+                        $scope.list_org_suggestions = response;
+                    });
+                }
+            };
+
+            $scope.get_colors = function($event){
+                var elem = event.target;
+
+                $scope.pallets = [];
+
+                if (elem.files && elem.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var img_data = e.target.result;
+
+                        var image = new Image(200, 200);
+                        image.src = img_data;
+
+                        var vibrant = new Vibrant(image);
+                        var swatches = vibrant.swatches();
+
+                        var pallets = []
+                        for (var swatch in swatches) {
+                            if (swatches.hasOwnProperty(swatch) && swatches[swatch]) {
+                                var hex_color = swatches[swatch].getHex();
+                                pallets.push(hex_color);
+                            }
+                        }
+
+                        $scope.$apply(function () {
+                            $scope.pallets = pallets;
+                        });
+                    };
+                    reader.readAsDataURL(elem.files[0]);
+                }
+            };
+
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,196 @@
+<style>
+    .color_preview_group {
+        padding: 3px;
+    }
+
+    .color_preview_group > div {
+        width: 25px;
+        height: 25px;
+        border-radius: 2px;
+    }
+</style>
+
+
+<!-- Basic -->
+<div class="panel panel-primary">
+    <div class="panel-heading panel_heading_2">
+        <i class="fa fa-info"></i>&nbsp;
+        Basic information
+    </div>
+    <div class="panel-body">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">Name<span class="required">*</span>:</label>
+            <div class="col-sm-7">
+                <input type="text" name="name" ng-model="data.name" class="form-control" placeholder="Enter name of the organization." minlength="2" maxlength="255" required autocomplete="off"
+                       ng-class="{'error': (form_create_edit_org.name.$dirty && form_create_edit_org.name.$invalid) || flags.val_errors.name }"
+                       ng-change="find_organization(data.name)"
+                >
+                <div ng-messages="form_create_edit_org.name.$dirty && form_create_edit_org.name.$error" role="alert" class="error_messages">
+                    <label ng-message="required" class="error">Please enter organization name.</label>
+                    <label ng-message="minlength" class="error">Brand name must be atleast 2 character long.</label>
+                    <label ng-message="maxlength" class="error">Brand name cannot be longer than 255 characters.</label>
+                </div>
+                <label ng-if="flags.val_errors.name" class="error">
+                    {$ flags.val_errors.name.join(", "); $}
+                </label>
+                <p ng-if="list_org_suggestions.length" style="margin: 5px 0px 5px 5px;">
+                    <span class="semi_bold" style="margin-right:5px;">Following organizations are already registered:</span><br/>
+                    <span ng-repeat="b in list_org_suggestions" style="color: #337ab7;margin-right:10px;">{$ b.name $}</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="hr-line-dashed"></div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">Acronym:</label>
+            <div class="col-sm-7">
+                <input type="text" name="acronym" ng-model="data.acronym" class="form-control" placeholder="Acronym of your organization." maxlength="10" autocomplete="off" ng-class="{'error': (form_create_edit_org.acronym.$dirty && form_create_edit_org.acronym.$invalid) }">
+            </div>
+        </div>
+
+        <div class="hr-line-dashed"></div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">Description<span class="required">*</span>:</label>
+            <div class="col-sm-7">
+                <textarea name="description" ng-model="data.description" class="form-control" placeholder="Recommended limit 150-160 characters." rows="6" style="resize:vertical;" required ng-class="{'error': (form_create_edit_org.description.$dirty && form_create_edit_org.description.$invalid) }"></textarea>
+                <p class="help-block">
+                    Short and catchy description about your organization. Describe organisation purpose,
+                    target audience and use keywords that best relate to the organization.
+                </p>
+            </div>
+        </div>
+
+        <div class="hr-line-dashed hr_line_dashed_m10"></div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">
+                Type<span class="required">*</span>:
+            </label>
+            <div class="col-sm-5">
+                <div>
+                    <div class="radio radio-primary radio-inline">
+                        <input type="radio" id="chk_type_public" value="public" name="type" ng-model="data.type" required >
+                        <label for="chk_type_public"> Public </label>
+                    </div>
+                    <div class="radio radio-primary radio-inline">
+                        <input type="radio" id="chk_type_private" value="private" name="type" ng-model="data.type" required >
+                        <label for="chk_type_private"> Private </label>
+                    </div>
+                    <div class="radio radio-primary radio-inline">
+                        <input type="radio" id="chk_type_government" value="government" name="type" ng-model="data.type" required >
+                        <label for="chk_type_government"> Government </label>
+                    </div>
+                    <div class="radio radio-primary radio-inline">
+                        <input type="radio" id="chk_type_ngo" value="ngo" name="type" ng-model="data.type" required >
+                        <label for="chk_type_ngo"> NGO </label>
+                    </div>
+                </div>
+
+                <div ng-messages="form_create_edit_org.type.$dirty && form_create_edit_org.type.$error" role="alert" class="error_messages">
+                    <label ng-message="required" class="error">Please select your organization type.</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Basic -->
+
+<!-- Customization -->
+<div class="panel panel-primary">
+    <div class="panel-heading panel_heading_2">
+        <i class="fa fa-wrench"></i>&nbsp;
+        Customization
+    </div>
+    <div class="panel-body">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">
+                Logo<span class="required" ng-if="ACTION=='create'">*</span>:
+            </label>
+            <div class="col-sm-7" style="padding-top: 7px;">
+                Upload a beautiful logo image of your organization that will be visible to public. Your
+                logo is your unique identity and expresses your organisation at its best. Kindly keep in
+                mind the following guidelines for better quality:
+                <ul>
+                    <li>Image must be of <code>300x100 pixel</code> resolution (width being larger).</li>
+                    <li><code>.PNG</code> extension is recommended with transparent background if your background is empty.</li>
+                    <li>Size of the image must be less than <code>30 KB</code> to avoid viewing delay in slow networks.</li>
+                </ul>
+
+                <div style="margin: 10px 0px 5px 0px;">
+                    <img id="logo_preview" ng-src="{$ logo_url $}" src="" class="img-thumbnail" style="max-width: 300px;">
+                </div>
+                <input type="file" name="file_logo" file-model="file_logo" ng-model="data.file_logo" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" ng-required="ACTION=='create'" validate-file="" preview-image="'logo_preview'" ng-change="get_colors();">
+                <label ng-if="flags.val_errors.file_logo" class="error">
+                    {$ flags.val_errors.file_logo.join(", "); $}
+                </label>
+                <div ng-messages="form_create_edit_org.file_logo.$dirty && form_create_edit_org.file_logo.$error" role="alert" class="error_messages">
+                    <label ng-message="required" class="error">Please select an image.</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="hr-line-dashed"></div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">
+                Icon<span class="required" ng-if="ACTION=='create'">*</span>:
+            </label>
+            <div class="col-sm-7" style="padding-top: 7px;">
+                Icon of your organization which can be your logo or major part of the logo. <br/>
+                Guidelines to upload an icon image are:
+                <ul>
+                    <li>Image must be of <code>64x64 pixel</code> resolution.</li>
+                    <li><code>.PNG</code> extension is recommended with transparent background if your background is empty.</li>
+                    <li>Size of the image must be less than <code>15 KB</code> to avoid viewing delay in slow networks.</li>
+                </ul>
+
+                <div style="margin: 10px 0px 5px 0px;">
+                    <img id="icon_preview" ng-src="{$ icon_url $}" src="" class="img-thumbnail" style="max-width: 64px;">
+                </div>
+                <input type="file" name="file_icon" file-model="file_icon" ng-model="data.file_icon" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" ng-required="ACTION=='create'" validate-file="" preview-image="'icon_preview'">
+                <label ng-if="flags.val_errors.file_icon" class="error">
+                    {$ flags.val_errors.file_icon.join(", "); $}
+                </label>
+                <div ng-messages="form_create_edit_org.file_icon.$dirty && form_create_edit_org.file_icon.$error" role="alert" class="error_messages">
+                    <label ng-message="required" class="error">Please select an image.</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="hr-line-dashed"></div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">
+                Theme:
+            </label>
+            <div class="col-sm-7" style="padding-top: 7px;">
+                Personalize your organization pages & web portal by changing UI theme.
+                We have identified few major colors from your logo for your ease, however you can always
+                select your own color.
+
+                <table class="table table_borderless" style="margin: 10px 0px 0px 0px;width: auto;">
+                    <tr>
+                        <td>
+                            <div class="input-group" style="display: inline-table;">
+                                <span class="input-group-addon color_preview_group">
+                                    <div ng-style="{'background-color': data.ui_theme__primary}">&nbsp;</div>
+                                </span>
+                                <input colorpicker type="text" name="ui_theme__primary" ng-model="data.ui_theme__primary" class="form-control" style="width: 100px;" maxlength="7" placeholder="Select" validate-hex-color />
+                                <a href="javascript: void(0);" class="input-group-addon" ng-click="data.ui_theme__primary = null;">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+
+                            <div class="pallets">
+                                <span class="swatch swatch_picker" ng-repeat="pallet in pallets" ng-style="{'background-color': pallet}" ng-click="data.ui_theme__primary=pallet;" title="{$ pallet $}"></span>
+                            </div>
+
+                            <div ng-messages="form_create_edit_org.ui_theme__primary.$dirty && form_create_edit_org.ui_theme__primary.$error" role="alert" class="error_messages">
+                                <label ng-message="validate-hex-color" class="error">Invalid color code.</label>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Customization -->

@@ -3,6 +3,7 @@
 # permission of Gagandeep Singh.
 from django.shortcuts import render
 
+from clients.models import Organization
 from utilities.decorators import registered_user_only, organization_console
 
 @registered_user_only
@@ -15,4 +16,8 @@ def console_org_settings(request, org):
 
     **Authors**: Gagandeep Singh
     """
-    raise Exception("Yo yo yo yo yo")
+    data = {
+        "app_name": "app_org_settings",
+        "Organization": Organization
+    }
+    return render(request, 'clients/console/org_settings.html', data)

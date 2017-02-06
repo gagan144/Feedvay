@@ -116,7 +116,7 @@ class Organization(models57.Model):
     acronym     = models.CharField(max_length=10, null=True, blank=True, help_text='Acronym of the organization if any.')
 
     # Settings
-    description = models.TextField(max_length=512, help_text='Short description about the organization. Include keywords for better SEO and keep characters between 150-160.')
+    description = tinymce_models.HTMLField(help_text='Short description about the organization.')
     type        = models.CharField(max_length=32, choices=CH_TYPE, help_text='Type of the organization.')
     logo        = models.ImageField(upload_to=upload_organization_logo_to, help_text='Organization logo of size 300x100 pixels.')
     icon        = models.ImageField(upload_to=upload_organization_icon_to, help_text='Organization icon of size 64x64 px.')

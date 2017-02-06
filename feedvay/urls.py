@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^console/', include('console.urls')),
     url(r'^watchdog/', include('watchdog.urls')),
     url(r'^brands/', include('brands.urls')),
+    url(r'^clients/', include('clients.urls')),
 
     url(r'^languages/', include('languages.urls')),
     url(r'^forms/', include('form_builder.urls')),

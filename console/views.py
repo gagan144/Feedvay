@@ -3,6 +3,7 @@
 # permission of Gagandeep Singh.
 from django.shortcuts import render
 from django.http.response import Http404
+from django.db.models import Q
 
 from clients.models import Organization, OrganizationMember
 from utilities.decorators import registered_user_only
@@ -16,11 +17,20 @@ def  home(request):
 
     **Authors**: Gagandeep Singh
     """
+    reg_user = request.user.registereduser
+
     # Check if it is organization home
     if request.GET.get('c', None):
         # Organization console
+        org_uid=request.GET['c']
+
         try:
-            org = Organization.objects.get(org_uid=request.GET['c'])
+            # Get organization to which this user is a member
+            org = Organization.objects.get(
+                Q(organizationmember__organization__org_uid = org_uid, organizationmember__registered_user = reg_user) &
+                ~Q(status=Organization.ST_DELETED)
+            )
+
             request.curr_org = org
 
             data = {
@@ -32,7 +42,6 @@ def  home(request):
             raise Http404("Invalid link.")
     else:
         # User console
-        reg_user = request.user.registereduser
         data = {
             "app_name": "app_home",
             "Organization": Organization,

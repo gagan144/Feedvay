@@ -89,7 +89,7 @@
                             <i class="fa fa-reorder"></i>
                         </button>
                         {% if request.curr_org %}
-                            <a href="{% url 'console_home' %}?c={{ request.curr_org.org_uid }}" class="navbar-brand navbar_brand_custom" title="{% if request.curr_org.acronym %}{{ request.curr_org.acronym }}{% else %}{{ request.curr_org.name }}{% endif %} management console">
+                            <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}" class="navbar-brand navbar_brand_custom" title="{% if request.curr_org.acronym %}{{ request.curr_org.acronym }}{% else %}{{ request.curr_org.name }}{% endif %} management console">
                                 <img src="{{ request.curr_org.logo.url }}" style="height: 34px !important;" alt="{% if request.curr_org.acronym %}{{ request.curr_org.acronym }}{% else %}{{ request.curr_org.name }}{% endif %}">
                             </a>
                         {% else %}

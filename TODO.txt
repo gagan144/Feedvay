@@ -13,6 +13,9 @@
     - Report Display view
     - Suggestions Display view
 
+- Permissions & Roles:
+    - Clear user cache on permission or role change
+
 - Market
     - BSP
         - Purpose of visit
@@ -46,6 +49,5 @@
 
 ------------- Infra ---------
 - Geography (Country tel code)
-- User roles
 - Elasticsearch
 - POBS

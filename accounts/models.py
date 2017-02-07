@@ -165,19 +165,166 @@ class RegisteredUser(models.Model):
 
         # TODO: Logout user from all mobile devices
 
-
-    def get_data_access(self, organization_id=None):
+    # ----- Permissions & access -----
+    def get_perm_cache_key(self, organization):
         """
-        Method to get all data access for this user.
+        Method to return permission cache key. This method only generates key and does not
+        affect cache.
 
-        :param organization_id: (Optional) If provides, filters by organization.
+        :param organization: Organization for which key is to be generated.
+        :return: Cache key
+        """
+        return "{}__{}".format(self.user.username, organization.id)
+
+    def fetch_all_permissions(self, organization, update_cache=True):
+        """
+        Method to fetch all user permissions for an organization from database and cache it if instructed.
+
+        :param organization: :class:`clients.models.Organization` instance
+        :param update_cache: If true, this will cache permission json in default cache with key as '<username>__<org.id>'
+            and expiry as ``settings.SESSION_COOKIE_AGE_PUBLIC``.
+        :return: Permissions JSON
+
+        **Permission JSON format**:
+
+        .. code-block:: json
+            {
+                "<app-label>.<model-name>"{
+                    "permissions": ["add_<model-name>", "read_<model-name>", "change_<model-name>", "delete_<model-name>"],
+                    "data_access": {
+
+                    }
+                },
+
+            }
+
+        **data_access**:
+
+            - ``None``: No data access allowed on corresponding model
+            - ``{}``: All/complete access allowed on records of corresponding model in that organization
+            - data_access is only filled for those model are in permission json
+
+
+        **Authors**: Gagandeep Singh
+        """
+        KEY_PERMISSIONS = "permissions"
+        KEY_DATA_ACCESS = "data_access"
+
+        gen_app_n_model = lambda app_label, model_name: "{}.{}".format(app_label, model_name)
+
+        perm_json = {}
+
+        # (a) User direct permissions
+        list_perm = Permission.objects.filter(
+            userpermission__organization_id = organization.id,
+            userpermission__registered_user_id = self.id
+        )
+
+        for perm in list_perm:
+            # Check app-model
+            app_n_model = gen_app_n_model(perm.content_type.app_label, perm.content_type.model)
+            if not perm_json.has_key(app_n_model):
+                perm_json[app_n_model] = {
+                    KEY_PERMISSIONS: [],
+                    KEY_DATA_ACCESS: None
+                }
+
+            # Set Param codename
+            perm_code = perm.codename
+            if not perm_json[app_n_model][KEY_PERMISSIONS].__contains__(perm_code):
+                perm_json[app_n_model][KEY_PERMISSIONS].append(perm_code)
+
+
+        # (b) On the basis of roles
+        list_perm = Permission.objects.filter(
+            role__organization_id = organization.id,
+            role__registereduser = self
+        )
+
+        for perm in list_perm:
+            # Check app-model
+            app_n_model = gen_app_n_model(perm.content_type.app_label, perm.content_type.model)
+            if not perm_json.has_key(app_n_model):
+                perm_json[app_n_model] = {
+                    KEY_PERMISSIONS: [],
+                    KEY_DATA_ACCESS: None
+                }
+
+            # Set Param codename
+            perm_code = perm.codename
+            if not perm_json[app_n_model][KEY_PERMISSIONS].__contains__(perm_code):
+                perm_json[app_n_model][KEY_PERMISSIONS].append(perm_code)
+
+        # (c) Data access
+        list_data_access = UserDataAccess.objects.filter(
+            organization_id = organization.id,
+            registered_user_id = self.id
+        )
+
+        for da in list_data_access:
+            app_n_model = gen_app_n_model(da.content_type.app_label, da.content_type.model)
+            if perm_json.has_key(app_n_model):
+                perm_json[app_n_model][KEY_DATA_ACCESS] = {} if da.all_access else da.access_filter
+
+
+        # Set/Update cache
+        if update_cache:
+            CACHE_KEY = self.get_perm_cache_key(organization)
+            cache.set(CACHE_KEY, perm_json, settings.SESSION_COOKIE_AGE_PUBLIC)
+
+        return perm_json
+
+    def get_data_access(self, organization):
+        """
+        Method to get all data access for this user in an organization.
+
+        :param organization: Organization for which data access is to be fetch.
         :return: List<:class:`accounts.models.UserDataAccess`>
-        """
-        qry = self.userdataaccess_set.all()
-        if organization_id:
-            qry = qry.filter(organization_id=organization_id)
 
+        **Authors**: Gagandeep Singh
+        """
+        qry = self.userdataaccess_set.filter(organization_id=organization.id)
         return qry
+
+    def get_all_permissions(self, organization):
+        """
+        Method to get all user permissions for an organization first from **cache**. If not found,
+        fetch all permissions from database, cache it and return permission json as in ``fetch_all_permissions()``.
+
+        :param organization: Orgnization for which permissions are to be obtained.
+        :return: Permission JSON
+
+        **Authors**: Gagandeep Singh
+        """
+
+        CACHE_KEY = self.get_perm_cache_key(organization)
+
+        perm_json = cache.get(CACHE_KEY)
+        if perm_json is None:
+            perm_json = self.fetch_all_permissions(organization, update_cache=True)
+
+        return perm_json
+
+    def delete_permission_cache(self, organization=None):
+        """
+        Delete permission cache of this user for all organizations
+
+        :param organization: (Optional) If provided, only permission cache for this org is deleted.
+        :return: Count of cache key deleted
+
+        **Authors**: Gagandeep Singh
+        """
+        qry = self.organizationmember_set.all()
+        if organization is not None:
+            qry = qry.filter(organization_id=organization.id)
+
+        count = 0
+        for org_mem in qry.select_related('organization'):
+            cache_key = self.get_perm_cache_key(org_mem.organization)
+            cache.delete(cache_key)
+            count += 1
+
+        return 1
 
     def clean(self):
         """
@@ -1172,101 +1319,3 @@ def force_logout_user(user_id):
         list_user_sessions.delete()
 
     return count
-
-def get_all_reguser_permissions(reg_user, organization, upsert_cache=False):
-    """
-    Method to get all registered user's permissions in an organization.
-
-    :param reg_user: :class:`accounts.models.RegisteredUser` instance
-    :param organization: :class:`clients.models.Organization` instance
-    :param upsert_cache: If true, this will cache permission json in default cache with key as username
-        and expiry as ``settings.SESSION_COOKIE_AGE_PUBLIC``.
-    :return: Permissions JSON
-
-    **Permission JSON format**:
-
-    .. code-block:: json
-        {
-            "<app-label>.<model-name>"{
-                "permissions": ["add_<model-name>", "read_<model-name>", "change_<model-name>", "delete_<model-name>"],
-                "data_access": {
-
-                }
-            },
-
-        }
-
-    **data_access**:
-
-        - ``None``: No data access allowed on corresponding model
-        - ``{}``: All/complete access allowed on records of corresponding model in that organization
-        - data_access is only filled for those model are in permission json
-
-
-    **Authors**: Gagandeep Singh
-    """
-    KEY_PERMISSIONS = "permissions"
-    KEY_DATA_ACCESS = "data_access"
-
-    gen_app_n_model = lambda app_label, model_name: "{}.{}".format(app_label, model_name)
-
-    perm_json = {}
-
-    # (a) User direct permissions
-    list_perm = Permission.objects.filter(
-        userpermission__organization_id = organization.id,
-        userpermission__registered_user_id = reg_user
-    )
-
-    for perm in list_perm:
-        # Check app-model
-        app_n_model = gen_app_n_model(perm.content_type.app_label, perm.content_type.model)
-        if not perm_json.has_key(app_n_model):
-            perm_json[app_n_model] = {
-                KEY_PERMISSIONS: [],
-                KEY_DATA_ACCESS: None
-            }
-
-        # Set Param codename
-        perm_code = perm.codename
-        if not perm_json[app_n_model][KEY_PERMISSIONS].__contains__(perm_code):
-            perm_json[app_n_model][KEY_PERMISSIONS].append(perm_code)
-
-
-    # (b) On the basis of roles
-    list_perm = Permission.objects.filter(
-        role__organization_id = organization.id,
-        role__registereduser = reg_user
-    )
-
-    for perm in list_perm:
-        # Check app-model
-        app_n_model = gen_app_n_model(perm.content_type.app_label, perm.content_type.model)
-        if not perm_json.has_key(app_n_model):
-            perm_json[app_n_model] = {
-                KEY_PERMISSIONS: [],
-                KEY_DATA_ACCESS: None
-            }
-
-        # Set Param codename
-        perm_code = perm.codename
-        if not perm_json[app_n_model][KEY_PERMISSIONS].__contains__(perm_code):
-            perm_json[app_n_model][KEY_PERMISSIONS].append(perm_code)
-
-    # (c) Data access
-    list_data_access = UserDataAccess.objects.filter(
-        organization_id = organization.id,
-        registered_user_id = reg_user.id
-    )
-
-    for da in list_data_access:
-        app_n_model = gen_app_n_model(da.content_type.app_label, da.content_type.model)
-        if perm_json.has_key(app_n_model):
-            perm_json[app_n_model][KEY_DATA_ACCESS] = {} if da.all_access else da.access_filter
-
-
-    # Set/Update cache
-    if upsert_cache:
-        cache.set(reg_user.user.username, perm_json, settings.SESSION_COOKIE_AGE_PUBLIC)
-
-    return perm_json

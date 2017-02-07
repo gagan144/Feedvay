@@ -21,6 +21,7 @@ url_account = [
 ]
 
 url_org =[
+    url(r'^$', views_clients.console_org_home, name='console_org_home'),
     url(r'^settings/$', views_clients.console_org_settings, name='console_org_settings'),
     url(r'^submit-changes/$', views_clients.console_org_submit_changes, name='console_org_submit_changes'),
 ]

@@ -73,7 +73,7 @@
                     <button ladda="flags.submitting" class="btn btn-primary ladda-button" type="button" ng-disabled="form_create_edit_org.$invalid || form_create_edit_org.$pristine" ng-click="submit_org_changes(form_create_edit_org);" data-style="zoom-in">
                         Save
                     </button>
-                    <a ng-if="!flags.submitting" class="btn btn-link" href="{% url 'console_home' %}?c={{ request.curr_org.org_uid }}">
+                    <a ng-if="!flags.submitting" class="btn btn-link" href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">
                         Cancel
                     </a>
 

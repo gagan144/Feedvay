@@ -41,13 +41,13 @@
                                     {% endif %}
 
                                     <div align="center" class="logo">
-                                        <a href="{% url 'console_home' %}?c={{ org.org_uid }}">
+                                        <a href="{% url 'console_org_home' %}?c={{ org.org_uid }}">
                                             <img src="{{ org.logo.url }}" class="image_loading">
                                         </a>
                                     </div>
                                     <div class="panel_body">
                                         <div>
-                                            <a class="title" href="{% url 'console_home' %}?c={{ org.org_uid }}">{{ org.name }}</a>
+                                            <a class="title" href="{% url 'console_org_home' %}?c={{ org.org_uid }}">{{ org.name }}</a>
                                         </div>
                                         <div style="font-size: 85%;">
                                             {{ org.description|truncatechars:150 }}

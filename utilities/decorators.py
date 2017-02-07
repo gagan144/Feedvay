@@ -10,6 +10,7 @@ from django.contrib import auth
 from functools import wraps
 import re
 from django.db.models import Q
+from django.core.cache import cache
 
 from accounts.utils import ClassifyRegisteredUser
 from clients.models import Organization, OrganizationMember
@@ -109,8 +110,12 @@ def organization_console(function):
                 Q(organizationmember__organization__org_uid = org_uid, organizationmember__registered_user = reg_user) &
                 ~Q(status=Organization.ST_DELETED)
             )
-
             request.curr_org = org
+
+            # Set permissions
+            perm_json = reg_user.get_all_permissions(org)
+            request.permissions = perm_json
+
             return function(request, org=org, *args, **kwargs)
 
         except (KeyError, ValueError) as ex:

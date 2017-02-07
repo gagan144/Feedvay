@@ -2,7 +2,7 @@
 {# Content in this document can not be copied and/or distributed without the express #}
 {# permission of Gagandeep Singh. #}
 {% extends 'console/base.html' %}
-{% load static %}
+{% load static commontags %}
 
 {% block head %}
     <!-- Favicon -->
@@ -19,6 +19,7 @@
                 <small>Management console</small>
             </h2>
         </div>
+        {% if request.permissions|has_permission:"clients.organization.change_organization" %}
         <div class="col-xs-2">
             <div class="title-action">
                 <a href="{% url 'console_org_settings' %}?c={{ request.curr_org.org_uid }}" class="btn btn-primary">
@@ -27,9 +28,18 @@
                 </a>
             </div>
         </div>
+        {% endif %}
     </div>
 {% endblock %}
 
 {% block content %}
-    {{ request.curr_org }}
+    <div class="wrapper wrapper-content">
+        <div class="container">
+            {{ request.curr_org }}
+
+            <br/><br/>{{ request.permissions }}
+
+            <br/><br/>{{ perms }}
+        </div>
+    </div>
 {% endblock %}

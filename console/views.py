@@ -11,7 +11,7 @@ from utilities.decorators import registered_user_only
 @registered_user_only
 def  home(request):
     """
-    View for user management console page.
+    View for user's management console page.
 
     **Type**: GET
 
@@ -19,32 +19,9 @@ def  home(request):
     """
     reg_user = request.user.registereduser
 
-    # Check if it is organization home
-    if request.GET.get('c', None):
-        # Organization console
-        org_uid=request.GET['c']
-
-        try:
-            # Get organization to which this user is a member
-            org = Organization.objects.get(
-                Q(organizationmember__organization__org_uid = org_uid, organizationmember__registered_user = reg_user) &
-                ~Q(status=Organization.ST_DELETED)
-            )
-
-            request.curr_org = org
-
-            data = {
-                "app_name": "app_home_org"
-            }
-            return render(request, 'clients/console/home_org.html', data)
-        except (ValueError, Organization.DoesNotExist):
-            # ValueError: If c is badly formed hexadecimal UUID string, DoesNotExist: Org not found
-            raise Http404("Invalid link.")
-    else:
-        # User console
-        data = {
-            "app_name": "app_home",
-            "Organization": Organization,
-            "list_organizations": Organization.objects.filter(organizationmember__registered_user=reg_user, organizationmember__deleted=False)
-        }
-        return render(request, 'console/home.html', data)
+    data = {
+        "app_name": "app_home",
+        "Organization": Organization,
+        "list_organizations": Organization.objects.filter(organizationmember__registered_user=reg_user, organizationmember__deleted=False)
+    }
+    return render(request, 'console/home.html', data)

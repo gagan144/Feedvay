@@ -11,6 +11,22 @@ from utilities.api_utils import ApiResponse
 # ==================== Console ====================
 @registered_user_only
 @organization_console
+def console_org_home(request, org):
+    """
+    View for organization home.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+
+    data = {
+        "app_name": "app_home_org"
+    }
+    return render(request, 'clients/console/home_org.html', data)
+
+@registered_user_only
+@organization_console
 def console_org_settings(request, org):
     """
     View for organization settings. Only applicable for brand console.

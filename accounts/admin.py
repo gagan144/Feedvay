@@ -187,10 +187,10 @@ class UserPermissionAdmin(admin.ModelAdmin):
         obj.save()
 
 
-@admin.register(Role)
-class RoleAdmin(admin.ModelAdmin):
+@admin.register(OrganizationRole)
+class OrganizationRoleAdmin(admin.ModelAdmin):
     """
-    Django admin for Role.
+    Django admin for OrganizationRole.
 
     **Authors**: Gagandeep Singh
     """
@@ -201,7 +201,7 @@ class RoleAdmin(admin.ModelAdmin):
     filter_horizontal = ('permissions', )
     list_per_page = 20
 
-    form = select2_modelform(Role, attrs={'width': '300px'})
+    form = select2_modelform(OrganizationRole, attrs={'width': '300px'})
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = [field.name for field in self.model._meta.fields if not field.editable]

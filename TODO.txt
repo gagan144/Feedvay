@@ -14,7 +14,7 @@
     - Suggestions Display view
 
 - Permissions & Roles:
-    - Clear user cache on permission or role change
+    - Super user
 
 - Market
     - BSP

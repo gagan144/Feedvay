@@ -9,7 +9,7 @@ from django.utils import timezone
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
 from django.core.exceptions import ValidationError
-# from django.db.models.signals import post_save
+from django.db.models.signals import post_save
 from mongoengine import signals as signals_mongo
 import random
 import string
@@ -90,7 +90,7 @@ class RegisteredUser(models.Model):
     status      = FSMField(default=ST_LEAD, protected=True, db_index=True, editable=False, help_text='Status of user registration.')
 
     # Permissions, Roles and DataAccess
-    roles       = models.ManyToManyField('Role', blank=True, help_text='Organizational roles for this user.')
+    roles       = models.ManyToManyField('OrganizationRole', blank=True, help_text='Organizational roles for this user.')
     permissions = models.ManyToManyField(Permission, through='UserPermission', blank=True, help_text='Organizational permissions for this user.')
     # data access through query
 
@@ -237,8 +237,8 @@ class RegisteredUser(models.Model):
 
         # (b) On the basis of roles
         list_perm = Permission.objects.filter(
-            role__organization_id = organization.id,
-            role__registereduser = self
+            organizationrole__organization_id = organization.id,
+            organizationrole__registereduser = self
         )
 
         for perm in list_perm:
@@ -336,6 +336,9 @@ class RegisteredUser(models.Model):
         if self.pk:
             # Update modified date
             self.modified_on = timezone.now()
+
+            # Delete all his organization's permission cache
+            self.delete_permission_cache()
 
         super(self.__class__, self).clean()
 
@@ -1148,7 +1151,7 @@ class UserPermission(models.Model):
         unique_together = ('organization', 'registered_user', 'permission')
 
     def __unicode__(self):
-        return self.id
+        return str(self.id)
 
     def clean(self):
         """
@@ -1171,9 +1174,33 @@ class UserPermission(models.Model):
         self.clean()
         super(self.__class__, self).save(*args, **kwargs)
 
-class Role(models.Model):
+    def delete(self, using=None, keep_parents=False):
+        """
+        Pre-delete method for this model.
+
+        **Authors**: Gagandeep Singh
+        """
+        # Clear permission cache the user
+        self.registered_user.delete_permission_cache(self.organization)
+
+        super(self.__class__, self).delete(using, keep_parents)
+
+    @classmethod
+    def post_save(cls, sender, instance, **kwargs):
+        """
+        Post save trigger for this model.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        # Clear permission cache the user
+        instance.registered_user.delete_permission_cache(instance.organization)
+
+post_save.connect(UserPermission.post_save, sender=UserPermission)
+
+class OrganizationRole(models.Model):
     """
-    Roles are a generic way of categorizing users to apply permissions. A user can belong to
+    Organization roles are a generic way of categorizing users to apply permissions. A user can belong to
     any number of roles. Use role when you want to assign similar set of permission to group
     of users.
 
@@ -1219,6 +1246,23 @@ class Role(models.Model):
         """
         self.clean()
         super(self.__class__, self).save(*args, **kwargs)
+
+    @classmethod
+    def post_save(cls, sender, instance, **kwargs):
+        """
+        Post save trigger for this model.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        # Clear permission cache for all users who has this role
+        if kwargs['created'] == False:
+            org = instance.organization
+            for reg_user in instance.registereduser_set.all():
+                cache_key = reg_user.get_perm_cache_key(org)
+                cache.delete(cache_key)
+
+post_save.connect(OrganizationRole.post_save, sender=OrganizationRole)
 
 class UserDataAccess(models57.Model):
     """

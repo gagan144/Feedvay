@@ -158,6 +158,11 @@ def logout(request):
 
     **Authors**: Gagandeep Singh
     """
+
+    # Delete permission cache
+    request.user.registereduser.delete_permission_cache()
+
+    # Logout
     auth.logout(request)
     return HttpResponseRedirect(reverse('accounts_login'))
 # ---------- /Login ----------

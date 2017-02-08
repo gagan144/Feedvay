@@ -10,7 +10,7 @@ from utilities.api_utils import ApiResponse
 
 # ==================== Console ====================
 @registered_user_only
-@organization_console
+@organization_console()
 def console_org_home(request, org):
     """
     View for organization home.
@@ -26,7 +26,7 @@ def console_org_home(request, org):
     return render(request, 'clients/console/home_org.html', data)
 
 @registered_user_only
-@organization_console
+@organization_console(required_perms='clients.organization.change_organization')
 def console_org_settings(request, org):
     """
     View for organization settings. Only applicable for brand console.
@@ -42,7 +42,7 @@ def console_org_settings(request, org):
     return render(request, 'clients/console/org_settings.html', data)
 
 @registered_user_only
-@organization_console
+@organization_console(required_perms='clients.organization.change_organization', exception_type='api')
 def console_org_submit_changes(request, org):
     """
     An API view to submit changes in organization. This view receives only changed fields and are
@@ -53,8 +53,6 @@ def console_org_submit_changes(request, org):
     **Authors**: Gagandeep Singh
     """
     if request.method.lower() == 'post':
-        # TODO: (a) Check edit permission
-
         # (b) Update information
         data = request.POST.copy()
         del data['c']

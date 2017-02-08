@@ -12,8 +12,9 @@ import re
 from django.db.models import Q
 from django.core.cache import cache
 
-from accounts.utils import ClassifyRegisteredUser
+from accounts.utils import ClassifyRegisteredUser, lookup_permission
 from clients.models import Organization, OrganizationMember
+from utilities.api_utils import ApiResponse
 
 def staff_user_only(function, login_url=settings.LOGIN_URL_STAFF, redirect_field_name=REDIRECT_FIELD_NAME):
     """
@@ -65,7 +66,8 @@ def registered_user_only(function, login_url=settings.LOGIN_URL, redirect_field_
     wrap.__name__ = function.__name__
     return wrap
 
-def organization_console(function):
+'''
+def organization_console(function, required_perms=None, all_required=True):
     """
     Django view decorator to allow only organization related console page.
     This decorator also authenticates if user is a member in that organization thus
@@ -95,6 +97,7 @@ def organization_console(function):
 
     **Authors**: Gagandeep Singh
     """
+
     def wrap(request, *args, **kwargs):
         try:
             # Fetch 'c' para, from GET or POST
@@ -128,6 +131,104 @@ def organization_console(function):
     wrap.__doc__ = function.__doc__
     wrap.__name__ = function.__name__
     return wrap
+'''
+
+# ----------------
+def organization_console(required_perms=None, all_required=True, exception_type='response'):
+    """
+    Django view decorator to allow only organization related console page.
+    This decorator also authenticates if user is a member in that organization thus
+    this decorator must be user after ``registered_user_only``.
+
+    This decorator expects the view to receive GET/POST parameter ``c`` as organization
+    unique id using which it finds user organization.
+
+    Also, the view on which this decorator is used must except an argument ``org``.
+
+    Deleted organization and not included in the query.
+
+    If everything is ok:
+
+        - It sets ``curr_org`` in ``request``
+        - Passes the argument ``org`` to the view.
+
+    **Failure behavior:**
+
+        - If ``c`` is not present in GET/POST params: returns Http404
+        - If Organization not found: HttpResponseForbidden
+        - If user is not a member of the organization: HttpResponseForbidden
+
+    .. note::
+        This decorators does not check user authentication. This decorator must be used after
+        any authentication check decorator.
+
+    **Authors**: Gagandeep Singh
+    """
+
+    def actual_decorator(func):
+        def wrapper(request, *args, **kwargs):
+            try:
+                # Fetch 'c' para, from GET or POST
+                if request.GET.get('c', None):
+                    org_uid = request.GET['c']
+                else:
+                    org_uid = request.POST['c']
+
+                reg_user = request.user.registereduser
+
+                # (a) Get organization to which this user is a member
+                org = Organization.objects.get(
+                    Q(organizationmember__organization__org_uid = org_uid, organizationmember__registered_user = reg_user) &
+                    ~Q(status=Organization.ST_DELETED)
+                )
+                request.curr_org = org
+
+                # (b) Check permissions
+                perm_json = reg_user.get_all_permissions(org)
+
+                if required_perms is not None:
+                    # Make list if not required_perms is string
+                    if isinstance(required_perms, str) or isinstance(required_perms, unicode):
+                        list_perms = [required_perms]
+                    else:
+                        list_perms = required_perms
+
+                    # Loop and check presence
+                    is_permitted = True
+                    for perm_key in list_perms:
+                        is_present = lookup_permission(perm_json, perm_key)
+
+                        if all_required:
+                            # All required: AND operation
+                            is_permitted = is_permitted and is_present
+                            if not is_permitted:
+                                break
+                        else:
+                            # Atleast one required: OR operation
+                            is_permitted = is_permitted or is_present
+
+                    if not is_permitted:
+                        msg = "You do not have permissions to access this page."
+                        if exception_type == 'api':
+                            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message=msg).gen_http_response()
+                        else:
+                            return HttpResponseForbidden(msg)
+
+                # (c) Set permissions in request
+                request.permissions = perm_json
+
+                return func(request, org=org, *args, **kwargs)
+
+            except (KeyError, ValueError) as ex:
+                # KeyError: 'c' was not in GET params, ValueError: If c is badly formed hexadecimal UUID string, DoesNotExist: Org not found
+                raise Http404("Invalid link.")
+            except Organization.DoesNotExist:
+                # Organization not found or user is not a member of the organization
+                return HttpResponseForbidden('You do not have permissions to access this page.')
+        return wrapper
+    return actual_decorator
+
+# ----------------
 
 def brand_console(function):
     """

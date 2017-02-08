@@ -6,6 +6,8 @@ from django import template
 import ujson
 from django.contrib.auth.models import User
 
+from accounts.utils import lookup_permission
+
 register = template.Library()
 
 @register.filter
@@ -91,6 +93,7 @@ def multiply(value, multiplier):
 def has_permission(perm_json, perm_key):
     """
     Method to tell if perm_json has permission or not.
+    This method uses :function:`accounts.utils.lookup_permission`.
 
     :param perm_json: Permission JSON
     :param perm_key: ``.`` separated permission key of format ``<app-label>.<model-name>.<perm-codename>``
@@ -98,16 +101,4 @@ def has_permission(perm_json, perm_key):
 
     **Authors**: Gagandeep Singh
     """
-
-    key_split = perm_key.split('.')
-
-    # Validate
-    if len(key_split) != 3:
-        raise ValueError("Invalid perm_key '{}'. Allowed format: <app-label>.<model-name>.<perm-codename>.".format(perm_key))
-
-    app_n_model = ".".join(key_split[:2])
-    app_n_model_json = perm_json.get(app_n_model, None)
-    if app_n_model_json:
-        return True if app_n_model_json.get('permissions', []).__contains__(key_split[2]) else False
-    else:
-        return False
+    return lookup_permission(perm_json, perm_key)

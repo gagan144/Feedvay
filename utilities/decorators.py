@@ -66,101 +66,38 @@ def registered_user_only(function, login_url=settings.LOGIN_URL, redirect_field_
     wrap.__name__ = function.__name__
     return wrap
 
-'''
-def organization_console(function, required_perms=None, all_required=True):
-    """
-    Django view decorator to allow only organization related console page.
-    This decorator also authenticates if user is a member in that organization thus
-    this decorator must be user after ``registered_user_only``.
 
-    This decorator expects the view to receive GET/POST parameter ``c`` as organization
-    unique id using which it finds user organization.
-
-    Also, the view on which this decorator is used must except an argument ``org``.
-
-    Deleted organization and not included in the query.
-
-    If everything is ok:
-
-        - It sets ``curr_org`` in ``request``
-        - Passes the argument ``org`` to the view.
-
-    **Failure behavior:**
-
-        - If ``c`` is not present in GET/POST params: returns Http404
-        - If Organization not found: HttpResponseForbidden
-        - If user is not a member of the organization: HttpResponseForbidden
-
-    .. note::
-        This decorators does not check user authentication. This decorator must be used after
-        any authentication check decorator.
-
-    **Authors**: Gagandeep Singh
-    """
-
-    def wrap(request, *args, **kwargs):
-        try:
-            # Fetch 'c' para, from GET or POST
-            if request.GET.get('c', None):
-                org_uid = request.GET['c']
-            else:
-                org_uid = request.POST['c']
-
-            reg_user = request.user.registereduser
-
-            # Get organization to which this user is a member
-            org = Organization.objects.get(
-                Q(organizationmember__organization__org_uid = org_uid, organizationmember__registered_user = reg_user) &
-                ~Q(status=Organization.ST_DELETED)
-            )
-            request.curr_org = org
-
-            # Set permissions
-            perm_json = reg_user.get_all_permissions(org)
-            request.permissions = perm_json
-
-            return function(request, org=org, *args, **kwargs)
-
-        except (KeyError, ValueError) as ex:
-            # KeyError: 'c' was not in GET params, ValueError: If c is badly formed hexadecimal UUID string, DoesNotExist: Org not found
-            raise Http404("Invalid link.")
-        except Organization.DoesNotExist:
-            # Organization not found or user is not a member of the organization
-            return HttpResponseForbidden('You do not have permissions to access this page.')
-
-    wrap.__doc__ = function.__doc__
-    wrap.__name__ = function.__name__
-    return wrap
-'''
-
-# ----------------
 def organization_console(required_perms=None, all_required=True, exception_type='response'):
     """
     Django view decorator to allow only organization related console page.
-    This decorator also authenticates if user is a member in that organization thus
-    this decorator must be user after ``registered_user_only``.
+    This decorator authenticates if user is a member in that organization and has required permissions.
 
     This decorator expects the view to receive GET/POST parameter ``c`` as organization
     unique id using which it finds user organization.
 
     Also, the view on which this decorator is used must except an argument ``org``.
 
-    Deleted organization and not included in the query.
+    :param required_perms: String or list of permission key of format ``<app-label>.<model-name>.<perm-codename>``.
+    :param all_required: If True, all permissions are required else atleast one.
+    :param exception_type: Type of forbidden response - ``response``: 403 page with message,
+        ``api``: Forbidden response as per :class:`utilities.api_utils.ApiResponse`.
 
-    If everything is ok:
 
-        - It sets ``curr_org`` in ``request``
-        - Passes the argument ``org`` to the view.
+    **Points**:
+
+        - This decorator must be user after ``registered_user_only``. It expects registered user.
+        - Deleted organization and not included in the query.
+        - If everything is ok:
+
+            - It sets ``curr_org`` in ``request``.
+            - It sets ``permissions`` in ``request``.
+            - Passes the argument ``org`` to the view.
 
     **Failure behavior:**
 
         - If ``c`` is not present in GET/POST params: returns Http404
         - If Organization not found: HttpResponseForbidden
         - If user is not a member of the organization: HttpResponseForbidden
-
-    .. note::
-        This decorators does not check user authentication. This decorator must be used after
-        any authentication check decorator.
 
     **Authors**: Gagandeep Singh
     """
@@ -228,7 +165,6 @@ def organization_console(required_perms=None, all_required=True, exception_type=
         return wrapper
     return actual_decorator
 
-# ----------------
 
 def brand_console(function):
     """
@@ -252,6 +188,7 @@ def brand_console(function):
     wrap.__doc__ = function.__doc__
     wrap.__name__ = function.__name__
     return wrap
+
 
 def minified_response(f):
     """

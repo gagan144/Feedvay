@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.db.models import Q
 from django.db.models.fields.files import ImageFieldFile
+from django.db import transaction
 from django_mysql import models as models57
 from django.utils import timezone
 import uuid, os, shortuuid, StringIO
@@ -19,7 +20,7 @@ from PIL import Image
 
 from django.contrib.auth.models import User
 
-from accounts.models import RegisteredUser
+from accounts.models import RegisteredUser, UserPermission, UserDataAccess
 from utilities.theme import UiTheme, ColorUtils, render_skin
 
 def upload_organization_logo_to(instance, filename):
@@ -407,6 +408,12 @@ class OrganizationMember(models.Model):
 
     **Uniqueness**: ``organization``, ``registered_user``
 
+    **Delete/Remove membership**: You cannot delete membership record however, you can mark it deleted. Please **DO NOT**
+    set ``deleted`` as ``True``. Always use method ``mark_deleted()`` which will remove all entities associations with the
+    organization and set it deleted.
+
+    **Revive membership**: If membership was deleted and is now to be revived, simply set ``deleted`` as ``False``.
+
     **Authors**: Gagandeep Singh
     """
     organization    = models.ForeignKey(Organization, help_text='Associated organization.')
@@ -422,6 +429,44 @@ class OrganizationMember(models.Model):
 
     def __unicode__(self):
         return "{} <-> {}".format(self.organization.name, self.registered_user)
+
+    def mark_deleted(self, confirm=False):
+        """
+        Method to deleted user membership from organization and remove various entities associations.
+
+        **Exceptions**: Throws exception is confirm is not True.
+
+        :param confirm: (Required) Default is False to prevent accidents.
+        """
+        if not confirm:
+            raise Exception("Please confirm membership delete action by passing confirm as True.")
+
+        # Remove associations.
+        with transaction.atomic():
+            reg_user = self.registered_user
+            org = self.organization
+
+            # Remove superuser
+            for su_org in reg_user.superuser_in.filter(id=org.id):
+                reg_user.superuser_in.remove(su_org)
+
+            # Remove roles
+            for role in reg_user.roles.filter(organization_id=org.id):
+                reg_user.roles.remove(role)
+
+            # Remove permissions
+            UserPermission.objects.filter(registered_user_id=reg_user.id, organization_id=org.id).delete()
+
+            # Remove data access
+            UserDataAccess.objects.filter(registered_user_id=reg_user.id, organization_id=org.id).delete()
+
+            # Remove permission cache
+            print reg_user.delete_permission_cache(org)
+
+
+        # Mark deleted
+        self.deleted = True
+        self.save()
 
     def clean(self):
         """

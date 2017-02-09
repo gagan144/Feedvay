@@ -1,0 +1,6 @@
+{
+  "clients.organization":{
+    "data_access": null,
+    "permissions": ["change_organization"]
+  }
+}

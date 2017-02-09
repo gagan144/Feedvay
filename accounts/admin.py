@@ -95,7 +95,7 @@ class RegisteredUserAdmin(admin.ModelAdmin):
             'fields': ('reg_count', 'last_reg_date', 'status')
         }),
         ('Permissions and Roles', {
-            'fields': ('roles', )
+            'fields': ('superuser_in', 'roles')
         }),
         ('Dates', {'fields': ('created_on', 'modified_on')}),
     )
@@ -104,7 +104,7 @@ class RegisteredUserAdmin(admin.ModelAdmin):
     list_filter = ('reg_method', 'status', 'last_reg_date', 'created_on')
     search_fields = ('user__username', )
     raw_id_fields = ('user', )
-    filter_horizontal = ('roles', )
+    filter_horizontal = ('superuser_in', 'roles')
     list_per_page = 20
 
     def get_readonly_fields(self, request, obj=None):

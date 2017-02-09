@@ -115,7 +115,7 @@ def organization_console(required_perms=None, all_required=True, exception_type=
 
                 # (a) Get organization to which this user is a member
                 org = Organization.objects.get(
-                    Q(organizationmember__organization__org_uid = org_uid, organizationmember__registered_user = reg_user) &
+                    Q(organizationmember__organization__org_uid=org_uid, organizationmember__registered_user=reg_user, organizationmember__deleted=False) &
                     ~Q(status=Organization.ST_DELETED)
                 )
                 request.curr_org = org

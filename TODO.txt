@@ -1,10 +1,5 @@
 - Infrastructure
     - Globalization & timezones *
-    - User Management
-        - User Roles
-        - Default Group for public user
-        - Sudo user login
-
     - Mobile/Desktop client check (django-mobile)
     - New Feature Promotion
 
@@ -12,9 +7,6 @@
     - Summernote css
     - Report Display view
     - Suggestions Display view
-
-- Permissions & Roles:
-    - Super user
 
 - Market
     - BSP
@@ -24,30 +16,32 @@
     - Create: survey title already existing - autocomplete type options
     - API - Access authentication
 
-- All models
-    - If CharField/TextField 'default=None' as well
-
 - Brands
     - Disable notifications for brand owners and only for brand authority users
 
 - Data privacy conventions (public, encypted, client shared etc)
-- SEO
 
 - Crons
     - Delete orphan sessions & UserSessions
     - Delete expired notification messages
     - Owls
 
-- Logo
 - SMS Gateway service classes
+
 
 ------------- Low priority --------------
 
-- Brands
+- Organization & Brands
     - image size validations (Client side only)
+
+- User
+    - Sudo user login
 
 
 ------------- Infra ---------
 - Geography (Country tel code)
 - Elasticsearch
-- POBS
+
+---------- Note -----------
+All models
+    - If CharField/TextField 'default=None' as well

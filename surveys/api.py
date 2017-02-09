@@ -66,8 +66,7 @@ class SurveyResponsesAPI(resources.MongoEngineResource):
 class SurveyResponseTrendAPI(Resource):
     """
     An API resource to display response submission trend of a survey.
-    This is a custom api that aggregates responses on keys:
-        ``response_date``, ``suspect``
+    This is a custom api that aggregates responses on keys: ``response_date``, ``suspect``
 
     **Options**:
 

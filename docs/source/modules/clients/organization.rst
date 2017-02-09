@@ -5,6 +5,9 @@ An organization is an legal registered entity such as Company, Firm, Agency, Gov
 NGO etc. Such an organization can be Proprietorship, Partnership or Private Limited. These will have owners and
 can be potential clients. All billing are attached to this entity if services are used under it.
 
+.. note::
+    Currently organizations are created by staff user only as per contract.
+
 1. Organisation registration or creation
 ----------------------------------------
 There are many ways through which an organization can be registered or creating in the system:
@@ -45,7 +48,7 @@ as specified in reason for rejection. To do this:
 
     - User goes to organization settings and edit his previous details and submits.
     - At backend, all changes are updated in the organization instance itself **(inplace update)**
-     and organization is transitioned to ``verification_pending`` state.
+      and organization is transitioned to ``verification_pending`` state.
 
 From here, user again waits for the verification to be completed.
 

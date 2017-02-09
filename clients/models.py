@@ -63,7 +63,7 @@ class Organization(models57.Model):
 
         - **Status**:
             - ``frozen``: Means all operations of this organization have been ceased. No one can add update or create
-            anything. Only viewing is allowed. This can be unfreeze to ``verified`` state.
+              anything. Only viewing is allowed. This can be unfreeze to ``verified`` state.
             - ``deleted``: Means this organization has been permanently deleted from the system. It cannot be revived now.
         - Please call save after all transition method calls.
         - If verification fails, it is mandatory to provide reason. This reason will be shown to the user.

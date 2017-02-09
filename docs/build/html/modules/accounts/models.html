@@ -36,7 +36,7 @@
     <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
         <link rel="up" title="Accounts" href="index.html"/>
         <link rel="next" title="Forms" href="forms.html"/>
-        <link rel="prev" title="Email Verification" href="mod_email_verification.html"/> 
+        <link rel="prev" title="User-Organization membership" href="mod_user_org_membership.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -101,6 +101,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../brands/index.html">Brands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../clients/index.html">Clients</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../console/index.html">Console</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../form_builder/index.html">Form builder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../languages/index.html">Languages</a></li>
@@ -158,6 +159,44 @@
 <h1>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h1>
 <p>List of database models (MySQL &amp; MongoDb) for accounts app.</p>
 <span class="target" id="module-accounts.models"></span><dl class="class">
+<dt id="accounts.models.OrganizationRole">
+<em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">OrganizationRole</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.OrganizationRole" title="Permalink to this definition">¶</a></dt>
+<dd><p>Organization roles are a generic way of categorizing users to apply permissions. A user can belong to
+any number of roles. Use role when you want to assign similar set of permission to group
+of users.</p>
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>This model does not specifies data access. Only set of permissions.</li>
+<li>All roles are defined under an organization.</li>
+<li><strong>Uniqueness</strong>: <code class="docutils literal"><span class="pre">organization</span></code>, <code class="docutils literal"><span class="pre">name</span></code></li>
+</ul>
+</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="accounts.models.OrganizationRole.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.OrganizationRole.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="accounts.models.OrganizationRole.post_save">
+<em class="property">classmethod </em><code class="descname">post_save</code><span class="sig-paren">(</span><em>sender</em>, <em>instance</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.OrganizationRole.post_save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Post save trigger for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.OrganizationRole.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.OrganizationRole.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="accounts.models.RegisteredUser">
 <em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">RegisteredUser</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.RegisteredUser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extension of django <code class="xref py py-class docutils literal"><span class="pre">django.contrib.auth.models.User</span></code> model that maintains all public user
@@ -252,6 +291,107 @@ country telephone code from actula username.</p>
 </tbody>
 </table>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.RegisteredUser.delete_permission_cache">
+<code class="descname">delete_permission_cache</code><span class="sig-paren">(</span><em>organization=None</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.RegisteredUser.delete_permission_cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete permission cache of this user for all organizations</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>organization</strong> &#8211; (Optional) If provided, only permission cache for this org is deleted.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Count of cache key deleted</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.RegisteredUser.fetch_all_permissions">
+<code class="descname">fetch_all_permissions</code><span class="sig-paren">(</span><em>organization</em>, <em>update_cache=True</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.RegisteredUser.fetch_all_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to fetch all user permissions for an organization from database and cache it if instructed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>organization</strong> &#8211; <a class="reference internal" href="../clients/models.html#clients.models.Organization" title="clients.models.Organization"><code class="xref py py-class docutils literal"><span class="pre">clients.models.Organization</span></code></a> instance</li>
+<li><strong>update_cache</strong> &#8211; If true, this will cache permission json in default cache with key as &#8216;&lt;username&gt;__&lt;org.id&gt;&#8217;
+and expiry as <code class="docutils literal"><span class="pre">settings.SESSION_COOKIE_AGE_PUBLIC</span></code>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Permissions JSON or {} if user does not belongs to the organization.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Permission JSON format</strong>:</p>
+<p><strong>data_access structure in permission JSON</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">None</span></code>: No data access allowed on corresponding model</li>
+<li><code class="docutils literal"><span class="pre">{}</span></code>: All/complete access allowed on records of corresponding model in that organization</li>
+<li>data_access is only filled for those model are in permission json</li>
+</ul>
+</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.RegisteredUser.get_all_permissions">
+<code class="descname">get_all_permissions</code><span class="sig-paren">(</span><em>organization</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.RegisteredUser.get_all_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to get all user permissions for an organization first from <strong>cache</strong>. If not found,
+fetch all permissions from database, cache it and return permission json as in <code class="docutils literal"><span class="pre">fetch_all_permissions()</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>organization</strong> &#8211; Orgnization for which permissions are to be obtained.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Permission JSON</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.RegisteredUser.get_data_access">
+<code class="descname">get_data_access</code><span class="sig-paren">(</span><em>organization</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.RegisteredUser.get_data_access" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to get all data access for this user in an organization.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>organization</strong> &#8211; Organization for which data access is to be fetch.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List&lt;<a class="reference internal" href="#accounts.models.UserDataAccess" title="accounts.models.UserDataAccess"><code class="xref py py-class docutils literal"><span class="pre">accounts.models.UserDataAccess</span></code></a>&gt;</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.RegisteredUser.get_perm_cache_key">
+<code class="descname">get_perm_cache_key</code><span class="sig-paren">(</span><em>organization</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.RegisteredUser.get_perm_cache_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to return permission cache key. This method only generates key and does not
+affect cache.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>organization</strong> &#8211; Organization for which key is to be generated.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Cache key</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -363,6 +503,47 @@ Claim permission on entity can only be disabled by staff.</li>
 </dd></dl>
 
 <dl class="class">
+<dt id="accounts.models.UserDataAccess">
+<em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserDataAccess</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserDataAccess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to define what instances of an entity a user is allowed to perform actions.
+Where, UserPermissions and Roles together specify set of action a user to allowed on
+an entity, this model specifies sets of instances on which user can perform those actions.</p>
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Instances are specified in terms of actual django orm query filters and not mostly list
+of instance pk. These filters are in form of JSON as per the underline database (MySQL or MongoDb)</li>
+<li>To allow access over all instances, set <code class="docutils literal"><span class="pre">all_access</span></code> to True. This will ignore <code class="docutils literal"><span class="pre">access_filter</span></code>.</li>
+<li>If <code class="docutils literal"><span class="pre">all_access</span></code> is <code class="docutils literal"><span class="pre">False</span></code>, <code class="docutils literal"><span class="pre">access_filter`</span></code> is mandatory.</li>
+<li><strong>Uniqueness</strong>: <code class="docutils literal"><span class="pre">organization</span></code>, <code class="docutils literal"><span class="pre">registered_user</span></code>, <code class="docutils literal"><span class="pre">content_type</span></code> i.e. only one entry
+for user in an organization that hass access over an entity.</li>
+</ul>
+</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="accounts.models.UserDataAccess.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserDataAccess.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="accounts.models.UserDataAccess.post_save">
+<em class="property">classmethod </em><code class="descname">post_save</code><span class="sig-paren">(</span><em>sender</em>, <em>instance</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserDataAccess.post_save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Post save trigger for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.UserDataAccess.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserDataAccess.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="accounts.models.UserDevice">
 <em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserDevice</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserDevice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Model to keep track of user devices that have registered for
@@ -376,6 +557,54 @@ to obtain list of devices to those message is to be send.</p>
 This is done to allow provision for staff user to also register their devices for push notifications.</p>
 </div>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="accounts.models.UserPermission">
+<em class="property">class </em><code class="descclassname">accounts.models.</code><code class="descname">UserPermission</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserPermission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to associate user with permissions for an organization.
+This model only defines what action a user is allowed on an entity. This <strong>does not</strong>
+specifies on which instances of the entity user can perform that action.</p>
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>All user permissions are defined under organization to which he is part of.</li>
+<li>Currently permissions are applied on database entities only (not pages).</li>
+<li>To get list of permissions on entities we use <code class="xref py py-class docutils literal"><span class="pre">django.contrib.auth.models.Permission</span></code>.</li>
+<li>Each permission relates to one of the CRUD operation allowed on that entity.</li>
+<li><strong>Uniqueness</strong>: <code class="docutils literal"><span class="pre">organization</span></code>, <code class="docutils literal"><span class="pre">registered_user</span></code>, <code class="docutils literal"><span class="pre">permission</span></code> i.e under an organization,
+a user can have only one permission for an action (CRUD) over an entity.</li>
+</ul>
+</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="accounts.models.UserPermission.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserPermission.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.UserPermission.delete">
+<code class="descname">delete</code><span class="sig-paren">(</span><em>using=None</em>, <em>keep_parents=False</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserPermission.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-delete method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="accounts.models.UserPermission.post_save">
+<em class="property">classmethod </em><code class="descname">post_save</code><span class="sig-paren">(</span><em>sender</em>, <em>instance</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserPermission.post_save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Post save trigger for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="accounts.models.UserPermission.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.models.UserPermission.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -736,7 +965,7 @@ map the session to current user.</p>
         <a href="forms.html" class="btn btn-neutral float-right" title="Forms" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="mod_email_verification.html" class="btn btn-neutral" title="Email Verification" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="mod_user_org_membership.html" class="btn btn-neutral" title="User-Organization membership" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

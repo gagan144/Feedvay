@@ -13,6 +13,7 @@ Apps and modules
    modules/management_commands/index
    modules/accounts/index
    modules/brands/index
+   modules/clients/index
    modules/console/index
    modules/form_builder/index
    modules/languages/index

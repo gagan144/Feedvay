@@ -23,7 +23,7 @@ There are two types of surveys:
 
 Surveyor: Who can conduct a survey?
 -----------------------------------
-A person or an organisation that can conduct asurvey is called **surveyor**. On Feedvay platform,
+A person or an organisation that can conducts a survey is called **surveyor**. On Feedvay platform,
 a survey can be conducted by an individual or an organisation or even a brand:
 
        1. **An individual:** Any person who has registered with Feedvay and has completed his basic KYC

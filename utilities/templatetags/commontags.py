@@ -93,7 +93,7 @@ def multiply(value, multiplier):
 def has_permission(perm_json, perm_key):
     """
     Method to tell if perm_json has permission or not.
-    This method uses :function:`accounts.utils.lookup_permission`.
+    This method uses ``accounts.utils.lookup_permission()`` method.
 
     :param perm_json: Permission JSON
     :param perm_key: ``.`` separated permission key of format ``<app-label>.<model-name>.<perm-codename>``

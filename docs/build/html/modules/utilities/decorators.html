@@ -97,16 +97,17 @@
 <li class="toctree-l1"><a class="reference internal" href="../surveys/index.html">Survey</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Utilities</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="abstract_models.html">Abstract models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_utils.html">Api utilities</a></li>
 <li class="toctree-l3"><a class="reference internal" href="aws.html">AWS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="custom_storages.html">Custom Storages</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Decorators</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fcm_utils.html">FCM utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="theme.html">Theme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tastypi_utils.html">Tastypie utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="validators.html">Validators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="theme.html">Theme</a></li>
 <li class="toctree-l3"><a class="reference internal" href="templatetags.html">Template tags</a></li>
 <li class="toctree-l3"><a class="reference internal" href="timezone_utils.html">Timezone utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validators.html">Validators</a></li>
 </ul>
 </li>
 </ul>
@@ -178,6 +179,57 @@ any authentication check decorator.</p>
 <dt id="utilities.decorators.minified_response">
 <code class="descclassname">utilities.decorators.</code><code class="descname">minified_response</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.decorators.minified_response" title="Permalink to this definition">¶</a></dt>
 <dd><p>Django view decorator to minify html page.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="utilities.decorators.organization_console">
+<code class="descclassname">utilities.decorators.</code><code class="descname">organization_console</code><span class="sig-paren">(</span><em>required_perms=None</em>, <em>all_required=True</em>, <em>exception_type='response'</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.decorators.organization_console" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django view decorator to allow only organization related console page.
+This decorator authenticates if user is a member in that organization and has required permissions.</p>
+<p>This decorator expects the view to receive GET/POST parameter <code class="docutils literal"><span class="pre">c</span></code> as organization
+unique id using which it finds user organization.</p>
+<p>Also, the view on which this decorator is used must except an argument <code class="docutils literal"><span class="pre">org</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>required_perms</strong> &#8211; String or list of permission key of format <code class="docutils literal"><span class="pre">&lt;app-label&gt;.&lt;model-name&gt;.&lt;perm-codename&gt;</span></code>.</li>
+<li><strong>all_required</strong> &#8211; If True, all permissions are required else atleast one.</li>
+<li><strong>exception_type</strong> &#8211; Type of forbidden response - <code class="docutils literal"><span class="pre">response</span></code>: 403 page with message,
+<code class="docutils literal"><span class="pre">api</span></code>: Forbidden response as per <a class="reference internal" href="api_utils.html#utilities.api_utils.ApiResponse" title="utilities.api_utils.ApiResponse"><code class="xref py py-class docutils literal"><span class="pre">utilities.api_utils.ApiResponse</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">This decorator must be user after <code class="docutils literal"><span class="pre">registered_user_only</span></code>. It expects registered user.</p>
+</li>
+<li><p class="first">Deleted organization and not included in the query.</p>
+</li>
+<li><p class="first">If everything is ok:</p>
+<blockquote>
+<div><ul class="simple">
+<li>It sets <code class="docutils literal"><span class="pre">curr_org</span></code> in <code class="docutils literal"><span class="pre">request</span></code>.</li>
+<li>It sets <code class="docutils literal"><span class="pre">permissions</span></code> in <code class="docutils literal"><span class="pre">request</span></code>.</li>
+<li>Passes the argument <code class="docutils literal"><span class="pre">org</span></code> to the view.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<p><strong>Failure behavior:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li>If <code class="docutils literal"><span class="pre">c</span></code> is not present in GET/POST params: returns Http404</li>
+<li>If Organization not found: HttpResponseForbidden</li>
+<li>If user is not a member of the organization: HttpResponseForbidden</li>
+</ul>
+</div></blockquote>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 

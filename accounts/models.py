@@ -198,7 +198,7 @@ class RegisteredUser(models.Model):
 
             }
 
-        **data_access**:
+        **data_access structure in permission JSON**:
 
             - ``None``: No data access allowed on corresponding model
             - ``{}``: All/complete access allowed on records of corresponding model in that organization

@@ -71,10 +71,10 @@ class ClassifyRegisteredUser:
 
 def lookup_permission(perm_json, perm_key):
     """
-    Method to lookup for a permission in permission json.
+    Method to lookup for a permission in permission json. A permission lookup can be based on app model or app model CRUDs.
 
     :param perm_json: Permission JSON
-    :param perm_key: ``.`` separated permission key of format ``<app-label>.<model-name>.<perm-codename>``
+    :param perm_key: ``.`` separated permission key of format ``<app-label>.<model-name>`` or ``<app-label>.<model-name>.<perm-codename>``
     :return: True if json has permission else false
 
     **Authors**: Gagandeep Singh
@@ -83,12 +83,19 @@ def lookup_permission(perm_json, perm_key):
     key_split = perm_key.split('.')
 
     # Validate
-    if len(key_split) != 3:
-        raise ValueError("Invalid perm_key '{}'. Allowed format: <app-label>.<model-name>.<perm-codename>.".format(perm_key))
+    key_len = len(key_split)
+    if key_len not in [2,3]:
+        raise ValueError("Invalid perm_key '{}'. Allowed format: '<app-label>.<model-name>' or '<app-label>.<model-name>.<perm-codename>'.".format(perm_key))
 
     app_n_model = ".".join(key_split[:2])
     app_n_model_json = perm_json.get(app_n_model, None)
+
     if app_n_model_json:
-        return True if app_n_model_json.get('permissions', []).__contains__(key_split[2]) else False
+        if key_len == 2:
+            # App model lookup
+            return True
+        else:
+            # App model CRUD lookup
+            return True if app_n_model_json.get('permissions', []).__contains__(key_split[2]) else False
     else:
         return False

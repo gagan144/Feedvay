@@ -132,6 +132,9 @@ class Brand(models57.Model):
 
     class Meta:
         ordering = ('name', )
+        permissions = (
+            ("view_brand", "Can view brands"),
+        )
 
     def __unicode__(self):
         return "{} ({})".format(self.name, self.organization.name)

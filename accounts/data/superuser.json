@@ -1,6 +1,10 @@
 {
   "clients.organization":{
-    "data_access": null,
-    "permissions": ["change_organization"]
+    "permissions": ["change_organization"],
+    "data_access": null
+  },
+  "market.brand":{
+    "permissions": ["add_brand", "view_brand", "change_brand", "delete_brand"],
+    "data_access": {}
   }
 }

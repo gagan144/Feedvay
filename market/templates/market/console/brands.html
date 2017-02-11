@@ -1,0 +1,189 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'console/base.html' %}
+{% load static commontags %}
+
+{% block head %}
+    <!-- Favicon -->
+    <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
+
+    <title>Brands | {{ request.curr_org.name }}</title>
+{% endblock %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-8">
+            <h2>
+                <i class="fa fa-star"></i>
+                Brands
+            </h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">Home</a>
+                </li>
+                <li class="active">
+                    Brands
+                </li>
+            </ol>
+        </div>
+        {% if request.permissions|has_permission:"market.brand.add_brand" %}
+        <div class="col-xs-4">
+            <div class="title-action" style="padding-top: 20px !important;">
+                <a href="{% url 'console_market_brand_new' %}?c={{ request.curr_org.org_uid }}" class="btn btn-primary">
+                    <i class="fa fa-plus"></i>
+                    <span class="mobile_hide">&nbsp;Add brand</span>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="wrapper wrapper-content" ng-cloak>
+        <div ng-controller="MainCtrl">
+            {% if list_brands %}
+                <style>
+                    .project-title p{
+                        margin: 0px !important;
+                    }
+
+                    .project-status{
+                        width: 80px;
+                    }
+
+                    .project-title{
+                        min-width: 250px;
+                    }
+                </style>
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <div class="row m-b-sm m-t-sm">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <input type="text" placeholder="Search" class="input-sm form-control">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-sm btn-primary"> Go!</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="project-list">
+                            <table class="table table-hover" style="margin-bottom: 0px;">
+                                <thead>
+                                    <tr>
+                                        <th>Status</th>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Duration</th>
+                                        <th>Completion</th>
+                                        <th>&nbsp;</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for s in list_surveys %}
+                                        <tr>
+                                            <td class="project-status">
+                                                <span class="label label-primary">{{ s.status|title }}</span>
+                                            </td>
+                                            <td class="project-title">
+                                                <a href="{% url 'console_survey_panel' s.survey_uid %}">{{ s.title }}</a>
+                                                <br/>
+                                                <small>{{ s.description|truncatechars:150|safe }}</small>
+                                            </td>
+                                            <td style="width: 100px;">
+                                                {{ s.category.name }}
+                                            </td>
+                                            <td style="width: 220px;">
+                                                {{ s.start_date|date:"d-M-Y" }}
+                                                <span style="margin: 0px 5px;">to</span>
+                                                {{ s.end_date|date:"d-M-Y" }}
+                                            </td>
+                                            <td class="project-completion">
+                                                <small>Completion with: 48%</small>
+                                                <div class="progress progress-mini">
+                                                    <div style="width: 48%;" class="progress-bar"></div>
+                                                </div>
+                                            </td>
+        {#                                    <td class="project-people">#}
+        {#                                        <a href=""><img alt="image" class="img-circle" src="img/a3.jpg"></a>#}
+        {#                                        <a href=""><img alt="image" class="img-circle" src="img/a1.jpg"></a>#}
+        {#                                        <a href=""><img alt="image" class="img-circle" src="img/a2.jpg"></a>#}
+        {#                                        <a href=""><img alt="image" class="img-circle" src="img/a4.jpg"></a>#}
+        {#                                        <a href=""><img alt="image" class="img-circle" src="img/a5.jpg"></a>#}
+        {#                                    </td>#}
+                                            <td class="project-actions">
+                                                <a href="{% url 'console_survey_panel' s.survey_uid %}#/edit" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Edit </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            {% else %}
+                <div class="alert alert-info">
+                    <table style="width: 100%">
+                        <tr>
+                            <td valign="top" style="width: 90px;">
+                                <i class="fa fa-exclamation-circle" style="font-size: 80px;"></i>
+                            </td>
+                            <td valign="top">
+                                <h2 style="margin-top: 0px;">No brands!</h2>
+                                <div>
+                                    Either your organization does not have added any brands yet or you do not have access over any brands.
+
+                                    {% if request.permissions|has_permission:"market.brand.add_brand" %}
+                                        <div >
+                                            Click below button to add new brand to your organization:<br/><br/>
+                                            <a href="{% url 'console_market_brand_new' %}?c={{ request.curr_org.org_uid }}" class="btn btn-info btn-xs">
+                                                <i class="fa fa-plus"></i>
+                                                <span class="mobile_hide">&nbsp;Add brand</span>
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        'use strict';
+
+        var APP = angular.module('{{ app_name }}',[
+            'feedvay.watchdog',
+
+            'ngCookies',
+            'ui.bootstrap'
+        ])
+        .run(function($http, $cookies) {
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+            $http.defaults.xsrfCookieName = 'csrftoken';
+            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+        })
+        .config(function($interpolateProvider, $httpProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+
+            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+        });
+
+        APP.controller('MainCtrl', function($scope){
+            $scope.msg = 'helloooo';
+        });
+    </script>
+
+{% endblock %}

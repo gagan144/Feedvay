@@ -101,9 +101,18 @@
                     <div class="navbar-collapse collapse" id="navbar">
                         <ul class="nav navbar-nav">
 
+                            {% if request.curr_org %}
+                                <li>
+                                    <a href="{% url 'console_market_brands' %}?c={{ request.curr_org.org_uid }}">
+                                        Brands
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            <!-- DELETE -->
                             <li class="dropdown">
                                 <a aria-expanded="false" role="button" href="javascript: void(0);" class="dropdown-toggle" data-toggle="dropdown">
-                                    Brands
+                                    Brands XX
                                     <span class="caret"></span>
                                 </a>
                                 <ul role="menu" class="dropdown-menu">
@@ -130,12 +139,16 @@
                                     {% endfor %}
                                 </ul>
                             </li>
+                            <!-- /DELETE -->
+
                             <li class="dropdown">
                                 <a aria-expanded="false" role="button" href="javascript: void(0);" class="dropdown-toggle" data-toggle="dropdown"> Surveys <span class="caret"></span></a>
                                 <ul role="menu" class="dropdown-menu">
                                     <li><a href="{% url 'console_surveys' %}">My surveys</a></li>
                                 </ul>
                             </li>
+
+
                             <li class="dropdown">
                                 <a aria-expanded="false" role="button" href="javascript: void(0);" class="dropdown-toggle" data-toggle="dropdown"> Menu item <span class="caret"></span></a>
                                 <ul role="menu" class="dropdown-menu">

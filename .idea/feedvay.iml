@@ -29,6 +29,7 @@
         <option value="$MODULE_DIR$/form_builder/templates" />
         <option value="$MODULE_DIR$/surveys/templates" />
         <option value="$MODULE_DIR$/clients/templates" />
+        <option value="$MODULE_DIR$/market/templates" />
       </list>
     </option>
   </component>

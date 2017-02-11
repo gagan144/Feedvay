@@ -191,7 +191,7 @@ class RegisteredUser(models.Model):
 
             {
                 "<app-label>.<model-name>"{
-                    "permissions": ["add_<model-name>", "read_<model-name>", "change_<model-name>", "delete_<model-name>"],
+                    "permissions": ["add_<model-name>", "view_<model-name>", "change_<model-name>", "delete_<model-name>"],
                     "data_access": {
 
                     }

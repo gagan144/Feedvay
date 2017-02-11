@@ -182,12 +182,13 @@ class RegisteredUser(models.Model):
 
         :param organization: :class:`clients.models.Organization` instance
         :param update_cache: If true, this will cache permission json in default cache with key as '<username>__<org.id>'
-            and expiry as ``settings.SESSION_COOKIE_AGE_PUBLIC``.
+            and expiry as :py:data:`settings.SESSION_COOKIE_AGE_PUBLIC`.
         :return: Permissions JSON or {} if user does not belongs to the organization.
 
         **Permission JSON format**:
 
         .. code-block:: json
+
             {
                 "<app-label>.<model-name>"{
                     "permissions": ["add_<model-name>", "read_<model-name>", "change_<model-name>", "delete_<model-name>"],

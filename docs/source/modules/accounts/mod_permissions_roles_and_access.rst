@@ -26,18 +26,16 @@ Obtain user permissions
 
 For permission JOSN structure and methods to obtain permissions, kindly refer :class:`accounts.models.RegisteredUser` methods:
 
-    - get_perm_cache_key()
-    - fetch_all_permissions()
-    - get_data_access()
-    - get_all_permissions()
-    - delete_permission_cache()
+    - :py:func:`accounts.models.RegisteredUser.get_perm_cache_key`
+    - :py:func:`accounts.models.RegisteredUser.fetch_all_permissions`
+    - :py:func:`accounts.models.RegisteredUser.get_data_access`
+    - :py:func:`accounts.models.RegisteredUser.get_all_permissions`
+    - :py:func:`accounts.models.RegisteredUser.delete_permission_cache`
 
 
 Django views decorator
 ----------------------
 
 A decorator on every view that requires certain permissions to allow access.
-Kindly refer the decorator :func:`accounts.decorators.organization_console`.
-
-
+Kindly refer the decorator :py:func:`accounts.decorators.organization_console`.
 

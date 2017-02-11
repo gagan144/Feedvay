@@ -301,6 +301,7 @@ class BusinessServicePoint(Document):
     also be a place that offers any kind of service. Moreover, it can also be person such as a teacher.
 
     Examples:
+
         Local business shop such as restaurants, clothing, repair shop, grocery shop etc,
         Government office, post boxes, ATMs, Company office, pan wala shop, chemist, hospital,
         Tutor, Coaching center, mobile app/website lets say to order food or buy products and so on.

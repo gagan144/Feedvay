@@ -17,6 +17,7 @@ Apps and modules
    modules/console/index
    modules/form_builder/index
    modules/languages/index
+   modules/market/index
    modules/owlery/index
    modules/surveys/index
    modules/utilities/index

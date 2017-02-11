@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from jsonobject import *
 from jsonobject.properties import SetProperty
 
-
+# ---------- General ----------
 class BspTypes:
     """
     Enum class that defines various types of business and Service points.
@@ -41,7 +41,7 @@ class PaymentMethods:
         (WALLETS, 'Wallets')
     )
 
-
+# ---------- BSP Types ----------
 class Restaurant(JsonObject):
     """
     Eatery is any point offering food or drink service in any form and type.

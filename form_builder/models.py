@@ -376,9 +376,12 @@ class Form(models57.Model):
     def get_formquestions(self, only_current=True):
         """
         Method to return form questions for this form.
+
         :param only_current: If True, returns only those questions which are currently in the form.
             Otherwise returns all questions including those which have been changed.
         :return: List<:class:`form_builder.models.FormQuestion`>
+
+        **Authors**: Gagandeep Singh
         """
 
         if only_current:
@@ -674,19 +677,22 @@ class BaseResponse(Document):
         Response embedded document to an answer to the question in details. This includes
         various meta information for an answer.
 
-        Specifications for ``ai`` field:
+        **Specifications for ``ai`` field**:
 
-            Structure:
-            {
-                "<algo_key>":{
-                    "pending": True/False,
-                    "result": {
-                        --- result json ---
+            .. code-block:: json
+
+                {
+                    "<algo_key>":{
+                        "pending": true,
+                        "result": {
+
+                        }
                     }
                 }
-            }
 
-            ** Points**:
+
+            **Points**:
+
                 - The structure is created during response creation after analyzing corresponding FormField.
                 - All process looks for its ``algo_key`` to check if this answer must be analyzed or not. This happens
                   when the process gets a green light to proceed after checking in ``response.process_flags``.

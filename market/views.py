@@ -7,6 +7,7 @@ from accounts.decorators import registered_user_only, organization_console
 
 from market.models import Brand
 from market.forms import *
+from market import operations as ops
 
 from utilities.api_utils import ApiResponse
 
@@ -27,7 +28,7 @@ def console_brands(request, org):
         list_brands = []
     else:
         filter_brands['organization_id'] = org.id
-        list_brands = Brand.objects.filter(**filter_brands)
+        list_brands = Brand.objects.filter(**filter_brands).only('id', 'name', 'brand_uid', 'logo', 'icon', 'active', 'created_by', 'created_on').select_related('created_by')
 
     data = {
         'app_name': 'app_brands',
@@ -69,7 +70,7 @@ def console_brand_create(request, org):
         if form_brand.is_valid():
             form_data = form_brand.cleaned_data
 
-            #ops.create_new_brand(form_data, request.user.registereduser)
+            ops.create_new_brand(form_data, org, request.user.registereduser)
             return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok.').gen_http_response()
         else:
             errors = dict(form_brand.errors)

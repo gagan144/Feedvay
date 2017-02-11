@@ -119,14 +119,14 @@ class Organization(models57.Model):
     # Settings
     description = tinymce_models.HTMLField(help_text='Short description about the organization.')
     type        = models.CharField(max_length=32, choices=CH_TYPE, help_text='Type of the organization.')
-    logo        = models.ImageField(upload_to=upload_organization_logo_to, help_text='Organization logo of size 300x100 pixels.')
-    icon        = models.ImageField(upload_to=upload_organization_icon_to, help_text='Organization icon of size 64x64 px.')
+    logo        = models.ImageField(max_length=256, upload_to=upload_organization_logo_to, help_text='Organization logo of size 300x100 pixels.')
+    icon        = models.ImageField(max_length=256, upload_to=upload_organization_icon_to, help_text='Organization icon of size 64x64 px.')
 
     # Customization
     # banner
     # splashscreen
     ui_theme    = models57.JSONField(default=None, blank=True, null=True, help_text="Custom UI theme for this organization. This must be of format 'utilities.theme.UiTheme'")
-    theme_file  = models.FileField(upload_to=upload_organization_theme_file_to, editable=False, help_text='Theme file link which is automatically generated if ui_theme is defined')
+    theme_file  = models.FileField(max_length=256, upload_to=upload_organization_theme_file_to, editable=False, help_text='Theme file link which is automatically generated if ui_theme is defined')
 
     members     = models.ManyToManyField(RegisteredUser, through='OrganizationMember', help_text='Members of this organization.')
 

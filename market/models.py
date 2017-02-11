@@ -114,16 +114,16 @@ class Brand(models57.Model):
     slug        = models.SlugField(unique=True, blank=True, db_index=True, help_text='Slug of the name used for url referencing and dedupe matching.')
 
     # Settings
-    description = models.TextField(max_length=512, help_text='Short description about the brand. Include keywords for better SEO and keep characters between 150-160.')
-    logo        = models.ImageField(upload_to=upload_brand_logo_to, help_text='Brand logo of size 300x100 pixels.')
-    icon        = models.ImageField(upload_to=upload_brand_icon_to, help_text='Brand icon of size 64x64 px.')
+    description = models.TextField(help_text='Short description about the brand.')
+    logo        = models.ImageField(max_length=512, upload_to=upload_brand_logo_to, help_text='Brand logo of size 300x100 pixels.')
+    icon        = models.ImageField(max_length=512, upload_to=upload_brand_icon_to, help_text='Brand icon of size 64x64 px.')
 
     # Customization
     ui_theme    = models57.JSONField(default=None, blank=True, null=True, help_text="Custom UI theme for this brand. This must be of format 'utilities.theme.UiTheme'")
-    theme_file  = models.FileField(upload_to=upload_brand_theme_file_to, editable=False, help_text='Theme file link which is automatically generated if ui_theme is defined')
+    theme_file  = models.FileField(max_length=256, upload_to=upload_brand_theme_file_to, editable=False, help_text='Theme file link which is automatically generated if ui_theme is defined')
 
     # Status
-    active      = models.BooleanField(default=False, db_index=True, help_text='If true, it means brand currenlt inactive.')
+    active      = models.BooleanField(default=True, db_index=True, help_text='If false, it means brand is currenlty inactive.')
 
     # Misc
     created_by  = models.ForeignKey(User, editable=False, related_name='created_by', help_text='User that created this brand. This can be a staff or registered user.')

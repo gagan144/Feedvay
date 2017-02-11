@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.http.response import HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 
-from utilities.decorators import registered_user_only
+from accounts.decorators import registered_user_only
 from utilities.api_utils import ApiResponse
 from watchdog.models import *
 from watchdog.forms import *

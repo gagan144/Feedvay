@@ -5,7 +5,7 @@ from django.shortcuts import render
 
 from clients.models import Organization
 from clients import operations
-from utilities.decorators import registered_user_only, organization_console
+from accounts.decorators import registered_user_only, organization_console
 from utilities.api_utils import ApiResponse
 
 # ==================== Console ====================

@@ -7,7 +7,8 @@ from brands.forms import *
 from brands import operations as ops
 from brands.models import Brand, BrandOwner
 
-from utilities.decorators import registered_user_only, brand_console
+from accounts.decorators import registered_user_only
+from utilities.decorators import brand_console
 from utilities.api_utils import ApiResponse
 
 # ==================== Console ====================

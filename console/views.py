@@ -6,7 +6,7 @@ from django.http.response import Http404
 from django.db.models import Q
 
 from clients.models import Organization, OrganizationMember
-from utilities.decorators import registered_user_only
+from accounts.decorators import registered_user_only
 
 @registered_user_only
 def  home(request):

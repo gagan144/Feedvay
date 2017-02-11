@@ -22,7 +22,7 @@ from accounts.utils import *
 from accounts.exceptions import *
 from owlery import owls
 from utilities.api_utils import ApiResponse
-from utilities.decorators import registered_user_only
+from accounts.decorators import registered_user_only
 
 # ---------- Login ----------
 def login(request):

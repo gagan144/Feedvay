@@ -17,6 +17,7 @@ Modules
        mod_password_recovery.rst
        mod_email_verification.rst
        mod_user_org_membership.rst
+       mod_permissions_roles_and_access.rst
 
 
 Contents
@@ -28,6 +29,7 @@ Contents
 
        models
        forms
+       decorators
        views
        utils
        exceptions

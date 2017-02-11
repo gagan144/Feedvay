@@ -5,7 +5,7 @@ This section discusses how a registered user is associated or member of an organ
 either work as individual (currently disabled) or under one or more organization. The schema is as follows:
 
 .. image:: ../../_static/accounts/ERD_user_org.jpg
-        :scale: 80%
+        :scale: 90%
         :align: center
 
 

@@ -9,7 +9,7 @@ from django.conf import settings
 
 import os
 
-from utilities.decorators import staff_user_only
+from accounts.decorators import staff_user_only
 
 
 def home(request):

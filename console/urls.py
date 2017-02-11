@@ -30,6 +30,7 @@ url_org =[
 url_brands = [
     url(r'^$', views_market.console_brands, name='console_market_brands'),
     url(r'^new/$', views_market.console_brand_new, name='console_market_brand_new'),
+    url(r'^create/$', views_market.console_brand_create, name='console_market_brand_create'),
 ]
 
 

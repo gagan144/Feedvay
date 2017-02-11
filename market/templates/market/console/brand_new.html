@@ -151,6 +151,7 @@
 
                 // Prepare form data
                 var fd = new FormData();
+                fd.append('c', '{{ request.curr_org.org_uid }}');
                 for(var key in $scope.data){
                     if(!key.startsWith("file_") && $scope.data[key]!=null) {
                         fd.append(key, $scope.data[key]);
@@ -160,7 +161,7 @@
                 fd.append('file_icon', $scope.file_icon);
 
                 $http.post(
-                    "{% url 'console_brand_create' %}",
+                    "{% url 'console_market_brand_create' %}",
                     fd,
                     {
                         transformRequest: angular.identity,
@@ -168,11 +169,10 @@
                     }
                 )
                 .success(function (response, status, headers, config) {
-                    $scope.flags.submitting = false;
-
                     if(response.status=='success'){
-                        $window.location.href = '{% url 'console_brands' %}';
+                        $window.location.href = '{% url 'console_market_brands' %}?c={{ request.curr_org.org_uid }}';
                     }else{
+                        $scope.flags.submitting = false;
                         $scope.flags.error = true;
                         $scope.flags.err_msg = response.message;
                         if(response.status == 'failed'){

@@ -16,3 +16,4 @@ Contents
        models
        bsp_types
        views
+       forms

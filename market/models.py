@@ -243,6 +243,79 @@ class Brand(models57.Model):
         """
         raise ValidationError("You cannot delete a brand. Mark 'active' false instead.")
 
+    # ----- Static methods -----
+    @staticmethod
+    def generate_uitheme(primary_color):
+        """
+        Method to generate ui theme json wrapper :class:`utilities.theme.UiTheme`.
+        :param primary_color: Primary color in hex format
+        :return: :class:`utilities.theme.UiTheme` instance
+        """
+        from utilities.theme import UiTheme, ColorUtils
+        return UiTheme(
+                primary = primary_color,
+                primary_dark = ColorUtils.scale_hex_color(primary_color, -40),
+                primary_disabled = ColorUtils.scale_hex_color(primary_color, 60)
+            )
+
+
+    @staticmethod
+    def does_exists(name):
+        """
+        Method to check if brand exists with given name or with slug of given name.
+
+        :param name: Name of the brand
+        :return: (bool) True if brand exists else False
+
+        **Authors**: Gagandeep Singh
+        """
+        slug = slugify(name)
+        return Brand.objects.filter(Q(name=name)|Q(slug=slug))
+
+    @staticmethod
+    def validate_logo_image(img_obj):
+        """
+        Method to validate brand logo image.
+        Handles both ``InMemoryUploadedFile`` and ``ImageFieldFile`` objects.
+
+        :param img_obj: InMemory object of image
+        :return: True if image is valid
+
+        **Authors**: Gagandeep Singh
+        """
+        if isinstance(img_obj, InMemoryUploadedFile):
+            # InMemory object
+            size = img_obj.size
+            dim = Image.open(img_obj).size
+        elif isinstance(img_obj, ImageFieldFile):
+            # Django model field from ImageField
+            size = img_obj._get_size()
+            dim = img_obj._get_image_dimensions()
+
+        return (size <= Brand.LOGO_MAX_SIZE and dim == Brand.LOGO_DIM)
+
+    @staticmethod
+    def validate_icon_image(img_obj):
+        """
+        Method to validate brand icon image.
+        Handles both ``InMemoryUploadedFile`` and ``ImageFieldFile`` objects.
+
+        :param img_obj: InMemory object of image
+        :return: True if image is valid
+
+        **Authors**: Gagandeep Singh
+        """
+        if isinstance(img_obj, InMemoryUploadedFile):
+            # InMemory object
+            size = img_obj.size
+            dim = Image.open(img_obj).size
+        elif isinstance(img_obj, ImageFieldFile):
+            # Django model field from ImageField
+            size = img_obj._get_size()
+            dim = img_obj._get_image_dimensions()
+
+        return (size <= Brand.ICON_MAX_SIZE and dim == Brand.ICON_DIM)
+
 # ========== /Brand ==========
 
 

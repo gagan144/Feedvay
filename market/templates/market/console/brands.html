@@ -59,54 +59,82 @@
                         <div class="row m-b-sm m-t-sm">
                             <div class="col-md-12">
                                 <div class="input-group">
-                                    <input type="text" placeholder="Search" class="input-sm form-control">
-                                    <span class="input-group-btn">
-                                        <button type="button" class="btn btn-sm btn-primary"> Go!</button>
+                                    <span class="input-group-addon">
+                                        <span class="semi_bold">{$ list_brands.length $}</span> Brand<span ng-if="list_brands.length>1">s</span>
                                     </span>
+                                    <input type="text" ng-model="searchText" placeholder="Search" class="input-sm form-control">
                                 </div>
                             </div>
                         </div>
 
                         <div class="project-list">
-                            <table class="table table-hover" style="margin-bottom: 0px;">
-                                <thead>
-                                    <tr>
-                                        <th colspan="2">Name</th>
-                                        <th>Active</th>
-                                        <th>Created by</th>
-                                        <th>Created on</th>
-                                        <th>&nbsp;</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for b in list_brands %}
+                            {% with can_change=request.permissions|has_permission:"market.brand.change_brand" %}
+                                <table class="table table-hover" style="margin-bottom: 0px;">
+                                    <thead>
                                         <tr>
+                                            <th colspan="2">Brand</th>
+                                            <th>Active</th>
+                                            <th>Created by</th>
+                                            <th>Created on</th>
+                                            {% if can_change %}<th>&nbsp;</th>{% endif %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="b in list_brands|orderBy:'name'|filter: searchText">
                                             <td style="width: 140px;">
-                                                <img src="{{ b.logo.url }}" class="logo_preview">
+                                                <img ng-src="{$ b.logo_url $}" class="logo_preview">
                                             </td>
                                             <td class="project-title">
-                                                {{ b.name }}
+                                                {$ b.name $}
                                             </td>
                                             <td style="font-size: 20px;">
-                                                {% if b.active %}
-                                                    <i class="fa fa-check-circle text-success"></i>
-                                                {% else %}
-                                                    <i class="fa fa-times-circle text-danger"></i>
-                                                {% endif %}
+                                                <i ng-if="b.active" class="fa fa-check-circle text-success"></i>
+                                                <i ng-if="!b.active" class="fa fa-times-circle text-danger"></i>
                                             </td>
                                             <td>
-                                                {{ b.created_by.first_name }} {{ b.created_by.last_name }}
+                                                {$ b.created_by.first_name $} {$ b.created_by.last_name $}
                                             </td>
                                             <td>
-                                                {{ b.created_on|date:"d-M-Y" }}
+                                                {$ b.created_on $}
                                             </td>
-                                            <td class="project-actions">
-                                                <a href="#" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Edit </a>
-                                            </td>
+                                            {% if can_change %}
+                                                <td class="project-actions">
+                                                    <a href="#" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Edit </a>
+                                                </td>
+                                            {% endif %}
                                         </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+
+{#                                        {% for b in list_brands %}#}
+{#                                            <tr>#}
+{#                                                <td style="width: 140px;">#}
+{#                                                    <img src="{{ b.logo.url }}" class="logo_preview">#}
+{#                                                </td>#}
+{#                                                <td class="project-title">#}
+{#                                                    {{ b.name }}#}
+{#                                                </td>#}
+{#                                                <td style="font-size: 20px;">#}
+{#                                                    {% if b.active %}#}
+{#                                                        <i class="fa fa-check-circle text-success"></i>#}
+{#                                                    {% else %}#}
+{#                                                        <i class="fa fa-times-circle text-danger"></i>#}
+{#                                                    {% endif %}#}
+{#                                                </td>#}
+{#                                                <td>#}
+{#                                                    {{ b.created_by.first_name }} {{ b.created_by.last_name }}#}
+{#                                                </td>#}
+{#                                                <td>#}
+{#                                                    {{ b.created_on|date:"d-M-Y" }}#}
+{#                                                </td>#}
+{#                                                {% if can_change %}#}
+{#                                                    <td class="project-actions">#}
+{#                                                        <a href="#" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Edit </a>#}
+{#                                                    </td>#}
+{#                                                {% endif %}#}
+{#                                            </tr>#}
+{#                                        {% endfor %}#}
+                                    </tbody>
+                                </table>
+                            {% endwith %}
                         </div>
                     </div>
                 </div>
@@ -168,7 +196,13 @@
         });
 
         APP.controller('MainCtrl', function($scope){
-            $scope.msg = 'helloooo';
+            {% if list_brands %}
+                $scope.list_brands = [
+                    {% for b in list_brands %}
+                        { "id":"{{ b.id }}", "brand_uid":"{{ b.bradnd_uid }}",  "name":"{{ b.name }}", "logo_url":"{{ b.logo.url }}", "active": {{ b.active|jsonify }}, "created_by": { "first_name":"{{ b.created_by.first_name }}", "last_name":"{{ b.created_by.last_name }}"}, "created_on": "{{ b.created_on|date:"d-M-Y" }}" }{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ];
+            {% endif %}
         });
     </script>
 

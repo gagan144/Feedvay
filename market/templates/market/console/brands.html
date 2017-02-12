@@ -73,10 +73,10 @@
                                     <thead>
                                         <tr>
                                             <th colspan="2">Brand</th>
-                                            <th>Active</th>
-                                            <th>Created by</th>
-                                            <th>Created on</th>
-                                            {% if can_change %}<th>&nbsp;</th>{% endif %}
+                                            <th style="width: 70px;">Active</th>
+                                            <th style="width: 150px;">Created by</th>
+                                            <th style="width: 120px;">Created on</th>
+                                            {% if can_change %}<th style="width: 70px;">&nbsp;</th>{% endif %}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -103,35 +103,6 @@
                                                 </td>
                                             {% endif %}
                                         </tr>
-
-{#                                        {% for b in list_brands %}#}
-{#                                            <tr>#}
-{#                                                <td style="width: 140px;">#}
-{#                                                    <img src="{{ b.logo.url }}" class="logo_preview">#}
-{#                                                </td>#}
-{#                                                <td class="project-title">#}
-{#                                                    {{ b.name }}#}
-{#                                                </td>#}
-{#                                                <td style="font-size: 20px;">#}
-{#                                                    {% if b.active %}#}
-{#                                                        <i class="fa fa-check-circle text-success"></i>#}
-{#                                                    {% else %}#}
-{#                                                        <i class="fa fa-times-circle text-danger"></i>#}
-{#                                                    {% endif %}#}
-{#                                                </td>#}
-{#                                                <td>#}
-{#                                                    {{ b.created_by.first_name }} {{ b.created_by.last_name }}#}
-{#                                                </td>#}
-{#                                                <td>#}
-{#                                                    {{ b.created_on|date:"d-M-Y" }}#}
-{#                                                </td>#}
-{#                                                {% if can_change %}#}
-{#                                                    <td class="project-actions">#}
-{#                                                        <a href="#" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Edit </a>#}
-{#                                                    </td>#}
-{#                                                {% endif %}#}
-{#                                            </tr>#}
-{#                                        {% endfor %}#}
                                     </tbody>
                                 </table>
                             {% endwith %}

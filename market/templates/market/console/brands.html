@@ -99,7 +99,7 @@
                                             </td>
                                             {% if can_change %}
                                                 <td class="project-actions">
-                                                    <a href="#" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Edit </a>
+                                                    <a ng-href="{% url 'console_market_brand_edit' %}?c={{ request.curr_org.org_uid }}&brand_uid={$ b.brand_uid $}" class="btn btn-primary btn-outline btn-sm"><i class="fa fa-pencil"></i> Edit </a>
                                                 </td>
                                             {% endif %}
                                         </tr>
@@ -170,7 +170,7 @@
             {% if list_brands %}
                 $scope.list_brands = [
                     {% for b in list_brands %}
-                        { "id":"{{ b.id }}", "brand_uid":"{{ b.bradnd_uid }}",  "name":"{{ b.name }}", "logo_url":"{{ b.logo.url }}", "active": {{ b.active|jsonify }}, "created_by": { "first_name":"{{ b.created_by.first_name }}", "last_name":"{{ b.created_by.last_name }}"}, "created_on": "{{ b.created_on|date:"d-M-Y" }}" }{% if not forloop.last %},{% endif %}
+                        { "id":"{{ b.id }}", "brand_uid":"{{ b.brand_uid }}",  "name":"{{ b.name }}", "logo_url":"{{ b.logo.url }}", "active": {{ b.active|jsonify }}, "created_by": { "first_name":"{{ b.created_by.first_name }}", "last_name":"{{ b.created_by.last_name }}"}, "created_on": "{{ b.created_on|date:"d-M-Y" }}" }{% if not forloop.last %},{% endif %}
                     {% endfor %}
                 ];
             {% endif %}

@@ -139,6 +139,27 @@
         </div>
     </div>
 
+    <div ng-if="ACTION=='edit'">
+        <div class="hr-line-dashed"></div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">
+                Status:
+            </label>
+            <div class="col-sm-7">
+                <div class="checkbox checkbox-primary">
+                    <input id="chk_active" type="checkbox" ng-model="data.active">
+                    <label for="chk_active">
+                        Active
+                    </label>
+                </div>
+                <p class="help-block">
+                    If unchecked, this brand becomes inactive and cannot be used for any further association.
+                    However, any association prior to status change remains unaffected.
+                </p>
+            </div>
+        </div>
+    </div>
+
     <div class="hr-line-dashed"></div>
     <div class="form-group">
         <div class="col-sm-9 col-sm-offset-3">

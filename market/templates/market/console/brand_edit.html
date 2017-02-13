@@ -8,7 +8,7 @@
     <!-- Favicon -->
     <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
 
-    <title>Add brands | {{ request.curr_org.name }}</title>
+    <title>Edit {{ brand.name }} | {{ request.curr_org.name }}</title>
 
     <link href="{% get_static_prefix %}ui/css/plugins/colorpicker/colorpicker.css" rel="stylesheet">
 {% endblock %}
@@ -17,8 +17,8 @@
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-xs-12">
             <h2>
-                <i class="fa fa-plus"></i>
-                Add brand
+                <i class="fa fa-star"></i>
+                {{ brand.name }}
             </h2>
             <ol class="breadcrumb">
                 <li>
@@ -28,7 +28,7 @@
                     <a href="{% url 'console_market_brands' %}?c={{ request.curr_org.org_uid }}">Brands</a>
                 </li>
                 <li class="active">
-                    Add brand
+                    Edit: {{ brand.name }}
                 </li>
             </ol>
         </div>
@@ -39,8 +39,8 @@
     <div class="wrapper wrapper-content">
         <div class="container">
             <div class="content_box" style="padding-top: 30px;margin-bottom: 20px;" ng-cloak>
-{#        <div ng-include="'{% get_static_prefix %}partials/brands/create_edit_brand.html'" ng-controller="NewBrandFormCtrl" ng-init="ACTION='edit'"></div>#}
-                <div static-include="{% get_static_prefix %}partials/market/brands/create_edit_brand.html" ng-controller="NewBrandFormCtrl" ng-init="ACTION='create'"></div>
+{#        <div ng-include="'{% get_static_prefix %}partials/brands/create_edit_brand.html'" ng-controller="BrandEditFormCtrl" ng-init="ACTION='edit'"></div>#}
+                <div static-include="{% get_static_prefix %}partials/market/brands/create_edit_brand.html" ng-controller="BrandEditFormCtrl" ng-init="ACTION='edit'"></div>
             </div>
         </div>
     </div>
@@ -80,13 +80,24 @@
             $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
         });
 
-        APP.controller('NewBrandFormCtrl', function($scope, $http, $window, ServiceBrandExistence){
+        APP.controller('BrandEditFormCtrl', function($scope, $http, $window, ServiceBrandExistence){
             $scope.ServiceBrandExistence = ServiceBrandExistence;
-            $scope.pallets = [];
-            $scope.data = {
-                ui_theme__primary: null
-            };
 
+            // data
+            $scope.logo_url = "{{ brand.logo.url }}";
+            $scope.icon_url = "{{ brand.icon.url }}";
+            var master_data = {
+                id: {{ brand.id }},
+                brand_uid: "{{ brand.brand_uid }}",
+                name: "{{ brand.name }}",
+                description: "{{ brand.description }}",
+
+                ui_theme__primary: {% if brand.ui_theme %}"{{ brand.ui_theme.primary }}"{% else %}null{% endif %},
+                active: {{ brand.active|jsonify }}
+            };
+            $scope.data = angular.copy(master_data);
+
+            $scope.pallets = [];
             $scope.list_brands = [];
             $scope.find_brand = function(value){
                 if(value) {
@@ -136,9 +147,6 @@
                 }
             };
 
-
-
-
             $scope.submit_brand = function(form_obj){
                 if(form_obj.$invalid){
                     return false;
@@ -149,19 +157,39 @@
                 $scope.flags.err_msg = null;
                 $scope.flags.val_errors = null;
 
+
+                // Find updated data
+                var data_updates = angular.copy($scope.data);
+{#                var data_updates = {};#}
+{#                for(var key in $scope.data){#}
+{#                    if($scope.data[key] != master_data[key]){#}
+{#                        data_updates[key] = $scope.data[key];#}
+{#                    }#}
+{#                }#}
+
+                if(!Object.keys(data_updates).length){
+                    alert("Nothing has changed!");
+                    return false;
+                }
+
                 // Prepare form data
                 var fd = new FormData();
                 fd.append('c', '{{ request.curr_org.org_uid }}');
-                for(var key in $scope.data){
-                    if(!key.startsWith("file_") && $scope.data[key]!=null) {
-                        fd.append(key, $scope.data[key]);
+                fd.append('brand_uid', '{{ brand.brand_uid }}');
+                for(var key in data_updates){
+                    if(!key.startsWith("file_") && data_updates[key]!=null) {
+                        fd.append(key, data_updates[key]);
                     }
                 }
-                fd.append('file_logo', $scope.file_logo);
-                fd.append('file_icon', $scope.file_icon);
+                if($scope.file_logo) {
+                    fd.append('file_logo', $scope.file_logo);
+                }
+                if($scope.file_icon) {
+                    fd.append('file_icon', $scope.file_icon);
+                }
 
                 $http.post(
-                    "{% url 'console_market_brand_create' %}",
+                    "{% url 'console_market_brand_save_changes' %}",
                     fd,
                     {
                         transformRequest: angular.identity,

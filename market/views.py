@@ -2,6 +2,7 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from django.shortcuts import render
+from django.http.response import Http404
 
 from accounts.decorators import registered_user_only, organization_console
 
@@ -65,7 +66,7 @@ def console_brand_create(request, org):
     """
 
     if request.method.lower() == 'post':
-        form_brand = BrandCreateEditForm(request.POST, request.FILES)
+        form_brand = BrandCreateForm(request.POST, request.FILES)
 
         if form_brand.is_valid():
             form_data = form_brand.cleaned_data
@@ -78,5 +79,58 @@ def console_brand_create(request, org):
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+@registered_user_only
+@organization_console(required_perms='market.brand.change_brand')
+def console_brand_edit(request, org):
+    """
+    Django view to open brand form.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+
+    try:
+        brand_uid = request.GET['brand_uid']
+
+        brand = Brand.objects.get(organization=org, brand_uid=brand_uid)
+
+        data = {
+            "app_name": "app_brand_edit",
+            "brand": brand
+        }
+
+        return render(request, 'market/console/brand_edit.html', data)
+
+
+    except (KeyError, Brand.DoesNotExist) as ex:
+        return Http404("Invalid link.")
+
+@registered_user_only
+@organization_console(required_perms='market.brand.change_brand')
+def console_brand_save_changes(request, org):
+    """
+    An API view to save brand chnages. User fills a form and submit data.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+
+    if request.method.lower() == 'post':
+        form_brand = BrandEditForm(request.POST, request.FILES)
+
+        if form_brand.is_valid():
+            form_brand.save()
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok.').gen_http_response()
+        else:
+            errors = dict(form_brand.errors)
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+
 
 # ==================== /Console ====================

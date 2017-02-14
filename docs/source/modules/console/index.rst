@@ -15,4 +15,5 @@ Contents
        :titlesonly:
 
        views
+       middleware.rst
 

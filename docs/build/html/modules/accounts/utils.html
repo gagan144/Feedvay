@@ -97,6 +97,7 @@
 <li class="toctree-l3"><a class="reference internal" href="views.html">Views</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Utilities</a></li>
 <li class="toctree-l3"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html">Resource API</a></li>
 </ul>
 </li>
 </ul>
@@ -214,6 +215,30 @@ incomplete registration state etc.</p>
 </tbody>
 </table>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="accounts.utils.has_necessary_permissions">
+<code class="descclassname">accounts.utils.</code><code class="descname">has_necessary_permissions</code><span class="sig-paren">(</span><em>perm_json</em>, <em>required_perms</em>, <em>all_required=True</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.utils.has_necessary_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to check if given permission json has all necessary permissions. The necessity has
+be all permissions are strictly required (AND operation) or atleast one perission is required
+(OR operation).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>perm_json</strong> &#8211; Permission JSON</li>
+<li><strong>required_perms</strong> &#8211; String or list of permission key of format <code class="docutils literal"><span class="pre">&lt;app-label&gt;.&lt;model-name&gt;.&lt;perm-codename&gt;</span></code>.</li>
+<li><strong>all_required</strong> &#8211; If True, all permissions are required else atleast one.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if necessity is met else False</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">

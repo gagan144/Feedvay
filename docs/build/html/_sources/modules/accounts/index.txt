@@ -33,4 +33,5 @@ Contents
        views
        utils
        exceptions
+       api
 

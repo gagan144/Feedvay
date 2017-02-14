@@ -65,4 +65,25 @@ def console_org_submit_changes(request, org):
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
+# ----- User permissions , roles & data access -----
+@registered_user_only
+@organization_console(required_perms='accounts.organizationrole')
+def console_organization_roles(request, org):
+    """
+    Django view to dsiplay all organization roles.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+
+    data = {
+        'app_name': 'app_org_roles'
+    }
+
+    return render(request, 'clients/console/iam/organization_roles.html', data)
+
+
+# ----- /User permissions , roles & data access -----
+
 # ==================== /Console ====================

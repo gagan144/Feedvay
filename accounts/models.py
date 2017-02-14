@@ -1252,6 +1252,9 @@ class OrganizationRole(models.Model):
 
     class Meta:
         unique_together = ('organization', 'name')
+        permissions = (
+            ("view_organizationrole", "Can view organization role"),
+        )
 
     def __unicode__(self):
         return "{} ({})".format(self.name, self.organization.name)

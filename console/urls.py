@@ -26,6 +26,10 @@ url_org =[
     url(r'^submit-changes/$', views_clients.console_org_submit_changes, name='console_org_submit_changes'),
 ]
 
+url_iam = [
+    url(r'^$', views_clients.console_organization_roles, name='console_iam_organization_roles'),
+]
+
 url_brands = [
     url(r'^$', views_market.console_brands, name='console_market_brands'),
     url(r'^new/$', views_market.console_brand_new, name='console_market_brand_new'),
@@ -64,6 +68,7 @@ urlpatterns = [
     url(r'^account/', include(url_account)),
 
     url(r'^org/', include(url_org)),
+    url(r'^iam/', include(url_iam)),
     url(r'^brands/', include(url_brands)),
     url(r'^surveys/', include(url_surveys)),
 ]

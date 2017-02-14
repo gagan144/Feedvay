@@ -2,7 +2,11 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from tastypie.authentication import SessionAuthentication
+from tastypie.authorization import Authorization
 from tastypie.paginator import Paginator
+from tastypie.exceptions import Unauthorized
+
+from accounts.utils import has_necessary_permissions
 
 class GenericTastypieObject(object):
     """
@@ -27,31 +31,6 @@ class GenericTastypieObject(object):
     def to_dict(self):
         return self._data
 
-class BrandConsoleSessionAuthentication(SessionAuthentication):
-    """
-    Django tastypie session authentication for resources used in brand console.
-    This class extends :class:`tastypie.authentication.SessionAuthentication`. It first authenticates
-    user session and then check presence of ``curr_brand`` in ``request`` as created by
-    :class:`console.middleware.ConsoleBrandSwitchMiddleware` middleware. If the variable is not found,
-    access is authenticated otherwise authentication fails.
-
-    **Authors**: Gagandeep Singh
-    """
-    def is_authenticated(self, request, **kwargs):
-        """
-        Authenticates user session and brand.
-        :return: Returns True if everything this is ok else False.
-        """
-        session_ok = super(BrandConsoleSessionAuthentication, self).is_authenticated(request, **kwargs)
-        if session_ok:
-            try:
-                curr_brand = request.curr_brand
-                return True
-            except AttributeError:
-                return False
-        else:
-            return False
-
 class StaffSessionAuthentication(SessionAuthentication):
     """
     Django tastypie session authentication for resources to allow access only to staff user.
@@ -71,6 +50,98 @@ class StaffSessionAuthentication(SessionAuthentication):
             return True
         else:
             return False
+
+class OrgConsoleSessionAuthentication(SessionAuthentication):
+    """
+    Django tastypie session authentication for resources used in organization console.
+    This class extends :class:`tastypie.authentication.SessionAuthentication`. It first authenticates
+    user session and then check presence of ``curr_org`` in ``request`` as created by
+    :class:`console.middleware.OrgConsoleMiddleware` middleware. If the variable is found,
+    access is authenticated otherwise authentication fails.
+
+    **Authors**: Gagandeep Singh
+    """
+    def is_authenticated(self, request, **kwargs):
+        """
+        Authenticates user session and brand.
+        :return: Returns True if everything this is ok else False.
+        """
+        session_ok = super(OrgConsoleSessionAuthentication, self).is_authenticated(request, **kwargs)
+        if session_ok:
+            try:
+                curr_org = request.curr_org
+                return True
+            except AttributeError:
+                return False
+        else:
+            return False
+
+class OrgConsoleAuthorization(Authorization):
+    """
+    Django tastypie authorization for resources used in organization console.
+    This class verifies if user has permissions to access the resource using this
+    authorization.
+
+    **Authors**: Gagandeep Singh
+    """
+
+    def __init__(self, required_permissions, all_required=True):
+        if not isinstance(required_permissions, list):
+            raise Exception("required_permissions must be a list.")
+
+        self.required_permissions = required_permissions
+        self.all_required = all_required
+
+
+    def base_checks(self, request):
+        reg_user = request.user.registereduser
+        org = request.curr_org
+        perm_json = reg_user.get_all_permissions(org)
+
+        is_permitted = has_necessary_permissions(
+            perm_json = perm_json,
+            required_perms = self.required_permissions,
+            all_required = self.all_required
+        )
+
+        if is_permitted is False:
+            raise Unauthorized("You are not allowed to access this resource.")
+
+        # Set permissions in request
+        request.permissions = perm_json
+
+    # ----- Tastypie methods -----
+    def read_list(self, object_list, bundle):
+        self.base_checks(bundle.request)
+        return object_list
+
+    def read_detail(self, object_list, bundle):
+        self.base_checks(bundle.request)
+        return True
+
+    def create_list(self, object_list, bundle):
+        self.base_checks(bundle.request)
+        return []
+
+    def create_detail(self, object_list, bundle):
+        self.base_checks(bundle.request)
+        return True
+
+    def update_list(self, object_list, bundle):
+        self.base_checks(bundle.request)
+        return object_list
+
+    def update_detail(self, object_list, bundle):
+        self.base_checks(bundle.request)
+        return True
+
+    def delete_list(self, object_list, bundle):
+        self.base_checks(bundle.request)
+        return object_list
+
+    def delete_detail(self, object_list, bundle):
+        self.base_checks(bundle.request)
+        return True
 
 class NoPaginator(Paginator):
     """

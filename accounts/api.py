@@ -3,10 +3,11 @@
 # permission of Gagandeep Singh.
 from tastypie.resources import ModelResource, Resource, ALL, ALL_WITH_RELATIONS
 from tastypie.authentication import SessionAuthentication
+from tastypie.authorization import DjangoAuthorization
 
 from clients.models import Organization
 from accounts.models import OrganizationRole
-from utilities.tastypie_utils import NoPaginator
+from utilities.tastypie_utils import NoPaginator, OrgConsoleSessionAuthentication, OrgConsoleAuthorization
 
 class OrganizarionRolesAPI(ModelResource):
     """
@@ -23,7 +24,8 @@ class OrganizarionRolesAPI(ModelResource):
         limit = 0
         max_limit = None
         list_allowed_methods = ['get']
-        authentication = SessionAuthentication()
+        authentication = OrgConsoleSessionAuthentication()
+        authorization = OrgConsoleAuthorization(['accounts.organizationrole'])
         paginator_class = NoPaginator
 
     def apply_filters(self, request, applicable_filters):

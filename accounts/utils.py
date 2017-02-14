@@ -99,3 +99,39 @@ def lookup_permission(perm_json, perm_key):
             return True if app_n_model_json.get('permissions', []).__contains__(key_split[2]) else False
     else:
         return False
+
+
+def has_necessary_permissions(perm_json, required_perms, all_required=True):
+    """
+    Method to check if given permission json has all necessary permissions. The necessity has
+    be all permissions are strictly required (AND operation) or atleast one perission is required
+    (OR operation).
+
+    :param perm_json: Permission JSON
+    :param required_perms: String or list of permission key of format ``<app-label>.<model-name>.<perm-codename>``.
+    :param all_required: If True, all permissions are required else atleast one.
+    :return: True if necessity is met else False
+    """
+
+    # Make list if not required_perms is string
+    if isinstance(required_perms, str) or isinstance(required_perms, unicode):
+        list_perms = [required_perms]
+    else:
+        list_perms = required_perms
+
+    # Loop and check presence
+    is_permitted = True
+    for perm_key in list_perms:
+        is_present = lookup_permission(perm_json, perm_key)
+
+        if all_required:
+            # All required: AND operation
+            is_permitted = is_permitted and is_present
+            if not is_permitted:
+                break
+        else:
+            # Atleast one required: OR operation
+            is_permitted = is_permitted or is_present
+
+
+    return is_permitted

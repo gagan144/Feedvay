@@ -10,8 +10,8 @@ from django.contrib import auth
 from functools import wraps
 from django.db.models import Q
 
-from accounts.utils import ClassifyRegisteredUser, lookup_permission
-from clients.models import Organization, OrganizationMember
+from accounts.utils import ClassifyRegisteredUser, has_necessary_permissions
+# from clients.models import Organization, OrganizationMember
 from utilities.api_utils import ApiResponse
 
 def staff_user_only(function, login_url=settings.LOGIN_URL_STAFF, redirect_field_name=REDIRECT_FIELD_NAME):
@@ -67,11 +67,10 @@ def registered_user_only(function, login_url=settings.LOGIN_URL, redirect_field_
 
 def organization_console(required_perms=None, all_required=True, exception_type='response'):
     """
-    Django view decorator to allow only organization related console page.
-    This decorator authenticates if user is a member in that organization and has required permissions.
-
-    This decorator expects the view to receive GET/POST parameter ``c`` as organization
-    unique id using which it finds user organization.
+    Django view decorator to allow only organization related console page with required permissions.
+    This decorator depends upon :class:`console.middleware.OrgConsoleMiddleware` which is responsible
+    authenticating user membership with the organization. After membership check, this decorator
+    verifies that it registered user has required permissions or not.
 
     Also, the view on which this decorator is used must except an argument ``org``.
 
@@ -93,9 +92,7 @@ def organization_console(required_perms=None, all_required=True, exception_type=
 
     **Failure behavior:**
 
-        - If ``c`` is not present in GET/POST params: returns Http404
-        - If Organization not found: HttpResponseForbidden
-        - If user is not a member of the organization: HttpResponseForbidden
+        - If ``request`` does not have attribute ``curr_org``: returns Http404
 
     **Authors**: Gagandeep Singh
     """
@@ -103,6 +100,7 @@ def organization_console(required_perms=None, all_required=True, exception_type=
     def actual_decorator(func):
         def wrapper(request, *args, **kwargs):
             try:
+                """
                 # Fetch 'c' para, from GET or POST
                 if request.GET.get('c', None):
                     org_uid = request.GET['c']
@@ -117,8 +115,29 @@ def organization_console(required_perms=None, all_required=True, exception_type=
                     ~Q(status=Organization.ST_DELETED)
                 )
                 request.curr_org = org
+                """
+
+                # (a) Organization permissions already checked in `console.middleware.OrgConsoleMiddleware`
+                reg_user = request.user.registereduser
+                org = request.curr_org
 
                 # (b) Check permissions
+                perm_json = reg_user.get_all_permissions(org)
+
+                if required_perms is not None:
+                    is_permitted = has_necessary_permissions(perm_json, required_perms, all_required)
+
+                    if not is_permitted:
+                        msg = "You do not have permissions to access this page."
+                        if exception_type == 'api':
+                            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message=msg).gen_http_response()
+                        else:
+                            return HttpResponseForbidden(msg)
+
+                # (c) Set permissions in request
+                request.permissions = perm_json
+
+                """
                 perm_json = reg_user.get_all_permissions(org)
 
                 if required_perms is not None:
@@ -151,14 +170,13 @@ def organization_console(required_perms=None, all_required=True, exception_type=
 
                 # (c) Set permissions in request
                 request.permissions = perm_json
+                """
 
                 return func(request, org=org, *args, **kwargs)
 
-            except (KeyError, ValueError) as ex:
-                # KeyError: 'c' was not in GET params, ValueError: If c is badly formed hexadecimal UUID string, DoesNotExist: Org not found
+            except AttributeError:
+                # AttributeError: 'curr_org' was not in request
                 raise Http404("Invalid link.")
-            except Organization.DoesNotExist:
-                # Organization not found or user is not a member of the organization
-                return HttpResponseForbidden('You do not have permissions to access this page.')
+
         return wrapper
     return actual_decorator

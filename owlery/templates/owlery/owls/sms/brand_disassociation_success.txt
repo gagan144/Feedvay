@@ -1,2 +1,0 @@
-You have successfully disassociated yourself from {{brand_name}}.
-Regards Feedvay

@@ -3,8 +3,8 @@ Welcome to feedvay's documentation!
 
 Collaborated platform for feedbacks, surveys and market intelligence.
 
-Apps and modules
-----------------
+Topics
+------
 
 .. toctree::
    :maxdepth: 3
@@ -12,7 +12,6 @@ Apps and modules
    modules/main/index
    modules/management_commands/index
    modules/accounts/index
-   modules/brands/index
    modules/clients/index
    modules/console/index
    modules/form_builder/index

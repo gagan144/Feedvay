@@ -7,7 +7,8 @@ import os
 from django.db.models import Q
 
 from utilities.theme import render_skin
-from brands.models import Brand
+from clients.models import Organization
+from market.models import Brand
 
 
 class Command(BaseCommand):
@@ -49,9 +50,15 @@ class Command(BaseCommand):
                 f.write(content)
                 f.close()
 
-            # (2) Brand skins
+            # (2) Organization skins
             self.stdout.write(self.style.SUCCESS("Updating themes for brands ..."))
-            for brand in Brand.objects.all().exclude(status=Brand.ST_DELETED):
+            for org in Organization.objects.all().exclude(status=Organization.ST_DELETED):
+                self.stdout.write(self.style.SUCCESS("Updating organization '{}'...".format(org.name)))
+                org.update_theme_files(auto_save=True)
+
+            # (3) Brand skins
+            self.stdout.write(self.style.SUCCESS("Updating themes for brands ..."))
+            for brand in Brand.objects.all():
                 self.stdout.write(self.style.SUCCESS("Updating brand '{}'...".format(brand.name)))
                 brand.update_theme_files(auto_save=True)
 

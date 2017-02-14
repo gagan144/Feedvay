@@ -26,7 +26,6 @@ urlpatterns = [
     url(r'^accounts/', include('accounts.urls')),
     url(r'^console/', include('console.urls')),
     url(r'^watchdog/', include('watchdog.urls')),
-    url(r'^brands/', include('brands.urls')),       # TODO: remove
     url(r'^clients/', include('clients.urls')),
     url(r'^market/', include('market.urls')),
 

@@ -591,7 +591,7 @@ user_logged_out.connect(user_logged_out_handler)
 class UserClaim(models.Model):
     """
     Model to record all claims by registered user on various entities such as
-    brands, POBS etc.
+    organization, brands, POBS etc.
 
     **Points**:
 
@@ -675,7 +675,7 @@ class UserClaim(models.Model):
 
         # Verify entity being claimed
         if self.entity == UserClaim.ENTITY_BRAND:
-            from brands.models import Brand
+            from market.models import Brand
             try:
                 brand = Brand.objects.get(id=int(self.entity_id))
                 if not self.pk and brand.disable_claim:

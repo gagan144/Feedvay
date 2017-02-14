@@ -109,38 +109,6 @@
                                 </li>
                             {% endif %}
 
-                            <!-- DELETE -->
-                            <li class="dropdown">
-                                <a aria-expanded="false" role="button" href="javascript: void(0);" class="dropdown-toggle" data-toggle="dropdown">
-                                    Brands XX
-                                    <span class="caret"></span>
-                                </a>
-                                <ul role="menu" class="dropdown-menu">
-                                    <li>
-                                        <a href="{% url 'console_brands' %}">
-                                            <i class="fa fa-star"></i>&nbsp;
-                                            My brands
-                                        </a>
-                                    </li>
-                                    {% if list_owned_brands.count %}<li role="separator" class="divider divider_custom"></li>{% endif %}
-                                    {% for b in list_owned_brands %}
-                                        <li {% if b == request.curr_brand %}class="active"{% endif %} style="{% if b.status == 'deleted' %}opacity:0.6;{% endif %}">
-                                            <a href="{% url 'console_home' %}b/{{ b.brand_uid }}/">
-                                                <img src="{{ b.icon.url }}" style="height: 16px;">&nbsp;
-                                                {{ b.name }}
-
-                                                {% if b.status == 'verification_pending' %}
-                                                    <i class="fa fa-exclamation-circle text-warning" style="margin-left: 10px" tooltip-placement="right" uib-tooltip="Verification pending!"></i>
-                                                {% elif b.status == 'verification_failed' %}
-                                                    <i class="fa fa-ban text-danger" style="margin-left: 10px" tooltip-placement="right" uib-tooltip="Verification failed!"></i>
-                                                {% endif %}
-                                            </a>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </li>
-                            <!-- /DELETE -->
-
                             <li class="dropdown">
                                 <a aria-expanded="false" role="button" href="javascript: void(0);" class="dropdown-toggle" data-toggle="dropdown"> Surveys <span class="caret"></span></a>
                                 <ul role="menu" class="dropdown-menu">

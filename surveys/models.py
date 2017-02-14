@@ -21,7 +21,7 @@ import StringIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from accounts.models import RegisteredUser
-from brands.models import Brand
+from market.models import Brand
 from form_builder.models import Form, BaseResponse
 
 class SurveyTag(models.Model):
@@ -131,14 +131,14 @@ class Survey(models.Model):
         - Survey unique id is always attached with survey that can be shared to respondents. But only
           ``public`` and ``private`` survey are allowed to be answers.
         - Surveyor type:
-            - **Company**: Field ``company`` is mandatory.
+            - **Organization**: Field ``organization`` is mandatory.
             - **Brand**: Field ``brand`` is mandatory.
             - **Individual**: ``created_by`` is used as surveyor.
         - Survey with audience as ``public`` is only visible to the public, rest are hidden.
         - Audience filer to automatically set to {} if audience type is ``self``.
         - Survey with status ``draft`` & ``paused`` are not visible to the public.
 
-    **State chart diagram for brand status**:
+    **State chart diagram for survey status**:
 
         .. image:: ../../_static/surveys/survey_statechart.jpg
 
@@ -156,11 +156,11 @@ class Survey(models.Model):
         (TYPE_COMPLEX, 'Complex')
     )
 
-    SURVYR_COMPANY = 'company'
+    SURVYR_ORGANIZATION = 'organization'
     SURVYR_BRAND = 'brand'
     SURVYR_INDIVIDUAL = 'individual'
     CH_SURVEYOR = (
-        (SURVYR_COMPANY, 'Company'),
+        (SURVYR_ORGANIZATION, 'Organization'),
         (SURVYR_BRAND, 'Brand'),
         (SURVYR_INDIVIDUAL, 'Individual')
     )
@@ -200,7 +200,7 @@ class Survey(models.Model):
 
     # Surveyor
     surveyor_type = models.CharField(max_length=16, default=None, choices=CH_SURVEYOR, help_text='Who is conducting this survey?')
-    # TODO: company     = models.ForeignKey(Company, null=True, blank=True, help_text='Company reference if the surveyor is a company.')
+    # organization  = models.ForeignKey(Organization, null=True, blank=True, help_text='Organization reference if the surveyor is an organization.')
     brand       = models.ForeignKey(Brand, null=True, blank=True, help_text='Brand reference if the surveyor is a brand.')
 
     # Audience

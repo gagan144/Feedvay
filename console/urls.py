@@ -8,6 +8,7 @@ from accounts import views as views_accounts
 from clients import views as views_clients
 from market import views as views_market
 
+from accounts import api as api_accounts
 from market import api as api_market
 from surveys import views as views_surveys
 from surveys import api as api_surveys
@@ -26,8 +27,13 @@ url_org =[
     url(r'^submit-changes/$', views_clients.console_org_submit_changes, name='console_org_submit_changes'),
 ]
 
+
+api_organization_roles = api_accounts.OrganizarionRolesAPI()
 url_iam = [
     url(r'^$', views_clients.console_organization_roles, name='console_iam_organization_roles'),
+
+    # Api
+    url(r'^api/', include(api_organization_roles.urls)),
 ]
 
 url_brands = [

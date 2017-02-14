@@ -444,6 +444,15 @@ td.admin_content{
 }
 /* ----- Bootstrap tables ----- */
 
+
+.loading_big{
+    height: 200px;
+    border: dashed 1px;
+    padding-top: 55px;
+    text-align: center;
+    align-content: center;
+}
+
 /* =============== Desktop =============== */
 @media (min-width: 767px) {
     .mobile_show{

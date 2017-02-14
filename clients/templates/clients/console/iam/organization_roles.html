@@ -22,7 +22,7 @@
                 <li>
                     <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">Home</a>
                 </li>
-                <li class="active">
+                <li>
                     IAM
                 </li>
                 <li class="active">
@@ -46,79 +46,34 @@
 {% block content %}
     <div class="wrapper wrapper-content" ng-cloak>
         <div ng-controller="MainCtrl">
-            {% if list_brands %}
-                <style>
-                    .logo_preview{
-                        height: 40px;
-                    }
 
-                    .project-title{
-                        min-width: 250px;
-                        font-size: 17px;
-                    }
-                </style>
-                <div class="ibox">
-                    <div class="ibox-content">
-                        <div class="row m-b-sm m-t-sm">
-                            <div class="col-md-12">
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <span class="semi_bold">{$ list_brands.length $}</span> Brand<span ng-if="list_brands.length>1">s</span>
-                                    </span>
-                                    <input type="text" ng-model="searchText" placeholder="Search" class="input-sm form-control">
-                                </div>
+            <div ng-if="ui_flags.state==ST_AJAX.LOADING" class="loading_big white-bg" align="center" valign="middle">
+                <img src="{% get_static_prefix %}images/loading/spinner_1.gif" style="height: 40px">
+                <h3 style="margin-top: 20px;font-weight: normal;">Loading roles ...</h3>
+            </div>
+
+            <div ng-if="ui_flags.state==ST_AJAX.ERROR" class="alert alert-danger">
+                <table style="width: 100%">
+                    <tr>
+                        <td valign="top" style="width: 90px;">
+                            <i class="fa fa-exclamation-triangle" style="font-size: 80px;"></i>
+                        </td>
+                        <td valign="top">
+                            <h2 style="margin-top: 0px;">Error!</h2>
+                            <div>
+                                {$ ui_flags.error_msg $}
                             </div>
-                        </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
-                        <div class="project-list">
-                            {% with can_change=request.permissions|has_permission:"market.brand.change_brand" %}
-                                <table class="table table-hover" style="margin-bottom: 0px;">
-                                    <thead>
-                                        <tr>
-                                            <th colspan="2">Brand</th>
-                                            <th style="width: 70px;">Active</th>
-                                            <th style="width: 150px;">Created by</th>
-                                            <th style="width: 120px;">Created on</th>
-                                            {% if can_change %}<th style="width: 70px;">&nbsp;</th>{% endif %}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="b in list_brands|orderBy:'name'|filter: searchText">
-                                            <td style="width: 140px;">
-                                                <img ng-src="{$ b.logo_url $}" class="logo_preview">
-                                            </td>
-                                            <td class="project-title">
-                                                {$ b.name $}
-                                            </td>
-                                            <td style="font-size: 20px;">
-                                                <i ng-if="b.active" class="fa fa-check-circle text-success"></i>
-                                                <i ng-if="!b.active" class="fa fa-times-circle text-danger"></i>
-                                            </td>
-                                            <td>
-                                                {$ b.created_by.first_name $} {$ b.created_by.last_name $}
-                                            </td>
-                                            <td>
-                                                {$ b.created_on $}
-                                            </td>
-                                            {% if can_change %}
-                                                <td class="project-actions">
-                                                    <a ng-href="{% url 'console_market_brand_edit' %}?c={{ request.curr_org.org_uid }}&brand_uid={$ b.brand_uid $}" class="btn btn-primary btn-outline btn-sm"><i class="fa fa-pencil"></i> Edit </a>
-                                                </td>
-                                            {% endif %}
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            {% endwith %}
-                        </div>
-                    </div>
-                </div>
-
-            {% else %}
-                <div class="alert alert-info">
+            <div ng-if="ui_flags.state==ST_AJAX.COMPLETED">
+                <div ng-if="list_org_roles.length==0" class="alert alert-info">
                     <table style="width: 100%">
                         <tr>
                             <td valign="top" style="width: 90px;">
-                                <i class="fa fa-exclamation-circle" style="font-size: 80px;"></i>
+                                <i class="fa fa-info-circle" style="font-size: 80px;"></i>
                             </td>
                             <td valign="top">
                                 <h2 style="margin-top: 0px;">No roles!</h2>
@@ -139,27 +94,89 @@
                         </tr>
                     </table>
                 </div>
-            {% endif %}
-        </div>
 
+
+                <style>
+                    .project-title{
+                        min-width: 250px;
+                        font-size: 17px;
+                    }
+                </style>
+                <div ng-if="list_org_roles.length" class="ibox">
+                    <div class="ibox-content">
+                        <div class="row m-b-sm m-t-sm">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <span class="semi_bold">{$ list_org_roles.length $}</span> Role<span ng-if="list_org_roles.length>1">s</span>
+                                    </span>
+                                    <input type="text" ng-model="searchText" placeholder="Search" class="input-sm form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="project-list">
+                            {% with can_change=request.permissions|has_permission:"accounts.organizationrole.change_organizationrole" %}
+                                <table class="table table-hover" style="margin-bottom: 0px;">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th style="width: 100px;" align="right">Permissions</th>
+                                            <th style="width: 200px;">Created by</th>
+                                            <th style="width: 200px;">Created on</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="role in list_org_roles|orderBy:'name'|filter: searchText">
+                                            <td class="project-title">
+                                                {% if can_change %}
+                                                    <a href="#">{$ role.name $}</a>
+                                                {% else %}
+                                                    {$ role.name $}
+                                                {% endif %}
+                                            </td>
+                                            <td align="right">
+                                                {$ role.count_permissions $}
+                                            </td>
+                                            <td>
+                                                {$ role.created_by.first_name $} {$ role.created_by.last_name $}
+                                            </td>
+                                            <td>
+                                                {$ role.created_on|date:"d-MMM-yyyy h:m a" $}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
     </div>
 {% endblock %}
 
 {% block scripts %}
+    <script src="{% get_static_prefix %}apps/clients/iam.js"></script>
     <script>
         'use strict';
 
         var APP = angular.module('{{ app_name }}',[
             'feedvay.watchdog',
+            'feedvay.iam',
 
             'ngCookies',
             'ui.bootstrap'
         ])
-        .run(function($http, $cookies) {
+        .run(function($rootScope, $http, $cookies) {
             $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 
             $http.defaults.xsrfCookieName = 'csrftoken';
             $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+            $rootScope.ST_AJAX = ST_AJAX;
         })
         .config(function($interpolateProvider, $httpProvider) {
             $interpolateProvider.startSymbol('{$');
@@ -169,14 +186,32 @@
             $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
         });
 
-        APP.controller('MainCtrl', function($scope){
-            {% if list_brands %}
-                $scope.list_brands = [
-                    {% for b in list_brands %}
-                        { "id":"{{ b.id }}", "brand_uid":"{{ b.brand_uid }}",  "name":"{{ b.name }}", "logo_url":"{{ b.logo.url }}", "active": {{ b.active|jsonify }}, "created_by": { "first_name":"{{ b.created_by.first_name }}", "last_name":"{{ b.created_by.last_name }}"}, "created_on": "{{ b.created_on|date:"d-M-Y" }}" }{% if not forloop.last %},{% endif %}
-                    {% endfor %}
-                ];
-            {% endif %}
+        APP.controller('MainCtrl', function($scope, ServiceOrgRoles){
+            $scope.ui_flags = {
+                state: ST_AJAX.LOADING,
+                error_msg: null
+            };
+
+            $scope.list_org_roles = [];
+
+            // Get all roles
+            ServiceOrgRoles.get('{{ request.curr_org.org_uid }}').then(
+                function (response_data){
+                    $scope.ui_flags.state = ST_AJAX.COMPLETED;
+                    $scope.list_org_roles = response_data;
+                },
+                function(response){
+                    $scope.ui_flags.state = ST_AJAX.ERROR;
+
+                    if(response.status != -1){
+                        $scope.ui_flags.error_msg = "Something went wrong. Our engineers will be informed.";
+                    }else{
+                        $scope.ui_flags.error_msg = "Please check your internet connection.";
+                    }
+
+                }
+            );
+
         });
     </script>
 

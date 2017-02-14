@@ -135,3 +135,11 @@ var SUMMERNOTE_CONFIG = {
 }
 // ----- /Summer note defaults -----
 
+// ----- Ajax states -----
+var ST_AJAX = {
+    LOADING: 'loading',
+    COMPLETED: 'completed',
+    ERROR: 'error'
+};
+// ----- /Ajax states -----
+

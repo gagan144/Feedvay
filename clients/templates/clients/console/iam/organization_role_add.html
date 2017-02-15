@@ -1,0 +1,77 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'console/base.html' %}
+{% load static commontags %}
+
+{% block head %}
+    <!-- Favicon -->
+    <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
+
+    <title>Add roles | {{ request.curr_org.name }}</title>
+{% endblock %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-12">
+            <h2>
+                <i class="fa fa-user"></i>
+                New roles
+            </h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">Home</a>
+                </li>
+                <li>
+                    IAM
+                </li>
+                <li class="active">
+                    Add roles
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+    <div class="wrapper wrapper-content" ng-cloak>
+        <div ng-controller="MainCtrl">
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% get_static_prefix %}apps/clients/iam.js"></script>
+    <script>
+        'use strict';
+
+        var APP = angular.module('{{ app_name }}',[
+            'feedvay.watchdog',
+            'feedvay.iam',
+
+            'ngCookies',
+            'ui.bootstrap'
+        ])
+        .run(function($rootScope, $http, $cookies) {
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+            $http.defaults.xsrfCookieName = 'csrftoken';
+            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+            $rootScope.ST_AJAX = ST_AJAX;
+        })
+        .config(function($interpolateProvider, $httpProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+
+            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+        });
+
+        APP.controller('MainCtrl', function($scope){
+
+        });
+    </script>
+
+{% endblock %}

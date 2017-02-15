@@ -70,7 +70,7 @@ def console_org_submit_changes(request, org):
 @organization_console(required_perms='accounts.organizationrole')
 def console_organization_roles(request, org):
     """
-    Django view to dsiplay all organization roles.
+    Django view to display all organization roles.
 
     **Type**: GET
 
@@ -83,6 +83,22 @@ def console_organization_roles(request, org):
 
     return render(request, 'clients/console/iam/organization_roles.html', data)
 
+@registered_user_only
+@organization_console(required_perms='accounts.organizationrole')
+def console_organization_role_add(request, org):
+    """
+    Django view to all new organization roles.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+
+    data = {
+        'app_name': 'app_org_role_add'
+    }
+
+    return render(request, 'clients/console/iam/organization_role_add.html', data)
 
 # ----- /User permissions , roles & data access -----
 

@@ -187,3 +187,25 @@ class PrivateInfoForm(forms.Form):
 
 
 # ----- /Console: Profile -----
+
+
+# ----- Console: Roles -----
+class OrganizationRoleForm(forms.ModelForm):
+    """
+    Django form to create or edit organization role.
+
+    **Authors**: Gagandeep Singh
+    """
+    class Meta:
+        model = OrganizationRole
+        fields = ['organization', 'name', 'permissions']
+
+
+    def clean(self):
+        form_data = self.cleaned_data
+
+        if OrganizationRole.objects.filter(organization=form_data['organization'], name=form_data['name']).exists():
+            self._errors["name"] = ["Role with name '{}' already exists.".format(form_data['name'])]
+
+        return form_data
+# ----- /Console: Roles -----

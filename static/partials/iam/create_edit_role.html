@@ -1,0 +1,46 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label">Name<span class="required">*</span>:</label>
+    <div class="col-sm-7">
+        <input type="text" name="name" ng-model="data.name" class="form-control" placeholder="Enter a name of the role." minlength="2" maxlength="128" required
+               ng-class="{'error': (form_role.name.$dirty && form_role.name.$invalid) }"
+        >
+        <div ng-messages="form_role.name.$dirty && form_role.name.$error" role="alert" class="error_messages">
+            <label ng-message="required" class="error">Please enter role name.</label>
+            <label ng-message="minlength" class="error">Role name must be atleast 2 character long.</label>
+            <label ng-message="maxlength" class="error">Role name cannot be longer than 128 characters.</label>
+        </div>
+        <label ng-if="flags.errors.name" class="error">
+            {$ flags.errors.name.join(", "); $}
+        </label>
+        <p class="help-block">
+            Name that uniquely identifies a role in your organization.
+        </p>
+    </div>
+</div>
+
+<div class="hr-line-dashed"></div>
+<div class="form-group">
+    <label class="col-sm-3 control-label">Permissions<span class="required">*</span>:</label>
+    <div class="col-sm-8">
+        <p class="help-block" style="margin-top: 7px;">
+            Select list of permissions allowed for a user in this role:
+        </p>
+
+        <div style="height: 20px;margin-bottom: 15px;">
+            <span ng-show="data.permissions.length" class="label label-default" style="font-size: 14px;">
+                {$ data.permissions.length $} permissions selected
+            </span>
+        </div>
+
+        <style>
+            #bootstrap-duallistbox-nonselected-list_permissions, #bootstrap-duallistbox-nonselected-list_permissions{
+                height: 200px !important;
+            }
+        </style>
+        <select ng-model="data.permissions" name="permissions" ng-options="p.content_type+' | '+p.name for p in list_all_permissions" multiple bs-duallistbox required></select>
+        <div ng-messages="form_role.permissions.$dirty && form_role.permissions.$error" role="alert" class="error_messages">
+            <label ng-message="required" class="error">Please select atleast one permission.</label>
+        </div>
+
+    </div>
+</div>

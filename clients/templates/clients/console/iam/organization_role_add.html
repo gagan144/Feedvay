@@ -9,6 +9,8 @@
     <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
 
     <title>Add roles | {{ request.curr_org.name }}</title>
+
+    <link href="{% get_static_prefix %}ui/css/plugins/dualListbox/bootstrap-duallistbox.min.css" rel="stylesheet">
 {% endblock %}
 
 {% block page_header %}
@@ -25,6 +27,9 @@
                 <li>
                     IAM
                 </li>
+                <li>
+                    <a href="{% url 'console_iam_organization_roles' %}?c={{ request.curr_org.org_uid }}">Roles</a>
+                </li>
                 <li class="active">
                     Add roles
                 </li>
@@ -35,23 +40,51 @@
 
 
 {% block content %}
-    <div class="wrapper wrapper-content" ng-cloak>
-        <div ng-controller="MainCtrl">
+    <div class="wrapper wrapper-content">
+        <div class="container" ng-cloak>
+            <div class="content_box" ng-controller="FormRoleAdd">
+                <form name="form_role" class="form-horizontal" novalidate>
+                    <div ng-include="'{% get_static_prefix %}partials/iam/create_edit_role.html'"></div>
+
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group">
+                        <div class="col-sm-9 col-sm-offset-3">
+                            <p ng-if="flags.status==ST_AJAX.ERROR" class="text-danger">
+                                <i class="fa fa-exclamation-triangle"></i> {$ flags.error_msg $}
+                            </p>
+                            <button ladda="flags.status==ST_AJAX.LOADING" class="btn btn-primary ladda-button" type="button" ng-disabled="form_role.$invalid || form_role.$pristine" ng-click="submit_role(form_role);" data-style="zoom-in">
+                                Create
+                            </button>
+                            <a class="btn btn-link" href="{% url 'console_iam_organization_roles' %}?c={{ request.curr_org.org_uid }}" >
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 {% endblock %}
 
 {% block scripts %}
     <script src="{% get_static_prefix %}apps/clients/iam.js"></script>
+
+    <script src="{% get_static_prefix %}ui/js/plugins/dualListbox/jquery.bootstrap-duallistbox.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/dualListbox/angular-bootstrap-duallistbox.js"></script>
+
     <script>
         'use strict';
 
         var APP = angular.module('{{ app_name }}',[
+            'feedvay.common',
             'feedvay.watchdog',
             'feedvay.iam',
 
             'ngCookies',
-            'ui.bootstrap'
+            'ngMessages',
+            'ui.bootstrap',
+            'angular-ladda',
+            'frapontillo.bootstrap-duallistbox'
         ])
         .run(function($rootScope, $http, $cookies) {
             $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
@@ -69,7 +102,69 @@
             $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
         });
 
-        APP.controller('MainCtrl', function($scope){
+        APP.controller('FormRoleAdd', function($scope, $http, $window){
+            $scope.data = {};
+
+            $scope.list_all_permissions = [
+                {% for p in list_all_permissions %}
+                    {"id": {{ p.id }}, "name": "{{ p.name }}", "codename":"{{ p.codename }}", "content_type": "{{ p.content_type.name }}" }{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ];
+
+            $scope.flags = {
+                status: null,
+                error_msg: null,
+                errors: null
+            };
+            $scope.submit_role = function(form_obj){
+                if(form_obj.$invalid){
+                    return false;
+                }
+
+                // Prepare data
+                var data = angular.copy($scope.data);
+                var permissions = [];
+                for(var i=0;i<data['permissions'].length;i++){
+                    permissions.push(data['permissions'][i]["id"]);
+                }
+                data['permissions'] = permissions
+
+                data['c'] = '{{ request.curr_org.org_uid }}';
+                console.log(data);
+
+                $scope.flags.status = ST_AJAX.LOADING;
+                $scope.flags.error_msg = null;
+                $scope.flags.errors = null;
+
+                $http.post(
+                    "{% url 'console_iam_organization_role_create' %}",
+                    $.param(data)
+                )
+                .success(function (response, status, headers, config) {
+                    if(response.status=='success'){
+                        $window.location.href = '{% url 'console_iam_organization_roles' %}?c={{ request.curr_org.org_uid }}';
+                    }else{
+                        $scope.flags.status = ST_AJAX.ERROR;
+                        $scope.flags.error_msg = response.message;
+                        if(response.status == 'failed'){
+                            $scope.flags.errors = response.errors;
+                        }
+                    }
+                })
+                .error(function (response, status, headers, config) {
+                    if(status != -1){
+                        $scope.flags.status = ST_AJAX.ERROR;
+                        $scope.flags.error_msg = "Something went wrong. Our engineers will be informed.";
+                    }else{
+                        $scope.flags.status = null;
+                        $.growl.error({
+                            title: '<i class="fa fa-signal"></i> Network error!',
+                            message: "Please check your internet connection."
+                        });
+                    }
+                });
+
+            }
 
         });
     </script>

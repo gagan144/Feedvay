@@ -2,10 +2,12 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from django.shortcuts import render
+from django.contrib.auth.models import Permission
 
 from clients.models import Organization
 from clients import operations
 from accounts.decorators import registered_user_only, organization_console
+from accounts import forms as forms_account
 from utilities.api_utils import ApiResponse
 
 # ==================== Console ====================
@@ -84,8 +86,8 @@ def console_organization_roles(request, org):
     return render(request, 'clients/console/iam/organization_roles.html', data)
 
 @registered_user_only
-@organization_console(required_perms='accounts.organizationrole')
-def console_organization_role_add(request, org):
+@organization_console(required_perms='accounts.organizationrole.add_organizationrole')
+def console_organization_role_new(request, org):
     """
     Django view to all new organization roles.
 
@@ -95,10 +97,41 @@ def console_organization_role_add(request, org):
     """
 
     data = {
-        'app_name': 'app_org_role_add'
+        'app_name': 'app_org_role_add',
+        'list_all_permissions': Permission.objects.all().select_related('content_type').order_by('content_type__model', 'codename')
     }
 
     return render(request, 'clients/console/iam/organization_role_add.html', data)
+
+@registered_user_only
+@organization_console(required_perms='accounts.organizationrole.add_organizationrole')
+def console_organization_role_create(request, org):
+    """
+    An API view to create new role in the organization.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        # Set data
+        data = {
+            "name": request.POST['name'],
+            "permissions": request.POST.getlist('permissions[]'),
+            "organization": org.id
+        }
+
+        form_new_role = forms_account.OrganizationRoleForm(data)
+
+        if form_new_role.is_valid():
+            pass
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok.').gen_http_response()
+        else:
+            errors = dict(form_new_role.errors)
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
 # ----- /User permissions , roles & data access -----
 

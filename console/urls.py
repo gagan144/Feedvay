@@ -30,8 +30,9 @@ url_org =[
 
 api_organization_roles = api_accounts.OrganizarionRolesAPI()
 url_iam = [
-    url(r'^$', views_clients.console_organization_roles, name='console_iam_organization_roles'),
-    url(r'^add-role/$', views_clients.console_organization_role_add, name='console_iam_organization_role_add'),
+    url(r'^roles/$', views_clients.console_organization_roles, name='console_iam_organization_roles'),
+    url(r'^roles/new/$', views_clients.console_organization_role_new, name='console_iam_organization_role_new'),
+    url(r'^roles/create/$', views_clients.console_organization_role_create, name='console_iam_organization_role_create'),
 
     # Api
     url(r'^api/', include(api_organization_roles.urls)),

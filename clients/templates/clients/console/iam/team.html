@@ -26,16 +26,67 @@
             </h2>
             <hr style="margin-top: 15px;"/>
 
-            <!-- Response grid -->
-            <ng-jqgrid
-                    config="grid_members.config"
-                    modeldata="list_members"
-                    gridid="{$ grid_members.gridid $}"
-                    pagerid="{$ grid_members.pagerid $}"
-                    api="grid_members.gridapi"
-                    filtertoolbar="{stringResult: true, searchOnEnter: false, defaultSearch: 'cn'}"
-            ></ng-jqgrid>
-            <!-- /Response grid -->
+            <div ng-if="ui_flags.state==ST_AJAX.LOADING" class="loading_big" align="center" valign="middle">
+                <img src="{% get_static_prefix %}images/loading/spinner_1.gif" style="height: 40px">
+                <h3 style="margin-top: 20px;font-weight: normal;">Loading members ...</h3>
+            </div>
+            <div ng-if="ui_flags.state==ST_AJAX.ERROR" class="alert alert-danger">
+                <table style="width: 100%">
+                    <tr>
+                        <td valign="top" style="width: 90px;">
+                            <i class="fa fa-exclamation-triangle" style="font-size: 60px;"></i>
+                        </td>
+                        <td valign="top">
+                            <h2 style="margin-top: 0px;">Error!</h2>
+                            <div>
+                                {$ ui_flags.error_msg $}
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div ng-show="ui_flags.state==ST_AJAX.COMPLETED">
+                <div ng-if="list_members.length==0" class="alert alert-info">
+                    <table style="width: 100%">
+                        <tr>
+                            <td valign="top" style="width: 90px;">
+                                <i class="fa fa-info-circle" style="font-size: 80px;"></i>
+                            </td>
+                            <td valign="top">
+                                <h2 style="margin-top: 0px;">No members!</h2>
+                                <div>
+                                    Either your organization has not added any members yet or you do not have access over any members.
+
+                                    {% if request.permissions|has_permission:"clients.organizationmember.add_organizationmember" %}
+                                        <div >
+                                            Click below button to invite new member in your organization:<br/><br/>
+                                            <a href="#?c={{ request.curr_org.org_uid }}" class="btn btn-info btn-xs">
+                                                <i class="fa fa-plus"></i>
+                                                &nbsp;Invite new member
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div ng-show="list_members.length">
+                    <!-- Response grid -->
+                    <ng-jqgrid
+                            config="grid_members.config"
+                            modeldata="list_members"
+                            gridid="{$ grid_members.gridid $}"
+                            pagerid="{$ grid_members.pagerid $}"
+                            api="grid_members.gridapi"
+                            filtertoolbar="{stringResult: true, searchOnEnter: false, defaultSearch: 'cn'}"
+                    ></ng-jqgrid>
+                    <!-- /Response grid -->
+                </div>
+
+            </div>
 
         </div>
     </script>
@@ -186,7 +237,8 @@
         // --- Members ---
         function MembersCtrl($scope, ServiceOrgTeam) {
             $scope.ui_flags = {
-                status: null
+                state: null,
+                error_msg: null
             };
 
             // Jqgrid
@@ -252,10 +304,13 @@
                 gridapi: {}
             };
 
-            $scope.ui_flags.status = ST_AJAX.LOADING;
+            $scope.ui_flags.state = ST_AJAX.LOADING;
+            $scope.ui_flags.error_msg = null;
             ServiceOrgTeam.get_members('{{ request.curr_org.org_uid }}').then(
                 function (response){
                     var records = response.objects;
+
+                    $scope.ui_flags.state = ST_AJAX.COMPLETED;
 
                     // Preprocess
                     for(var i=0;i<records.length;i++){
@@ -275,20 +330,15 @@
                     $scope.list_members = records;
                     $scope.grid_members.gridapi.clear();
                     $scope.grid_members.gridapi.insert(records);
+
                 },
                 function(response){
-                    $scope.ui_flags.status = ST_AJAX.ERROR;
+                    $scope.ui_flags.state = ST_AJAX.ERROR;
 
                     if(response.status != -1){
-                        $.growl.error({
-                            title: '<i class="fa fa-exclamation-triangle"></i> Error!',
-                            message: "Something went wrong. Our engineers will be informed."
-                        });
+                        $scope.ui_flags.error_msg = "Something went wrong. Our engineers will be informed.";
                     }else{
-                        $.growl.error({
-                            title: '<i class="fa fa-signal"></i> Network error!',
-                            message: "Please check your internet connection."
-                        });
+                        $scope.ui_flags.error_msg = "Please check your internet connection.";
                     }
 
                 }

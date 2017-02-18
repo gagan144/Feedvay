@@ -42,9 +42,7 @@
 {% block content %}
     <div class="wrapper wrapper-content">
         <div class="container" ng-cloak>
-            <div class="content_box" ng-controller="FormRoleAdd">
-                {$ data $}
-
+            <div class="content_box" ng-controller="FormRoleEdit">
                 <form name="form_role" class="form-horizontal" novalidate>
                     <div ng-include="'{% get_static_prefix %}partials/iam/create_edit_role.html'"></div>
 
@@ -104,7 +102,7 @@
             $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
         });
 
-        APP.controller('FormRoleAdd', function($scope, $http, $filter, $window){
+        APP.controller('FormRoleEdit', function($scope, $http, $filter, $window){
             $scope.list_all_permissions = [
                 {% for p in list_all_permissions %}
                     {"id": {{ p.id }}, "name": "{{ p.name }}", "codename":"{{ p.codename }}", "content_type": "{{ p.content_type.name }}" }{% if not forloop.last %},{% endif %}

@@ -7,9 +7,9 @@ from tastypie.authorization import DjangoAuthorization
 
 from clients.models import Organization
 from accounts.models import OrganizationRole
-from utilities.tastypie_utils import NoPaginator, OrgConsoleSessionAuthentication, OrgConsoleAuthorization
+from utilities.tastypie_utils import NoPaginator, OrgConsoleSessionAuthentication
 
-class OrganizarionRolesAPI(ModelResource):
+class OrganizationRolesAPI(ModelResource):
     """
     Tastypie resource to get all organization roles.
     This resources applies permissions & data access before querying model.
@@ -24,8 +24,7 @@ class OrganizarionRolesAPI(ModelResource):
         limit = 0
         max_limit = None
         list_allowed_methods = ['get']
-        authentication = OrgConsoleSessionAuthentication()
-        authorization = OrgConsoleAuthorization(['accounts.organizationrole'])
+        authentication = OrgConsoleSessionAuthentication(['accounts.organizationrole'])
         paginator_class = NoPaginator
 
     def apply_filters(self, request, applicable_filters):
@@ -34,16 +33,13 @@ class OrganizarionRolesAPI(ModelResource):
         org_uid = request.GET['c']
         org = Organization.objects.get(org_uid=org_uid)
 
-        # TODO: Data access filter
-        filter_org = {}
-        # filter_org = request.permissions['accounts.organizationroles']['data_access']
-        # if filter_org is None:
-        #     base_object_list = []
-        # else:
-        filter_org['organization__org_uid'] = org_uid
-        base_object_list = base_object_list.filter(**filter_org)
-
-        return base_object_list.select_related('created_by')
+        filter_org = request.permissions['accounts.organizationrole']['data_access']
+        if filter_org is None:
+            return []
+        else:
+            filter_org['organization__org_uid'] = org_uid
+            base_object_list = base_object_list.filter(**filter_org)
+            return base_object_list.select_related('created_by')
 
     def dehydrate(self, bundle):
         obj = bundle.obj

@@ -59,8 +59,18 @@ class OrgConsoleSessionAuthentication(SessionAuthentication):
     :class:`console.middleware.OrgConsoleMiddleware` middleware. If the variable is found,
     access is authenticated otherwise authentication fails.
 
+    Moreover, it also verifies if user has certain permissions to access the resource. If not,
+    authentication fails. It permitted, it set ``permissions`` in ``request``.
+
     **Authors**: Gagandeep Singh
     """
+    def __init__(self, required_permissions, all_required=True):
+        if not isinstance(required_permissions, list):
+            raise Exception("required_permissions must be a list.")
+
+        self.required_permissions = required_permissions
+        self.all_required = all_required
+
     def is_authenticated(self, request, **kwargs):
         """
         Authenticates user session and brand.
@@ -69,79 +79,30 @@ class OrgConsoleSessionAuthentication(SessionAuthentication):
         session_ok = super(OrgConsoleSessionAuthentication, self).is_authenticated(request, **kwargs)
         if session_ok:
             try:
-                curr_org = request.curr_org
+                reg_user = request.user.registereduser      # Already taken care by the middleware
+                org = request.curr_org
+
+                perm_json = reg_user.get_all_permissions(org)
+
+                is_permitted = has_necessary_permissions(
+                    perm_json = perm_json,
+                    required_perms = self.required_permissions,
+                    all_required = self.all_required
+                )
+
+                if is_permitted is False:
+                    return False
+
+                # Set permissions in request
+                request.permissions = perm_json
+
                 return True
+
             except AttributeError:
                 return False
         else:
             return False
 
-class OrgConsoleAuthorization(Authorization):
-    """
-    Django tastypie authorization for resources used in organization console.
-    This class verifies if user has permissions to access the resource using this
-    authorization.
-
-    **Authors**: Gagandeep Singh
-    """
-
-    def __init__(self, required_permissions, all_required=True):
-        if not isinstance(required_permissions, list):
-            raise Exception("required_permissions must be a list.")
-
-        self.required_permissions = required_permissions
-        self.all_required = all_required
-
-
-    def base_checks(self, request):
-        reg_user = request.user.registereduser
-        org = request.curr_org
-        perm_json = reg_user.get_all_permissions(org)
-
-        is_permitted = has_necessary_permissions(
-            perm_json = perm_json,
-            required_perms = self.required_permissions,
-            all_required = self.all_required
-        )
-
-        if is_permitted is False:
-            raise Unauthorized("You are not allowed to access this resource.")
-
-        # Set permissions in request
-        request.permissions = perm_json
-
-    # ----- Tastypie methods -----
-    def read_list(self, object_list, bundle):
-        self.base_checks(bundle.request)
-        return object_list
-
-    def read_detail(self, object_list, bundle):
-        self.base_checks(bundle.request)
-        return True
-
-    def create_list(self, object_list, bundle):
-        self.base_checks(bundle.request)
-        return []
-
-    def create_detail(self, object_list, bundle):
-        self.base_checks(bundle.request)
-        return True
-
-    def update_list(self, object_list, bundle):
-        self.base_checks(bundle.request)
-        return object_list
-
-    def update_detail(self, object_list, bundle):
-        self.base_checks(bundle.request)
-        return True
-
-    def delete_list(self, object_list, bundle):
-        self.base_checks(bundle.request)
-        return object_list
-
-    def delete_detail(self, object_list, bundle):
-        self.base_checks(bundle.request)
-        return True
 
 class NoPaginator(Paginator):
     """

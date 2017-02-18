@@ -5,8 +5,8 @@ from tastypie.resources import ModelResource, Resource, ALL, ALL_WITH_RELATIONS
 from tastypie.authentication import SessionAuthentication
 from django.db.models import Q
 
-from clients.models import Organization
-from utilities.tastypie_utils import NoPaginator
+from clients.models import Organization, OrganizationMember
+from utilities.tastypie_utils import OrgConsoleSessionAuthentication, NoPaginator
 
 class OrgExistenceAPI(ModelResource):
     """
@@ -41,3 +41,60 @@ class OrgExistenceAPI(ModelResource):
         q = bundle.request.GET['q']
 
         return queryset.filter(Q(name__icontains=q)|Q(slug__icontains=q))
+
+
+class OrganizationMembersAPI(ModelResource):
+    """
+    Tastypie resource to get all organization members.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    class Meta:
+        queryset = OrganizationMember.objects.all()
+        resource_name = 'organization_members'
+        limit = 0
+        max_limit = None
+        list_allowed_methods = ['get']
+        authentication = OrgConsoleSessionAuthentication(['clients.organizationmember'])
+        paginator_class = NoPaginator
+
+    def apply_filters(self, request, applicable_filters):
+        base_object_list = super(self.__class__, self).apply_filters(request, applicable_filters)
+
+        org_uid = request.GET['c']
+        org = Organization.objects.get(org_uid=org_uid)
+
+        filters = request.permissions['clients.organizationmember']['data_access']
+        if filters is None:
+            return []
+        else:
+            filters['organization__org_uid'] = org_uid
+            filters['deleted'] = False
+
+            base_object_list = base_object_list.filter(**filters)
+
+        return base_object_list.select_related('registered_user', 'registered_user__user', 'created_by')
+
+    def dehydrate(self, bundle):
+        obj = bundle.obj
+
+        bundle.data['registered_user'] = {
+            'id': obj.registered_user.id,
+            'username': obj.registered_user.user.username,
+            'first_name': obj.registered_user.user.first_name,
+            'last_name': obj.registered_user.user.last_name,
+            'email': obj.registered_user.user.email,
+        }
+
+        bundle.data['created_by'] = {
+            'id': obj.created_by.id,
+            'username': obj.created_by.username,
+            'first_name': obj.created_by.first_name,
+            'last_name': obj.created_by.last_name,
+        }
+
+        bundle.data['roles'] = list(obj.registered_user.roles.all().values('id', 'name'))
+
+        return bundle

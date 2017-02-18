@@ -112,6 +112,7 @@
                                     <a aria-expanded="false" role="button" href="javascript: void(0);" class="dropdown-toggle" data-toggle="dropdown"> IAM <span class="caret"></span></a>
                                     <ul role="menu" class="dropdown-menu">
                                         <li><a href="{% url 'console_iam_organization_roles' %}?c={{ request.curr_org.org_uid }}">Roles</a></li>
+                                        <li><a href="{% url 'console_team' %}?c={{ request.curr_org.org_uid }}">Manage Team</a></li>
                                     </ul>
                                 </li>
 

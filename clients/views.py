@@ -146,7 +146,12 @@ def console_organization_role_edit(request, org, org_role_id):
     **Authors**: Gagandeep Singh
     """
     try:
-        org_role = OrganizationRole.objects.get(organization_id=org.id, pk=org_role_id)
+        filters = request.permissions['accounts.organizationrole']['data_access']
+        filters['organization_id'] = org.id
+        filters['id'] = org_role_id
+
+        # org_role = OrganizationRole.objects.get(organization_id=org.id, pk=org_role_id)
+        org_role = OrganizationRole.objects.get(**filters)
     except OrganizationRole.DoesNotExist:
         return HttpResponseForbidden("You do not have permissions to access this page.")
 
@@ -170,7 +175,12 @@ def console_organization_role_edit_save(request, org, org_role_id):
     """
     if request.method.lower() == 'post':
         try:
-            org_role = OrganizationRole.objects.get(organization_id=org.id, pk=org_role_id)
+            filters = request.permissions['accounts.organizationrole']['data_access']
+            filters['organization_id'] = org.id
+            filters['id'] = org_role_id
+
+            # org_role = OrganizationRole.objects.get(organization_id=org.id, pk=org_role_id)
+            org_role = OrganizationRole.objects.get(**filters)
         except OrganizationRole.DoesNotExist:
             return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="You do not have permissions to change this role.")
 
@@ -192,6 +202,24 @@ def console_organization_role_edit_save(request, org, org_role_id):
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+
+@registered_user_only
+@organization_console(required_perms='clients.organizationmember')
+def console_team(request, org):
+    """
+    Django view to manage all organization members.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+
+    data = {
+        'app_name': 'app_team'
+    }
+
+    return render(request, 'clients/console/iam/team.html', data)
 
 # ----- /User permissions , roles & data access -----
 

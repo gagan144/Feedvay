@@ -1,0 +1,299 @@
+{% extends 'console/base.html' %}
+{% load static commontags %}
+
+{% block head %}
+    <!-- Favicon -->
+    <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
+
+    <title page-title></title>
+
+    <link href="{% get_static_prefix %}ui/css/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/css/plugins/datapicker/datepicker3.css" rel="stylesheet">
+
+    <!-- ----- Templates ----- -->
+    <script type="text/ng-template" id="tmpl_members">
+        <div>
+            <h2 style="margin-top: 0px;">
+                <i class="fa fa-users"></i>&nbsp;
+                Members
+
+                {% if request.permissions|has_permission:"clients.organizationmember.add_organizationmember" %}
+                    <a href="#?c={{ request.curr_org.org_uid }}" class="btn btn-primary btn-sm pull-right">
+                        <i class="fa fa-plus"></i>
+                        <span class="mobile_hide">&nbsp;Invite new member</span>
+                    </a>
+                {% endif %}
+            </h2>
+            <hr style="margin-top: 15px;"/>
+
+            <!-- Response grid -->
+            <ng-jqgrid
+                    config="grid_members.config"
+                    modeldata="list_members"
+                    gridid="{$ grid_members.gridid $}"
+                    pagerid="{$ grid_members.pagerid $}"
+                    api="grid_members.gridapi"
+                    filtertoolbar="{stringResult: true, searchOnEnter: false, defaultSearch: 'cn'}"
+            ></ng-jqgrid>
+            <!-- /Response grid -->
+
+        </div>
+    </script>
+    <!-- ----- /Templates ----- -->
+{% endblock %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-8">
+            <h2>
+                <i class="fa fa-users"></i>
+                Team
+            </h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">Home</a>
+                </li>
+                <li class="active">
+                    Team
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="wrapper_admin_content" ng-controller="MainCtrl" ng-cloak>
+        <table class="table_tab_admin">
+            <tr>
+                <td class="admin_tabs" valign="top">
+                    <div class="list-group list_group_tabs" >
+                        <a ui-sref="members" class="list-group-item" ng-class="{'active': $state.current.name=='members'}">
+                            <i class="fa fa-users list_md_icon"></i> Members
+                        </a>
+{#                        <a ui-sref="security" class="list-group-item" ng-class="{'active': $state.current.name=='security'}">#}
+{#                            <i class="fa fa-shield list_md_icon"></i> Security#}
+{#                        </a>#}
+                    </div>
+                </td>
+                <td class="admin_content" valign="top">
+                    <!-- Partial view div -->
+                    <div ui-view></div>
+                    <!-- Partial view div -->
+                </td>
+            </tr>
+        </table>
+    </div>
+{% endblock %}
+
+
+{% block scripts %}
+    <script src="{% get_static_prefix %}ui/js/plugins/datapicker/bootstrap-datepicker.js"></script>
+    <script src="{% get_static_prefix %}ui/js/ui-router/angular-ui-router.min.js"></script>
+
+    <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/i18n/grid.locale-en.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/jquery.jqGrid.min.js"></script>
+
+    <script src="{% get_static_prefix %}lib/angular/angular-jqgrid/angular-jqgrid.js"></script>
+
+    <script src="{% get_static_prefix %}apps/clients/team.js"></script>
+    <script>
+        'use strict';
+
+        var APP = angular.module('{{ app_name }}',[
+            'feedvay.uiapp',
+            'feedvay.common',
+            'feedvay.watchdog',
+            'feedvay.team',
+
+            'ngCookies',
+            'ngMessages',
+            'ui.router',                    // Routing
+            'oc.lazyLoad',                  // ocLazyLoad
+            'ui.bootstrap',
+            'datePicker',
+            'angular-ladda',
+            'angular-jqgrid',
+        ])
+        .config(function($interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+
+            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+
+            // ----- Routing -----
+            $urlRouterProvider.otherwise("/members");   // Default state to load
+
+            $ocLazyLoadProvider.config({
+                // Set to true if you want to see what and when is dynamically loaded
+                debug: false
+            });
+
+            $stateProvider
+                .state('members', {
+                    url: "/members",
+                    templateUrl: "tmpl_members",
+                    data: { pageTitle: 'Members | {{ request.curr_org.name }}' },
+                    controller: MembersCtrl,
+                })
+{#                .state('security', {#}
+{#                    url: "/security",#}
+{#                    templateUrl: "/static/partials/accounts/security.html",#}
+{#                    data: { pageTitle: 'Security - Feedvay' },#}
+{#                    controller: SecurityCtrl,#}
+{#                })#}
+            // ----- /Routing -----
+        })
+        .run(function($rootScope, $http, $cookies, $state) {
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+            $http.defaults.xsrfCookieName = 'csrftoken';
+            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+            $rootScope.ST_AJAX = ST_AJAX;
+
+            // ----- Routing -----
+            $rootScope.$state = $state;
+
+            $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
+                event.preventDefault();
+                //console.log(error);
+
+                if(error.status == -1){
+                    $.growl.error({
+                        title: '<i class="fa fa-signal"></i> Network error!',
+                        message: "Please check your internet connection."
+                    });
+                }else{
+                    $.growl.error({
+                        title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                        message: "Something went wrong. Our engineers will be informed."
+                    });
+                }
+
+            });
+            // ----- /Routing -----
+
+        });
+
+
+        APP.controller('MainCtrl', function($scope){
+
+        });
+
+        // ========== State Controllers ==========
+
+        // --- Members ---
+        function MembersCtrl($scope, ServiceOrgTeam) {
+            $scope.ui_flags = {
+                status: null
+            };
+
+            // Jqgrid
+            $scope.list_members = [];
+            $scope.grid_members = {
+                gridid: "grid_members",
+                pagerid: "grid_members_pager",
+                config: {
+                    datatype: "local",
+                    colNames: [
+                        '',
+                        'Name',
+                        'MobileNo',
+                        'Email',
+                        'Roles',
+                        'Created by',
+                        'Created on',
+                        {% if request.permissions|has_permission:"clients.organizationmember.change_organizationmember" %}
+                        ''
+                        {% endif %}
+                    ],
+                    colModel: [
+                        { name: 'id', index: 'id', width: 20, hidden:true, search:false },
+                        { name: 'registered_user.full_name', index: 'registered_user.full_name', width: 40 },
+                        { name: 'registered_user.username', index: 'registered_user.username', width: 40 },
+                        { name: 'registered_user.email', index: 'registered_user.email', width: 50 },
+                        { name: 'roles_html', index: 'roles_html', width: 60 },
+                        { name: 'created_by.display_name', index: 'created_by.display_name', width: 40 },
+                        { name: 'created_on', index: 'created_on', width: 40,
+                            sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-dTH:i:s', newformat: 'd-M-Y' },
+                            searchoptions: {
+                                attr:{ placeholder: 'Select date', readonly:'readonly'},
+                                dataInit: function (elem) {
+                                    $(elem).datepicker({
+                                        format: 'yyyy-mm-dd',
+                                        keyboardNavigation: false,
+                                        autoclose: true,
+                                        todayHighlight: true,
+                                    }).on('changeDate', function(e) {
+                                        $('#grid_members')[0].triggerToolbar();
+                                    });
+                                }
+                            }
+                        },
+                        {% if request.permissions|has_permission:"clients.organizationmember.change_organizationmember" %}
+                            { name: 'actions', index: 'actions', width: 20, search:false, sortable:false },
+                        {% endif %}
+                    ],
+                    viewrecords: true,
+                    sortname: 'registered_user.full_name',
+                    sortorder: "asc",
+                    rowNum: 50,
+                    rowList: [10, 50, 100, 100000],
+                    autowidth : true,
+                    height: '300px',
+                    shrinkToFit: true,
+                    hidegrid: false,
+                    ignoreCase:true
+                },
+                filtertoolbar: {
+                    stringResult: true, searchOnEnter: false, defaultSearch: 'cn',
+                },
+                gridapi: {}
+            };
+
+            $scope.ui_flags.status = ST_AJAX.LOADING;
+            ServiceOrgTeam.get_members('{{ request.curr_org.org_uid }}').then(
+                function (response){
+                    var records = response.objects;
+
+                    // Preprocess
+                    for(var i=0;i<records.length;i++){
+                        var row = records[i];
+
+                        records[i]['registered_user']['full_name'] = row['registered_user']['first_name'] + " " +row['registered_user']['last_name'];
+                        records[i]['created_by']['display_name'] = row['created_by']['first_name'] + " " +row['created_by']['last_name'];
+
+                        var roles_html = '';
+                        for(var r=0;r<row['roles'].length;r++){
+                            roles_html += ('<a href="{% url 'console_iam_organization_role_edit' 9999 %}?c={{ request.curr_org.org_uid }}" target="_blank">'+row['roles'][r]['name']+'</a> ').replace('9999', row['roles'][r]['id']);
+                        }
+                        records[i]['roles_html'] = roles_html;
+                    }
+
+                    // Update grid
+                    $scope.list_members = records;
+                    $scope.grid_members.gridapi.clear();
+                    $scope.grid_members.gridapi.insert(records);
+                },
+                function(response){
+                    $scope.ui_flags.status = ST_AJAX.ERROR;
+
+                    if(response.status != -1){
+                        $.growl.error({
+                            title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                            message: "Something went wrong. Our engineers will be informed."
+                        });
+                    }else{
+                        $.growl.error({
+                            title: '<i class="fa fa-signal"></i> Network error!',
+                            message: "Please check your internet connection."
+                        });
+                    }
+
+                }
+            );
+        }
+
+    </script>
+{% endblock %}

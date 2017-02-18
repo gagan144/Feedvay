@@ -422,10 +422,14 @@ class OrganizationMember(models.Model):
     deleted         = models.BooleanField(default=False, editable=False, help_text="If true, it means user's membership is now removed.")
 
     created_on      = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
+    created_by      = models.ForeignKey(User, editable=False, help_text='Person who added this user as a member.')
     modified_on     = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
 
     class Meta:
         unique_together = ('organization', 'registered_user')
+        permissions = (
+            ('view_organizationmember', 'Can view members'),
+        )
 
     def __unicode__(self):
         return "{} <-> {}".format(self.organization.name, self.registered_user)
@@ -446,7 +450,7 @@ class OrganizationMember(models.Model):
             reg_user = self.registered_user
             org = self.organization
 
-            # Remove superuser
+            # Remove from superuser list
             for su_org in reg_user.superuser_in.filter(id=org.id):
                 reg_user.superuser_in.remove(su_org)
 
@@ -460,9 +464,8 @@ class OrganizationMember(models.Model):
             # Remove data access
             UserDataAccess.objects.filter(registered_user_id=reg_user.id, organization_id=org.id).delete()
 
-            # Remove permission cache
-            print reg_user.delete_permission_cache(org)
-
+        # Remove permission cache
+        reg_user.delete_permission_cache(org)
 
         # Mark deleted
         self.deleted = True

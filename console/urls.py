@@ -9,6 +9,7 @@ from clients import views as views_clients
 from market import views as views_market
 
 from accounts import api as api_accounts
+from clients import api as api_clients
 from market import api as api_market
 from surveys import views as views_surveys
 from surveys import api as api_surveys
@@ -28,7 +29,7 @@ url_org =[
 ]
 
 
-api_organization_roles = api_accounts.OrganizarionRolesAPI()
+api_organization_roles = api_accounts.OrganizationRolesAPI()
 url_iam = [
     url(r'^roles/$', views_clients.console_organization_roles, name='console_iam_organization_roles'),
     url(r'^roles/new/$', views_clients.console_organization_role_new, name='console_iam_organization_role_new'),
@@ -36,8 +37,20 @@ url_iam = [
     url(r'^roles/edit/(?P<org_role_id>[0-9]+)/$', views_clients.console_organization_role_edit, name='console_iam_organization_role_edit'),
     url(r'^roles/edit-save/(?P<org_role_id>[0-9]+)/$', views_clients.console_organization_role_edit_save, name='console_iam_organization_role_edit_save'),
 
+    url(r'^team/$', views_clients.console_team, name='console_team'),
+
     # Api
     url(r'^api/', include(api_organization_roles.urls)),
+
+
+]
+
+api_organization_members = api_clients.OrganizationMembersAPI()
+url_team = [
+    url(r'^$', views_clients.console_team, name='console_team'),
+
+    # Api
+    url(r'^api/', include(api_organization_members.urls)),
 ]
 
 url_brands = [
@@ -79,6 +92,7 @@ urlpatterns = [
 
     url(r'^org/', include(url_org)),
     url(r'^iam/', include(url_iam)),
+    url(r'^team/', include(url_team)),
     url(r'^brands/', include(url_brands)),
     url(r'^surveys/', include(url_surveys)),
 ]

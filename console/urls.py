@@ -33,6 +33,8 @@ url_iam = [
     url(r'^roles/$', views_clients.console_organization_roles, name='console_iam_organization_roles'),
     url(r'^roles/new/$', views_clients.console_organization_role_new, name='console_iam_organization_role_new'),
     url(r'^roles/create/$', views_clients.console_organization_role_create, name='console_iam_organization_role_create'),
+    url(r'^roles/edit/(?P<org_role_id>[0-9]+)/$', views_clients.console_organization_role_edit, name='console_iam_organization_role_edit'),
+    url(r'^roles/edit-save/(?P<org_role_id>[0-9]+)/$', views_clients.console_organization_role_edit_save, name='console_iam_organization_role_edit_save'),
 
     # Api
     url(r'^api/', include(api_organization_roles.urls)),

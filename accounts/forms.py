@@ -204,8 +204,16 @@ class OrganizationRoleForm(forms.ModelForm):
     def clean(self):
         form_data = self.cleaned_data
 
-        if OrganizationRole.objects.filter(organization=form_data['organization'], name=form_data['name']).exists():
-            self._errors["name"] = ["Role with name '{}' already exists.".format(form_data['name'])]
+        if self.instance.pk is None:
+            if OrganizationRole.objects.filter(organization=form_data['organization'], name=form_data['name']).exists():
+                self._errors["name"] = ["Role with name '{}' already exists.".format(form_data['name'])]
 
         return form_data
+
+    def save(self, created_by=None, commit=True):
+        if self.instance.pk is None:
+            # New instance; set created_by
+            self.instance.created_by = created_by
+
+        super(self.__class__, self).save(commit=commit)
 # ----- /Console: Roles -----

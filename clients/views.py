@@ -2,11 +2,13 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from django.shortcuts import render
-from django.contrib.auth.models import Permission
+from django.http import HttpResponseForbidden
 
 from clients.models import Organization
 from clients import operations
+from accounts.models import OrganizationRole
 from accounts.decorators import registered_user_only, organization_console
+from accounts.utils import get_all_superuser_permissions
 from accounts import forms as forms_account
 from utilities.api_utils import ApiResponse
 
@@ -95,10 +97,9 @@ def console_organization_role_new(request, org):
 
     **Authors**: Gagandeep Singh
     """
-
     data = {
         'app_name': 'app_org_role_add',
-        'list_all_permissions': Permission.objects.all().select_related('content_type').order_by('content_type__model', 'codename')
+        'list_all_permissions': get_all_superuser_permissions()
     }
 
     return render(request, 'clients/console/iam/organization_role_add.html', data)
@@ -124,7 +125,66 @@ def console_organization_role_create(request, org):
         form_new_role = forms_account.OrganizationRoleForm(data)
 
         if form_new_role.is_valid():
-            pass
+            form_new_role.save(created_by=request.user)
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok.').gen_http_response()
+        else:
+            errors = dict(form_new_role.errors)
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+
+@registered_user_only
+@organization_console(required_perms='accounts.organizationrole.change_organizationrole')
+def console_organization_role_edit(request, org, org_role_id):
+    """
+    Django view to all edit an organization role.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    try:
+        org_role = OrganizationRole.objects.get(organization_id=org.id, pk=org_role_id)
+    except OrganizationRole.DoesNotExist:
+        return HttpResponseForbidden("You do not have permissions to access this page.")
+
+    data = {
+        'app_name': 'app_org_role_edit',
+        'org_role': org_role,
+        'list_all_permissions': get_all_superuser_permissions()
+    }
+
+    return render(request, 'clients/console/iam/organization_role_edit.html', data)
+
+@registered_user_only
+@organization_console(required_perms='accounts.organizationrole.change_organizationrole')
+def console_organization_role_edit_save(request, org, org_role_id):
+    """
+    An API view to save role changes in the organization.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        try:
+            org_role = OrganizationRole.objects.get(organization_id=org.id, pk=org_role_id)
+        except OrganizationRole.DoesNotExist:
+            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="You do not have permissions to change this role.")
+
+        # Set data
+        data = {
+            "name": request.POST['name'],
+            "permissions": request.POST.getlist('permissions[]'),
+            "organization": org.id
+        }
+
+        form_new_role = forms_account.OrganizationRoleForm(data, instance=org_role)
+
+        if form_new_role.is_valid():
+            form_new_role.save()
             return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok.').gen_http_response()
         else:
             errors = dict(form_new_role.errors)

@@ -3,6 +3,10 @@
     "permissions": ["change_organization"],
     "data_access": null
   },
+  "accounts.organizationrole":{
+    "permissions": ["add_organizationrole", "view_organizationrole", "change_organizationrole", "delete_organizationrole"],
+    "data_access": {}
+  },
   "market.brand":{
     "permissions": ["add_brand", "view_brand", "change_brand", "delete_brand"],
     "data_access": {}

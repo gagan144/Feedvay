@@ -33,11 +33,22 @@
         </div>
 
         <style>
-            #bootstrap-duallistbox-nonselected-list_permissions, #bootstrap-duallistbox-nonselected-list_permissions{
+            .bootstrap-duallistbox-container{
+                border: solid 1px #e5e6e7;
+                border-radius: 3px;
+                padding: 10px 0px 15px 0px;
+                margin-left: 0px !important;
+            }
+
+            #bootstrap-duallistbox-nonselected-list_permissions, #bootstrap-duallistbox-selected-list_permissions{
                 height: 200px !important;
             }
         </style>
-        <select ng-model="data.permissions" name="permissions" ng-options="p.content_type+' | '+p.name for p in list_all_permissions" multiple bs-duallistbox required></select>
+        <select ng-model="data.permissions" name="permissions" ng-options="p.content_type+' | '+p.name for p in list_all_permissions" multiple
+                bs-duallistbox
+                info-empty="No permissions selected"
+                required
+        ></select>
         <div ng-messages="form_role.permissions.$dirty && form_role.permissions.$error" role="alert" class="error_messages">
             <label ng-message="required" class="error">Please select atleast one permission.</label>
         </div>

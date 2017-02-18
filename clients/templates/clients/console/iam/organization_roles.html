@@ -134,7 +134,7 @@
                                         <tr ng-repeat="role in list_org_roles|orderBy:'name'|filter: searchText">
                                             <td class="project-title">
                                                 {% if can_change %}
-                                                    <a href="#">{$ role.name $}</a>
+                                                    <a ng-href="{$ '{% url 'console_iam_organization_role_edit' 9999 %}'.replace('9999', role.id) $}?c={{ request.curr_org.org_uid }}">{$ role.name $}</a>
                                                 {% else %}
                                                     {$ role.name $}
                                                 {% endif %}

@@ -2,7 +2,12 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from django.contrib.auth.models import User
+import os, json
+
+from django.contrib.auth.models import Permission
+
 from accounts.models import RegisteredUser
+
 
 class ClassifyRegisteredUser:
     """
@@ -68,7 +73,7 @@ class ClassifyRegisteredUser:
         except User.DoesNotExist:
             return ClassifyRegisteredUser.NEW
 
-
+# ----- Permissions utils -----
 def lookup_permission(perm_json, perm_key):
     """
     Method to lookup for a permission in permission json. A permission lookup can be based on app model or app model CRUDs.
@@ -135,3 +140,36 @@ def has_necessary_permissions(perm_json, required_perms, all_required=True):
 
 
     return is_permitted
+
+
+def get_all_superuser_permission_codenames():
+    """
+    Method to return all permission codenames for superuser access.
+    This method reads ``accounts/data/superuser.json`` file, iterates over all keys
+    and returns list of permissions codenames.
+
+    :return: List
+    """
+
+    file_path  = os.path.join(os.path.dirname(__file__), 'data/superuser.json')
+    with open(file_path, 'r') as f:
+        perm_json = json.load(f)
+
+    list_perms = []
+    for key in perm_json:
+        list_perms += perm_json[key]['permissions']
+
+    return list_perms
+
+def get_all_superuser_permissions():
+    """
+    Method to return all :class:`django.contrib.auth.models.Permission` for superuser access.
+    This method uses :py:func:`accounts.utils.get_all_superuser_permission_codenames` to obtain all
+    superuser permission codenames.
+
+    :return: List<:class:`django.contrib.auth.model.Permission`>
+    """
+    list_codenames = get_all_superuser_permission_codenames()
+    return Permission.objects.filter(codename__in=list_codenames).select_related('content_type').order_by('content_type__model', 'codename')
+
+# ----- /Permissions utils -----

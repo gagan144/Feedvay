@@ -63,6 +63,7 @@ class OrganizationMembersAPI(ModelResource):
     def apply_filters(self, request, applicable_filters):
         base_object_list = super(self.__class__, self).apply_filters(request, applicable_filters)
 
+        reg_user = request.user.registereduser
         org_uid = request.GET['c']
         org = Organization.objects.get(org_uid=org_uid)
 
@@ -75,7 +76,7 @@ class OrganizationMembersAPI(ModelResource):
 
             base_object_list = base_object_list.filter(**filters)
 
-        return base_object_list.select_related('registered_user', 'registered_user__user', 'created_by')
+        return base_object_list.exclude(registered_user_id=reg_user.id).select_related('registered_user', 'registered_user__user', 'created_by')
 
     def dehydrate(self, bundle):
         obj = bundle.obj

@@ -8,7 +8,7 @@
     <!-- Favicon -->
     <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
 
-    <title>Add roles | {{ request.curr_org.name }}</title>
+    <title>Edit role - {{ org_role.name }} | {{ request.curr_org.name }}</title>
 
     <link href="{% get_static_prefix %}ui/css/plugins/dualListbox/bootstrap-duallistbox.min.css" rel="stylesheet">
 {% endblock %}
@@ -18,20 +18,20 @@
         <div class="col-xs-12">
             <h2>
                 <i class="fa fa-user"></i>
-                New roles
+                {{ org_role.name }}
             </h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">Home</a>
                 </li>
                 <li>
-                    IAM
+                    <a href="{% url 'console_team' %}?c={{ request.curr_org.org_uid }}">Team</a>
                 </li>
                 <li>
-                    <a href="{% url 'console_iam_organization_roles' %}?c={{ request.curr_org.org_uid }}">Roles</a>
+                    <a href="{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/roles">Roles</a>
                 </li>
                 <li class="active">
-                    Add roles
+                    {{ org_role.name }}
                 </li>
             </ol>
         </div>
@@ -42,9 +42,9 @@
 {% block content %}
     <div class="wrapper wrapper-content">
         <div class="container" ng-cloak>
-            <div class="content_box" ng-controller="FormRoleAdd">
+            <div class="content_box" ng-controller="FormRoleEdit">
                 <form name="form_role" class="form-horizontal" novalidate>
-                    <div ng-include="'{% get_static_prefix %}partials/iam/create_edit_role.html'"></div>
+                    <div ng-include="'{% get_static_prefix %}partials/team/create_edit_role.html'"></div>
 
                     <div class="hr-line-dashed"></div>
                     <div class="form-group">
@@ -53,9 +53,9 @@
                                 <i class="fa fa-exclamation-triangle"></i> {$ flags.error_msg $}
                             </p>
                             <button ladda="flags.status==ST_AJAX.LOADING" class="btn btn-primary ladda-button" type="button" ng-disabled="form_role.$invalid || form_role.$pristine" ng-click="submit_role(form_role);" data-style="zoom-in">
-                                Create
+                                Save
                             </button>
-                            <a class="btn btn-link" href="{% url 'console_iam_organization_roles' %}?c={{ request.curr_org.org_uid }}" >
+                            <a class="btn btn-link" href="{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/roles" >
                                 Cancel
                             </a>
                         </div>
@@ -67,7 +67,7 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="{% get_static_prefix %}apps/clients/iam.js"></script>
+    <script src="{% get_static_prefix %}apps/clients/team.js"></script>
 
     <script src="{% get_static_prefix %}ui/js/plugins/dualListbox/jquery.bootstrap-duallistbox.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/dualListbox/angular-bootstrap-duallistbox.js"></script>
@@ -78,7 +78,7 @@
         var APP = angular.module('{{ app_name }}',[
             'feedvay.common',
             'feedvay.watchdog',
-            'feedvay.iam',
+            'feedvay.team',
 
             'ngCookies',
             'ngMessages',
@@ -102,14 +102,25 @@
             $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
         });
 
-        APP.controller('FormRoleAdd', function($scope, $http, $window){
-            $scope.data = {};
-
+        APP.controller('FormRoleEdit', function($scope, $http, $filter, $window){
             $scope.list_all_permissions = [
                 {% for p in list_all_permissions %}
                     {"id": {{ p.id }}, "name": "{{ p.name }}", "codename":"{{ p.codename }}", "content_type": "{{ p.content_type.name }}" }{% if not forloop.last %},{% endif %}
                 {% endfor %}
             ];
+
+            $scope.data = {
+                "name": '{{ org_role.name }}',
+                "permissions":[]
+            };
+            // Set original permissions
+            var perm_ids = [{% for p in org_role.permissions.all %}{{ p.id }}{% if not forloop.last %},{% endif %}{% endfor %}];
+            for(var i=0;i<perm_ids.length;i++){
+                var idx = perm_ids[i];
+                // Find and set
+                $scope.data['permissions'].push($filter('filter')($scope.list_all_permissions, {id: idx })[0]);
+            }
+
 
             $scope.flags = {
                 status: null,
@@ -137,12 +148,12 @@
                 $scope.flags.errors = null;
 
                 $http.post(
-                    "{% url 'console_iam_organization_role_create' %}",
+                    "{% url 'console_team_organization_role_edit_save' org_role.id %}",
                     $.param(data)
                 )
                 .success(function (response, status, headers, config) {
                     if(response.status=='success'){
-                        $window.location.href = '{% url 'console_iam_organization_roles' %}?c={{ request.curr_org.org_uid }}';
+                        $window.location.href = '{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/roles';
                     }else{
                         $scope.flags.status = ST_AJAX.ERROR;
                         $scope.flags.error_msg = response.message;

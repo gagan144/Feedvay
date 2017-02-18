@@ -69,12 +69,12 @@ def console_org_submit_changes(request, org):
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
-# ----- User permissions , roles & data access -----
+
 @registered_user_only
-@organization_console(required_perms='accounts.organizationrole')
-def console_organization_roles(request, org):
+@organization_console(required_perms='clients.organizationmember')
+def console_team(request, org):
     """
-    Django view to display all organization roles.
+    Django view to manage all organization members.
 
     **Type**: GET
 
@@ -82,11 +82,12 @@ def console_organization_roles(request, org):
     """
 
     data = {
-        'app_name': 'app_org_roles'
+        'app_name': 'app_team'
     }
 
-    return render(request, 'clients/console/iam/organization_roles.html', data)
+    return render(request, 'clients/console/team/team.html', data)
 
+# ----- User permissions , roles & data access -----
 @registered_user_only
 @organization_console(required_perms='accounts.organizationrole.add_organizationrole')
 def console_organization_role_new(request, org):
@@ -102,7 +103,7 @@ def console_organization_role_new(request, org):
         'list_all_permissions': get_all_superuser_permissions()
     }
 
-    return render(request, 'clients/console/iam/organization_role_add.html', data)
+    return render(request, 'clients/console/team/organization_role_add.html', data)
 
 @registered_user_only
 @organization_console(required_perms='accounts.organizationrole.add_organizationrole')
@@ -161,7 +162,7 @@ def console_organization_role_edit(request, org, org_role_id):
         'list_all_permissions': get_all_superuser_permissions()
     }
 
-    return render(request, 'clients/console/iam/organization_role_edit.html', data)
+    return render(request, 'clients/console/team/organization_role_edit.html', data)
 
 @registered_user_only
 @organization_console(required_perms='accounts.organizationrole.change_organizationrole')
@@ -202,24 +203,6 @@ def console_organization_role_edit_save(request, org, org_role_id):
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
-
-
-@registered_user_only
-@organization_console(required_perms='clients.organizationmember')
-def console_team(request, org):
-    """
-    Django view to manage all organization members.
-
-    **Type**: GET
-
-    **Authors**: Gagandeep Singh
-    """
-
-    data = {
-        'app_name': 'app_team'
-    }
-
-    return render(request, 'clients/console/iam/team.html', data)
 
 # ----- /User permissions , roles & data access -----
 

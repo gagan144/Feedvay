@@ -30,26 +30,18 @@ url_org =[
 
 
 api_organization_roles = api_accounts.OrganizationRolesAPI()
-url_iam = [
-    url(r'^roles/$', views_clients.console_organization_roles, name='console_iam_organization_roles'),
-    url(r'^roles/new/$', views_clients.console_organization_role_new, name='console_iam_organization_role_new'),
-    url(r'^roles/create/$', views_clients.console_organization_role_create, name='console_iam_organization_role_create'),
-    url(r'^roles/edit/(?P<org_role_id>[0-9]+)/$', views_clients.console_organization_role_edit, name='console_iam_organization_role_edit'),
-    url(r'^roles/edit-save/(?P<org_role_id>[0-9]+)/$', views_clients.console_organization_role_edit_save, name='console_iam_organization_role_edit_save'),
-
-    url(r'^team/$', views_clients.console_team, name='console_team'),
-
-    # Api
-    url(r'^api/', include(api_organization_roles.urls)),
-
-
-]
-
 api_organization_members = api_clients.OrganizationMembersAPI()
 url_team = [
     url(r'^$', views_clients.console_team, name='console_team'),
 
+    url(r'^roles/new/$', views_clients.console_organization_role_new, name='console_team_organization_role_new'),
+    url(r'^roles/new/$', views_clients.console_organization_role_new, name='console_team_organization_role_new'),
+    url(r'^roles/create/$', views_clients.console_organization_role_create, name='console_team_organization_role_create'),
+    url(r'^roles/edit/(?P<org_role_id>[0-9]+)/$', views_clients.console_organization_role_edit, name='console_team_organization_role_edit'),
+    url(r'^roles/edit-save/(?P<org_role_id>[0-9]+)/$', views_clients.console_organization_role_edit_save, name='console_team_organization_role_edit_save'),
+
     # Api
+    url(r'^api/', include(api_organization_roles.urls)),
     url(r'^api/', include(api_organization_members.urls)),
 ]
 
@@ -91,7 +83,6 @@ urlpatterns = [
     url(r'^account/', include(url_account)),
 
     url(r'^org/', include(url_org)),
-    url(r'^iam/', include(url_iam)),
     url(r'^team/', include(url_team)),
     url(r'^brands/', include(url_brands)),
     url(r'^surveys/', include(url_surveys)),

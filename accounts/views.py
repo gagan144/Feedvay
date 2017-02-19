@@ -2,7 +2,7 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseForbidden
+from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseForbidden, JsonResponse
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.utils import timezone
@@ -702,6 +702,59 @@ class UserDeviceViewSet(viewsets.ModelViewSet):
         instance.is_active = False
         instance.save()
 # ---------- /User devices (FCM) ----------
+
+def get_user_details(request):
+    """
+    An API view to return basic details of :class:`accounts.models.RegisteredUser` given an username.
+
+    **Response**:
+
+        If user is found:
+
+        .. code-block:: json
+
+            {
+                "status": "success",
+                "message": "Ok",
+                "data": {}
+            }
+
+        If user is **NOT** found:
+
+        .. code-block:: json
+
+            {
+                "status": "failed",
+                "message": "<some-message>",
+            }
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+
+    try:
+        username = request.GET['username']
+
+        try:
+            reg_user = RegisteredUser.objects.get(user__username=username)
+
+            return ApiResponse(
+                status = ApiResponse.ST_SUCCESS,
+                message = 'Ok',
+                data = {
+                    "username" : reg_user.user.username,
+                    "first_name" : reg_user.user.first_name,
+                    "last_name" : reg_user.user.last_name,
+                    "email" : reg_user.user.email,
+                }
+            ).gen_http_response()
+        except RegisteredUser.DoesNotExist:
+            return ApiResponse(status=ApiResponse.ST_FAILED, message="User with username '{}' does not exists.".format(username)).gen_http_response()
+
+    except KeyError:
+        return ApiResponse(status=ApiResponse.ST_BAD_REQUEST, message="Please provide parameter 'username'.").gen_http_response()
+
 
 
 # ==================== Console ====================

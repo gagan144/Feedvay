@@ -31,4 +31,7 @@ urlpatterns = [
 
     # Email verification
     url(r'^verify/email/(?P<web_token>.*)/$', views.verify_email, name='accounts_verify_email'),
+
+    # Api
+    url(r'^api/get-user-details/$', views.get_user_details, name='accounts_get_user_details'),
 ]

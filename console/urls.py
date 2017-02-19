@@ -35,10 +35,11 @@ url_team = [
     url(r'^$', views_clients.console_team, name='console_team'),
 
     url(r'^roles/new/$', views_clients.console_organization_role_new, name='console_team_organization_role_new'),
-    url(r'^roles/new/$', views_clients.console_organization_role_new, name='console_team_organization_role_new'),
     url(r'^roles/create/$', views_clients.console_organization_role_create, name='console_team_organization_role_create'),
     url(r'^roles/edit/(?P<org_role_id>[0-9]+)/$', views_clients.console_organization_role_edit, name='console_team_organization_role_edit'),
     url(r'^roles/edit-save/(?P<org_role_id>[0-9]+)/$', views_clients.console_organization_role_edit_save, name='console_team_organization_role_edit_save'),
+
+    url(r'^member/new/$', views_clients.console_member_new, name='console_team_member_new'),
 
     # Api
     url(r'^api/', include(api_organization_roles.urls)),

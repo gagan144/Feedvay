@@ -1,0 +1,228 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'console/base.html' %}
+{% load static commontags %}
+
+{% block head %}
+    <!-- Favicon -->
+    <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
+
+    <title>Invite new member | {{ request.curr_org.name }}</title>
+
+    <link href="{% get_static_prefix %}ui/css/plugins/dualListbox/bootstrap-duallistbox.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-12">
+            <h2>
+                <i class="fa fa-plus"></i>
+                Invite new member
+            </h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">Home</a>
+                </li>
+                <li>
+                    <a href="{% url 'console_team' %}?c={{ request.curr_org.org_uid }}">Team</a>
+                </li>
+                <li>
+                    <a href="{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/members">Members</a>
+                </li>
+                <li class="active">
+                    Invite new member
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="wrapper wrapper-content">
+        <div class="container" ng-cloak>
+            <div class="content_box" ng-controller="FormMemberAdd">
+
+                <form name="form_member" class="form-horizontal" novalidate>
+                    <div ng-include="'{% get_static_prefix %}partials/team/add_member.html'"></div>
+
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group">
+                        <div class="col-sm-9 col-sm-offset-3">
+                            <p ng-if="flags.status==ST_AJAX.ERROR" class="text-danger">
+                                <i class="fa fa-exclamation-triangle"></i> {$ flags.error_msg $}
+                            </p>
+
+                            <div ng-if="data.is_owner || data.is_superuser" style="margin-bottom: 10px;">
+                                <b>Note:</b>
+                                <div style="padding-left: 20px;">
+                                    You have granted this person as
+                                    <b ng-if="data.is_owner" style="margin-right: 3px;">owner</b>
+                                    <b ng-if="data.is_superuser">superuser</b>.
+                                </div>
+                            </div>
+
+                            <button ladda="flags.status==ST_AJAX.LOADING" class="btn btn-primary ladda-button" type="button" ng-disabled="form_member.$invalid || form_member.$pristine" ng-click="submit_form(form_member);" data-style="zoom-in">
+                                Add & send invitation
+                            </button>
+                            <a class="btn btn-link" href="{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/roles" >
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+
+    <script src="{% get_static_prefix %}ui/js/plugins/jasny/jasny-bootstrap.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/dualListbox/jquery.bootstrap-duallistbox.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/dualListbox/angular-bootstrap-duallistbox.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/checklist-model.js"></script>
+
+    <script src="{% get_static_prefix %}apps/clients/team.js"></script>
+    <script src="{% get_static_prefix %}apps/accounts/accounts.js"></script>
+    <script>
+        'use strict';
+
+        var APP = angular.module('{{ app_name }}',[
+            'feedvay.common',
+            'feedvay.watchdog',
+            'feedvay.team',
+            'feedvay.accounts',
+
+            'ngCookies',
+            'ngMessages',
+            'ui.bootstrap',
+            'angular-ladda',
+            'frapontillo.bootstrap-duallistbox',
+            'checklist-model',
+        ])
+        .run(function($rootScope, $http, $cookies) {
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+            $http.defaults.xsrfCookieName = 'csrftoken';
+            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+            $rootScope.ST_AJAX = ST_AJAX;
+        })
+        .config(function($interpolateProvider, $httpProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+
+            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+        });
+
+        APP.controller('FormMemberAdd', function($scope, $http, $window, ServiceAccounts){
+            // --- Variables ----
+            $scope.url_roles = '{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/roles';
+            $scope.country_tel_code = '{{ country_tel_code }}';
+
+            $scope.list_roles = [
+                {% for r in list_roles %}
+                    {"id": {{ r.id }}, "name": "{{ r.name }}"}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ];
+
+            $scope.list_all_permissions = [
+                {% for p in list_all_permissions %}
+                    {"id": {{ p.id }}, "name": "{{ p.name }}", "codename":"{{ p.codename }}", "content_type": "{{ p.content_type.name }}" }{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ];
+
+            // --- Form ---
+            $scope.person_exists = false;
+            $scope.data = {};
+
+            $scope.find_user = function(mobile_no){
+                if(mobile_no) {
+                    var username = $scope.country_tel_code + "-" + mobile_no;
+                    ServiceAccounts.find_user(username).then(function (response) {
+                        if(response.status=='success'){
+                            $scope.data.email = response.data.email;
+                            $scope.data.first_name = response.data.first_name;
+                            $scope.data.last_name = response.data.last_name;
+
+                            $scope.person_exists = true;
+                        }else{
+                            $scope.person_exists = false;
+                        }
+                    });
+                }else{
+                    $scope.data.email = null;
+                    $scope.data.first_name = null;
+                    $scope.data.last_name = null;
+
+                    $scope.person_exists = false;
+                }
+            };
+
+            $scope.onchange_onwer = function(){
+                if($scope.data.is_owner){
+                    $scope.data.is_superuser = true;
+                }
+            };
+
+            $scope.flags = {
+                status: null,
+                error_msg: null,
+                errors: null
+            };
+            $scope.submit_form = function(form_obj){
+                if(form_obj.$invalid){
+                    return false;
+                }
+
+                // Prepare data
+                var data = angular.copy($scope.data);
+                var permissions = [];
+                for(var i=0;i<data['permissions'].length;i++){
+                    permissions.push(data['permissions'][i]["id"]);
+                }
+                data['permissions'] = permissions;
+
+                data['c'] = '{{ request.curr_org.org_uid }}';
+                console.log(data);
+
+                $scope.flags.status = ST_AJAX.LOADING;
+                $scope.flags.error_msg = null;
+                $scope.flags.errors = null;
+
+                $http.post(
+                    "",
+                    $.param(data)
+                )
+                .success(function (response, status, headers, config) {
+                    if(response.status=='success'){
+                        $window.location.href = '{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/roles';
+                    }else{
+                        $scope.flags.status = ST_AJAX.ERROR;
+                        $scope.flags.error_msg = response.message;
+                        if(response.status == 'failed'){
+                            $scope.flags.errors = response.errors;
+                        }
+                    }
+                })
+                .error(function (response, status, headers, config) {
+                    if(status != -1){
+                        $scope.flags.status = ST_AJAX.ERROR;
+                        $scope.flags.error_msg = "Something went wrong. Our engineers will be informed.";
+                    }else{
+                        $scope.flags.status = null;
+                        $.growl.error({
+                            title: '<i class="fa fa-signal"></i> Network error!',
+                            message: "Please check your internet connection."
+                        });
+                    }
+                });
+
+            }
+
+        });
+    </script>
+
+{% endblock %}

@@ -152,7 +152,7 @@
                 Members
 
                 {% if request.permissions|has_permission:"clients.organizationmember.add_organizationmember" %}
-                    <a href="#?c={{ request.curr_org.org_uid }}" class="btn btn-primary btn-sm pull-right">
+                    <a href="{% url 'console_team_member_new' %}?c={{ request.curr_org.org_uid }}" class="btn btn-primary btn-sm pull-right">
                         <i class="fa fa-plus"></i>
                         &nbsp;Invite new member
                     </a>
@@ -195,7 +195,7 @@
                                     {% if request.permissions|has_permission:"clients.organizationmember.add_organizationmember" %}
                                         <div >
                                             Click below button to invite new member in your organization:<br/><br/>
-                                            <a href="#?c={{ request.curr_org.org_uid }}" class="btn btn-info btn-xs">
+                                            <a href="{% url 'console_team_member_new' %}?c={{ request.curr_org.org_uid }}" class="btn btn-info btn-xs">
                                                 <i class="fa fa-plus"></i>
                                                 &nbsp;Invite new member
                                             </a>

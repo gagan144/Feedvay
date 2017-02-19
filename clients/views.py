@@ -87,7 +87,8 @@ def console_team(request, org):
 
     return render(request, 'clients/console/team/team.html', data)
 
-# ----- User permissions , roles & data access -----
+# ----- User, permissions , roles & data access -----
+# --- Roles ---
 @registered_user_only
 @organization_console(required_perms='accounts.organizationrole.add_organizationrole')
 def console_organization_role_new(request, org):
@@ -203,7 +204,30 @@ def console_organization_role_edit_save(request, org, org_role_id):
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+# --- Roles ---
 
-# ----- /User permissions , roles & data access -----
+# --- Members, invitation ---
+@registered_user_only
+@organization_console(required_perms='clients.organizationmember.add_organizationmember')
+def console_member_new(request, org):
+    """
+    View to open form to add/invite a new member in the organization.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    country_tel_code = '+91'    #TODO: Set default country_tel_code
+    data = {
+        "app_name": "app_mem_invite",
+        'country_tel_code': country_tel_code,
+        'list_roles': OrganizationRole.objects.filter(organization_id=org.id),
+        'list_all_permissions': get_all_superuser_permissions()
+    }
+
+    return render(request, 'clients/console/team/member_add.html', data)
+
+# --- /Members, invitation ---
+# ----- /User, permissions , roles & data access -----
 
 # ==================== /Console ====================

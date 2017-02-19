@@ -3,11 +3,12 @@
     <div class="col-sm-7">
         <div class="input-group date">
             <span class="input-group-addon">{$ country_tel_code $}</span>
-            <input type="text" name="mobile_no" ng-model="data.mobile_no" class="form-control" placeholder="Enter a mobile no of the person"  required
+            <input type="text" name="mobile_no" ng-model="data.mobile_no" class="form-control" placeholder="10-digit mobile no"  required
                minlength="10" maxlength="10"
                data-mask="9999999999"
                ng-class="{'error': (form_member.mobile_no.$dirty && form_member.mobile_no.$invalid) }"
                ng-change="find_user(data.mobile_no)"
+               style="width: 150px;"
             >
         </div>
         <div ng-messages="form_member.mobile_no.$dirty && form_member.mobile_no.$error" role="alert" class="error_messages">
@@ -171,5 +172,16 @@
             <label ng-message="required" class="error">Please select atleast one permission.</label>
         </div>
 
+    </div>
+</div>
+
+
+<div class="hr-line-dashed"></div>
+<div class="form-group">
+    <label class="col-sm-3 control-label">Data access:</label>
+    <div class="col-sm-7">
+        <div style="margin-top: 7px;">
+            Currently user has complete access at resource level for all granted permissions.
+        </div>
     </div>
 </div>

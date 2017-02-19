@@ -65,7 +65,7 @@
                             <button ladda="flags.status==ST_AJAX.LOADING" class="btn btn-primary ladda-button" type="button" ng-disabled="form_member.$invalid || form_member.$pristine" ng-click="submit_form(form_member);" data-style="zoom-in">
                                 Add & send invitation
                             </button>
-                            <a class="btn btn-link" href="{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/roles" >
+                            <a class="btn btn-link" href="{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/members" >
                                 Cancel
                             </a>
                         </div>

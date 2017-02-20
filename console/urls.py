@@ -40,6 +40,7 @@ url_team = [
     url(r'^roles/edit-save/(?P<org_role_id>[0-9]+)/$', views_clients.console_organization_role_edit_save, name='console_team_organization_role_edit_save'),
 
     url(r'^member/new/$', views_clients.console_member_new, name='console_team_member_new'),
+    url(r'^member/invite/$', views_clients.console_member_invite, name='console_team_member_invite'),
 
     # Api
     url(r'^api/', include(api_organization_roles.urls)),

@@ -80,13 +80,18 @@ class RegisteredUser(models.Model):
     ST_LEAD = 'lead'
     ST_VERIFICATION_PENDING = 'verification_pending'
     ST_VERIFIED = 'verified'
+    CH_STATUS = (
+        (ST_LEAD, 'Lead'),
+        (ST_VERIFICATION_PENDING, 'Verification pending'),
+        (ST_VERIFIED, 'Verified')
+    )
 
     # ----- fields -----
     user        = models.OneToOneField(User, db_index=True, editable=False, help_text='Reference to django user model.')
     reg_method  = models.CharField(max_length=32, choices=CH_REG_METHOD, db_index=True, editable=False, help_text='Last registration method used by the user')
     reg_count   = models.SmallIntegerField(default=1, editable=False, help_text='No of times this user registered himself.')
     last_reg_date = models.DateTimeField(auto_now_add=True, editable=False, help_text='Last registration datetime.')
-    status      = FSMField(default=ST_LEAD, protected=True, db_index=True, editable=False, help_text='Status of user registration.')
+    status      = FSMField(protected=True, default=ST_LEAD, choices=CH_STATUS, db_index=True, editable=False, help_text='Status of user registration.')
 
     # Permissions, Roles and DataAccess with context to Organizations
     superuser_in = models.ManyToManyField('clients.Organization', blank=True, help_text='Organizations in which this user has all permissions and data access. This overrides roles, permissions & data acess.')
@@ -870,8 +875,8 @@ class UserProfile(Document):
         first_name      = StringField(required=True, help_text="First name of the user. This will be updated by 'first_name' in User model.")
         last_name       = StringField(required=True, help_text="Last Name of the user. This will be updated by 'last_name' in User model.")
 
-        gender          = StringField(required=True, choices=CH_GENDER, help_text="User gender.")
-        date_of_birth   = DateTimeField(required=True, help_text="Date of birth (with time as 00:00:00.00+0000)")
+        gender          = StringField(required=False, choices=CH_GENDER, help_text="User gender.")  # OPTIONAL SINCE gender might not be present during invitation.
+        date_of_birth   = DateTimeField(required=False, help_text="Date of birth (with time as 00:00:00.00+0000)")  # OPTIONAL since dob might not be present during invitation.
         email           = EmailField(required=False, help_text="Email address. This must be same as 'email' in User model.")
 
         blood_group     = StringField(choices=CH_BLOOD_GROUP, help_text="Blood group of the user.")

@@ -26,7 +26,7 @@
         </p>
 
         <span ng-if="person_exists" class="text-primary">
-            <i class="fa fa-check"></i> Person exists in our system.
+            <i class="fa fa-check"></i> We recognize this person.
         </span>
     </div>
 </div>
@@ -119,7 +119,7 @@
 
 <div class="hr-line-dashed"></div>
 <div class="form-group">
-    <label class="col-sm-3 control-label">Roles<span class="required">*</span>:</label>
+    <label class="col-sm-3 control-label">Roles<span class="required" ng-if="!(data.is_owner || data.is_superuser)">*</span>:</label>
     <div class="col-sm-7">
         <p class="help-block" style="margin-top: 7px;">
             Please select one or more <a ng-href="{$ url_roles $}">roles</a> for this person:
@@ -128,13 +128,16 @@
         <div class="row">
             <div class="col-md-4" ng-repeat="role in list_roles">
                 <div class="checkbox checkbox-primary" >
-                    <input id="chkbx_role_{$ role.id $}" type="checkbox" checklist-model="data.roles" checklist-value="role.id" ng-required="!data.roles.length" >
+                    <input id="chkbx_role_{$ role.id $}" type="checkbox" checklist-model="data.roles" checklist-value="role.id" ng-required="!(data.is_owner || data.is_superuser)?!data.roles.length:false" >
                     <label for="chkbx_role_{$ role.id $}">
                         {$ role.name $}
                     </label>
                 </div>
             </div>
         </div>
+        <label ng-if="flags.errors.roles" class="error">
+            {$ flags.errors.roles.join(", "); $}
+        </label>
     </div>
 </div>
 

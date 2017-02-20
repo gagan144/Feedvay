@@ -20,6 +20,7 @@ from accounts.forms import *
 from accounts.models import *
 from accounts.utils import *
 from accounts.exceptions import *
+from accounts import operations as ops_accounts
 from owlery import owls
 from utilities.api_utils import ApiResponse
 from accounts.decorators import registered_user_only
@@ -257,6 +258,7 @@ def registration(request):
                 # Allow
                 # Create all database entries in one atomic process
                 with transaction.atomic():
+                    """
                     # Create 'User' model
                     new_user = User(
                         username = username,
@@ -290,6 +292,17 @@ def registration(request):
                     if new_registered_user.status == RegisteredUser.ST_LEAD:
                         new_registered_user.trans_registered()
                         new_registered_user.save()
+                    """
+                    # Create User
+                    # TODO: Test -> accounts.operation: create_new_registered_user
+                    form_data['date_of_birth'] = form_reg.get_date_of_birth()
+                    new_registered_user = ops_accounts.create_new_registered_user(
+                        username = username,
+                        form_data = form_data,
+                        reg_method = RegisteredUser.REG_WEB_PORTAL,
+                        set_passwd = True
+                    )
+                    new_user = new_registered_user.user
 
                     # Create verification code token
                     user_token, is_utoken_new = UserToken.objects.update_or_create(

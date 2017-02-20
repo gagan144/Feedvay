@@ -6,6 +6,7 @@ from django.http import HttpResponseForbidden
 
 from clients.models import Organization
 from clients import operations
+from clients import forms as forms_clients
 from accounts.models import OrganizationRole
 from accounts.decorators import registered_user_only, organization_console
 from accounts.utils import get_all_superuser_permissions
@@ -227,6 +228,46 @@ def console_member_new(request, org):
 
     return render(request, 'clients/console/team/member_add.html', data)
 
+@registered_user_only
+@organization_console(required_perms='clients.organizationmember.add_organizationmember')
+def console_member_invite(request, org):
+    """
+    API view to add/invite a new member in the organization. User submit his form to this
+    view.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        country_tel_code = '+91'    #TODO: Set default country_tel_code
+
+        # Set data
+        data = request.POST.copy()
+        data['organization'] = org.id
+        data['country_tel_code'] = country_tel_code
+        if request.POST.get('roles[]', None):
+            data['roles'] = request.POST.getlist('roles[]')
+            del data['roles[]']
+        if request.POST.get('permissions[]', None):
+            data['permissions'] = request.POST.getlist('permissions[]')
+            del data['permissions[]']
+
+        del data['c']
+        data = data.dict()
+
+
+        form_new_mem = forms_clients.AddInviteMemberForm(data)
+
+        if form_new_mem.is_valid():
+            form_new_mem.save(created_by=request.user)
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok.').gen_http_response()
+        else:
+            errors = dict(form_new_mem.errors)
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 # --- /Members, invitation ---
 # ----- /User, permissions , roles & data access -----
 

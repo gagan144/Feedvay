@@ -179,11 +179,13 @@
 
                 // Prepare data
                 var data = angular.copy($scope.data);
-                var permissions = [];
-                for(var i=0;i<data['permissions'].length;i++){
-                    permissions.push(data['permissions'][i]["id"]);
+                if(data['permissions']) {
+                    var permissions = [];
+                    for (var i = 0; i < data['permissions'].length; i++) {
+                        permissions.push(data['permissions'][i]["id"]);
+                    }
+                    data['permissions'] = permissions;
                 }
-                data['permissions'] = permissions;
 
                 data['c'] = '{{ request.curr_org.org_uid }}';
                 console.log(data);
@@ -193,12 +195,12 @@
                 $scope.flags.errors = null;
 
                 $http.post(
-                    "",
+                    "{% url 'console_team_member_invite' %}",
                     $.param(data)
                 )
                 .success(function (response, status, headers, config) {
                     if(response.status=='success'){
-                        $window.location.href = '{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/roles';
+                        $window.location.href = '{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/members';
                     }else{
                         $scope.flags.status = ST_AJAX.ERROR;
                         $scope.flags.error_msg = response.message;
@@ -220,7 +222,7 @@
                     }
                 });
 
-            }
+            };
 
         });
     </script>

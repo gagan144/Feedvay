@@ -99,10 +99,11 @@ class FcmPushService:
             # Multicast send
             list_user_ids = list(self.notif.notificationrecipient_set.all().values_list('registered_user__user', flat=True))
             list_devices = UserDevice.objects.filter(user__in=list_user_ids)
-            result = list_devices.send_message(
-                self.data,
-                collapse_key = self.collapse_key
-            )
-            was_send = False if result[1].get('failure', 0) else True
+            if len(list_devices):
+                result = list_devices.send_message(
+                    self.data,
+                    collapse_key = self.collapse_key
+                )
+                was_send = False if result[1].get('failure', 0) else True
 
         return (was_send, result)

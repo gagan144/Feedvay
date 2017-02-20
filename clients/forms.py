@@ -10,6 +10,7 @@ from accounts.models import RegisteredUser, OrganizationRole, UserPermission
 from clients.models import Organization, OrganizationMember
 from accounts.utils import get_all_superuser_permission_codenames
 from accounts import operations as ops_accounts
+from owlery import owls
 
 class AddInviteMemberForm(forms.Form):
     """
@@ -65,11 +66,12 @@ class AddInviteMemberForm(forms.Form):
 
     def save(self, created_by):
         data = self.cleaned_data
-        print data
 
         username = RegisteredUser.construct_username(data['country_tel_code'], data['mobile_no'])
 
         with transaction.atomic():
+            reg_user_created = False
+
             # (a) Check if user exists in the system
             try:
                 reg_user = RegisteredUser.objects.get(user__username=username)
@@ -81,6 +83,7 @@ class AddInviteMemberForm(forms.Form):
                     reg_method = RegisteredUser.REG_CAPTURED_LEAD,
                     set_passwd = False
                 )
+                reg_user_created = True
 
             # (b) Get or create org member; User might be an ex-member
             org_mem, is_new = OrganizationMember.objects.get_or_create(
@@ -95,6 +98,7 @@ class AddInviteMemberForm(forms.Form):
             # If was ex-member
             if not is_new:
                 # Revive membership
+                org_mem.created_by = created_by
                 org_mem.deleted = False
                 org_mem.save()
 
@@ -127,9 +131,8 @@ class AddInviteMemberForm(forms.Form):
 
             reg_user.save()
 
-        # TODO: Send Owls
-
-        print "Saved!"
-
-
-
+        # Send Owls
+        owls.SmsOwl.send_org_invitation(mobile_no=username, org_mem=org_mem, reg_user_created=reg_user_created, username=username)
+        if reg_user.user.email:
+            owls.EmailOwl.send_org_invitation(org_mem=org_mem)
+        owls.NotificationOwl.send_org_invitation(org_mem=org_mem)

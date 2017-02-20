@@ -1,0 +1,14 @@
+Hi {{ org_mem.registered_user.user.first_name }} {{ org_mem.registered_user.user.last_name }},<br/>
+
+<p>
+    You have been invited to <b>{{ org_mem.organization.name }}</b> by {{ org_mem.created_by.first_name }} {{ org_mem.created_by.last_name }} on Feevay.
+</p>
+
+<p>
+    Kindly visit the following <a href="{{ url }}" target="_blank">link</a> to view and explore services for your organization.
+</p>
+
+<p>
+    Best Regards,<br/>
+    Team Feedvay
+</p>

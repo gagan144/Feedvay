@@ -26,11 +26,14 @@ def create_new_registered_user(username, form_data, reg_method, set_passwd=True)
 
     # Create all database entries in one atomic process
     with transaction.atomic():
+        email = form_data.get('email', None)
+
         # Create 'User' model
         new_user = User.objects.create(
             username = username,
             first_name = form_data['first_name'],
             last_name = form_data['last_name'],
+            email = email,
             is_active = False
         )
 
@@ -50,11 +53,16 @@ def create_new_registered_user(username, form_data, reg_method, set_passwd=True)
         )
         user_profile.add_update_attribute('first_name', new_user.first_name, auto_save=False)
         user_profile.add_update_attribute('last_name', new_user.last_name, auto_save=False)
+        if email:
+            user_profile.add_update_attribute('email', email, auto_save=False)
+
         if form_data.has_key('date_of_birth'):
             # user_profile.add_update_attribute('date_of_birth', form_reg.get_date_of_birth(), auto_save=False)
             user_profile.add_update_attribute('date_of_birth', form_data['date_of_birth'], auto_save=False)
+
         if form_data.has_key('gender'):
             user_profile.add_update_attribute('gender', form_data['gender'], auto_save=False)
+
         user_profile.save()
 
         if set_passwd:

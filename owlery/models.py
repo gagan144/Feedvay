@@ -57,10 +57,12 @@ class SmsMessage(models.Model):
     TYPE_REG_VERIF = 'reg_verification'
     TYPE_PASS_RESET = 'password_reset'
     TYPE_PASS_CHNG_SUCC = 'password_change_success'
+    TYPE_ORG_INVTN = 'organization_invitation'
     CH_TYPE = (
         (TYPE_REG_VERIF, 'Registration Verification'),
         (TYPE_PASS_RESET, 'Password Reset'),
         (TYPE_PASS_CHNG_SUCC, 'Password change success'),
+        (TYPE_ORG_INVTN, 'Organization invitation')
     )
 
     PR_LOW = 'low'
@@ -175,11 +177,13 @@ class EmailMessage(models.Model):
     TYPE_PASS_RESET = 'password_reset'
     TYPE_PASS_CHNG_SUCC = 'password_change_success'
     TYPE_EMAIL_VERIF = 'email_verification'
+    TYPE_ORG_INVTN = 'organization_invitation'
     CH_TYPE = (
         (TYPE_REG_VERIF, 'Registration Verification'),
         (TYPE_PASS_RESET, 'Password Reset'),
         (TYPE_PASS_CHNG_SUCC, 'Password change success'),
         (TYPE_EMAIL_VERIF, 'Email verification'),
+        (TYPE_ORG_INVTN, 'Organization invitation')
     )
 
     PR_LOW = 'low'
@@ -357,8 +361,9 @@ class NotificationMessage(models.Model):
         (PR_URGENT, 'Urgent')
     )
 
+    TYPE_ORG_INVTN = 'organization_invitation'
     CH_TYPE = (
-        ('---', '---'),
+        (TYPE_ORG_INVTN, 'Organization_invitation'),
     )
 
     ST_NEW = 'new'

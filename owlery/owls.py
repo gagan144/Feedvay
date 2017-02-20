@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.conf import settings
 from django.db import transaction
+from django.core.urlresolvers import reverse
 
 from owlery.models import SmsMessage, EmailMessage, NotificationMessage, NotificationRecipient
 
@@ -115,6 +116,36 @@ class SmsOwl:
 
         return sms
 
+    @staticmethod
+    def send_org_invitation(mobile_no, org_mem, reg_user_created, username=None):
+        """
+        Sends a organization invitation SMS.
+
+        :param mobile_no: Mobile number. +91-9999999999 is converted to +919999999999
+        :param org_mem: Membership instance :class:`clients.models.OrganizationMember`
+        :param reg_user_created: If True, it means invitee was created during invitation.
+        :param username: (Optional) Username of user to which SMS is to be send.
+        :return: Returns :class:`owlery.model.SmsMessage` instance.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        template_name = 'org_invitation_new.txt' if reg_user_created else 'org_invitation.txt'
+        message_body = render_to_response('owlery/owls/sms/'+template_name,{
+            "org_mem": org_mem,
+        }).content
+
+        sms = SmsMessage.objects.create(
+            username = username,
+            mobile_no = mobile_no.replace('-',''),
+            message = message_body,
+            type = SmsMessage.TYPE_ORG_INVTN,
+            priority = SmsMessage.PR_HIGH
+        )
+
+        # TODO: Send SMS immediately using gateway
+
+        return sms
 
 class EmailOwl:
     """
@@ -271,6 +302,49 @@ class EmailOwl:
 
         return email_msg
 
+    @staticmethod
+    def send_org_invitation(org_mem):
+        """
+        Method to send a organization invitation email.
+
+        :param org_mem: Membership instance :class:`clients.models.OrganizationMember`
+        :return: Returns :class:`owlery.model.EmailMessage` instance
+
+        **Authors**: Gagandeep Singh
+        """
+
+        user  = org_mem.registered_user.user
+        url = "{domain}{url}?c={org_uid}".format(
+            domain = settings.FEEDVAY_DOMAIN,
+            url = reverse('console_org_home'),
+            org_uid = org_mem.organization.org_uid
+        )
+
+        # Create message body
+        message_body = render_to_response('owlery/owls/emails/org_invitation.html', {
+            "org_mem": org_mem,
+            "url": url
+        }).content
+
+        # Create database entry
+        email_msg = EmailMessage.objects.create(
+            username = user.username,
+            email_id = user.email,
+
+            subject = "Feedvay - {} invitation".format(org_mem.organization.name),
+            message = message_body,
+
+            type = EmailMessage.TYPE_ORG_INVTN,
+            priority = EmailMessage.PR_HIGH
+        )
+
+        # Send email since it is an urgent message
+        try:
+            email_msg.force_send()
+        except:
+            pass
+
+        return email_msg
 
 class NotificationOwl:
     """
@@ -289,4 +363,45 @@ class NotificationOwl:
 
     **Authors**: Gagandeep Singh
     """
-    pass
+
+    @staticmethod
+    def send_org_invitation(org_mem):
+        """
+        Sends notifications for organization invitation.
+
+        :param org_mem: Membership instance :class:`clients.models.OrganizationMember`
+        :return: Returns :class:`owlery.model.NotificationMessage` instance, None if there are no owners of the brand
+
+        **Authors**: Gagandeep Singh
+        """
+
+        url_web = "{url}?c={org_uid}".format(
+            url = reverse('console_org_home'),
+            org_uid = org_mem.organization.org_uid
+        )
+
+        message_body = render_to_response('owlery/owls/notifications/org_invitation.html', {
+            "org_mem": org_mem,
+        }).content
+
+        # Create entry
+        notif_msg = NotificationMessage.objects.create(
+            target = NotificationMessage.TARGET_USER,
+            transmission = NotificationMessage.TRANSM_MULTICAST,
+            type = NotificationMessage.TYPE_ORG_INVTN,
+            title = '{} invitation'.format(org_mem.organization.name),
+            message = message_body,
+            url_web = url_web,
+            priority = NotificationMessage.PR_URGENT
+        )
+
+        # Create recipient
+        NotificationRecipient(
+            notif_message = notif_msg,
+            registered_user = org_mem.registered_user
+        )
+
+        # Send notification
+        notif_msg.force_send()
+
+        return notif_msg

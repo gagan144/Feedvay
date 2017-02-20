@@ -1,0 +1,2 @@
+Hi {{ org_mem.registered_user.user.first_name }} {{ org_mem.registered_user.user.last_name }},
+You have been invited to '{{ org_mem.organization.name|truncatechars:20 }}' by {{ org_mem.created_by.first_name }} {{ org_mem.created_by.last_name }} at Feedvay. We have created an account with username {{ org_mem.registered_user.user.username }}. Kindly visit {{ FEEDVAY_DOMAIN }} and recover your password to access your account.

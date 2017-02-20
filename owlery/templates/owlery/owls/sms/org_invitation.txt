@@ -1,0 +1,1 @@
+{{ org_mem.created_by.first_name }} {{ org_mem.created_by.last_name }} has invited you to '{{ org_mem.organization.name|truncatechars:20 }}' at Feedvay. Login to your account to view.

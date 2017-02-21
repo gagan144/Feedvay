@@ -97,5 +97,6 @@ class OrganizationMembersAPI(ModelResource):
         }
 
         bundle.data['roles'] = list(obj.registered_user.roles.all().values('id', 'name'))
+        bundle.data['is_superuser'] = obj.registered_user.superuser_in.filter(id=obj.organization.id).exists()
 
         return bundle

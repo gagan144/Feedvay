@@ -418,6 +418,8 @@
                         'Name',
                         'MobileNo',
                         'Email',
+                        'Is owner',
+                        'Is superuser',
                         'Roles',
                         'Created by',
                         'Created on',
@@ -430,6 +432,12 @@
                         { name: 'registered_user.full_name', index: 'registered_user.full_name', width: 40 },
                         { name: 'registered_user.username', index: 'registered_user.username', width: 40 },
                         { name: 'registered_user.email', index: 'registered_user.email', width: 50 },
+                        { name: 'is_owner_html', index: 'is_owner', width: 25, align:"center",
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;true:Yes;false:No" }
+                        },
+                        { name: 'is_superuser_html', index: 'is_superuser', width: 25, align:"center",
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;true:Yes;false:No" }
+                        },
                         { name: 'roles_html', index: 'roles_html', width: 60 },
                         { name: 'created_by.display_name', index: 'created_by.display_name', width: 40 },
                         { name: 'created_on', index: 'created_on', width: 40,
@@ -483,6 +491,9 @@
 
                         records[i]['registered_user']['full_name'] = row['registered_user']['first_name'] + " " +row['registered_user']['last_name'];
                         records[i]['created_by']['display_name'] = row['created_by']['first_name'] + " " +row['created_by']['last_name'];
+
+                        records[i]['is_owner_html'] = row['is_owner']?'<i class="fa fa-check-circle text-success"></i>':'';
+                        records[i]['is_superuser_html'] = row['is_superuser']?'<i class="fa fa-check-circle text-success"></i>':'';
 
                         var roles_html = '';
                         for(var r=0;r<row['roles'].length;r++){

@@ -449,7 +449,7 @@
                             }
                         },
                         {% if request.permissions|has_permission:"clients.organizationmember.change_organizationmember" %}
-                            { name: 'actions', index: 'actions', width: 20, search:false, sortable:false },
+                            { name: 'actions_html', index: 'actions_html', width: 20, search:false, sortable:false },
                         {% endif %}
                     ],
                     viewrecords: true,
@@ -489,6 +489,11 @@
                             roles_html += ('<a href="{% url 'console_team_organization_role_edit' 9999 %}?c={{ request.curr_org.org_uid }}" target="_blank">'+row['roles'][r]['name']+'</a> ').replace('9999', row['roles'][r]['id']);
                         }
                         records[i]['roles_html'] = roles_html;
+
+                        {% if request.permissions|has_permission:"clients.organizationmember.change_organizationmember" %}
+                            records[i]['actions_html'] = ('<a href="{% url 'console_team_member_edit' 9999 %}?c={{ request.curr_org.org_uid }}" class="btn btn-primary btn-xs btn-outline grid_btn"><i class="fa fa-pencil"></i> Edit</a>').replace('9999', row['id']);
+                        {% endif %}
+
                     }
 
                     // Update grid

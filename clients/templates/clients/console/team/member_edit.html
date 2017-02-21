@@ -8,17 +8,18 @@
     <!-- Favicon -->
     <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
 
-    <title>Invite new member | {{ request.curr_org.name }}</title>
+    <title>Member: {{ org_mem.registered_user.user.first_name }} | {{ request.curr_org.name }}</title>
 
     <link href="{% get_static_prefix %}ui/css/plugins/dualListbox/bootstrap-duallistbox.min.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
 {% endblock %}
 
 {% block page_header %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-xs-12">
             <h2>
-                <i class="fa fa-plus"></i>
-                Invite new member
+                <i class="fa fa-user"></i>
+                Member: {{ org_mem.registered_user.user.first_name }} {{ org_mem.registered_user.user.last_name }}
             </h2>
             <ol class="breadcrumb">
                 <li>
@@ -31,7 +32,7 @@
                     <a href="{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/members">Members</a>
                 </li>
                 <li class="active">
-                    Invite new member
+                    {{ org_mem.registered_user.user.first_name }} {{ org_mem.registered_user.user.last_name }}
                 </li>
             </ol>
         </div>
@@ -41,10 +42,10 @@
 {% block content %}
     <div class="wrapper wrapper-content">
         <div class="container" ng-cloak>
-            <div class="content_box" ng-controller="FormMemberAdd">
+            <div class="content_box" ng-controller="FormMemberEdit">
 
                 <form name="form_member" class="form-horizontal" novalidate>
-                    <div ng-include="'{% get_static_prefix %}partials/team/add_edit_member.html'" ng-init="ACTION='add'"></div>
+                    <div ng-include="'{% get_static_prefix %}partials/team/add_edit_member.html'" ng-init="ACTION='edit'"></div>
 
                     <div class="hr-line-dashed"></div>
                     <div class="form-group">
@@ -63,11 +64,17 @@
                             </div>
 
                             <button ladda="flags.status==ST_AJAX.LOADING" class="btn btn-primary ladda-button" type="button" ng-disabled="form_member.$invalid || form_member.$pristine" ng-click="submit_form(form_member);" data-style="zoom-in">
-                                Add & send invitation
+                                Save
                             </button>
                             <a class="btn btn-link" href="{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/members" >
                                 Cancel
                             </a>
+
+                            {% if request.permissions|has_permission:"clients.organizationmember.delete_organizationmember" %}
+                                <button ladda="flags.status_rm==ST_AJAX.LOADING" class="btn btn-danger ladda-button pull-right" type="button" data-style="zoom-in" ng-click="remove_member()">
+                                    <i class="fa fa-unlink"></i> Remove
+                                </button>
+                            {% endif %}
                         </div>
                     </div>
                 </form>
@@ -82,6 +89,10 @@
     <script src="{% get_static_prefix %}ui/js/plugins/dualListbox/jquery.bootstrap-duallistbox.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/dualListbox/angular-bootstrap-duallistbox.js"></script>
     <script src="{% get_static_prefix %}lib/angular/checklist-model.js"></script>
+
+    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/uievents/event.js"></script>
 
     <script src="{% get_static_prefix %}apps/clients/team.js"></script>
     <script src="{% get_static_prefix %}apps/accounts/accounts.js"></script>
@@ -100,6 +111,8 @@
             'angular-ladda',
             'frapontillo.bootstrap-duallistbox',
             'checklist-model',
+            'oitozero.ngSweetAlert',
+            'ui.event',
         ])
         .run(function($rootScope, $http, $cookies) {
             $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
@@ -117,7 +130,7 @@
             $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
         });
 
-        APP.controller('FormMemberAdd', function($scope, $http, $window, ServiceAccounts){
+        APP.controller('FormMemberEdit', function($scope, $http, $window, $filter, SweetAlert){
             // --- Variables ----
             $scope.url_roles = '{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/roles';
             $scope.country_tel_code = '{{ country_tel_code }}';
@@ -134,32 +147,83 @@
                 {% endfor %}
             ];
 
+            // --- Remove ---
+            $scope.remove_member = function (){
+                SweetAlert.swal({
+                    title: "Are you sure?",
+                    text: "Do you want to remove this person from your organization?",
+                    type: 'warning',
+                    confirmButtonColor: "#DD6B55",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, remove!",
+                    cancelButtonText: "No, cancel!",
+                    closeOnConfirm: false,
+                    closeOnCancel: true,
+                    allowEscapeKey: false,
+                    showLoaderOnConfirm: true,
+                },
+                function (isConfirm) {
+                    if (isConfirm) {
+                        $http.post(
+                            "{% url 'console_team_member_remove' org_mem.id %}?c={{ request.curr_org.org_uid }}#/members",
+                            $.param({"confirm": 1})
+                        )
+                        .success(function (response, status, headers, config) {
+                            if(response.status=='success'){
+                                $window.location.href = '{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/members';
+                            }else{
+                                swal.close();
+                                $.growl.error({
+                                    title: '<i class="fa fa-ban"></i> Denied!',
+                                    message: response.message
+                                });
+                            }
+                        })
+                        .error(function (response, status, headers, config) {
+                            swal.close();
+                            if(status != -1){
+                                $.growl.error({
+                                    title: '<i class="fa fa-signal"></i> Network error!',
+                                    message: "Please check your internet connection."
+                                });
+                            }else{
+                                $.growl.error({
+                                    title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                    message: "Something went wrong. Our engineers will be informed."
+                                });
+                            }
+                        });
+
+                    }
+
+                });
+
+            };
+            // --- Remove ---
+
             // --- Form ---
             $scope.person_exists = false;
-            $scope.data = {};
-
-            $scope.find_user = function(mobile_no){
-                if(mobile_no) {
-                    var username = $scope.country_tel_code + "-" + mobile_no;
-                    ServiceAccounts.find_user(username).then(function (response) {
-                        if(response.status=='success'){
-                            $scope.data.email = response.data.email;
-                            $scope.data.first_name = response.data.first_name;
-                            $scope.data.last_name = response.data.last_name;
-
-                            $scope.person_exists = true;
-                        }else{
-                            $scope.person_exists = false;
-                        }
-                    });
-                }else{
-                    $scope.data.email = null;
-                    $scope.data.first_name = null;
-                    $scope.data.last_name = null;
-
-                    $scope.person_exists = false;
-                }
+            $scope.person = {
+                "first_name": "{{ org_mem.registered_user.user.first_name }}",
+                "last_name": "{{ org_mem.registered_user.user.last_name }}",
+                "mobile_no": "{{ org_mem.registered_user.user.username }}",
+                "email": "{{ org_mem.registered_user.user.email }}"
             };
+            $scope.data = {
+                "is_owner": {{ org_mem.is_owner|jsonify }},
+                "is_superuser": {{ is_superuser|jsonify }},
+                "roles": [{% for r in roles %}{{ r.id }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                "permissions": []
+            };
+            // Set original permissions
+            var perm_ids = [{% for p in permissions %}{{ p.id }}{% if not forloop.last %},{% endif %}{% endfor %}];
+            for(var i=0;i<perm_ids.length;i++){
+                var idx = perm_ids[i];
+                // Find and set
+                $scope.data['permissions'].push($filter('filter')($scope.list_all_permissions, {id: idx })[0]);
+            }
+
+            $scope.find_user = function(mobile_no){};
 
             $scope.onchange_onwer = function(){
                 if($scope.data.is_owner){
@@ -195,7 +259,7 @@
                 $scope.flags.errors = null;
 
                 $http.post(
-                    "{% url 'console_team_member_invite' %}",
+                    "",
                     $.param(data)
                 )
                 .success(function (response, status, headers, config) {

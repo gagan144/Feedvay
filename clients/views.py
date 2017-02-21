@@ -4,7 +4,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseForbidden
 
-from clients.models import Organization
+from clients.models import Organization, OrganizationMember
 from clients import operations
 from clients import forms as forms_clients
 from accounts.models import OrganizationRole
@@ -155,7 +155,8 @@ def console_organization_role_edit(request, org, org_role_id):
 
         # org_role = OrganizationRole.objects.get(organization_id=org.id, pk=org_role_id)
         org_role = OrganizationRole.objects.get(**filters)
-    except OrganizationRole.DoesNotExist:
+    except (TypeError, OrganizationRole.DoesNotExist):
+        # TypeError: If filters is None
         return HttpResponseForbidden("You do not have permissions to access this page.")
 
     data = {
@@ -184,7 +185,8 @@ def console_organization_role_edit_save(request, org, org_role_id):
 
             # org_role = OrganizationRole.objects.get(organization_id=org.id, pk=org_role_id)
             org_role = OrganizationRole.objects.get(**filters)
-        except OrganizationRole.DoesNotExist:
+        except (TypeError, OrganizationRole.DoesNotExist):
+            # TypeError: If filters is None
             return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="You do not have permissions to change this role.")
 
         # Set data
@@ -265,6 +267,80 @@ def console_member_invite(request, org):
         else:
             errors = dict(form_new_mem.errors)
             return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+@registered_user_only
+@organization_console(required_perms='clients.organizationmember.change_organizationmember')
+def console_member_edit(request, org, org_mem_id):
+    """
+    Django view to all edit an organization membership details.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    try:
+        filters = request.permissions['clients.organizationmember']['data_access']
+
+        filters['organization_id'] = org.id
+        filters['id'] = org_mem_id
+        filters['deleted'] = False
+
+        org_mem = OrganizationMember.objects.get(**filters)
+        member = org_mem.registered_user
+    except (TypeError, OrganizationRole.DoesNotExist):
+        # TypeError: If filters is None
+        return HttpResponseForbidden("You do not have permissions to access this page.")
+
+    country_tel_code = '+91'    #TODO: Set default country_tel_code
+    data = {
+        'app_name': 'app_org_mem_edit',
+        'org_mem': org_mem,
+
+        'is_superuser': member.superuser_in.filter(id=org.id).exists(),
+        'roles': member.roles.filter(organization_id=org.id),
+        'permissions': member.permissions.filter(userpermission__organization_id=org.id, userpermission__registered_user_id=member.id),
+
+        'country_tel_code': country_tel_code,
+        'list_roles': OrganizationRole.objects.filter(organization_id=org.id),
+        'list_all_permissions': get_all_superuser_permissions()
+    }
+
+    return render(request, 'clients/console/team/member_edit.html', data)
+
+@registered_user_only
+@organization_console(required_perms='clients.organizationmember.delete_organizationmember')
+def console_member_remove(request, org, org_mem_id):
+    """
+    API view to remove a member of the organization.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        try:
+            filters = request.permissions['clients.organizationmember']['data_access']
+
+            filters['organization_id'] = org.id
+            filters['id'] = org_mem_id
+            filters['deleted'] = False
+
+            org_mem = OrganizationMember.objects.get(**filters)
+        except (TypeError, OrganizationRole.DoesNotExist):
+            # TypeError: If filters is None
+            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="You do not have permissions to remove this member.")
+
+
+        confirm = int(request.POST.get('confirm', 0))
+
+        if not confirm:
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Please confirm your action.').gen_http_response()
+        else:
+            org_mem.mark_deleted(confirm=True)
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok.').gen_http_response()
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()

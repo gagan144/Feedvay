@@ -5,10 +5,11 @@ from django import forms
 from django.db import transaction
 
 from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 
-from accounts.models import RegisteredUser, OrganizationRole, UserPermission
+from accounts.models import RegisteredUser, OrganizationRole, UserPermission, UserDataAccess
 from clients.models import Organization, OrganizationMember
-from accounts.utils import get_all_superuser_permission_codenames
+from accounts.utils import get_all_superuser_permission_codenames, get_superuser_perm_json
 from accounts import operations as ops_accounts
 from owlery import owls
 
@@ -71,6 +72,7 @@ class AddInviteMemberForm(forms.Form):
 
         with transaction.atomic():
             reg_user_created = False
+            set_content_type_codes = set()
 
             # (a) Check if user exists in the system
             try:
@@ -107,10 +109,19 @@ class AddInviteMemberForm(forms.Form):
             if data['is_superuser']:
                 reg_user.superuser_in.add(data['organization'])
                 # No need to create roles & permissions
+
+                su_keys = get_superuser_perm_json().keys()
+                for k in su_keys:
+                    set_content_type_codes.add(k)
+
             else:
                 # Create Roles
                 for role in data['roles']:
                     reg_user.roles.add(role)
+
+                    for p in role.permissions.all():
+                        set_content_type_codes.add("{}.{}".format(p.content_type.app_label, p.content_type.model))
+
 
                 # Create permissions if selected
                 list_permissions = data['permissions']
@@ -125,11 +136,35 @@ class AddInviteMemberForm(forms.Form):
                                 created_by = created_by
                             )
                         )
+
+                        set_content_type_codes.add("{}.{}".format(perm.content_type.app_label, perm.content_type.model))
+
                     UserPermission.objects.bulk_create(list_usr_perm)
 
-            # TODO: Create data access
-
             reg_user.save()
+
+            # (d) Create data access
+            list_da = []
+            cache_ct = {}
+            for app_model in set_content_type_codes:
+                ct = cache_ct.get(app_model, None)
+                if ct is None:
+                    _key = app_model.split('.')
+                    ct = ContentType.objects.get(app_label=_key[0], model=_key[1])
+                    cache_ct[app_model] = ct
+
+                list_da.append(
+                    UserDataAccess(
+                        organization = data['organization'],
+                        registered_user = reg_user,
+                        content_type = ct,
+                        all_access = True,
+                        access_filter = None,
+                        created_by = created_by
+                    )
+                )
+            UserDataAccess.objects.bulk_create(list_da)
+
 
         # Send Owls
         owls.SmsOwl.send_org_invitation(mobile_no=username, org_mem=org_mem, reg_user_created=reg_user_created, username=username)

@@ -116,6 +116,8 @@ def has_necessary_permissions(perm_json, required_perms, all_required=True):
     :param required_perms: String or list of permission key of format ``<app-label>.<model-name>.<perm-codename>``.
     :param all_required: If True, all permissions are required else atleast one.
     :return: True if necessity is met else False
+
+    **Authors**: Gagandeep Singh
     """
 
     # Make list if not required_perms is string
@@ -141,6 +143,20 @@ def has_necessary_permissions(perm_json, required_perms, all_required=True):
 
     return is_permitted
 
+def get_superuser_perm_json():
+    """
+    Method to read return superuser permissions json from ``accounts/data/superuser.json`` files.
+
+    :return: Dict
+
+    **Authors**: Gagandeep Singh
+    """
+
+    file_path = os.path.join(os.path.dirname(__file__), 'data/superuser.json')
+    with open(file_path, 'r') as f:
+        perm_json = json.load(f)
+
+    return perm_json
 
 def get_all_superuser_permission_codenames():
     """
@@ -149,6 +165,8 @@ def get_all_superuser_permission_codenames():
     and returns list of permissions codenames.
 
     :return: List
+
+    **Authors**: Gagandeep Singh
     """
 
     file_path  = os.path.join(os.path.dirname(__file__), 'data/superuser.json')
@@ -168,6 +186,8 @@ def get_all_superuser_permissions():
     superuser permission codenames.
 
     :return: List<:class:`django.contrib.auth.model.Permission`>
+
+    **Authors**: Gagandeep Singh
     """
     list_codenames = get_all_superuser_permission_codenames()
     return Permission.objects.filter(codename__in=list_codenames).select_related('content_type').order_by('content_type__model', 'codename')

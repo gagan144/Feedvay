@@ -222,9 +222,11 @@ class RegisteredUser(models.Model):
 
             if self.superuser_in.filter(id=organization.id).exists():
                 # --- User is SUPERUSER ---
-                file_path = os.path.join(os.path.dirname(__file__), 'data/superuser.json')
-                with open(file_path, 'r') as f:
-                    perm_json = json.load(f)
+                # file_path = os.path.join(os.path.dirname(__file__), 'data/superuser.json')
+                # with open(file_path, 'r') as f:
+                #     perm_json = json.load(f)
+                from accounts.utils import get_superuser_perm_json
+                perm_json = get_superuser_perm_json()
 
                 # Set/Update cache
                 if update_cache:

@@ -34,4 +34,5 @@ Contents
        utils
        exceptions
        api
+       operations
 

@@ -98,6 +98,7 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Utilities</a></li>
 <li class="toctree-l3"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html">Resource API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operations.html">Operations</a></li>
 </ul>
 </li>
 </ul>
@@ -218,6 +219,55 @@ incomplete registration state etc.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="accounts.utils.get_all_superuser_permission_codenames">
+<code class="descclassname">accounts.utils.</code><code class="descname">get_all_superuser_permission_codenames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#accounts.utils.get_all_superuser_permission_codenames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to return all permission codenames for superuser access.
+This method reads <code class="docutils literal"><span class="pre">accounts/data/superuser.json</span></code> file, iterates over all keys
+and returns list of permissions codenames.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="accounts.utils.get_all_superuser_permissions">
+<code class="descclassname">accounts.utils.</code><code class="descname">get_all_superuser_permissions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#accounts.utils.get_all_superuser_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to return all <code class="xref py py-class docutils literal"><span class="pre">django.contrib.auth.models.Permission</span></code> for superuser access.
+This method uses <a class="reference internal" href="#accounts.utils.get_all_superuser_permission_codenames" title="accounts.utils.get_all_superuser_permission_codenames"><code class="xref py py-func docutils literal"><span class="pre">accounts.utils.get_all_superuser_permission_codenames()</span></code></a> to obtain all
+superuser permission codenames.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List&lt;<code class="xref py py-class docutils literal"><span class="pre">django.contrib.auth.model.Permission</span></code>&gt;</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="accounts.utils.get_superuser_perm_json">
+<code class="descclassname">accounts.utils.</code><code class="descname">get_superuser_perm_json</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#accounts.utils.get_superuser_perm_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to read return superuser permissions json from <code class="docutils literal"><span class="pre">accounts/data/superuser.json</span></code> files.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Dict</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="accounts.utils.has_necessary_permissions">
 <code class="descclassname">accounts.utils.</code><code class="descname">has_necessary_permissions</code><span class="sig-paren">(</span><em>perm_json</em>, <em>required_perms</em>, <em>all_required=True</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.utils.has_necessary_permissions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to check if given permission json has all necessary permissions. The necessity has
@@ -239,6 +289,7 @@ be all permissions are strictly required (AND operation) or atleast one perissio
 </tr>
 </tbody>
 </table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 
 <dl class="function">

@@ -97,6 +97,8 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Views</a></li>
 <li class="toctree-l3"><a class="reference internal" href="utils.html">Utilities</a></li>
 <li class="toctree-l3"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html">Resource API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operations.html">Operations</a></li>
 </ul>
 </li>
 </ul>
@@ -164,6 +166,32 @@
 <em class="property">class </em><code class="descclassname">accounts.views.</code><code class="descname">UserDeviceViewSet</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.views.UserDeviceViewSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>View to register or de-register user device for Google Firebase Cloud Messaging (FCM).</p>
 <p><strong>Type</strong>: POST</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="accounts.views.get_user_details">
+<code class="descclassname">accounts.views.</code><code class="descname">get_user_details</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.views.get_user_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>An API view to return basic details of <a class="reference internal" href="models.html#accounts.models.RegisteredUser" title="accounts.models.RegisteredUser"><code class="xref py py-class docutils literal"><span class="pre">accounts.models.RegisteredUser</span></code></a> given an username.</p>
+<p><strong>Response</strong>:</p>
+<blockquote>
+<div><p>If user is found:</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Ok&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">{}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If user is <strong>NOT</strong> found:</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failed&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;some-message&gt;&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><strong>Type</strong>: GET</p>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
 </dd></dl>
 

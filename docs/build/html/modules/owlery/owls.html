@@ -204,6 +204,23 @@ from where they are picked up by a cron process for dispatching.</p>
 </dd></dl>
 
 <dl class="staticmethod">
+<dt id="owlery.owls.EmailOwl.send_org_invitation">
+<em class="property">static </em><code class="descname">send_org_invitation</code><span class="sig-paren">(</span><em>org_mem</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.EmailOwl.send_org_invitation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to send a organization invitation email.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>org_mem</strong> &#8211; Membership instance <a class="reference internal" href="../clients/models.html#clients.models.OrganizationMember" title="clients.models.OrganizationMember"><code class="xref py py-class docutils literal"><span class="pre">clients.models.OrganizationMember</span></code></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Returns <code class="xref py py-class docutils literal"><span class="pre">owlery.model.EmailMessage</span></code> instance</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
 <dt id="owlery.owls.EmailOwl.send_password_change_success">
 <em class="property">static </em><code class="descname">send_password_change_success</code><span class="sig-paren">(</span><em>user</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.EmailOwl.send_password_change_success" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends password change success email to the user.</p>
@@ -263,6 +280,23 @@ and sends the message to push service.</li>
 </ol>
 </div></blockquote>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="staticmethod">
+<dt id="owlery.owls.NotificationOwl.send_org_invitation">
+<em class="property">static </em><code class="descname">send_org_invitation</code><span class="sig-paren">(</span><em>org_mem</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.NotificationOwl.send_org_invitation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends notifications for organization invitation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>org_mem</strong> &#8211; Membership instance <a class="reference internal" href="../clients/models.html#clients.models.OrganizationMember" title="clients.models.OrganizationMember"><code class="xref py py-class docutils literal"><span class="pre">clients.models.OrganizationMember</span></code></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Returns <code class="xref py py-class docutils literal"><span class="pre">owlery.model.NotificationMessage</span></code> instance, None if there are no owners of the brand</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -280,6 +314,30 @@ and sends the message.</li>
 </ol>
 </div></blockquote>
 <p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="staticmethod">
+<dt id="owlery.owls.SmsOwl.send_org_invitation">
+<em class="property">static </em><code class="descname">send_org_invitation</code><span class="sig-paren">(</span><em>mobile_no</em>, <em>org_mem</em>, <em>reg_user_created</em>, <em>username=None</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.SmsOwl.send_org_invitation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a organization invitation SMS.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mobile_no</strong> &#8211; Mobile number. +91-9999999999 is converted to +919999999999</li>
+<li><strong>org_mem</strong> &#8211; Membership instance <a class="reference internal" href="../clients/models.html#clients.models.OrganizationMember" title="clients.models.OrganizationMember"><code class="xref py py-class docutils literal"><span class="pre">clients.models.OrganizationMember</span></code></a></li>
+<li><strong>reg_user_created</strong> &#8211; If True, it means invitee was created during invitation.</li>
+<li><strong>username</strong> &#8211; (Optional) Username of user to which SMS is to be send.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Returns <code class="xref py py-class docutils literal"><span class="pre">owlery.model.SmsMessage</span></code> instance.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
 <dl class="staticmethod">
 <dt id="owlery.owls.SmsOwl.send_password_change_success">
 <em class="property">static </em><code class="descname">send_password_change_success</code><span class="sig-paren">(</span><em>mobile_no</em>, <em>username=None</em><span class="sig-paren">)</span><a class="headerlink" href="#owlery.owls.SmsOwl.send_password_change_success" title="Permalink to this definition">¶</a></dt>

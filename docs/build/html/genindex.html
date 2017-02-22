@@ -189,15 +189,19 @@
   </dt>
 
       
-  <dt><a href="modules/accounts/utils.html#module-accounts.utils">accounts.utils (module)</a>
+  <dt><a href="modules/accounts/operations.html#module-accounts.operations">accounts.operations (module)</a>
   </dt>
 
       
-  <dt><a href="modules/accounts/views.html#module-accounts.views">accounts.views (module)</a>
+  <dt><a href="modules/accounts/utils.html#module-accounts.utils">accounts.utils (module)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="modules/accounts/views.html#module-accounts.views">accounts.views (module)</a>
+  </dt>
+
       
   <dt><a href="modules/accounts/models.html#accounts.models.UserProfile.add_update_attribute">add_update_attribute() (accounts.models.UserProfile method)</a>
   </dt>
@@ -535,6 +539,10 @@
   </dt>
 
       
+  <dt><a href="modules/accounts/operations.html#accounts.operations.create_new_registered_user">create_new_registered_user() (in module accounts.operations)</a>
+  </dt>
+
+      
   <dt><a href="modules/utilities/theme.html#utilities.theme.ColorUtils.cvt_hex_rgb">cvt_hex_rgb() (utilities.theme.ColorUtils static method)</a>
   </dt>
 
@@ -809,6 +817,14 @@
   </dt>
 
       
+  <dt><a href="modules/accounts/utils.html#accounts.utils.get_all_superuser_permission_codenames">get_all_superuser_permission_codenames() (in module accounts.utils)</a>
+  </dt>
+
+      
+  <dt><a href="modules/accounts/utils.html#accounts.utils.get_all_superuser_permissions">get_all_superuser_permissions() (in module accounts.utils)</a>
+  </dt>
+
+      
   <dt><a href="modules/form_builder/models.html#form_builder.models.BaseResponse.get_answers_lookup">get_answers_lookup() (form_builder.models.BaseResponse method)</a>
   </dt>
 
@@ -873,6 +889,10 @@
   </dt>
 
       
+  <dt><a href="modules/accounts/utils.html#accounts.utils.get_superuser_perm_json">get_superuser_perm_json() (in module accounts.utils)</a>
+  </dt>
+
+      
   <dt><a href="modules/form_builder/templatetags.html#form_builder.templatetags.formbuilder.get_trans_from_lookup">get_trans_from_lookup() (in module form_builder.templatetags.formbuilder)</a>
   </dt>
 
@@ -882,6 +902,10 @@
 
       
   <dt><a href="modules/languages/templatetags.html#languages.templatetags.language_tags.get_translation_text">get_translation_text() (in module languages.templatetags.language_tags)</a>
+  </dt>
+
+      
+  <dt><a href="modules/accounts/views.html#accounts.views.get_user_details">get_user_details() (in module accounts.views)</a>
   </dt>
 
       
@@ -1171,10 +1195,6 @@
   </dt>
 
       
-  <dt><a href="modules/accounts/api.html#accounts.api.OrganizarionRolesAPI">OrganizarionRolesAPI (class in accounts.api)</a>
-  </dt>
-
-      
   <dt><a href="modules/clients/models.html#clients.models.Organization">Organization (class in clients.models)</a>
   </dt>
 
@@ -1187,11 +1207,19 @@
   </dt>
 
       
+  <dt><a href="modules/clients/api.html#clients.api.OrganizationMembersAPI">OrganizationMembersAPI (class in clients.api)</a>
+  </dt>
+
+      
   <dt><a href="modules/accounts/models.html#accounts.models.OrganizationRole">OrganizationRole (class in accounts.models)</a>
   </dt>
 
       
-  <dt><a href="modules/utilities/tastypi_utils.html#utilities.tastypie_utils.OrgConsoleAuthorization">OrgConsoleAuthorization (class in utilities.tastypie_utils)</a>
+  <dt><a href="modules/accounts/forms.html#accounts.forms.OrganizationRoleForm">OrganizationRoleForm (class in accounts.forms)</a>
+  </dt>
+
+      
+  <dt><a href="modules/accounts/api.html#accounts.api.OrganizationRolesAPI">OrganizationRolesAPI (class in accounts.api)</a>
   </dt>
 
   </dl></td>
@@ -1502,12 +1530,26 @@
   <dt><a href="modules/owlery/mod_services.html#owlery.services.firebase.FcmPushService.send">send() (owlery.services.firebase.FcmPushService method)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/owlery/owls.html#owlery.owls.EmailOwl.send_email_verification">send_email_verification() (owlery.owls.EmailOwl static method)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="modules/owlery/owls.html#owlery.owls.EmailOwl.send_org_invitation">send_org_invitation() (owlery.owls.EmailOwl static method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="modules/owlery/owls.html#owlery.owls.NotificationOwl.send_org_invitation">(owlery.owls.NotificationOwl static method)</a>
+  </dt>
+
+        
+  <dt><a href="modules/owlery/owls.html#owlery.owls.SmsOwl.send_org_invitation">(owlery.owls.SmsOwl static method)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="modules/owlery/owls.html#owlery.owls.EmailOwl.send_password_change_success">send_password_change_success() (owlery.owls.EmailOwl static method)</a>
   </dt>

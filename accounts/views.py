@@ -625,14 +625,14 @@ def recover_account(request):
                             registered_user = user.registereduser
 
                             if registered_user.status == RegisteredUser.ST_LEAD:
-                                # Transist to verfification pending
+                                # Transit to verification pending
                                 registered_user.trans_registered()
                                 registered_user.save()
 
                                 user.is_active = True
                                 user.save()
 
-                            # Now transist him to verified
+                            # Now transit him to verified
                             registered_user.trans_verification_completed()
                             registered_user.save()
 
@@ -684,8 +684,6 @@ def recover_account(request):
                         """
                     else:
                         raise NotImplementedError("Invalid condition for user class '{}'".format(user_class))
-
-
 
                 else:
                     # Token verification failed

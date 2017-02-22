@@ -88,6 +88,12 @@ class OrganizationMemberAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+    def save_model(self, request, obj, form, change):
+        if obj.pk is None:
+            obj.created_by = request.user
+
+        obj.save()
+
 @admin.register(OrgInvitation)
 class OrgInvitationAdmin(admin.ModelAdmin):
     """

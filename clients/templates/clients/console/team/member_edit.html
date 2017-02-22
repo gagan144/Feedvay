@@ -8,7 +8,7 @@
     <!-- Favicon -->
     <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
 
-    <title>Member: {{ org_mem.registered_user.user.first_name }} | {{ request.curr_org.name }}</title>
+    <title>{{ org_mem.registered_user.user.first_name }} {{ org_mem.registered_user.user.last_name }} | {{ request.curr_org.name }}</title>
 
     <link href="{% get_static_prefix %}ui/css/plugins/dualListbox/bootstrap-duallistbox.min.css" rel="stylesheet">
     <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
@@ -252,14 +252,13 @@
                 }
 
                 data['c'] = '{{ request.curr_org.org_uid }}';
-                console.log(data);
 
                 $scope.flags.status = ST_AJAX.LOADING;
                 $scope.flags.error_msg = null;
                 $scope.flags.errors = null;
 
                 $http.post(
-                    "",
+                    "{% url 'console_team_member_edit_save' org_mem.id %}",
                     $.param(data)
                 )
                 .success(function (response, status, headers, config) {

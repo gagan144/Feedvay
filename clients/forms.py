@@ -171,3 +171,133 @@ class AddInviteMemberForm(forms.Form):
         if reg_user.user.email:
             owls.EmailOwl.send_org_invitation(org_mem=org_mem)
         owls.NotificationOwl.send_org_invitation(org_mem=org_mem)
+
+class EditMemberForm(forms.Form):
+    """
+    Django form to edit membership of a user in an organization..
+
+    **Authors**: Gagandeep Singh
+    """
+    org_mem     = forms.ModelChoiceField(queryset=OrganizationMember.objects.all())
+
+    is_owner    = forms.BooleanField(required=False)
+    is_superuser = forms.BooleanField(required=False)
+    roles       = forms.ModelMultipleChoiceField(required=False, queryset=OrganizationRole.objects.all())
+    permissions = forms.ModelMultipleChoiceField(required=False, queryset=Permission.objects.all())
+
+    def clean(self):
+        form_data = self.cleaned_data
+
+        org_mem = form_data['org_mem']
+        org = org_mem.organization
+
+        # Validate
+        if form_data['is_owner']:
+            form_data['is_superuser'] = True
+
+        if not (form_data['is_owner'] or form_data['is_superuser']):
+            if len(form_data['roles']) == 0:
+                self._errors['roles'] = ['Please select atleast one role.']
+
+        # roles
+        for role in form_data['roles']:
+            if role.organization_id != org.id:
+                self._errors['roles'] = ["Invalid role '{}' selected.".format(role.name)]
+                break
+
+        # permissions
+        list_codenames = get_all_superuser_permission_codenames()
+        for perm in form_data['permissions']:
+            if perm.codename not in list_codenames:
+                self._errors['roles'] = ["Invalid permission '{}' selected.'".format(perm.codename)]
+                break
+
+        return form_data
+
+    def save(self, created_by):
+        data = self.cleaned_data
+        org_mem = data['org_mem']
+        org = org_mem.organization
+        reg_user = org_mem.registered_user
+
+        with transaction.atomic():
+            set_content_type_new_codes = set()  # List of '<app>.<model>' codes
+
+            # Owner
+            org_mem.is_owner = data['is_owner']
+            org_mem.save()
+
+            # Superuser
+            is_su = reg_user.superuser_in.filter(id=org.id).exists()
+            if is_su and data['is_superuser'] == False:
+                # Was su, now he is NOT
+                reg_user.superuser_in.remove(org)
+            elif is_su == False and data['is_superuser']:
+                # Was NOT su but now he is
+                reg_user.superuser_in.add(org)
+
+            # Roles
+            list_roles_curr = set(list(reg_user.roles.filter(organization_id=org.id).values_list('id', flat=True)))     # Eg: [1,2,3]
+            list_roles_new = set([r.id for r in data['roles']])     # Eg: [1,2,5,6]
+
+            list_roles_rm = list(list_roles_curr-list_roles_new)    # Eg: [1,2,3]-[1,2,5,6] = [3]
+            list_roles_add = list(list_roles_new-list_roles_curr)   # Eg: [1,2,5,6]-[1,2,3] = [5,6]
+
+            reg_user.roles.remove(*list_roles_rm)
+            reg_user.roles.add(*list_roles_add)
+
+            for role in data['roles']:
+                if role.id in list_roles_add:
+                    for p in role.permissions.all():
+                        set_content_type_new_codes.add("{}.{}".format(p.content_type.app_label, p.content_type.model))
+
+            # Permissions
+            list_perms_curr = set(list(UserPermission.objects.filter(organization_id=org.id, registered_user_id=reg_user.id).values_list('permission', flat=True)))
+            list_perm_new = set([p.id for p in data['permissions']])
+
+            list_perm_rm = list(list_perms_curr-list_perm_new)
+            list_perm_add = list(list_perm_new-list_perms_curr)
+
+            if len(list_perm_rm):
+                UserPermission.objects.filter(organization_id=org.id, registered_user_id=reg_user.id, permission_id__in=list_perm_rm).delete()
+
+            bulk_usr_perm = []
+            for pid in list_perm_add:
+                bulk_usr_perm.append(
+                    UserPermission(
+                        organization = org,
+                        registered_user = reg_user,
+                        permission_id = pid,
+                        created_by = created_by
+                    )
+                )
+            UserPermission.objects.bulk_create(bulk_usr_perm)
+
+            for p in data['permissions']:
+                if p.id in list_perm_add:
+                    set_content_type_new_codes.add("{}.{}".format(p.content_type.app_label, p.content_type.model))
+
+            # Data Access; Create only those which do not exists. Ignore present ones
+            list_da = []
+            cache_ct = {}
+            for app_model in set_content_type_new_codes:
+                ct = cache_ct.get(app_model, None)
+                if ct is None:
+                    _key = app_model.split('.')
+                    ct = ContentType.objects.get(app_label=_key[0], model=_key[1])
+                    cache_ct[app_model] = ct
+
+                if not UserDataAccess.objects.filter(organization_id=org.id, registered_user_id=reg_user.id, content_type_id=ct.id).exists():
+                    list_da.append(
+                        UserDataAccess(
+                            organization = org,
+                            registered_user = reg_user,
+                            content_type = ct,
+                            all_access = True,
+                            access_filter = None,
+                            created_by = created_by
+                        )
+                    )
+
+            UserDataAccess.objects.bulk_create(list_da)
+

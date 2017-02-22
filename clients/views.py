@@ -311,6 +311,44 @@ def console_member_edit(request, org, org_mem_id):
     return render(request, 'clients/console/team/member_edit.html', data)
 
 @registered_user_only
+@organization_console(required_perms='clients.organizationmember.add_organizationmember')
+def console_member_edit_save(request, org, org_mem_id):
+    """
+    API view to save changes for a member in the organization. User submit his form to this
+    view.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+
+        # Set data
+        data = request.POST.copy()
+        data['org_mem'] = org_mem_id
+        if request.POST.get('roles[]', None):
+            data['roles'] = request.POST.getlist('roles[]')
+            del data['roles[]']
+        if request.POST.get('permissions[]', None):
+            data['permissions'] = request.POST.getlist('permissions[]')
+            del data['permissions[]']
+
+        del data['c']
+        data = data.dict()
+
+        form_edit_mem = forms_clients.EditMemberForm(data)
+
+        if form_edit_mem.is_valid():
+            form_edit_mem.save(created_by=request.user)
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok.').gen_http_response()
+        else:
+            errors = dict(form_edit_mem.errors)
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+@registered_user_only
 @organization_console(required_perms='clients.organizationmember.delete_organizationmember')
 def console_member_remove(request, org, org_mem_id):
     """

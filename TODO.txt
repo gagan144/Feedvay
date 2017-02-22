@@ -12,6 +12,9 @@
     - Info correction when user is created by invitation
     - After invitation new create ask user to recover password.
 
+- Clients
+    - Org: Correct description as HTML
+
 - Market
     - BSP
         - Purpose of visit

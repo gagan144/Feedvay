@@ -42,6 +42,7 @@ url_team = [
     url(r'^member/new/$', views_clients.console_member_new, name='console_team_member_new'),
     url(r'^member/invite/$', views_clients.console_member_invite, name='console_team_member_invite'),
     url(r'^member/edit/(?P<org_mem_id>[0-9]+)/$', views_clients.console_member_edit, name='console_team_member_edit'),
+    url(r'^member/edit-save/(?P<org_mem_id>[0-9]+)/$', views_clients.console_member_edit_save, name='console_team_member_edit_save'),
     url(r'^member/remove/(?P<org_mem_id>[0-9]+)/$', views_clients.console_member_remove, name='console_team_member_remove'),
 
     # Api

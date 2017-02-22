@@ -614,6 +614,36 @@ def recover_account(request):
                         return HttpResponseRedirect(reverse('console_home'))
 
                     elif user_class == ClassifyRegisteredUser.UNVERIFIED:
+                        # --- (3.2) Unverified user ---
+                        # Mark verified since it has already verified itself from password recovery
+                        # User can be lead or verification pending here
+
+                        with transaction.atomic():
+                            # Delete Token
+                            user_pass_reset_token.delete()
+
+                            registered_user = user.registereduser
+
+                            if registered_user.status == RegisteredUser.ST_LEAD:
+                                # Transist to verfification pending
+                                registered_user.trans_registered()
+                                registered_user.save()
+
+                                user.is_active = True
+                                user.save()
+
+                            # Now transist him to verified
+                            registered_user.trans_verification_completed()
+                            registered_user.save()
+
+                            # Login user and create session
+                            auth.login(request, user)
+                            request.session.set_expiry(0) # Expire when web browser is closed
+
+                            # Redirect to home
+                            return HttpResponseRedirect(reverse('console_home'))
+
+                        """
                         # --- (3.2) Unverified user; redirect to verification ---
                         # Delete Token
                         user_pass_reset_token.delete()
@@ -651,6 +681,7 @@ def recover_account(request):
                                 token = token
                             )
                         )
+                        """
                     else:
                         raise NotImplementedError("Invalid condition for user class '{}'".format(user_class))
 

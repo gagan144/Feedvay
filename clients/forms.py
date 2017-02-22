@@ -301,3 +301,4 @@ class EditMemberForm(forms.Form):
 
             UserDataAccess.objects.bulk_create(list_da)
 
+        reg_user.fetch_all_permissions(organization=org, update_cache=True)

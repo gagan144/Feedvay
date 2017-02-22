@@ -10,7 +10,6 @@
 
 - RegisteredUser
     - Info correction when user is created by invitation
-    - After invitation new create ask user to recover password.
 
 - Market
     - BSP
@@ -20,8 +19,6 @@
     - Create: survey title already existing - autocomplete type options
     - API - Access authentication
 
-- Brands
-    - Disable notifications for brand owners and only for brand authority users
 
 - Data privacy conventions (public, encypted, client shared etc)
 

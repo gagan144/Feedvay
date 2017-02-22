@@ -38,6 +38,10 @@
                                         <span class="label label-danger label-ribbon right">
                                             Deleted
                                         </span>
+                                    {% elif org.status == Organization.ST_VERF_PENDING %}
+                                        <span class="label label-warning label-ribbon right">
+                                            Verification pending
+                                        </span>
                                     {% endif %}
 
                                     <div align="center" class="logo">

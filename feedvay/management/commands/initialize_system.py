@@ -3,6 +3,7 @@
 # permission of Gagandeep Singh.
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
+from django.db import transaction
 import codecs
 import json
 import os
@@ -23,6 +24,48 @@ class Command(BaseCommand):
     help = 'Initialises system and creates all necessary database entries. ' \
            'Use this command only after all database syncs have been done.'
     requires_system_checks = True
+
+    def db_permissions(self):
+        """
+        Initializes any extra permissions in permissions framework. This ussualy includes
+        mongodb collection.
+
+        **Authors**: Gagandeep Singh
+        """
+        self.stdout.write('* Creating database entries for extra permissions...')
+        from django.contrib.auth.models import Permission
+        from django.contrib.contenttypes.models import ContentType
+
+        self.stdout.write('\tPreparing data...')
+        # Read json database
+        f = open(os.path.join(DIR_DB, "db_permissions.json"), 'r')
+        data_perms = json.loads(f.read())
+        f.close()
+
+        count_ct = 0
+        count_p = 0
+        for row in data_perms:
+            with transaction.atomic():
+                # Create ContenType
+                content_type, is_new_ct = ContentType.objects.get_or_create(
+                    app_label = row['app'],
+                    model = row['model']
+                )
+                if is_new_ct:
+                    count_ct += 1
+
+                # Create permissions
+                for p in row['permissions']:
+                    perm, is_new_perm = Permission.objects.get_or_create(
+                        name = p['name'],
+                        content_type = content_type,
+                        codename = p['codename']
+                    )
+                    if is_new_perm:
+                        count_p += 1
+
+        self.stdout.write('\tDone! {} content types and {} permissions inserted.'.format(count_ct, count_p))
+
 
     def db_languages(self):
         """
@@ -192,13 +235,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write('Initializing Feedvay system, please wait...')
 
-        # (1) Create database entries for language & translations
+        # (1) Create permissions
+        self.db_permissions()
+
+        # (2) Create database entries for language & translations
         self.db_languages()
 
-        # (2) Create database entries for themes
+        # (3) Create database entries for themes
         self.db_themes()
 
-        # (3) Market
+        # (4) Market
         self.db_market()
 
         # Completed!

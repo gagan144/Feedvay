@@ -27,6 +27,7 @@ from accounts.models import RegisteredUser
 from clients.models import Organization
 from utilities.theme import UiTheme, ColorUtils, render_skin
 from utilities.abstract_models.mongodb import AddressEmbDoc, ContactEmbDoc
+from market.bsp_types import BspTypes
 
 # ----- General -----
 class BspTag(Document):
@@ -487,15 +488,13 @@ class BusinessServicePoint(Document):
     name        = StringField(required=True, help_text="Name of the business or service point. Thius can be duplicates.")
     description = StringField(help_text='Description about this BSP.')
 
-    # TODO: type, members
-    # type        = models
+    type        = StringField(required=True, choices=BspTypes.choices, help_text="Type of BSP.")
     organization_id = IntField(required=True, help_text="Instance id of the organization to which this BSP belongs to.")
     brand_id    = IntField(help_text="(Optional) Instance id of the brand to which this BSP belongs to.")
-    # members
 
     # Attributes
     attributes  = DictField(required=True, help_text='Pre-defined attributes of BSP according to BspType. Use this for reporting or display.')
-    timings     = EmbeddedDocumentListField(DayTiming, help_text='Week day wise timings. This can hav multiple timings for a day.')
+    timings     = EmbeddedDocumentListField(DayTiming, help_text='Week day wise timings. This can have multiple timings for a day.')
 
     list_attributes = EmbeddedDocumentListField(Attribute, required=True, help_text="List of all attributes from various fields. These are populated by 'attributes' so do not update here. Use this for analytics.")
 
@@ -534,6 +533,7 @@ class BusinessServicePoint(Document):
         'indexes':[
             'bsp_uid',
             '$name',
+            'type',
             'organization_id',
             { 'fields':['brand_id'], 'cls':False, 'sparse': True },
 

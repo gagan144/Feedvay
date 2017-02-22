@@ -1,0 +1,13 @@
+[
+  {
+    "app": "market",
+    "model": "businessservicepoint",
+    "db": "mongodb",
+    "permissions": [
+      {"codename": "add_businessservicepoint", "name":"Can add business or service points"},
+      {"codename": "change_businessservicepoint", "name":"Can change business or service points"},
+      {"codename": "delete_businessservicepoint", "name":"Can delete business or service points"},
+      {"codename": "view_businessservicepoint", "name":"Can view business or service points"}
+    ]
+  }
+]

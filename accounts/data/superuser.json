@@ -14,5 +14,9 @@
   "market.brand":{
     "permissions": ["add_brand", "view_brand", "change_brand", "delete_brand"],
     "data_access": {}
+  },
+  "market.businessservicepoint":{
+    "permissions": ["add_businessservicepoint", "view_businessservicepoint", "change_businessservicepoint", "delete_businessservicepoint"],
+    "data_access": {}
   }
 }

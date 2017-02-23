@@ -58,6 +58,10 @@ url_brands = [
     url(r'^save-changes/$', views_market.console_brand_save_changes, name='console_market_brand_save_changes'),
 ]
 
+url_bsp = [
+    url(r'^$', views_market.console_bsp_panel, name='console_market_bsp_panel'),
+]
+
 api_survey_responses = api_surveys.SurveyResponsesAPI()
 api_survey_response_trend = api_surveys.SurveyResponseTrendAPI()
 url_surveys = [
@@ -90,5 +94,6 @@ urlpatterns = [
     url(r'^org/', include(url_org)),
     url(r'^team/', include(url_team)),
     url(r'^brands/', include(url_brands)),
+    url(r'^bsp/', include(url_bsp)),
     url(r'^surveys/', include(url_surveys)),
 ]

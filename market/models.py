@@ -384,6 +384,9 @@ class BspTypeCustomization(models57.Model):
 
     class Meta:
         unique_together = ('organization', 'bsp_type')
+        permissions = (
+            ('view_bsptypecustomization', 'Can be bsp type customizations'),
+        )
 
     def __unicode__(self):
         return "{} - {}".format(self.bsp_type, self.organization.name)

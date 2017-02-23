@@ -72,10 +72,10 @@ def console_org_submit_changes(request, org):
 
 
 @registered_user_only
-@organization_console(required_perms='clients.organizationmember')
+@organization_console()
 def console_team(request, org):
     """
-    Django view to manage all organization members.
+    Django view to manage organization teams in terms of roles, members etc.
 
     **Type**: GET
 

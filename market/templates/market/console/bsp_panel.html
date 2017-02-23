@@ -1,0 +1,210 @@
+{% extends 'console/base.html' %}
+{% load static commontags %}
+
+{% block head %}
+    <!-- Favicon -->
+    <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
+
+    <title page-title></title>
+
+    <link href="{% get_static_prefix %}ui/css/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/css/plugins/datapicker/datepicker3.css" rel="stylesheet">
+
+
+    <!-- ========== Templates ========== -->
+    <!-- CustomizeTypes -->
+    <script type="text/ng-template" id="tmpl_customize_types">
+        <div>
+            <h2 style="margin-top: 0px;">
+                <i class="fa fa-pencil"></i>&nbsp;
+                Customize BSP types
+
+                {% if request.permissions|has_permission:"market.bsptypecustomization.add_bsptypecustomization" %}
+                    <a href="#?c={{ request.curr_org.org_uid }}" class="btn btn-primary btn-sm pull-right">
+                        <i class="fa fa-plus"></i>
+                        &nbsp;Customization type
+                    </a>
+                {% endif %}
+            </h2>
+            <hr style="margin-top: 15px;"/>
+
+        </div>
+    </script>
+    <!-- /CustomizeTypes -->
+
+    <!-- BSP -->
+    <script type="text/ng-template" id="tmpl_bsps">
+        <div>
+            <h2 style="margin-top: 0px;">
+                <i class="fa fa-university"></i>&nbsp;
+                Business or Service Points
+
+                {% if request.permissions|has_permission:"market.businessservicepoint.add_businessservicepoint" %}
+                    <a href="#?c={{ request.curr_org.org_uid }}" class="btn btn-primary btn-sm pull-right">
+                        <i class="fa fa-plus"></i>
+                        &nbsp;Add new bsp
+                    </a>
+                {% endif %}
+            </h2>
+            <hr style="margin-top: 15px;"/>
+
+        </div>
+    </script>
+    <!-- /BSP -->
+    <!-- ========== Templates ========== -->
+{% endblock %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-8">
+            <h2>
+                <i class="fa fa-users"></i>
+                Business or Service Point (BSP)
+            </h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">Home</a>
+                </li>
+                <li class="active">
+                    BSP
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="wrapper_admin_content" ng-controller="MainCtrl" ng-cloak>
+        <table class="table_tab_admin">
+            <tr>
+                <td class="admin_tabs" valign="top">
+                    <div class="list-group list_group_tabs" >
+                        <a ui-sref="customize_types" class="list-group-item" ng-class="{'active': $state.current.name=='customize_types'}">
+                            <i class="fa fa-pencil list_md_icon"></i> Customize Types
+                        </a>
+                        <a ui-sref="bsps" class="list-group-item" ng-class="{'active': $state.current.name=='bsps'}">
+                            <i class="fa fa-university list_md_icon"></i> BSP
+                        </a>
+                    </div>
+                </td>
+                <td class="admin_content" valign="top">
+                    <!-- Partial view div -->
+                    <div ui-view></div>
+                    <!-- Partial view div -->
+                </td>
+            </tr>
+        </table>
+    </div>
+{% endblock %}
+
+
+{% block scripts %}
+    <script src="{% get_static_prefix %}ui/js/plugins/datapicker/bootstrap-datepicker.js"></script>
+    <script src="{% get_static_prefix %}ui/js/ui-router/angular-ui-router.min.js"></script>
+
+    <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/i18n/grid.locale-en.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/jquery.jqGrid.min.js"></script>
+
+    <script src="{% get_static_prefix %}lib/angular/angular-jqgrid/angular-jqgrid.js"></script>
+
+    <script>
+        'use strict';
+
+        var APP = angular.module('{{ app_name }}',[
+            'feedvay.uiapp',
+            'feedvay.common',
+            'feedvay.watchdog',
+
+            'ngCookies',
+            'ngMessages',
+            'ui.router',                    // Routing
+            'oc.lazyLoad',                  // ocLazyLoad
+            'ui.bootstrap',
+            'datePicker',
+            'angular-ladda',
+            'angular-jqgrid',
+        ])
+        .config(function($interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+
+            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+
+            // ----- Routing -----
+            $urlRouterProvider.otherwise("/customize_types");   // Default state to load
+
+            $ocLazyLoadProvider.config({
+                // Set to true if you want to see what and when is dynamically loaded
+                debug: false
+            });
+
+            $stateProvider
+                .state('customize_types', {
+                    url: "/customize_types",
+                    templateUrl: "tmpl_customize_types",
+                    data: { pageTitle: 'Customize BSP types | {{ request.curr_org.name }}' },
+                    controller: CustomizeTypeCtrl,
+                })
+                .state('bsps', {
+                    url: "/bsps",
+                    templateUrl: "tmpl_bsps",
+                    data: { pageTitle: 'BSP | {{ request.curr_org.name }}' },
+                    controller: BspCtrl,
+                })
+
+            // ----- /Routing -----
+        })
+        .run(function($rootScope, $http, $cookies, $state) {
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+            $http.defaults.xsrfCookieName = 'csrftoken';
+            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+            $rootScope.ST_AJAX = ST_AJAX;
+
+            // ----- Routing -----
+            $rootScope.$state = $state;
+
+            $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
+                event.preventDefault();
+                //console.log(error);
+
+                if(error.status == -1){
+                    $.growl.error({
+                        title: '<i class="fa fa-signal"></i> Network error!',
+                        message: "Please check your internet connection."
+                    });
+                }else{
+                    $.growl.error({
+                        title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                        message: "Something went wrong. Our engineers will be informed."
+                    });
+                }
+
+            });
+            // ----- /Routing -----
+
+        });
+
+
+        APP.controller('MainCtrl', function($scope){
+
+        });
+
+        // ========== State Controllers ==========
+
+        // --- CustomizeTypeC ---
+        function CustomizeTypeCtrl($scope){
+
+        }
+        // --- /CustomizeTypeC ---
+
+        // --- Bsp ---
+        function BspCtrl($scope) {
+
+        }
+        // --- /Bsp ---
+
+    </script>
+{% endblock %}

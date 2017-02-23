@@ -116,6 +116,14 @@
                                     </ul>
                                 </li>
 
+                                <li class="dropdown">
+                                    <a aria-expanded="false" role="button" href="javascript: void(0);" class="dropdown-toggle" data-toggle="dropdown"> BSP <span class="caret"></span></a>
+                                    <ul role="menu" class="dropdown-menu">
+                                        <li><a href="{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/customize_types">Customize BSP types</a></li>
+                                        <li><a href="{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/bsp">Business or Service Points</a></li>
+                                    </ul>
+                                </li>
+
                             {% endif %}
 
                             <li class="dropdown">

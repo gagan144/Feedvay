@@ -13,6 +13,7 @@ from market import operations as ops
 from utilities.api_utils import ApiResponse
 
 # ==================== Console ====================
+# --- Brands ---
 @registered_user_only
 @organization_console(required_perms='market.brand')
 def console_brands(request, org):
@@ -130,7 +131,27 @@ def console_brand_save_changes(request, org):
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+# --- /Brands ---
 
+# --- BusinessServicePoint ---
+@registered_user_only
+@organization_console()
+def console_bsp_panel(request, org):
+    """
+    Django view to manage organization BSP in terms of type customization, BSP etc.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+
+    data = {
+        'app_name': 'app_bsp_panel'
+    }
+
+    return render(request, 'market/console/bsp_panel.html', data)
+
+# --- /BusinessServicePoint ---
 
 
 # ==================== /Console ====================

@@ -22,11 +22,71 @@
                 {% if request.permissions|has_permission:"market.bsptypecustomization.add_bsptypecustomization" %}
                     <a href="#?c={{ request.curr_org.org_uid }}" class="btn btn-primary btn-sm pull-right">
                         <i class="fa fa-plus"></i>
-                        &nbsp;Customization type
+                        &nbsp;Customize type
                     </a>
                 {% endif %}
             </h2>
             <hr style="margin-top: 15px;"/>
+
+            {% if list_custom_types %}
+                <p>
+                    Following are the BSP types that have been customized to add extra attributes to be tag to BSP of their kind.
+                    <br/>
+                    Please note that it is not mandatory to customize type before adding BSPs. You can still use all available
+                    types. for listing.
+                </p>
+
+                <style>
+                    .bsp_icon{
+                        height: 90px;
+                    }
+
+                    .panel_brand{
+                        padding: 10px;
+                    }
+
+                    .bsp_type_title{
+                        font-size: larger;
+                        margin-top: 10px;;
+                    }
+                </style>
+                <div class="row" style="margin-top: 30px;">
+                    {% for c in list_custom_types %}
+                        <div class="col-md-3 col-xs-6">
+                            <a href="#?c={{ request.curr_org.org_uid }}">
+                                <div class="panel_brand" align="center">
+                                    <img src="{% get_static_prefix %}images/bsp_types/{{ c.bsp_type }}.png" class="bsp_icon image_loading">
+
+                                    <div align="center" class="bsp_type_title">
+                                        {{ c.bsp_type|title }}
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <table style="width: 100%">
+                        <tr>
+                            <td valign="top" style="width: 90px;">
+                                <i class="fa fa-info-circle" style="font-size: 80px;"></i>
+                            </td>
+                            <td valign="top">
+                                <h2 style="margin-top: 0px;">No customized types!</h2>
+                                <div>
+                                    Either your organization has not customized any business or service point types or you do not have any permissions.
+                                    <br/>
+                                    <br/>
+                                    Please note that if is not mandatory to customize a type before adding a BSP. Customization is
+                                    a feature that allows organization to add extra attributes to their BSP rather than using only
+                                    primitive attributes.
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            {% endif %}
 
         </div>
     </script>
@@ -42,7 +102,7 @@
                 {% if request.permissions|has_permission:"market.businessservicepoint.add_businessservicepoint" %}
                     <a href="#?c={{ request.curr_org.org_uid }}" class="btn btn-primary btn-sm pull-right">
                         <i class="fa fa-plus"></i>
-                        &nbsp;Add new bsp
+                        &nbsp;Add new BSP
                     </a>
                 {% endif %}
             </h2>

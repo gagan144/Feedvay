@@ -9,6 +9,7 @@ from accounts.decorators import registered_user_only, organization_console
 from market.models import Brand
 from market.forms import *
 from market import operations as ops
+from market.models import *
 
 from utilities.api_utils import ApiResponse
 
@@ -146,7 +147,8 @@ def console_bsp_panel(request, org):
     """
 
     data = {
-        'app_name': 'app_bsp_panel'
+        'app_name': 'app_bsp_panel',
+        'list_custom_types': BspTypeCustomization.objects.filter(organization_id=org.id)
     }
 
     return render(request, 'market/console/bsp_panel.html', data)

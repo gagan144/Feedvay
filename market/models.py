@@ -16,6 +16,8 @@ from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
 from django.core.files.uploadedfile import InMemoryUploadedFile,SimpleUploadedFile
 from PIL import Image
+from jsonobject import *
+from jsonobject.exceptions import *
 
 from mongoengine.document import *
 from mongoengine.fields import *
@@ -28,6 +30,7 @@ from clients.models import Organization
 from utilities.theme import UiTheme, ColorUtils, render_skin
 from utilities.abstract_models.mongodb import AddressEmbDoc, ContactEmbDoc
 from market.bsp_types import BspTypes
+from form_builder.validators import validate_label
 
 # ----- General -----
 class BspTag(Document):
@@ -321,6 +324,102 @@ class Brand(models57.Model):
 
 
 # ========== Business or Service Point ==========
+
+
+class BspTypeCustomization(models57.Model):
+    """
+    Model to customize a BSP type in terms of attributes for an organization.
+    All BSPs have certain common attributes as well as attributes related to their type.
+    However, it is possible that organization might want certain more attributes other than
+    provided ones for their own use.
+
+    This model allows organizations to define attributes and their data type.
+
+    **Points**:
+
+        - Only one customization can be defined for organization-BSP basis.
+        - Data types for attributes are limited.
+
+    **Authors**: Gagandeep Singh
+    """
+    # --- Classes ---
+    class Attribute(JsonObject):
+        """
+        Attribute schema to define a custom bsp attribute.
+
+        **Authors**: Gagandeep Singh
+        """
+        class ENUMS:
+            DTYPE_NUMBER = 'number'
+            DTYPE_DECIMAL = 'decimal'
+            DTYPE_TEXT = 'text'
+            DTYPE_BOOL = 'bool'
+            CH_DTYPES = (
+                (DTYPE_NUMBER, 'Number'),
+                (DTYPE_DECIMAL, 'Decimal'),
+                (DTYPE_TEXT, 'TEXT'),
+                (DTYPE_BOOL, 'Boolean'),
+            )
+
+        _allow_dynamic_properties = False
+
+        label   = StringProperty(required=True, validators=[validate_label]) # Label of the attribute. This is what value is stored against. Follow variable conventions.
+        name    = StringProperty(required=True)    # Name of the attribute. Free text.
+        dtype   = StringProperty(required=True, choices=ENUMS.CH_DTYPES)   # Data-type of the attribute
+
+        # def __init__(self, _obj=None, **kwargs):
+        #     super(BspTypeCustomization.Attribute, self).__init__(_obj=_obj, **kwargs)
+
+
+
+    # --- Fields ---
+    organization = models.ForeignKey(Organization, help_text='Organization for which this customization is defined.')
+    bsp_type    = models.CharField(max_length=64, choices=BspTypes.choices, help_text='BSP that is customized.')
+
+    schema      = models57.JSONField(help_text='Schema that defines custom attributes.')
+
+    created_by  = models.ForeignKey(User, editable=False, help_text='Person who created this customization.')
+    created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
+    modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
+
+    class Meta:
+        unique_together = ('organization', 'bsp_type')
+
+    def __unicode__(self):
+        return "{} - {}".format(self.bsp_type, self.organization.name)
+
+    def clean(self):
+        """
+        Method to clean & validate data fields.
+
+        **Authors**: Gagandeep Singh
+        """
+        # Validate schema
+        if isinstance(self.schema, list):
+            for attr in self.schema:
+                try:
+                    a_obj = BspTypeCustomization.Attribute(attr)
+                except (BadValueError, WrappingAttributeError) as ex:
+                    raise ValidationError("Schema error: {}".format(ex.message))
+        else:
+            raise ValidationError('Schema must be a list.')
+
+        if self.pk:
+            self.modified_on = timezone.now()
+
+        super(self.__class__, self).clean()
+
+    def save(self, *args, **kwargs):
+        """
+        Pre-save method for this model.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        self.clean()
+        super(self.__class__, self).save(*args, **kwargs)
+
+
 # --- BSP related models ---
 class RestaurantCuisine(models.Model):
     """
@@ -494,6 +593,7 @@ class BusinessServicePoint(Document):
 
     # Attributes
     attributes  = DictField(required=True, help_text='Pre-defined attributes of BSP according to BspType. Use this for reporting or display.')
+    custom_attributes = DictField(required=True, help_text='Any other custom attributes. These are free to be updated.')
     timings     = EmbeddedDocumentListField(DayTiming, help_text='Week day wise timings. This can have multiple timings for a day.')
 
     list_attributes = EmbeddedDocumentListField(Attribute, required=True, help_text="List of all attributes from various fields. These are populated by 'attributes' so do not update here. Use this for analytics.")
@@ -602,6 +702,16 @@ class BusinessServicePoint(Document):
                             value = val
                         )
                     )
+
+            for key, val in self.custom_attributes.iteritems():
+                if not isinstance(val, dict):
+                    list_attr.append(
+                        BusinessServicePoint.Attribute(
+                            name = key,
+                            value = val
+                        )
+                    )
+
             self.list_attributes = list_attr
 
         return super(BusinessServicePoint, self).save(*args, **kwargs)

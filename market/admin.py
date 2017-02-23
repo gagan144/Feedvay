@@ -2,11 +2,42 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from django.contrib import admin
+from easy_select2 import select2_modelform
 
 from market.models import *
 
+@admin.register(BspTypeCustomization)
+class BspTypeCustomization(admin.ModelAdmin):
+    """
+    Django admin class for BspTypeCustomization.
+
+    **Authors**: Gagandeep Singh
+    """
+    list_display = ('bsp_type', 'organization')
+    list_filter = ('bsp_type', 'organization', 'created_on')
+    search_fields = ('bsp_type', 'organization__name')
+    list_per_page = 50
+
+    form = select2_modelform(BspTypeCustomization, attrs={'width': '300px'})
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = [field.name for field in self.model._meta.fields if not field.editable]
+        return readonly_fields
+
+    def save_model(self, request, obj, form, change):
+        if obj.pk is None:
+            obj.created_by = request.user
+
+        obj.save()
+
+
 @admin.register(RestaurantCuisine)
 class RestaurantCuisineAdmin(admin.ModelAdmin):
+    """
+    Django admin class for RestaurantCuisine.
+
+    **Authors**: Gagandeep Singh
+    """
     list_display = ('name', 'active')
     list_filter = ('active', )
     search_fields = ('name', )

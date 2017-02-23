@@ -15,6 +15,7 @@ class BspTypes:
     """
     # ATM = 'atm'
     # BANK = 'bank'
+    CAFE = 'cafe'
     # DOCTOR = 'doctor'   # <<-- category
     # TOILET = 'toilet'
     # MOBILE_APP = 'app'
@@ -22,6 +23,7 @@ class BspTypes:
     # WEBSITE = 'website'
 
     choices = (
+        (CAFE, 'Cafe'),
         (RESTAURANT, 'Restaurant'),
     )
 
@@ -42,7 +44,19 @@ class PaymentMethods:
     )
 
 # ---------- BSP Types ----------
-class Restaurant(JsonObject):
+class BaseBspType(JsonObject):
+    """
+    Base BSP type or establishment definitation.
+    Always inherit this class to define any further BSP type.
+
+    **Authors**: Gagandeep Singh
+    """
+    _allow_dynamic_properties = False
+
+    highlights  = SetProperty(unicode, exclude_if_none=True)    # Highlighting features
+    recommendations = StringProperty(exclude_if_none=True)      # Any recommendations
+
+class Restaurant(BaseBspType):
     """
     Eatery is any point offering food or drink service in any form and type.
 
@@ -59,7 +73,7 @@ class Restaurant(JsonObject):
         CTG_BAKERIES = 'bakeries'
         CTG_BEVERAGE_SHOPS = 'beverage shops'
         CTG_BUFFETS = 'buffets'
-        CTG_CAFES = 'cafes'
+        # CTG_CAFES = 'cafes'
         CTG_CASUAL_DINING = 'casual dining'
         CTG_DESSERT_PARLOR = 'dessert parlor'
         CTG_FOOD_COURTS = 'food courts'
@@ -77,7 +91,7 @@ class Restaurant(JsonObject):
             (CTG_BAKERIES,CTG_BAKERIES),
             (CTG_BEVERAGE_SHOPS,CTG_BEVERAGE_SHOPS),
             (CTG_BUFFETS,CTG_BUFFETS),
-            (CTG_CAFES,CTG_CAFES),
+            # (CTG_CAFES,CTG_CAFES),
             (CTG_CASUAL_DINING,CTG_CASUAL_DINING),
             (CTG_DESSERT_PARLOR,CTG_DESSERT_PARLOR),
             (CTG_FOOD_COURTS,CTG_FOOD_COURTS),
@@ -117,8 +131,6 @@ class Restaurant(JsonObject):
 
     food_type   = SetProperty(unicode, required=True) # Type of food; veg, non-veg, egg
     cuisines    = SetProperty(unicode, required=True)
-    highlights  = SetProperty(unicode, exclude_if_none=True)    # Highlighting features
-    recommendations = StringProperty(exclude_if_none=True) # Any recommendations
 
     home_delivery   = BooleanProperty(default=False, required=True) # Home delivery available or not
     average_cost_2  = IntegerProperty(default=None, exclude_if_none=True)   # Average cost for two person in native currency
@@ -127,25 +139,12 @@ class Restaurant(JsonObject):
     # def __init__(self, _obj=None, **kwargs):
     #     super(Restaurants, self).__init__(_obj=_obj, **kwargs)
 
+class Cafe(BaseBspType):
+    """
+    A cafe, or coffeehouse is a small restaurant serving coffee, beverages, and light meals.
 
-
-"""
-# ---------- Delete -----------
-
-r = Restaurant(
-    category = set([Restaurant.ENUMS.CTG_FOOD_STALLS]),
-    food_type = set([Restaurant.ENUMS.FOOD_NON_VEG, Restaurant.ENUMS.FOOD_VEG]),
-    cuisines = set(['chines', 'north']),
-    home_delivery = True,
-    average_cost_2 = 500,
-    payment_methods = set([PaymentMethods.CARDS, PaymentMethods.WALLETS, PaymentMethods.CASH])
-)
-print r
-print "\n"
-print r.to_json()
-
-print r.ENUMS.CH_FOOD_TYPE
-
-# new_r = Eatery(r.to_json())
-# print new_r.payment_methods
-"""
+    **Authors**: Gagandeep Singh
+    """
+    home_delivery   = BooleanProperty(default=False, required=True) # Home delivery available or not
+    average_cost_2  = IntegerProperty(default=None, exclude_if_none=True)   # Average cost for two person in native currency
+    payment_methods = SetProperty(unicode, required=True)   # Mode of payments

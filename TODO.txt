@@ -12,6 +12,10 @@
     - Info correction when user is created by invitation
 
 - Market
+    - BSP Cutomization UI
+        - Atleast one attr
+        - Validate labels on UI
+
     - BSP
         - Purpose of visit
 

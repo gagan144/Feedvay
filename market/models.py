@@ -29,7 +29,7 @@ from accounts.models import RegisteredUser
 from clients.models import Organization
 from utilities.theme import UiTheme, ColorUtils, render_skin
 from utilities.abstract_models.mongodb import AddressEmbDoc, ContactEmbDoc
-from market.bsp_types import BspTypes
+from market.bsp_types import *
 from form_builder.validators import validate_label
 
 # ----- General -----
@@ -406,6 +406,12 @@ class BspTypeCustomization(models57.Model):
                     raise ValidationError("Schema error: {}".format(ex.message))
         else:
             raise ValidationError('Schema must be a list.')
+
+        # Check for resered labels
+        list_reserved_labels = BusinessServicePoint._fields.keys() + MAPPING_BSP_CLASS[self.bsp_type].properties().keys()
+        for attr in self.schema:
+            if attr['label'] in list_reserved_labels:
+                raise ValidationError("Label '{}' is reserved.".format(attr['label']))
 
         if self.pk:
             self.modified_on = timezone.now()

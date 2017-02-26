@@ -45,6 +45,7 @@
 
                     .panel_brand{
                         padding: 10px;
+                        width: 100% !important;
                     }
 
                     .bsp_type_title{
@@ -57,7 +58,7 @@
                         <div class="col-md-3 col-xs-6">
                             <a href="#?c={{ request.curr_org.org_uid }}">
                                 <div class="panel_brand" align="center">
-                                    <img src="{% get_static_prefix %}images/bsp_types/{{ c.bsp_type }}.png" class="bsp_icon">
+                                    <img src="{% get_static_prefix %}images/bsp_types/{{ c.bsp_type }}-md.png" class="bsp_icon">
 
                                     <div align="center" class="bsp_type_title">
                                         {{ c.bsp_type|title }}

@@ -3,10 +3,12 @@
 # permission of Gagandeep Singh.
 from tastypie.resources import ModelResource, Resource, ALL, ALL_WITH_RELATIONS
 from tastypie.authentication import SessionAuthentication
+from tastypie import fields
 from django.db.models import Q
 
-from market.models import Brand
-from utilities.tastypie_utils import NoPaginator
+from market.models import Brand, BusinessServicePoint
+from market.bsp_types import *
+from utilities.tastypie_utils import NoPaginator, GenericTastypieObject
 
 class BrandExistenceAPI(ModelResource):
     """
@@ -41,3 +43,55 @@ class BrandExistenceAPI(ModelResource):
         q = bundle.request.GET['q']
 
         return queryset.filter(Q(name__icontains=q)|Q(slug__icontains=q))
+
+class BspLabelsAPI(Resource):
+    """
+    Tastypie resource to get a BSP type labels.
+
+    **Type**: GET
+
+    **Points**:
+
+        - Param ``type`` specifies BSP type
+        - Param ``include_common`` (0,1) can be used include or exclude common bsp labels. By default, these are included.
+
+    **Authors**: Gagandeep Singh
+    """
+    label       = fields.CharField(attribute='label')
+    description = fields.CharField(attribute='description', null=True)
+
+    class Meta:
+        object_class = GenericTastypieObject
+        resource_name = 'bsp_type_labels'
+        allowed_methods = ('get',)
+        limit=0
+        max_limit=None
+        include_resource_uri = False
+        authentication = SessionAuthentication()
+
+    def obj_get_list(self, bundle, **kwargs):
+        bsp_type_code = bundle.request.GET['type']
+        include_common = int(bundle.request.GET.get('include_common', 1))
+
+        data = []
+        if include_common:
+            for lbl, fld in BusinessServicePoint._fields.iteritems():
+                obj = GenericTastypieObject()
+                obj.label = lbl
+                try:
+                    obj.description = fld.help_text
+                except AttributeError:
+                    obj.description = None
+
+                data.append(obj)
+
+        # AS per BSP type
+        type_class = MAPPING_BSP_CLASS[bsp_type_code]
+        for lbl, fld in type_class.properties().iteritems():
+            obj = GenericTastypieObject()
+            obj.label = lbl
+            obj.description = lbl
+
+            data.append(obj)
+
+        return data

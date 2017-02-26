@@ -357,7 +357,7 @@ class BspTypeCustomization(models57.Model):
             CH_DTYPES = (
                 (DTYPE_NUMBER, 'Number'),
                 (DTYPE_DECIMAL, 'Decimal'),
-                (DTYPE_TEXT, 'TEXT'),
+                (DTYPE_TEXT, 'Text'),
                 (DTYPE_BOOL, 'Boolean'),
             )
 

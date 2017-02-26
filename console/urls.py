@@ -60,6 +60,9 @@ url_brands = [
 
 url_bsp = [
     url(r'^$', views_market.console_bsp_panel, name='console_market_bsp_panel'),
+    url(r'^customize-type/new/$', views_market.console_bsp_customize_type, name='console_market_customize_type'),
+    url(r'^customize-type/create/$', views_market.console_bsp_customize_type_create, name='console_market_customize_type_create'),
+
 ]
 
 api_survey_responses = api_surveys.SurveyResponsesAPI()

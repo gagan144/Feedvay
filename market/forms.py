@@ -3,7 +3,8 @@
 # permission of Gagandeep Singh.
 from django import forms
 
-from market.models import Brand
+from market.models import Brand, BspTypeCustomization, BusinessServicePoint
+from market.bsp_types import *
 from utilities.validators import *
 
 class BrandCreateForm(forms.Form):
@@ -126,7 +127,32 @@ class BrandEditForm(forms.Form):
 
         brand.save(update_theme=update_theme)
 
+class BspTypeCustomizationForm(forms.ModelForm):
+    """
+    Form to create/edit BSP customization.
+
+    **Authors**: Gagandeep Singh
+    """
+    class Meta:
+        model = BspTypeCustomization
+        fields = ['organization', 'bsp_type', 'schema']
 
 
+    def clean(self):
+        form_data = self.cleaned_data
+
+        # Check if labels are not reserved
+        list_reserved_labels = BusinessServicePoint._fields.keys() + MAPPING_BSP_CLASS[form_data['bsp_type']].properties().keys()
+
+        for attr in form_data['schema']:
+            if attr['label'] in list_reserved_labels:
+                self._errors["schema"] = ["Label '{}' is reserved.".format(attr['label'])]
+
+        return form_data
+
+    def save(self, created_by):
+        if not self.instance.pk:
+            self.instance.created_by = created_by
+        super(self.__class__, self).save(commit=True)
 
 

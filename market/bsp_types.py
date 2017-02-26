@@ -11,6 +11,13 @@ class BspTypes:
     Enum class that defines various types of business and Service points.
     These are fundamental types and not categories.
 
+    **Add new type in the system**:
+
+        - Create type enum in this class and add to ``choices`` keepng the order.
+        - Create new BSP type class by extending :class:`market.bsp_types.BaseBspType`
+        - Add mapping in ``MAPPING_BSP_CLASS``
+
+
     **Authors**: Gagandeep Singh
     """
     # ATM = 'atm'
@@ -22,6 +29,7 @@ class BspTypes:
     RESTAURANT = 'restaurant'
     # WEBSITE = 'website'
 
+    # Note: Keep this in alphabetic order
     choices = (
         (CAFE, 'Cafe'),
         (RESTAURANT, 'Restaurant'),
@@ -55,6 +63,16 @@ class BaseBspType(JsonObject):
 
     highlights  = SetProperty(unicode, exclude_if_none=True)    # Highlighting features
     recommendations = StringProperty(exclude_if_none=True)      # Any recommendations
+
+class Cafe(BaseBspType):
+    """
+    A cafe, or coffeehouse is a small restaurant serving coffee, beverages, and light meals.
+
+    **Authors**: Gagandeep Singh
+    """
+    home_delivery   = BooleanProperty(default=False, required=True) # Home delivery available or not
+    average_cost_2  = IntegerProperty(default=None, exclude_if_none=True)   # Average cost for two person in native currency
+    payment_methods = SetProperty(unicode, required=True)   # Mode of payments
 
 class Restaurant(BaseBspType):
     """
@@ -139,12 +157,8 @@ class Restaurant(BaseBspType):
     # def __init__(self, _obj=None, **kwargs):
     #     super(Restaurants, self).__init__(_obj=_obj, **kwargs)
 
-class Cafe(BaseBspType):
-    """
-    A cafe, or coffeehouse is a small restaurant serving coffee, beverages, and light meals.
 
-    **Authors**: Gagandeep Singh
-    """
-    home_delivery   = BooleanProperty(default=False, required=True) # Home delivery available or not
-    average_cost_2  = IntegerProperty(default=None, exclude_if_none=True)   # Average cost for two person in native currency
-    payment_methods = SetProperty(unicode, required=True)   # Mode of payments
+MAPPING_BSP_CLASS = {
+    BspTypes.CAFE: Cafe,
+    BspTypes.RESTAURANT: Restaurant,
+}

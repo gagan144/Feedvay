@@ -6,9 +6,11 @@ from django.conf.urls import url, include
 from market.api import *
 
 api_brand_existence = BrandExistenceAPI()
+api_bsp_labels = BspLabelsAPI()
 
 urlpatterns = [
 
     # Api
     url(r'^brands/api/', include(api_brand_existence.urls)),
+    url(r'^bsp/api/', include(api_bsp_labels.urls)),
 ]

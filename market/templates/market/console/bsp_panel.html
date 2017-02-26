@@ -1,3 +1,6 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
 {% extends 'console/base.html' %}
 {% load static commontags %}
 
@@ -20,9 +23,9 @@
                 Customize BSP types
 
                 {% if request.permissions|has_permission:"market.bsptypecustomization.add_bsptypecustomization" %}
-                    <a href="#?c={{ request.curr_org.org_uid }}" class="btn btn-primary btn-sm pull-right">
+                    <a href="{% url 'console_market_customize_type' %}?c={{ request.curr_org.org_uid }}" class="btn btn-primary btn-sm pull-right">
                         <i class="fa fa-plus"></i>
-                        &nbsp;Customize type
+                        &nbsp;Customize a type
                     </a>
                 {% endif %}
             </h2>
@@ -31,7 +34,6 @@
             {% if list_custom_types %}
                 <p>
                     Following are the BSP types that have been customized to add extra attributes to be tag to BSP of their kind.
-                    <br/>
                     Please note that it is not mandatory to customize type before adding BSPs. You can still use all available
                     types. for listing.
                 </p>
@@ -55,7 +57,7 @@
                         <div class="col-md-3 col-xs-6">
                             <a href="#?c={{ request.curr_org.org_uid }}">
                                 <div class="panel_brand" align="center">
-                                    <img src="{% get_static_prefix %}images/bsp_types/{{ c.bsp_type }}.png" class="bsp_icon image_loading">
+                                    <img src="{% get_static_prefix %}images/bsp_types/{{ c.bsp_type }}.png" class="bsp_icon">
 
                                     <div align="center" class="bsp_type_title">
                                         {{ c.bsp_type|title }}
@@ -126,7 +128,7 @@
                     <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">Home</a>
                 </li>
                 <li class="active">
-                    BSP
+                    Business or Service Point
                 </li>
             </ol>
         </div>
@@ -143,7 +145,7 @@
                             <i class="fa fa-pencil list_md_icon"></i> Customize Types
                         </a>
                         <a ui-sref="bsps" class="list-group-item" ng-class="{'active': $state.current.name=='bsps'}">
-                            <i class="fa fa-university list_md_icon"></i> BSP
+                            <i class="fa fa-university list_md_icon"></i> Business or Service Points
                         </a>
                     </div>
                 </td>

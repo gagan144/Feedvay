@@ -8,31 +8,30 @@
     <!-- Favicon -->
     <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
 
-    <title>{{ org_mem.registered_user.user.first_name }} {{ org_mem.registered_user.user.last_name }} | {{ request.curr_org.name }}</title>
+    <title>Customize - {{ cust_bsp.bsp_type }} | {{ request.curr_org.name }}</title>
 
-    <link href="{% get_static_prefix %}ui/css/plugins/dualListbox/bootstrap-duallistbox.min.css" rel="stylesheet">
     <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
 {% endblock %}
 
 {% block page_header %}
     <div class="row wrapper border-bottom white-bg page-heading">
-        <div class="col-xs-12">
+        <div class="col-xs-8">
             <h2>
-                <i class="fa fa-user"></i>
-                Member: {{ org_mem.registered_user.user.first_name }} {{ org_mem.registered_user.user.last_name }}
+                <i class="fa fa-pencil"></i>
+                Customize - {{ cust_bsp.bsp_type|title }}
             </h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">Home</a>
                 </li>
                 <li>
-                    <a href="{% url 'console_team' %}?c={{ request.curr_org.org_uid }}">Team</a>
+                    <a href="{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}">Business or Service Point</a>
                 </li>
                 <li>
-                    <a href="{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/members">Members</a>
+                    <a href="{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/customize_types">Customize Types</a>
                 </li>
                 <li class="active">
-                    {{ org_mem.registered_user.user.first_name }} {{ org_mem.registered_user.user.last_name }}
+                    {{ cust_bsp.bsp_type|title }}
                 </li>
             </ol>
         </div>
@@ -41,76 +40,61 @@
 
 {% block content %}
     <div class="wrapper wrapper-content">
-        <div class="container" ng-cloak>
-            <div class="content_box" ng-controller="FormMemberEdit">
+        <div class="container">
 
-                <form name="form_member" class="form-horizontal" novalidate>
-                    <div ng-include="'{% get_static_prefix %}partials/team/add_edit_member.html'" ng-init="ACTION='edit'"></div>
+            <div class="content_box" ng-controller="CustomizeType" ng-cloak>
+                <form name="form_customize_type" class="form-horizontal" novalidate>
+                    {$ data $}
+
+                    <div ng-include="'{% get_static_prefix %}partials/market/bsp/create_edit_customize_bsp.html'" ng-init="ACTION='edit'"></div>
 
                     <div class="hr-line-dashed"></div>
                     <div class="form-group">
-                        <div class="col-sm-9 col-sm-offset-3">
+                        <div class="col-sm-7 col-md-offset-3">
                             <p ng-if="flags.status==ST_AJAX.ERROR" class="text-danger">
                                 <i class="fa fa-exclamation-triangle"></i> {$ flags.error_msg $}
                             </p>
-
-                            <div ng-if="data.is_owner || data.is_superuser" style="margin-bottom: 10px;">
-                                <b>Note:</b>
-                                <div style="padding-left: 20px;">
-                                    You have granted this person as
-                                    <b ng-if="data.is_owner" style="margin-right: 3px;">owner</b>
-                                    <b ng-if="data.is_superuser">superuser</b>.
-                                </div>
-                            </div>
-
-                            <button ladda="flags.status==ST_AJAX.LOADING" class="btn btn-primary ladda-button" type="button" ng-disabled="form_member.$invalid || form_member.$pristine" ng-click="submit_form(form_member);" data-style="zoom-in">
+                            <button type="button" ladda="flags.status==ST_AJAX.LOADING"  class="btn btn-primary ladda-button" ng-disabled="form_customize_type.$invalid" ng-click="submit_customization(form_customize_type);" data-style="zoom-in">
                                 Save
                             </button>
-                            <a class="btn btn-link" href="{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/members" >
+                            <a href="{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/customize_types" class="btn btn-link">
                                 Cancel
                             </a>
 
-                            {% if request.permissions|has_permission:"clients.organizationmember.delete_organizationmember" %}
-                                <button ladda="flags.status_rm==ST_AJAX.LOADING" class="btn btn-danger ladda-button pull-right" type="button" data-style="zoom-in" ng-click="remove_member()">
-                                    <i class="fa fa-unlink"></i> Remove
+                            {% if request.permissions|has_permission:"market.bsptypecustomization.delete_bsptypecustomization" %}
+                                <button type="button" class="btn btn-danger pull-right" ng-click="remove_customization()">
+                                    Remove customization
                                 </button>
                             {% endif %}
                         </div>
                     </div>
                 </form>
             </div>
+
         </div>
     </div>
+
 {% endblock %}
 
 {% block scripts %}
-
-    <script src="{% get_static_prefix %}ui/js/plugins/jasny/jasny-bootstrap.min.js"></script>
-    <script src="{% get_static_prefix %}ui/js/plugins/dualListbox/jquery.bootstrap-duallistbox.js"></script>
-    <script src="{% get_static_prefix %}ui/js/plugins/dualListbox/angular-bootstrap-duallistbox.js"></script>
-    <script src="{% get_static_prefix %}lib/angular/checklist-model.js"></script>
-
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/uievents/event.js"></script>
 
-    <script src="{% get_static_prefix %}apps/clients/team.js"></script>
-    <script src="{% get_static_prefix %}apps/accounts/accounts.js"></script>
+    <script src="{% get_static_prefix %}apps/market/bsp.js"></script>
     <script>
         'use strict';
 
         var APP = angular.module('{{ app_name }}',[
+            'feedvay.uiapp',
             'feedvay.common',
             'feedvay.watchdog',
-            'feedvay.team',
-            'feedvay.accounts',
+            'feedvay.market.bsp',
 
             'ngCookies',
             'ngMessages',
             'ui.bootstrap',
             'angular-ladda',
-            'frapontillo.bootstrap-duallistbox',
-            'checklist-model',
             'oitozero.ngSweetAlert',
             'ui.event',
         ])
@@ -130,28 +114,54 @@
             $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
         });
 
-        APP.controller('FormMemberEdit', function($scope, $http, $window, $filter, SweetAlert){
-            // --- Variables ----
-            $scope.url_roles = '{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/roles';
-            $scope.country_tel_code = '{{ country_tel_code }}';
+        APP.controller('CustomizeType', function($scope, $http, $window, SweetAlert, ServiceBsp){
+            $scope.list_avail_types = {{ list_available_types|jsonify|safe }};
+            $scope.list_dtypes = {{ list_dtypes|jsonify|safe }};
+            $scope.reserved_labels = {
+                common: {{ reserved_labels_common|jsonify|safe }},
+                type_wise: []
+            };
 
-            $scope.list_roles = [
-                {% for r in list_roles %}
-                    {"id": {{ r.id }}, "name": "{{ r.name }}"}{% if not forloop.last %},{% endif %}
-                {% endfor %}
-            ];
+            $scope.data = {
+                bsp_type: "{{ cust_bsp.bsp_type }}",
+                schema: {{ cust_bsp.schema|jsonify|safe }}
+            };
 
-            $scope.list_all_permissions = [
-                {% for p in list_all_permissions %}
-                    {"id": {{ p.id }}, "name": "{{ p.name }}", "codename":"{{ p.codename }}", "content_type": "{{ p.content_type.name }}" }{% if not forloop.last %},{% endif %}
-                {% endfor %}
-            ];
+            // --- Functions ---
+            $scope.onchange_bsp_type = function(){
+                if($scope.data.bsp_type){
+                    ServiceBsp.get_labels($scope.data.bsp_type, 0).then(
+                        function(response){
+                            var data = response.objects;
+
+                            var list_lbl = [];
+                            for(var i=0;i<data.length;i++){
+                                list_lbl.push(data[i]['label']);
+                            }
+                            list_lbl.sort();
+
+                            $scope.reserved_labels.type_wise = angular.copy(list_lbl);
+                        }
+                    );
+                }else{
+                    $scope.reserved_labels.type_wise = [];
+                }
+            };
+
+            $scope.remove_attr = function(idx){
+                $scope.data.schema.splice(idx, 1);
+            };
+
+            $scope.add_attr = function(){
+                $scope.data.schema.push({});
+            };
+            // --- /Methods ---
 
             // --- Remove ---
-            $scope.remove_member = function (){
+            $scope.remove_customization = function (){
                 SweetAlert.swal({
-                    title: "Are you sure?",
-                    text: "Do you want to remove this person from your organization?",
+                    title: "Remove all {{ cust_bsp.bsp_type|title }} customization?",
+                    text: "This action is irreversible and all customization settings will be lost. BSPs belonging to this type will not be affected however you will not be able to edit their custom values.",
                     type: 'warning',
                     confirmButtonColor: "#DD6B55",
                     showCancelButton: true,
@@ -165,12 +175,12 @@
                 function (isConfirm) {
                     if (isConfirm) {
                         $http.post(
-                            "{% url 'console_team_member_remove' org_mem.id %}?c={{ request.curr_org.org_uid }}",
+                            "{% url 'console_market_customize_type_remove' cust_bsp.id %}?c={{ request.curr_org.org_uid }}",
                             $.param({"confirm": 1})
                         )
                         .success(function (response, status, headers, config) {
                             if(response.status=='success'){
-                                $window.location.href = '{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/members';
+                                $window.location.href = '{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/customize_types';
                             }else{
                                 swal.close();
                                 $.growl.error({
@@ -201,69 +211,34 @@
             };
             // --- Remove ---
 
-            // --- Form ---
-            $scope.person_exists = false;
-            $scope.person = {
-                "first_name": "{{ org_mem.registered_user.user.first_name }}",
-                "last_name": "{{ org_mem.registered_user.user.last_name }}",
-                "mobile_no": "{{ org_mem.registered_user.user.username }}",
-                "email": "{{ org_mem.registered_user.user.email }}"
-            };
-            $scope.data = {
-                "is_owner": {{ org_mem.is_owner|jsonify }},
-                "is_superuser": {{ is_superuser|jsonify }},
-                "roles": [{% for r in roles %}{{ r.id }}{% if not forloop.last %},{% endif %}{% endfor %}],
-                "permissions": []
-            };
-            // Set original permissions
-            var perm_ids = [{% for p in permissions %}{{ p.id }}{% if not forloop.last %},{% endif %}{% endfor %}];
-            for(var i=0;i<perm_ids.length;i++){
-                var idx = perm_ids[i];
-                // Find and set
-                $scope.data['permissions'].push($filter('filter')($scope.list_all_permissions, {id: idx })[0]);
-            }
-
-            $scope.find_user = function(mobile_no){};
-
-            $scope.onchange_onwer = function(){
-                if($scope.data.is_owner){
-                    $scope.data.is_superuser = true;
-                }
-            };
-
             $scope.flags = {
                 status: null,
                 error_msg: null,
                 errors: null
             };
-            $scope.submit_form = function(form_obj){
+            $scope.submit_customization = function(form_obj){
                 if(form_obj.$invalid){
                     return false;
                 }
 
+                // Validate labels
+
                 // Prepare data
                 var data = angular.copy($scope.data);
-                if(data['permissions']) {
-                    var permissions = [];
-                    for (var i = 0; i < data['permissions'].length; i++) {
-                        permissions.push(data['permissions'][i]["id"]);
-                    }
-                    data['permissions'] = permissions;
-                }
-
-                data['c'] = '{{ request.curr_org.org_uid }}';
+                data['schema'] = JSON.stringify(data['schema']);
+                data['c'] = "{{ request.curr_org.org_uid }}";
 
                 $scope.flags.status = ST_AJAX.LOADING;
                 $scope.flags.error_msg = null;
                 $scope.flags.errors = null;
 
                 $http.post(
-                    "{% url 'console_team_member_edit_save' org_mem.id %}",
+                    "{% url 'console_market_customize_type_edit_save' cust_bsp.id %}",
                     $.param(data)
                 )
                 .success(function (response, status, headers, config) {
                     if(response.status=='success'){
-                        $window.location.href = '{% url 'console_team' %}?c={{ request.curr_org.org_uid }}#/members';
+                        $window.location.href = '{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/customize_types';
                     }else{
                         $scope.flags.status = ST_AJAX.ERROR;
                         $scope.flags.error_msg = response.message;
@@ -289,5 +264,5 @@
 
         });
     </script>
-
 {% endblock %}
+

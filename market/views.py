@@ -3,6 +3,7 @@
 # permission of Gagandeep Singh.
 from django.shortcuts import render
 from django.http.response import Http404
+from django.http import HttpResponseForbidden
 
 from accounts.decorators import registered_user_only, organization_console
 
@@ -197,16 +198,121 @@ def console_bsp_customize_type_create(request, org):
     """
     if request.method.lower() == 'post':
         data = request.POST.copy()
-        data['organization'] = org.id
 
         form_custm = BspTypeCustomizationForm(data)
 
         if form_custm.is_valid():
-            form_custm.save(created_by=request.user)
+            form_custm.save(organization=org, created_by=request.user)
             return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok.').gen_http_response()
         else:
             errors = dict(form_custm.errors)
             return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+@registered_user_only
+@organization_console('market.bsptypecustomization.change_bsptypecustomization')
+def console_bsp_customize_type_edit(request, org, cust_id):
+    """
+    Django view to edit a customized BSP type.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+
+    try:
+        filters = request.permissions['market.bsptypecustomization']['data_access']
+        filters['organization_id'] = org.id
+        filters['id'] = cust_id
+
+        cust_bsp = BspTypeCustomization.objects.get(**filters)
+    except (TypeError, BspTypeCustomization.DoesNotExist):
+        # TypeError: If filters is None
+        return HttpResponseForbidden("You do not have permissions to access this page.")
+
+
+    list_dtypes = [{"id": dtype[0], "name": dtype[1]} for dtype in BspTypeCustomization.Attribute.ENUMS.CH_DTYPES]
+    reserved_labels_common = BusinessServicePoint._fields.keys()
+    reserved_labels_common.sort()
+
+    data = {
+        'app_name': 'app_customize_bsp_type',
+        'cust_bsp': cust_bsp,
+        'list_dtypes': list_dtypes,
+        'reserved_labels_common': reserved_labels_common
+    }
+
+    return render(request, 'market/console/bsp_customize_type_edit.html', data)
+
+
+@registered_user_only
+@organization_console('market.bsptypecustomization.change_bsptypecustomization')
+def console_bsp_customize_type_edit_save(request, org, cust_id):
+    """
+    API view to save edited bsp type customization.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        try:
+            filters = request.permissions['market.bsptypecustomization']['data_access']
+            filters['organization_id'] = org.id
+            filters['id'] = cust_id
+
+            cust_bsp = BspTypeCustomization.objects.get(**filters)
+        except (TypeError, BspTypeCustomization.DoesNotExist):
+            # TypeError: If filters is None
+            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="You do not have permissions to edit this customization.")
+
+
+        data = request.POST.copy()
+        form_custm = BspTypeCustomizationForm(data, instance=cust_bsp)
+
+        if form_custm.is_valid():
+            form_custm.save()
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok.').gen_http_response()
+        else:
+            errors = dict(form_custm.errors)
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+
+@registered_user_only
+@organization_console('market.bsptypecustomization.delete_bsptypecustomization')
+def console_bsp_customize_type_remove(request, org, cust_id):
+    """
+    API view to delete a bsp type customization.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        try:
+            filters = request.permissions['market.bsptypecustomization']['data_access']
+
+            filters['organization_id'] = org.id
+            filters['id'] = cust_id
+
+            cust_bsp = BspTypeCustomization.objects.get(**filters)
+        except (TypeError, BspTypeCustomization.DoesNotExist):
+            # TypeError: If filters is None
+            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="You do not have permissions to remove this customization.")
+
+
+        confirm = int(request.POST.get('confirm', 0))
+
+        if not confirm:
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Please confirm your action.').gen_http_response()
+        else:
+            cust_bsp.delete()
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok.').gen_http_response()
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()

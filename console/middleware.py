@@ -43,30 +43,31 @@ class OrgConsoleMiddleware(MiddlewareMixin):
     **Authors**: Gagandeep Singh
     """
     def process_request(self, request):
+        # Check only if logged-in otherwise skip
+        if request.user.is_authenticated():
+            # Look for 'c' paramtere in GET or POST
+            if request.GET.get('c', None):
+                org_uid = request.GET['c']
+            elif request.POST.get('c', None):
+                org_uid = request.POST['c']
+            else:
+                org_uid = None
 
-        # Look for 'c' paramtere in GET or POST
-        if request.GET.get('c', None):
-            org_uid = request.GET['c']
-        elif request.POST.get('c', None):
-            org_uid = request.POST['c']
-        else:
-            org_uid = None
+            if org_uid:
+                # Request is in context to an organization
+                try:
+                    reg_user = request.user.registereduser
 
-        if org_uid:
-            # Request is in context to an organization
-            try:
-                reg_user = request.user.registereduser
+                    # (a) Get organization to which this user is a member
+                    org = Organization.objects.get(
+                        Q(organizationmember__organization__org_uid=org_uid, organizationmember__registered_user=reg_user, organizationmember__deleted=False) &
+                        ~Q(status=Organization.ST_DELETED)
+                    )
+                    request.curr_org = org
 
-                # (a) Get organization to which this user is a member
-                org = Organization.objects.get(
-                    Q(organizationmember__organization__org_uid=org_uid, organizationmember__registered_user=reg_user, organizationmember__deleted=False) &
-                    ~Q(status=Organization.ST_DELETED)
-                )
-                request.curr_org = org
-
-            except (RegisteredUser.DoesNotExist, Organization.DoesNotExist):
-                return HttpResponseForbidden('You do not have permissions to access this page.')
-            except ValueError:
-                # ValueError: If c is badly formed hexadecimal UUID string
-                raise Http404("Invalid link.")
+                except (RegisteredUser.DoesNotExist, Organization.DoesNotExist):
+                    return HttpResponseForbidden('You do not have permissions to access this page.')
+                except ValueError:
+                    # ValueError: If c is badly formed hexadecimal UUID string
+                    raise Http404("Invalid link.")
 

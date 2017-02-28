@@ -26,6 +26,15 @@ function range() {
     };
 }
 
+function titleCase() {
+    return function (input) {
+        input = input || '';
+        return input.replace(/\w\S*/g, function (txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        }).replace(/-|_/, ' ');
+    }
+}
+
 // ---------- Directives ----------
 function staticInclude($http, $templateCache, $compile) {
     return function (scope, element, attrs) {
@@ -267,6 +276,27 @@ function greaterThanEq() {
 
 }
 
+
+function tolower(){
+    return {
+        require: 'ngModel',
+        link: function (scope, elem, attr, ngModel) {
+
+            function dom_to_model(value){
+                return value.toLowerCase();
+            }
+
+            function model_to_dom(value){
+                return value.toLowerCase();
+            }
+
+            ngModel.$parsers.push(dom_to_model);      // For DOM -> model validation
+            ngModel.$formatters.push(model_to_dom);   // For model -> DOM validation
+        }
+    };
+}
+
+
 function tolist() {
     return {
         require: 'ngModel',
@@ -370,6 +400,7 @@ angular.module('feedvay.common',[])
 .filter('unhtml', unhtml)
 .filter('dictlength', dictlength)
 .filter('range', range)
+.filter('titleCase', titleCase)
 
 .directive("compareTo", compareTo)
 .directive('validateFile', validateFile)
@@ -377,6 +408,8 @@ angular.module('feedvay.common',[])
 .directive('valVariableName', valVariableName)
 .directive('lowerThan', lowerThan)
 .directive('greaterThanEq', greaterThanEq)
+
+.directive('tolower', tolower)
 
 .directive('tolist', tolist)
 .directive('autoTypeCast', autoTypeCast)

@@ -11,10 +11,14 @@
 - RegisteredUser
     - Info correction when user is created by invitation
 
+- Permissions & roles
+    - Add missing data access on role change
+
 - Market
     - BSP Cutomization UI
         - Atleast one attr
         - Validate labels on UI
+        - ToLower label
 
     - BSP
         - Purpose of visit

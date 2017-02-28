@@ -135,7 +135,7 @@ class BspTypeCustomizationForm(forms.ModelForm):
     """
     class Meta:
         model = BspTypeCustomization
-        fields = ['organization', 'bsp_type', 'schema']
+        fields = ['bsp_type', 'schema']
 
 
     def clean(self):
@@ -150,8 +150,9 @@ class BspTypeCustomizationForm(forms.ModelForm):
 
         return form_data
 
-    def save(self, created_by):
+    def save(self, organization=None, created_by=None):
         if not self.instance.pk:
+            self.instance.organization = organization
             self.instance.created_by = created_by
         super(self.__class__, self).save(commit=True)
 

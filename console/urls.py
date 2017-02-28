@@ -62,6 +62,9 @@ url_bsp = [
     url(r'^$', views_market.console_bsp_panel, name='console_market_bsp_panel'),
     url(r'^customize-type/new/$', views_market.console_bsp_customize_type, name='console_market_customize_type'),
     url(r'^customize-type/create/$', views_market.console_bsp_customize_type_create, name='console_market_customize_type_create'),
+    url(r'^customize-type/edit/(?P<cust_id>[0-9]+)/$', views_market.console_bsp_customize_type_edit, name='console_market_customize_type_edit'),
+    url(r'^customize-type/edit-save/(?P<cust_id>[0-9]+)/$', views_market.console_bsp_customize_type_edit_save, name='console_market_customize_type_edit_save'),
+    url(r'^customize-type/remove/(?P<cust_id>[0-9]+)/$', views_market.console_bsp_customize_type_remove, name='console_market_customize_type_remove'),
 
 ]
 

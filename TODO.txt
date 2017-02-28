@@ -16,9 +16,7 @@
 
 - Market
     - BSP Cutomization UI
-        - Atleast one attr
-        - Validate labels on UI
-        - ToLower label
+        - Duplicate label check
 
     - BSP
         - Purpose of visit

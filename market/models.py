@@ -407,11 +407,14 @@ class BspTypeCustomization(models57.Model):
         else:
             raise ValidationError('Schema must be a list.')
 
-        # Check for resered labels
+        # Check for reserved labels
         list_reserved_labels = BusinessServicePoint._fields.keys() + MAPPING_BSP_CLASS[self.bsp_type].properties().keys()
         for attr in self.schema:
             if attr['label'] in list_reserved_labels:
                 raise ValidationError("Label '{}' is reserved.".format(attr['label']))
+
+        # TODO: Check duplicates
+
 
         if self.pk:
             self.modified_on = timezone.now()

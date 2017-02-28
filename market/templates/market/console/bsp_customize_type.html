@@ -115,6 +115,38 @@
             $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
         });
 
+        // ----- Directive -----
+        APP.directive('valLabel', function ($rootScope) {
+            // DOM usage: val-label
+
+            return {
+                require: 'ngModel',
+                link: function ($scope, elem, attr, ngModel) {
+                    function validate_label(value){
+                        if(value != null){
+                            var is_valid = true;
+
+                            // Check reserved labels
+                            for(var k in $scope.reserved_labels){
+                                if($scope.reserved_labels[k].indexOf(value)!=-1){
+                                    is_valid = false;
+                                    break;
+                                }
+                            }
+
+                            ngModel.$setValidity('val-label', is_valid);
+                        }
+
+                        return value;
+                    }
+
+                    ngModel.$parsers.push(validate_label);      // For DOM -> model validation
+                    ngModel.$formatters.push(validate_label);   // For model -> DOM validation
+                }
+            };
+        });
+        // ----- /Directives -----
+
         APP.controller('CustomizeType', function($scope, $http, $window, ServiceBsp){
             {% if list_available_types %}
                 $scope.list_avail_types = {{ list_available_types|jsonify|safe }};
@@ -169,6 +201,13 @@
                     }
 
                     // Validate labels
+                    if($scope.data.schema.length==0){
+                        $.growl.warning({
+                            title: '<i class="fa fa-exclamation-triangle"></i> Incomplete submittion!',
+                            message: "Please add atleast one attribute."
+                        });
+                        return false;
+                    }
 
                     // Prepare data
                     var data = angular.copy($scope.data);

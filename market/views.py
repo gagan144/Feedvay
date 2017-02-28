@@ -234,14 +234,19 @@ def console_bsp_customize_type_edit(request, org, cust_id):
 
 
     list_dtypes = [{"id": dtype[0], "name": dtype[1]} for dtype in BspTypeCustomization.Attribute.ENUMS.CH_DTYPES]
+
     reserved_labels_common = BusinessServicePoint._fields.keys()
     reserved_labels_common.sort()
+
+    type_class = MAPPING_BSP_CLASS[cust_bsp.bsp_type]
+    type_wise_labels = type_class.properties().keys()
 
     data = {
         'app_name': 'app_customize_bsp_type',
         'cust_bsp': cust_bsp,
         'list_dtypes': list_dtypes,
-        'reserved_labels_common': reserved_labels_common
+        'reserved_labels_common': reserved_labels_common,
+        'type_wise_labels': type_wise_labels
     }
 
     return render(request, 'market/console/bsp_customize_type_edit.html', data)

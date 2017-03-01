@@ -324,7 +324,14 @@ class Brand(models57.Model):
 
 
 # ========== Business or Service Point ==========
-
+def validate_unique_label(schema):
+    list_found = []
+    for attr in schema:
+        label = attr['label']
+        if list_found.__contains__(label):
+            raise ValidationError("Duplicate label '{}' in attributes.".format(label))
+        else:
+            list_found.append(label)
 
 class BspTypeCustomization(models57.Model):
     """
@@ -363,7 +370,7 @@ class BspTypeCustomization(models57.Model):
 
         _allow_dynamic_properties = False
 
-        label   = StringProperty(required=True, validators=[validate_label]) # Label of the attribute. This is what value is stored against. Follow variable conventions.
+        label   = StringProperty(required=True, validators=[validate_label]) # Lowercase label of the attribute. This is what value is stored against. Follow variable conventions.
         name    = StringProperty(required=True)    # Name of the attribute. Free text.
         dtype   = StringProperty(required=True, choices=ENUMS.CH_DTYPES)   # Data-type of the attribute
 
@@ -376,7 +383,7 @@ class BspTypeCustomization(models57.Model):
     organization = models.ForeignKey(Organization, help_text='Organization for which this customization is defined.')
     bsp_type    = models.CharField(max_length=64, choices=BspTypes.choices, help_text='BSP that is customized.')
 
-    schema      = models57.JSONField(help_text='Schema that defines custom attributes.')
+    schema      = models57.JSONField(validators=[validate_unique_label], help_text='Schema that defines custom attributes.')
 
     created_by  = models.ForeignKey(User, editable=False, help_text='Person who created this customization.')
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
@@ -410,11 +417,10 @@ class BspTypeCustomization(models57.Model):
         # Check for reserved labels
         list_reserved_labels = BusinessServicePoint._fields.keys() + MAPPING_BSP_CLASS[self.bsp_type].properties().keys()
         for attr in self.schema:
+            attr['label'] = attr['label'].lower()   # Convert labels to lowercase
+
             if attr['label'] in list_reserved_labels:
                 raise ValidationError("Label '{}' is reserved.".format(attr['label']))
-
-        # TODO: Check duplicates
-
 
         if self.pk:
             self.modified_on = timezone.now()

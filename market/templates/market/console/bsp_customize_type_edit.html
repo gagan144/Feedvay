@@ -44,7 +44,6 @@
 
             <div class="content_box" ng-controller="CustomizeType" ng-cloak>
                 <form name="form_customize_type" class="form-horizontal" novalidate>
-                    {$ data $}
 
                     <div ng-include="'{% get_static_prefix %}partials/market/bsp/create_edit_customize_bsp.html'" ng-init="ACTION='edit'"></div>
 
@@ -127,7 +126,7 @@
 
                             // Check reserved labels
                             for(var k in $scope.reserved_labels){
-                                if($scope.reserved_labels[k].indexOf(value)!=-1){
+                                if($scope.reserved_labels[k].indexOf(value.toLowerCase())!=-1){
                                     is_valid = false;
                                     break;
                                 }
@@ -261,6 +260,21 @@
                     });
                     return false;
                 }
+
+                var list_found = [];
+                for(var i=0;i<$scope.data.schema.length;i++){
+                    var lbl = $scope.data.schema[i]["label"];
+                    if(list_found.indexOf(lbl)!=-1){
+                        $.growl.warning({
+                            title: '<i class="fa fa-exclamation-triangle"></i> Denied!',
+                            message: "Duplicate label '"+lbl+"' in attributes."
+                        });
+                        return false;
+                    }else{
+                        list_found.push(lbl);
+                    }
+                }
+                // /Validate labels
 
                 // Prepare data
                 var data = angular.copy($scope.data);

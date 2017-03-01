@@ -53,7 +53,7 @@
                     <th>
                         Label<span class="required">*</span>
                         &nbsp;
-                        <i class="fa fa-info-circle custom_tooltip" tooltip-placement="top" uib-tooltip="A label is something that will be used to refer this attribute. This must be unique."></i>
+                        <i class="fa fa-info-circle custom_tooltip" tooltip-placement="top" uib-tooltip="A label is something that will be used to refer this attribute. This must be unique and in LOWERCASE."></i>
                     </th>
                     <th>
                         Name<span class="required">*</span>
@@ -71,7 +71,7 @@
             <tbody>
                 <tr ng-repeat="attr in data.schema">
                     <td>
-                        <input type="text" class="form-control input-sm" ng-model="attr.label" name="attr_label_{$ $index $}" ng-model-options="{ updateOn: 'blur' }" val-variable-name val-label required ng-class="{'error':form_customize_type['attr_label_'+$index].$invalid}">
+                        <input type="text" class="form-control input-sm" ng-model="attr.label" name="attr_label_{$ $index $}" ng-model-options="{ updateOn: 'blur' }" val-variable-name tolower val-label required ng-class="{'error':form_customize_type['attr_label_'+$index].$invalid}">
                         <div ng-messages="form_customize_type['attr_label_'+$index].$error" role="alert" class="error_messages">
                             <label ng-message="required" class="error">Required</label>
                             <label ng-message="val-variable-name" class="error">Invalid label name</label>
@@ -87,16 +87,8 @@
                     <td>
                         <select ng-model="attr.dtype" name="attr_dtype_{$ $index $}" class="form-control input-sm" required ng-class="{'error':form_customize_type['attr_dtype_'+$index].$invalid}">
                             <option value="">-- Select --</option>
-                            <option ng-repeat="dt in list_dtypes" ng-value="dt.id">{$ dt.name $}</option>
+                            <option ng-repeat="dt in list_dtypes" value="{$ dt.id $}">{$ dt.name $}</option>
                         </select>
-
-                        <!--<select ng-model="attr.dtype" name="attr_dtype_{$ $index $}" class="form-control input-sm" required
-                            ng-options="dt.id for dt in list_dtypes"
-                            ng-class="{'error':form_customize_type['attr_dtype_'+$index].$invalid}"
-                        >
-                            <option value="">-- Select --</option>
-                        </select>-->
-
                         <div ng-messages="form_customize_type['attr_dtype_'+$index].$error" role="alert" class="error_messages">
                             <label ng-message="required" class="error">Required</label>
                         </div>

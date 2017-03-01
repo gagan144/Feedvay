@@ -280,18 +280,19 @@ function greaterThanEq() {
 function tolower(){
     return {
         require: 'ngModel',
-        link: function (scope, elem, attr, ngModel) {
+        link: function (scope, element, attrs, modelCtrl) {
 
-            function dom_to_model(value){
-                return value.toLowerCase();
-            }
+            modelCtrl.$parsers.push(function (inputValue) {
 
-            function model_to_dom(value){
-                return value.toLowerCase();
-            }
+                var transformedInput = inputValue.toLowerCase();
 
-            ngModel.$parsers.push(dom_to_model);      // For DOM -> model validation
-            ngModel.$formatters.push(model_to_dom);   // For model -> DOM validation
+                if (transformedInput != inputValue) {
+                    modelCtrl.$setViewValue(transformedInput);
+                    modelCtrl.$render();
+                }
+
+                return transformedInput;
+            });
         }
     };
 }

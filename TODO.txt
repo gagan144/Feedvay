@@ -15,9 +15,6 @@
     - Add missing data access on role change
 
 - Market
-    - BSP Cutomization UI
-        - Duplicate label check
-
     - BSP
         - Purpose of visit
 

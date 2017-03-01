@@ -145,6 +145,7 @@ class BspTypeCustomizationForm(forms.ModelForm):
         list_reserved_labels = BusinessServicePoint._fields.keys() + MAPPING_BSP_CLASS[form_data['bsp_type']].properties().keys()
 
         for attr in form_data['schema']:
+            attr['label'] = attr['label'].lower()   # Convert labels to lowercase
             if attr['label'] in list_reserved_labels:
                 self._errors["schema"] = ["Label '{}' is reserved.".format(attr['label'])]
 

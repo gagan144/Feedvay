@@ -66,6 +66,7 @@ url_bsp = [
     url(r'^customize-type/edit-save/(?P<cust_id>[0-9]+)/$', views_market.console_bsp_customize_type_edit_save, name='console_market_customize_type_edit_save'),
     url(r'^customize-type/remove/(?P<cust_id>[0-9]+)/$', views_market.console_bsp_customize_type_remove, name='console_market_customize_type_remove'),
 
+    url(r'^upload-bulk/$', views_market.console_bsp_upload_bulk, name='console_market_bsp_upload_bulk'),
 ]
 
 api_survey_responses = api_surveys.SurveyResponsesAPI()

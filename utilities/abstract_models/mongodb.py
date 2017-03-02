@@ -11,7 +11,18 @@ class AddressEmbDoc(EmbeddedDocument):
 
     **Authors**: Gagandeep Singh
     """
-    location_id = StringField(required=True, help_text='Instance id of Location model.')
+    HELP_TEXT = {
+        "street_address": "Flat/Block/Street address",
+        "landmark": "Landmark near the address.",
+        "locality": "Locality",
+        "city": "City/Town/Village",
+        "state": "State",
+        "country": "Country",
+        "pincode": "Pincode or Postal code",
+        "coordinates": "GPS location in order of longitude and latitude separated by comma e.g. <lng>,<lat>"
+    }
+
+    location_id = StringField(required=True, confidential=True, help_text='Instance id of Location model.')
 
     street_address = StringField(required=True, help_text="Street address that mostly includes house/flat number.")
     landmark    = StringField(help_text='Landmarks for this address.')
@@ -42,6 +53,12 @@ class ContactEmbDoc(EmbeddedDocument):
         (LANDLINE, 'Landline'),
         (FAX, 'Fax')
     )
+
+    HELP_TEXT = {
+        "type": "Type of contact number; mobile/landline/fax etc.",
+        "code": "Telephone code/prefix",
+        "number": "Contact number"
+    }
 
     type    = StringField(required=True, choices=CH_TYPE, help_text='Type of contact number; mobile/landline/fax etc.')
     code    = StringField(required=True, help_text='Telephone code/prefix.')

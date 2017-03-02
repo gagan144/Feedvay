@@ -5,10 +5,13 @@ from tastypie.resources import ModelResource, Resource, ALL, ALL_WITH_RELATIONS
 from tastypie.authentication import SessionAuthentication
 from tastypie import fields
 from django.db.models import Q
+from mongoengine.fields import EmbeddedDocumentListField
 
 from market.models import Brand, BusinessServicePoint
 from market.bsp_types import *
 from utilities.tastypie_utils import NoPaginator, GenericTastypieObject
+from utilities.db_mongo import MAPPING_MONGO_FLD_PYTHON
+from utilities.jsonobject_utils import MAPPING_JSNOBJ_FLD_PYTHON
 
 class BrandExistenceAPI(ModelResource):
     """
@@ -57,8 +60,11 @@ class BspLabelsAPI(Resource):
 
     **Authors**: Gagandeep Singh
     """
-    label       = fields.CharField(attribute='label')
-    description = fields.CharField(attribute='description', null=True)
+    label       = fields.CharField(attribute='label', help_text='Label/identified iof the attribute.')
+    description = fields.CharField(attribute='description', null=True, help_text='Description of the attribute.')
+    dtype       = fields.CharField(attribute='dtype', help_text='Data type of the attribute')
+    required    = fields.BooleanField(attribute='required', help_text='Whether this field is mandatory or not.')
+    path        = fields.CharField(attribute='path', help_text='Dot (.) separated path in the model.')
 
     class Meta:
         object_class = GenericTastypieObject
@@ -76,21 +82,43 @@ class BspLabelsAPI(Resource):
         data = []
         if include_common:
             for lbl, fld in BusinessServicePoint._fields.iteritems():
-                obj = GenericTastypieObject()
-                obj.label = lbl
-                try:
-                    obj.description = fld.help_text
-                except AttributeError:
-                    obj.description = None
+                if lbl != 'id' and getattr(fld, 'confidential', False) == False:
+                    obj = GenericTastypieObject()
+                    obj.label = lbl
+                    obj.description = BusinessServicePoint.HELP_TEXT[lbl]
+                    obj.dtype = MAPPING_MONGO_FLD_PYTHON[fld.__class__.__name__].__name__
+                    obj.required = fld.required
+                    obj.path = lbl
 
-                data.append(obj)
+                    data.append(obj)
+
+                    # contacts, address, social
+                    if lbl in ['contacts', 'address', 'social']:
+                        if isinstance(fld, EmbeddedDocumentListField):
+                            embd_doc = fld.field.document_type
+                        else:
+                            embd_doc = fld.document_type
+
+                        for sub_lbl, sub_fld in embd_doc._fields.iteritems():
+                            if getattr(sub_fld, 'confidential', False) == False:
+                                obj_sub = GenericTastypieObject()
+                                obj_sub.label = sub_lbl
+                                obj_sub.description = embd_doc.HELP_TEXT[sub_lbl]
+                                obj_sub.dtype = MAPPING_MONGO_FLD_PYTHON[sub_fld.__class__.__name__].__name__
+                                obj_sub.required = sub_fld.required
+                                obj_sub.path = "{}.{}".format(lbl, sub_lbl)
+
+                                data.append(obj_sub)
 
         # AS per BSP type
         type_class = MAPPING_BSP_CLASS[bsp_type_code]
         for lbl, fld in type_class.properties().iteritems():
             obj = GenericTastypieObject()
             obj.label = lbl
-            obj.description = lbl
+            obj.description = type_class.ENUMS.HELP_TEXT[lbl]
+            obj.dtype = MAPPING_JSNOBJ_FLD_PYTHON[fld.__class__.__name__].__name__
+            obj.required = fld.required
+            obj.path = "attributes.{}".format(lbl)
 
             data.append(obj)
 

@@ -294,7 +294,7 @@ def console_bsp_customize_type_remove(request, org, cust_id):
     """
     API view to delete a bsp type customization.
 
-    **Type**: GET
+    **Type**: POST
 
     **Authors**: Gagandeep Singh
     """
@@ -321,6 +321,23 @@ def console_bsp_customize_type_remove(request, org, cust_id):
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+@registered_user_only
+@organization_console('market.businessservicepoint.add_businessservicepoint')
+def console_bsp_upload_bulk(request, org):
+    """
+    Django view to open page for bulk upload for a bsp.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    data = {
+
+    }
+
+    return render(request, 'market/console/bsp_upload_bulk.html', data)
+
 # --- /BusinessServicePoint ---
 
 

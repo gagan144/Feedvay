@@ -61,6 +61,12 @@ class BaseBspType(JsonObject):
     """
     _allow_dynamic_properties = False
 
+    class ENUMS:
+        HELP_TEXT = {
+            "highlights": "Any highlighting points.",
+            "recommendations": "Any recommendations.",
+        }
+
     highlights  = SetProperty(unicode, exclude_if_none=True)    # Highlighting features
     recommendations = StringProperty(exclude_if_none=True)      # Any recommendations
 
@@ -70,6 +76,16 @@ class Cafe(BaseBspType):
 
     **Authors**: Gagandeep Singh
     """
+    class ENUMS:
+        HELP_TEXT = {
+            "home_delivery": "Whether home delivery is available.",
+            "average_cost_2": "Average cost for two people",
+            "payment_methods": "Payment methods available.",
+
+            "highlights": BaseBspType.ENUMS.HELP_TEXT["highlights"],
+            "recommendations": BaseBspType.ENUMS.HELP_TEXT["recommendations"]
+        }
+
     home_delivery   = BooleanProperty(default=False, required=True) # Home delivery available or not
     average_cost_2  = IntegerProperty(default=None, exclude_if_none=True)   # Average cost for two person in native currency
     payment_methods = SetProperty(unicode, required=True)   # Mode of payments
@@ -143,6 +159,18 @@ class Restaurant(BaseBspType):
         @staticmethod
         def get_food_type_list():
             return [f[0] for f in Restaurant.ENUMS.CH_FOOD_TYPE]
+
+        HELP_TEXT = {
+            "category": "Category of the restaurant",
+            "food_type": "Type of food served in terms of veg, non-veg, egg",
+            "cuisines": "Cuisines served in the restaurant",
+            "home_delivery": "Whether home delivery is available.",
+            "average_cost_2": "Average cost for two people",
+            "payment_methods": "Payment methods available.",
+
+            "highlights": BaseBspType.ENUMS.HELP_TEXT["highlights"],
+            "recommendations": BaseBspType.ENUMS.HELP_TEXT["recommendations"]
+        }
 
     # --- Fields ---
     category    = SetProperty(unicode, required=True)   # Category of eatery

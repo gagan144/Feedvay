@@ -103,10 +103,32 @@
                 Business or Service Points
 
                 {% if request.permissions|has_permission:"market.businessservicepoint.add_businessservicepoint" %}
-                    <a href="#?c={{ request.curr_org.org_uid }}" class="btn btn-primary btn-sm pull-right">
-                        <i class="fa fa-plus"></i>
-                        &nbsp;Add new BSP
-                    </a>
+                    <div class="btn-group btn-group-sm pull-right">
+                        <a href="#?c={{ request.curr_org.org_uid }}" class="btn btn-primary">
+                            <i class="fa fa-plus"></i>
+                            &nbsp;Add new BSP
+                        </a>
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret"></span>
+                            <span class="sr-only">&nbsp;</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="{% url 'console_market_bsp_upload_bulk' %}?c={{ request.curr_org.org_uid }}">
+                                    <i class="fa fa-cloud-upload"></i>
+                                    &nbsp;Upload BSP in bulk
+                                </a>
+                                <a href="#?c={{ request.curr_org.org_uid }}">
+                                    <i class="fa fa-tasks"></i>
+                                    &nbsp;View uploads in queue
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+{#                    <a href="#?c={{ request.curr_org.org_uid }}" class="btn btn-primary btn-sm pull-right">#}
+{#                        <i class="fa fa-plus"></i>#}
+{#                        &nbsp;Add new BSP#}
+{#                    </a>#}
                 {% endif %}
             </h2>
             <hr style="margin-top: 15px;"/>

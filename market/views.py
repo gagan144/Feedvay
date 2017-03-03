@@ -3,10 +3,10 @@
 # permission of Gagandeep Singh.
 from django.shortcuts import render
 from django.http.response import Http404
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponse
+from openpyxl import Workbook
 
 from accounts.decorators import registered_user_only, organization_console
-
 from market.models import Brand
 from market.forms import *
 from market import operations as ops
@@ -324,7 +324,7 @@ def console_bsp_customize_type_remove(request, org, cust_id):
 
 @registered_user_only
 @organization_console('market.businessservicepoint.add_businessservicepoint')
-def console_bsp_upload_bulk(request, org):
+def console_bsp_bulk_upload(request, org):
     """
     Django view to open page for bulk upload for a bsp.
 
@@ -337,6 +337,36 @@ def console_bsp_upload_bulk(request, org):
     }
 
     return render(request, 'market/console/bsp_upload_bulk.html', data)
+
+@registered_user_only
+@organization_console('market.businessservicepoint.add_businessservicepoint')
+def console_bsp_download_bulk_upload_excel(request, org):
+    """
+    Django view to return excel filename for bsp bulk upload.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    bsp_type_code = request.GET['type']
+
+    list_attr = get_bsp_labels(bsp_type_code, org)
+
+    workbook = Workbook()
+    worksheet = workbook.worksheets[0]
+
+    row_header = [attr['path'] for attr in list_attr]
+    row_dtype = [attr['dtype'] for attr in list_attr]
+
+    worksheet.append(row_header)
+    worksheet.append(row_dtype)
+
+    # Save & return file
+    filename = "{}_bulk_upload_format.xlsx".format(bsp_type_code)
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename='+filename
+    workbook.save(response)
+    return response
 
 # --- /BusinessServicePoint ---
 

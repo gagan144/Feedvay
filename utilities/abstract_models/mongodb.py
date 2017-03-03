@@ -56,12 +56,12 @@ class ContactEmbDoc(EmbeddedDocument):
 
     HELP_TEXT = {
         "type": "Type of contact number; mobile/landline/fax etc.",
-        "code": "Telephone code/prefix",
+        "tel_code": "Telephone code/prefix",
         "number": "Contact number"
     }
 
     type    = StringField(required=True, choices=CH_TYPE, help_text='Type of contact number; mobile/landline/fax etc.')
-    code    = StringField(required=True, help_text='Telephone code/prefix.')
+    tel_code = StringField(required=True, help_text='Telephone code/prefix.')
     number  = IntField(required=True, help_text='Contact number.')
 
     def __unicode__(self):

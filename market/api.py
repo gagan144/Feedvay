@@ -5,8 +5,6 @@ from tastypie.resources import ModelResource, Resource, ALL, ALL_WITH_RELATIONS
 from tastypie.authentication import SessionAuthentication
 from tastypie import fields
 from django.db.models import Q
-from mongoengine.fields import EmbeddedDocumentListField
-from operator import itemgetter
 
 from market.models import Brand, get_bsp_labels
 from utilities.tastypie_utils import NoPaginator, GenericTastypieObject

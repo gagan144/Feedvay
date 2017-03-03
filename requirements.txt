@@ -31,6 +31,7 @@ indicoio
 pyopenssl
 ndg-httpsclient
 pyasn1
+openpyxl
 
 
 

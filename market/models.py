@@ -658,25 +658,25 @@ class BusinessServicePoint(Document):
     name        = StringField(required=True, help_text="Name of the business or service point. This can be duplicates.")
     description = StringField(help_text='Description about this BSP.')
 
-    type        = StringField(required=True, choices=BspTypes.choices, help_text="Type of BSP.")
+    type        = StringField(required=True, choices=BspTypes.choices, avoid=True, help_text="Type of BSP.")
     organization_id = IntField(required=True, confidential=True, help_text="Instance id of the organization to which this BSP belongs to.")
     brand_id    = IntField(help_text="(Optional) Instance id of the brand to which this BSP belongs to.")
 
     # Attributes
     attributes  = DictField(required=True, confidential=True, help_text='Pre-defined attributes of BSP according to BspType. Use this for reporting or display.')
     custom_attributes = DictField(required=True, confidential=True, help_text='Any other custom attributes. These are free to be updated.')
-    timings     = EmbeddedDocumentListField(DayTiming, help_text='Week day wise timings. This can have multiple timings for a day.')
+    timings     = EmbeddedDocumentListField(DayTiming, avoid=True, help_text='Week day wise timings. This can have multiple timings for a day.')
 
     list_attributes = EmbeddedDocumentListField(Attribute, required=True, confidential=True, help_text="List of all attributes from various fields. These are populated by 'attributes' so do not update here. Use this for analytics.")
 
     # Media
-    cover_photo = EmbeddedDocumentField(ImageDoc, help_text='Cover photo of this BSP.')
-    photos      = EmbeddedDocumentListField(ImageDoc, help_text='Multiple images for this BSP.')
+    cover_photo = EmbeddedDocumentField(ImageDoc, avoid=True, help_text='Cover photo of this BSP.')
+    photos      = EmbeddedDocumentListField(ImageDoc, avoid=True, help_text='Multiple images for this BSP.')
 
 
     # Contact
-    contacts    = EmbeddedDocumentListField(ContactEmbDoc, help_text="Contact number list for this BSP.")
-    address     = EmbeddedDocumentField(AddressEmbDoc, help_text="Address of this BSP.")
+    contacts    = EmbeddedDocumentListField(ContactEmbDoc, avoid=True, help_text="Contact number list for this BSP.")
+    address     = EmbeddedDocumentField(AddressEmbDoc, avoid=True, help_text="Address of this BSP.")
     emails      = ListField(help_text='Email ids')
     website     = URLField(help_text='Website url if any.')
 
@@ -686,7 +686,7 @@ class BusinessServicePoint(Document):
 
     # Misc
     tags        = ListField(help_text='Tags related to this BSP.')
-    social      = EmbeddedDocumentField(SocialMedia, help_text='Social media page links.')
+    social      = EmbeddedDocumentField(SocialMedia, avoid=True, help_text='Social media page links.')
     other_details = StringField(help_text='Any other details regarding this BSP.')
 
     # Statuses
@@ -833,7 +833,7 @@ def get_bsp_labels(bsp_type_code, org=None):
     # for lbl, fld in BusinessServicePoint._fields.iteritems():
     for lbl in sorted_list_fields:
         fld = map_fields[lbl]
-        if lbl != 'id' and getattr(fld, 'confidential', False) == False:
+        if lbl != 'id' and getattr(fld, 'confidential', getattr(fld, 'avoid', False) ) == False:
             data.append({
                 "label": lbl,
                 "description": BusinessServicePoint.HELP_TEXT[lbl],
@@ -843,23 +843,23 @@ def get_bsp_labels(bsp_type_code, org=None):
                 "is_common": True
             })
 
-            # contacts, address, social
-            if lbl in ['contacts', 'address', 'social']:
-                if isinstance(fld, EmbeddedDocumentListField):
-                    embd_doc = fld.field.document_type
-                else:
-                    embd_doc = fld.document_type
+        # contacts, address, social
+        if lbl in ['contacts', 'address', 'social']:
+            if isinstance(fld, EmbeddedDocumentListField):
+                embd_doc = fld.field.document_type
+            else:
+                embd_doc = fld.document_type
 
-                for sub_lbl, sub_fld in embd_doc._fields.iteritems():
-                    if getattr(sub_fld, 'confidential', False) == False:
-                        data.append({
-                            "label": sub_lbl,
-                            "description": embd_doc.HELP_TEXT[sub_lbl],
-                            "dtype": MAPPING_MONGO_FLD_PYTHON[sub_fld.__class__.__name__].__name__,
-                            "required": sub_fld.required,
-                            "path": "{}.{}".format(lbl, sub_lbl),
-                            "is_common": True
-                        })
+            for sub_lbl, sub_fld in embd_doc._fields.iteritems():
+                if getattr(sub_fld, 'confidential', False) == False:
+                    data.append({
+                        "label": sub_lbl,
+                        "description": embd_doc.HELP_TEXT[sub_lbl],
+                        "dtype": MAPPING_MONGO_FLD_PYTHON[sub_fld.__class__.__name__].__name__,
+                        "required": sub_fld.required,
+                        "path": "{}.{}".format(lbl, sub_lbl),
+                        "is_common": True
+                    })
 
     # (b) BSP type related attributes
     type_class = MAPPING_BSP_CLASS[bsp_type_code]
@@ -880,11 +880,11 @@ def get_bsp_labels(bsp_type_code, org=None):
 
             for attr in cust_attr.schema:
                 data.append({
-                    "label": attr.label,
-                    "description": attr.name,
-                    "dtype": attr.dtype,
+                    "label": attr['label'],
+                    "description": attr['name'],
+                    "dtype": attr['dtype'],
                     "required": False,
-                    "path": "custom_attributes.{}".format(attr.label),
+                    "path": "custom_attributes.{}".format(attr['label']),
                     "is_common": False
                 })
         except BspTypeCustomization.DoesNotExist:

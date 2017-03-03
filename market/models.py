@@ -18,6 +18,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile,SimpleUploadedFi
 from PIL import Image
 from jsonobject import *
 from jsonobject.exceptions import *
+from operator import itemgetter
 
 from mongoengine.document import *
 from mongoengine.fields import *
@@ -31,6 +32,8 @@ from utilities.theme import UiTheme, ColorUtils, render_skin
 from utilities.abstract_models.mongodb import AddressEmbDoc, ContactEmbDoc
 from market.bsp_types import *
 from form_builder.validators import validate_label
+from utilities.db_mongo import MAPPING_MONGO_FLD_PYTHON
+from utilities.jsonobject_utils import MAPPING_JSNOBJ_FLD_PYTHON
 
 # ----- General -----
 class BspTag(Document):
@@ -357,13 +360,13 @@ class BspTypeCustomization(models57.Model):
         **Authors**: Gagandeep Singh
         """
         class ENUMS:
-            DTYPE_NUMBER = 'number'
-            DTYPE_DECIMAL = 'decimal'
+            DTYPE_INT = 'int'
+            DTYPE_FLOAT = 'float'
             DTYPE_TEXT = 'text'
             DTYPE_BOOL = 'bool'
             CH_DTYPES = (
-                (DTYPE_NUMBER, 'Number'),
-                (DTYPE_DECIMAL, 'Decimal'),
+                (DTYPE_INT, 'Number'),
+                (DTYPE_FLOAT, 'Decimal'),
                 (DTYPE_TEXT, 'Text'),
                 (DTYPE_BOOL, 'Boolean'),
             )
@@ -651,7 +654,7 @@ class BusinessServicePoint(Document):
 
 
     # --- Fields ---
-    bsp_uid     = StringField(required=True, unique=True, help_text="Unique Feedvay id of the BSP. This will be shared with public.")
+    bsp_uid     = StringField(required=True, unique=True, confidential=True, help_text="Unique Feedvay id of the BSP. This will be shared with public.")
     name        = StringField(required=True, help_text="Name of the business or service point. This can be duplicates.")
     description = StringField(help_text='Description about this BSP.')
 
@@ -791,3 +794,100 @@ class BusinessServicePoint(Document):
         **Authors**: Gagandeep Singh
         """
         raise ValidationError("You cannot delete a BSP. Instead mark 'active' as false.")
+
+
+# ---------- Global methods ----------
+def get_bsp_labels(bsp_type_code, org=None):
+    """
+    Method to get all labels and its information for a bsp type.
+
+    :param bsp_type_code: Codename of the BSP type.
+    :param org: (Optional) If provided, it also includes custom attributes created by an organization for that BSP.
+    :return: List of dict objects.
+
+    **Return list structure**:
+
+        .. code-block:: json
+
+            [
+                {
+                    "label": "<Field label>",
+                    "description": "<Description of the field>",
+                    "dtype": "<Data ype of the field>",
+                    "required": true,
+                    "path": "<Dot separated path in the model>",
+                    "is_common": "<true/false: If true means this attribute is common across all BSP>"
+                },
+
+            ]
+
+    **Authors**: Gagandeep Singh
+    """
+    data = []
+
+    # (a) Common attributes
+    map_fields = BusinessServicePoint._fields
+    list_fields = ((v.creation_counter, k) for k,v in BusinessServicePoint._fields.iteritems())
+    sorted_list_fields = map(itemgetter(1), sorted(list_fields, key=itemgetter(0)))
+
+    # for lbl, fld in BusinessServicePoint._fields.iteritems():
+    for lbl in sorted_list_fields:
+        fld = map_fields[lbl]
+        if lbl != 'id' and getattr(fld, 'confidential', False) == False:
+            data.append({
+                "label": lbl,
+                "description": BusinessServicePoint.HELP_TEXT[lbl],
+                "dtype": MAPPING_MONGO_FLD_PYTHON[fld.__class__.__name__].__name__,
+                "required": fld.required,
+                "path": lbl,
+                "is_common": True
+            })
+
+            # contacts, address, social
+            if lbl in ['contacts', 'address', 'social']:
+                if isinstance(fld, EmbeddedDocumentListField):
+                    embd_doc = fld.field.document_type
+                else:
+                    embd_doc = fld.document_type
+
+                for sub_lbl, sub_fld in embd_doc._fields.iteritems():
+                    if getattr(sub_fld, 'confidential', False) == False:
+                        data.append({
+                            "label": sub_lbl,
+                            "description": embd_doc.HELP_TEXT[sub_lbl],
+                            "dtype": MAPPING_MONGO_FLD_PYTHON[sub_fld.__class__.__name__].__name__,
+                            "required": sub_fld.required,
+                            "path": "{}.{}".format(lbl, sub_lbl),
+                            "is_common": True
+                        })
+
+    # (b) BSP type related attributes
+    type_class = MAPPING_BSP_CLASS[bsp_type_code]
+    for lbl, fld in type_class.properties().iteritems():
+        data.append({
+            "label": lbl,
+            "description": type_class.ENUMS.HELP_TEXT[lbl],
+            "dtype": MAPPING_JSNOBJ_FLD_PYTHON[fld.__class__.__name__].__name__,
+            "required": fld.required,
+            "path": "attributes.{}".format(lbl),
+            "is_common": False
+        })
+
+    # (c) Custom attributes as per the organization
+    if org:
+        try:
+            cust_attr = BspTypeCustomization.objects.get(organization=org, bsp_type=bsp_type_code)
+
+            for attr in cust_attr.schema:
+                data.append({
+                    "label": attr.label,
+                    "description": attr.name,
+                    "dtype": attr.dtype,
+                    "required": False,
+                    "path": "custom_attributes.{}".format(attr.label),
+                    "is_common": False
+                })
+        except BspTypeCustomization.DoesNotExist:
+            pass
+
+    return data

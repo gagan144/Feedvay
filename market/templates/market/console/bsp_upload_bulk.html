@@ -1,1 +1,240 @@
 {% extends 'console/base.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
+
+    <title>BSP bulk upload | {{ request.curr_org.name }}</title>
+{% endblock %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-8">
+            <h2>
+                <i class="fa fa-cloud-upload"></i>
+                BSP bulk upload
+            </h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">Home</a>
+                </li>
+                <li>
+                    <a href="{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/bsps">
+                        Business or Service Point
+                    </a>
+                </li>
+                <li class="active">
+                    Bulk upload
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="wrapper wrapper-content">
+        <div class="container" ng-cloak>
+            <div class="content_box" ng-controller="BspBulkUpload">
+
+                <form name="form_bulk_upload" class="form-horizontal" novalidate>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">BSP type<span class="required">*</span>:</label>
+                        <div class="col-sm-9">
+                            <select name="bsp_type" ng-model="data.bsp_type" class="form-control" style="width: 250px;" required ng-change="onchange_bsptype()">
+                                <option value="">-- Please Select --</option>
+                                {% for bsp in list_bsp_types %}
+                                    <option value="{{ bsp.0 }}">{{ bsp.1 }}</option>
+                                {% endfor %}
+                            </select>
+                            <p class="help-block">
+                                Business or Service Point type for which you want to bluk upload.
+                            </p>
+
+                            <div ng-messages="form_bulk_upload.bsp_type.$dirty && form_bulk_upload.bsp_type.$error" role="alert" class="error_messages">
+                                <label ng-message="required" class="error">Please select a BSP type.</label>
+                            </div>
+
+
+                            <div ng-if="data.bsp_type" style="margin-top: 20px;">
+                                Download the following excel file format and edit it accordingly and
+                                then upload.
+                                <p align="left" style="margin-top: 10px;padding-left: 30px;">
+                                    <a href="/console/bsp/download-bulk-upload-format/?c={{ request.curr_org.org_uid }}&type={$ data.bsp_type $}" target="_blank" class="btn btn-primary btn-sm">
+                                        <i class="fa fa-file-excel-o"></i>&nbsp;
+                                        Download excel format
+                                    </a>
+                                </p>
+
+                                <div>
+                                    The specifications for upload are as follows:
+                                    <a ng-show="!view_specs" href="javascript: void(0);" ng-click="view_specs=true;">show</a>
+                                    <a ng-show="view_specs" href="javascript: void(0);" ng-click="view_specs=false;">hide</a>
+                                    <div ng-if="view_specs">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 200px;">Column</th>
+                                                    <th>Description</th>
+                                                    <th style="width: 30px;">Type</th>
+                                                    <th style="width: 30px;">Mandatory</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="attr in list_attributes">
+                                                    <td><code>{$ attr.path $}</code></td>
+                                                    <td>{$ attr.description $}</td>
+                                                    <td>{$ attr.dtype $}</td>
+                                                    <td align="center"><i ng-if="attr.required" class="fa fa-asterisk text-danger"></i></td>
+                                                </tr>
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+{#                    <div class="form-group" ng-if="data.bsp_type">#}
+                    <div class="form-group" ng-show="data.bsp_type">
+                        <label class="col-sm-3 control-label">Upload excel file<span class="required">*</span>:</label>
+                        <div class="col-sm-7">
+                            <input type="file" name="file_upload" file-model="file_upload" ng-model="data.file_upload" class="form-control" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" required validate-file="">
+{#                            <input type="file" name="file_logo" file-model="file_logo" ng-model="data.file_logo" class="form-control" style="width: 400px;" accept="image/x-png,image/jpeg" ng-required="ACTION=='create'" validate-file="" preview-image="'logo_preview'" ng-change="get_colors();">#}
+                            <div ng-messages="form_bulk_upload.file_upload.$dirty && form_bulk_upload.file_upload.$error" role="alert" class="error_messages">
+                                <label ng-message="required" class="error">Please select an image.</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group">
+                        <div class="col-sm-9 col-sm-offset-3">
+                            <p ng-if="flags.status==ST_AJAX.ERROR" class="text-danger">
+                                <i class="fa fa-exclamation-triangle"></i> {$ flags.error_msg $}
+                            </p>
+                            <button ladda="flags.status==ST_AJAX.LOADING" class="btn btn-primary ladda-button" type="button" ng-disabled="form_bulk_upload.$invalid" ng-click="submit_upload(form_bulk_upload)" data-style="zoom-in">
+                                Upload
+                            </button>
+                            <a href="{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/bsps" class="btn btn-link" type="button">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% get_static_prefix %}apps/market/bsp.js"></script>
+    <script>
+        'use strict';
+
+        var APP = angular.module('{{ app_name }}',[
+            'feedvay.uiapp',
+            'feedvay.common',
+            'feedvay.watchdog',
+            'feedvay.market.bsp',
+
+            'ngCookies',
+            'ngMessages',
+            'ui.bootstrap',
+            'angular-ladda'
+        ])
+        .run(function($rootScope, $http, $cookies) {
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+            $http.defaults.xsrfCookieName = 'csrftoken';
+            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+            $rootScope.ST_AJAX = ST_AJAX;
+        })
+        .config(function($interpolateProvider, $httpProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+
+            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+        });
+
+        APP.controller('BspBulkUpload', function($scope, $http, $window, ServiceBsp){
+            $scope.view_specs = false;
+            $scope.list_attributes = [];
+            $scope.flags = {
+                status: null,
+                error_msg: null,
+                errors: null
+            };
+
+            $scope.data = {};
+
+            // --- Methods ---
+            $scope.onchange_bsptype = function(){
+                ServiceBsp.get_labels($scope.data.bsp_type, 1).then(
+                    function(response){
+                        $scope.list_attributes = response.objects;
+                    },
+                    function(response){
+
+                    }
+                );
+            };
+
+            $scope.submit_upload = function(form_obj){
+                if(form_obj.$invalid){
+                    return false;
+                }
+
+                // Prepare form data
+                var fd = new FormData();
+                fd.append('c', '{{ request.curr_org.org_uid }}');
+                for(var key in $scope.data){
+                    if(!key.startsWith("file_") && $scope.data[key]!=null) {
+                        fd.append(key, $scope.data[key]);
+                    }
+                }
+                fd.append('file_upload', $scope.file_upload);
+
+                $scope.flags.status = ST_AJAX.LOADING;
+                $http.post(
+                    "{% url 'console_market_bsp_bulk_upload_post' %}",
+                    fd,
+                    {
+                        transformRequest: angular.identity,
+                        headers: {'Content-Type': undefined}
+                    }
+                )
+                .success(function (response, status, headers, config) {
+                    if(response.status=='success'){
+                        $scope.flags.status = null;
+                        //$window.location.href = '{% url 'console_market_brands' %}?c={{ request.curr_org.org_uid }}';
+                    }else{
+                        $scope.flags.status = ST_AJAX.ERROR;
+                        $scope.flags.error_msg = response.message;
+                        if(response.status == 'failed'){
+                            $scope.flags.errors = response.errors;
+                        }
+                    }
+                })
+                .error(function (response, status, headers, config) {
+                    $scope.flags.status = ST_AJAX.ERROR;
+
+                    if(status != -1){
+                        $scope.flags.error_msg = "Something went wrong. Our engineers will be informed.";
+                    }else{
+                        $.growl.error({
+                            title: '<i class="fa fa-signal"></i> Network error!',
+                            message: "Please check your internet connection."
+                        });
+                    }
+                });
+
+            };
+
+        });
+    </script>
+{% endblock %}

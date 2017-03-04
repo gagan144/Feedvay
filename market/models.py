@@ -635,7 +635,7 @@ class BusinessServicePoint(Document):
         "description": "Description about your business or service point.",
 
         "type": "Type of business or service point.",
-        "brand_id": "Maintained by feedvay, specifying the brand to which the BSP belongs to.",
+        "brand_id": "The brand to which the BSP belongs to.",
 
         "timings": "Weekday wise opening or closing timings for the BSP if any.",
 

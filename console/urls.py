@@ -68,6 +68,7 @@ url_bsp = [
 
     url(r'^bulk-upload/$', views_market.console_bsp_bulk_upload, name='console_market_bsp_bulk_upload'),
     url(r'^download-bulk-upload-format/$', views_market.console_bsp_download_bulk_upload_excel, name='console_market_bsp_download_bulk_upload_excel'),
+    url(r'^bulk-upload/post/$', views_market.console_bsp_bulk_upload_post, name='console_market_bsp_bulk_upload_post'),
 
 ]
 

@@ -258,7 +258,7 @@ def console_bsp_customize_type_edit_save(request, org, cust_id):
     """
     API view to save edited bsp type customization.
 
-    **Type**: GET
+    **Type**: POST
 
     **Authors**: Gagandeep Singh
     """
@@ -333,7 +333,8 @@ def console_bsp_bulk_upload(request, org):
     **Authors**: Gagandeep Singh
     """
     data = {
-
+        'app_name': 'app_bsp_bulk_upload',
+        'list_bsp_types': BspTypes.choices
     }
 
     return render(request, 'market/console/bsp_upload_bulk.html', data)
@@ -368,6 +369,28 @@ def console_bsp_download_bulk_upload_excel(request, org):
     workbook.save(response)
     return response
 
+
+@registered_user_only
+@organization_console('market.businessservicepoint.add_businessservicepoint')
+def console_bsp_bulk_upload_post(request, org):
+    """
+    API view to process bsp bulk uploaded file.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        is_valid = True
+
+        if is_valid:
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok.').gen_http_response()
+        else:
+            errors = {}
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 # --- /BusinessServicePoint ---
 
 

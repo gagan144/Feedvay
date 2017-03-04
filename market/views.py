@@ -4,6 +4,7 @@
 from django.shortcuts import render
 from django.http.response import Http404
 from django.http import HttpResponseForbidden, HttpResponse
+from django.utils.datastructures import MultiValueDictKeyError
 from openpyxl import Workbook
 
 from accounts.decorators import registered_user_only, organization_console
@@ -11,6 +12,7 @@ from market.models import Brand
 from market.forms import *
 from market import operations as ops
 from market.models import *
+from market.importers import dump_bsp_bulk_upload
 
 from utilities.api_utils import ApiResponse
 
@@ -334,7 +336,8 @@ def console_bsp_bulk_upload(request, org):
     """
     data = {
         'app_name': 'app_bsp_bulk_upload',
-        'list_bsp_types': BspTypes.choices
+        'list_bsp_types': BspTypes.choices,
+        'list_brands': Brand.objects.filter(organization=org, active=True).only('id', 'name', 'brand_uid', 'logo')
     }
 
     return render(request, 'market/console/bsp_upload_bulk.html', data)
@@ -381,13 +384,16 @@ def console_bsp_bulk_upload_post(request, org):
     **Authors**: Gagandeep Singh
     """
     if request.method.lower() == 'post':
-        is_valid = True
 
-        if is_valid:
-            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok.').gen_http_response()
-        else:
-            errors = {}
-            return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()
+        try:
+            bsp_type = request.POST['bsp_type']
+            file_excel = request.FILES['file_upload']
+
+            count = dump_bsp_bulk_upload(file_excel, bsp_type, org)
+
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok. {} bsp queued.'.format(count)).gen_http_response()
+        except MultiValueDictKeyError:
+            return ApiResponse(status=ApiResponse.ST_BAD_REQUEST, message='One or more parameters are missing.').gen_http_response()
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()

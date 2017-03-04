@@ -6,11 +6,12 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+import json
 
 from mongoengine.document import *
 from mongoengine.fields import *
 
-class Record(Document):
+class DataRecord(Document):
     """
     Mongo model to store data of any schema. This model act as a buffer storage
     for bulk uploads where records can be stored and later picked-up by process
@@ -21,6 +22,10 @@ class Record(Document):
 
     After processing, the record is removed from this collection. This is the responsibility of the
     process.
+
+    .. warning::
+        The schema of ``identifiers`` and ``data`` can be anything. Please be careful setting these
+        fields and make sure process that processes them can understand it.
 
     **Authors**: Gagandeep Singh
     """
@@ -40,13 +45,19 @@ class Record(Document):
     )
 
     context     = StringField(required=True, choices=CH_CONTEXT, help_text="Context of the record.")
-    data        = DictField(required=True, help_text="Key-value based actual data of the record.")
+    filename    = StringField(help_text="Uploaded file name that created this record.")
+    identifiers = DictField(required=True, help_text="Identifiers that describe this data record.")
+    data        = StringField(required=True, help_text="JSON dict string containing actual data for the record. This is string because mongo does not allow dot in keys.")
 
     status      = StringField(required=True, default=ST_NEW, choices=CH_STATUS, help_text="Status of this record.")
     error_message = StringField(help_text="Error details in case processing encountered any error.")
 
     created_on  = DateTimeField(default=timezone.now, required=True, confidential=True, help_text='Date on which this record was created in the database.')
     modified_on = DateTimeField(default=None, confidential=True, help_text='Date on which this record was modified.')
+
+    @property
+    def data_json(self):
+        return json.loads(self.data)
 
     meta = {
         'ordering': ['context', 'created_on'],
@@ -64,12 +75,19 @@ class Record(Document):
 
         **Authors**: Gagandeep Singh
         """
-        if self.status == Record.ST_ERROR and self.error_message in ["", None]:
+        # Check status
+        if self.status == DataRecord.ST_ERROR and self.error_message in ["", None]:
             raise ValidationError("Please specify error message.")
+
+        # Check data json
+        try:
+            d = self.data_json
+        except ValueError as ex:
+            raise ValidationError(ex.message)
 
         if self.pk:
             self.modified_on = timezone.now()
 
-        return super(Record, self).save(*args, **kwargs)
+        return super(DataRecord, self).save(*args, **kwargs)
 
 

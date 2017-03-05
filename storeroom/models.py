@@ -44,6 +44,7 @@ class DataRecord(Document):
         (ST_ERROR, 'Error'),
     )
 
+    batch_id    = StringField(required=True, help_text='Batch id of bulk upload for this record.')
     context     = StringField(required=True, choices=CH_CONTEXT, help_text="Context of the record.")
     filename    = StringField(help_text="Uploaded file name that created this record.")
     identifiers = DictField(required=True, help_text="Identifiers that describe this data record.")
@@ -62,6 +63,7 @@ class DataRecord(Document):
     meta = {
         'ordering': ['context', 'created_on'],
         'indexes':[
+            'batch_id',
             'context',
             'status',
             'created_on',

@@ -51,6 +51,8 @@ class PaymentMethods:
         (WALLETS, 'Wallets')
     )
 
+    help_text = 'Payment methods available.<br/>Values: '+", ".join(['<code>{}</code>'.format(pm[0]) for pm in choices])
+
 # ---------- BSP Types ----------
 class BaseBspType(JsonObject):
     """
@@ -80,7 +82,7 @@ class Cafe(BaseBspType):
         HELP_TEXT = {
             "home_delivery": "Whether home delivery is available.",
             "average_cost_2": "Average cost for two people",
-            "payment_methods": "Payment methods available.",
+            "payment_methods": PaymentMethods.help_text,
 
             "highlights": BaseBspType.ENUMS.HELP_TEXT["highlights"],
             "recommendations": BaseBspType.ENUMS.HELP_TEXT["recommendations"]
@@ -161,12 +163,12 @@ class Restaurant(BaseBspType):
             return [f[0] for f in Restaurant.ENUMS.CH_FOOD_TYPE]
 
         HELP_TEXT = {
-            "category": "Category of the restaurant",
-            "food_type": "Type of food served in terms of veg, non-veg, egg",
+            "category": 'Category of the restaurant.<br/>Values: ' + ', '.join(['<code>{}</code>'.format(catg[0]) for catg in CH_CATEGORIES]),
+            "food_type": 'Type of food served.<br/>Values: ' + ', '.join(['<code>{}</code>'.format(ft[0]) for ft in CH_FOOD_TYPE]),
             "cuisines": "Cuisines served in the restaurant",
             "home_delivery": "Whether home delivery is available.",
             "average_cost_2": "Average cost for two people",
-            "payment_methods": "Payment methods available.",
+            "payment_methods": PaymentMethods.help_text,
 
             "highlights": BaseBspType.ENUMS.HELP_TEXT["highlights"],
             "recommendations": BaseBspType.ENUMS.HELP_TEXT["recommendations"]

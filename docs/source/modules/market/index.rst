@@ -17,3 +17,4 @@ Contents
        bsp_types
        views
        forms
+       importers

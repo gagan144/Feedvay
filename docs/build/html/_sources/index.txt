@@ -18,6 +18,7 @@ Topics
    modules/languages/index
    modules/market/index
    modules/owlery/index
+   modules/storeroom/index
    modules/surveys/index
    modules/utilities/index
    modules/watchdog/index

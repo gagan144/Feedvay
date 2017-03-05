@@ -2,7 +2,7 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from openpyxl import load_workbook
-import json
+import json, uuid
 
 from storeroom.models import DataRecord
 
@@ -15,6 +15,7 @@ def dump_bsp_bulk_upload(file_excel, bsp_type, org):
     :param org: Organization for which dumping is done.
     :return: Number of records dumped.
     """
+    batch_id = str(uuid.uuid4())
 
     # Load workbook
     wb = load_workbook(file_excel, read_only=True)
@@ -26,8 +27,6 @@ def dump_bsp_bulk_upload(file_excel, bsp_type, org):
         for col_idx, cell in enumerate(row):
             map_headers[col_idx] = cell.value
         break
-
-    # print map_headers
 
     count = 0
     list_records = []
@@ -45,6 +44,7 @@ def dump_bsp_bulk_upload(file_excel, bsp_type, org):
         # Append to bulk insert list
         list_records.append(
             DataRecord(
+                batch_id = batch_id,
                 context = DataRecord.CNTX_BSP,
                 filename = file_excel._name,
                 identifiers = {

@@ -340,7 +340,7 @@ def console_bsp_bulk_upload(request, org):
         'list_brands': Brand.objects.filter(organization=org, active=True).only('id', 'name', 'brand_uid', 'logo')
     }
 
-    return render(request, 'market/console/bsp_upload_bulk.html', data)
+    return render(request, 'market/console/bsp_bulk_upload.html', data)
 
 @registered_user_only
 @organization_console('market.businessservicepoint.add_businessservicepoint')

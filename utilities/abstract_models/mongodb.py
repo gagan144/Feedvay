@@ -55,7 +55,7 @@ class ContactEmbDoc(EmbeddedDocument):
     )
 
     HELP_TEXT = {
-        "type": "Type of contact number; mobile/landline/fax etc.",
+        "type": 'Type of contact number.<br/>Values: ' + ', '.join(['<code>{}</code>'.format(t[0]) for t in CH_TYPE]),
         "tel_code": "Telephone code/prefix",
         "number": "Contact number"
     }

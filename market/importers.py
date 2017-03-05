@@ -6,13 +6,14 @@ import json, uuid
 
 from storeroom.models import DataRecord
 
-def dump_bsp_bulk_upload(file_excel, bsp_type, org):
+def dump_bsp_bulk_upload(file_excel, bsp_type, org, creator_user):
     """
     Importer that dumps all BSP bulk upload records to :class:`storeroom.models.Record`.
 
     :param file_excel: Excel file as the source of the bulk records.
     :param bsp_type: BSP type to which records belongs to.
     :param org: Organization for which dumping is done.
+    :param creator_user: User who made this import
     :return: Number of records dumped.
     """
     batch_id = str(uuid.uuid4())
@@ -44,14 +45,15 @@ def dump_bsp_bulk_upload(file_excel, bsp_type, org):
         # Append to bulk insert list
         list_records.append(
             DataRecord(
+                organization_id = org.id,
                 batch_id = batch_id,
                 context = DataRecord.CNTX_BSP,
                 filename = file_excel._name,
                 identifiers = {
                     "bsp_type": bsp_type,
-                    "organization_id": org.id
                 },
-                data = json.dumps(row_data)
+                data = json.dumps(row_data),
+                created_by = creator_user.id
             )
         )
 

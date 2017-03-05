@@ -1,0 +1,268 @@
+{% extends 'console/base.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
+
+    <title>BSP uploads in queue | {{ request.curr_org.name }}</title>
+
+{#    <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">#}
+    <link href="{% get_static_prefix %}ui/css/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/css/plugins/datapicker/datepicker3.css" rel="stylesheet">
+{% endblock %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-8">
+            <h2>
+                <i class="fa fa-tasks"></i>
+                BSP uploads in queue
+            </h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">Home</a>
+                </li>
+                <li>
+                    <a href="{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/bsps">
+                        Business or Service Point
+                    </a>
+                </li>
+                <li class="active">
+                    BSP uploads in queue
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="wrapper wrapper-content" style="padding-top: 10px;">
+        <div class="container" ng-cloak>
+            <div class="content_box" ng-controller="MainCtrl">
+
+                <div ng-if="ui_flags.state==ST_AJAX.LOADING" class="loading_big" align="center" valign="middle">
+                    <img src="{% get_static_prefix %}images/loading/spinner_1.gif" style="height: 40px">
+                    <h3 style="margin-top: 20px;font-weight: normal;">Loading pending uploads ...</h3>
+                </div>
+                <div ng-if="ui_flags.state==ST_AJAX.ERROR" class="alert alert-danger">
+                    <table style="width: 100%">
+                        <tr>
+                            <td valign="top" style="width: 90px;">
+                                <i class="fa fa-exclamation-triangle" style="font-size: 60px;"></i>
+                            </td>
+                            <td valign="top">
+                                <h2 style="margin-top: 0px;">Error!</h2>
+                                <div>
+                                    {$ ui_flags.error_msg $}
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div ng-show="ui_flags.state==ST_AJAX.COMPLETED">
+                    <div ng-if="list_datarecords.length==0" class="alert alert-success">
+                        <table style="width: 100%">
+                            <tr>
+                                <td valign="top" style="width: 90px;">
+                                    <i class="fa fa-check-circle" style="font-size: 80px;"></i>
+                                </td>
+                                <td valign="top">
+                                    <h2 style="margin-top: 0px;">No pending uploads!</h2>
+                                    <div>
+                                        There are no pending uploads in the queue. All BSP have been created.
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div ng-show="list_datarecords.length">
+                        <!-- Response grid -->
+                        <ng-jqgrid
+                                config="grid_datarecords.config"
+                                modeldata="list_datarecords"
+                                gridid="{$ grid_datarecords.gridid $}"
+                                pagerid="{$ grid_datarecords.pagerid $}"
+                                api="grid_datarecords.gridapi"
+                                filtertoolbar="{stringResult: true, searchOnEnter: false, defaultSearch: 'cn'}"
+                        ></ng-jqgrid>
+                        <!-- /Response grid -->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+{#    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>#}
+{#    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>#}
+{#    <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/uievents/event.js"></script>#}
+    <script src="{% get_static_prefix %}ui/js/plugins/datapicker/bootstrap-datepicker.js"></script>
+
+    <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/i18n/grid.locale-en.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/jquery.jqGrid.min.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/angular-jqgrid/angular-jqgrid.js"></script>
+
+    <script src="{% get_static_prefix %}apps/storeroom/storeroom.js"></script>
+    <script>
+        'use strict';
+
+        var APP = angular.module('{{ app_name }}',[
+            'feedvay.uiapp',
+            'feedvay.common',
+            'feedvay.watchdog',
+            'feedvay.storeroom',
+
+            'ngCookies',
+            'ngMessages',
+            'ui.bootstrap',
+            'angular-ladda',
+            'angular-jqgrid',
+{#            'oitozero.ngSweetAlert',#}
+{#            'ui.event',#}
+        ])
+        .run(function($rootScope, $http, $cookies) {
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+            $http.defaults.xsrfCookieName = 'csrftoken';
+            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+            $rootScope.ST_AJAX = ST_AJAX;
+        })
+        .config(function($interpolateProvider, $httpProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+
+            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+        });
+
+        APP.controller('MainCtrl', function($scope, $http, $window, ServiceStoreroom){
+            $scope.ui_flags = {
+                state: null,
+                error_msg: null
+            };
+
+            // Jqgrid
+            $scope.list_datarecords = [];
+            $scope.grid_datarecords = {
+                gridid: "grid_datarecords",
+                pagerid: "grid_datarecords_pager",
+                config: {
+                    datatype: "local",
+                    colNames: [
+                        '',
+                        'Batch ID',
+                        'Filename',
+                        'BSP Type',
+                        'Status',
+                        'Error message',
+                        'Created by',
+                        'Created on',
+                    ],
+                    colModel: [
+                        { name: 'id', index: 'id', width: 20, hidden:true, search:false },
+                        { name: 'batch_id', index: 'batch_id', width: 40 },
+                        { name: 'filename', index: 'filename', width: 30 },
+                        { name: 'identifiers.bsp_type', index: 'identifiers.bsp_type', width: 30 },
+                        { name: 'status_html', index: 'status', width: 25,
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for s in DataRecord.CH_STATUS %}{{ s.0 }}:{{ s.1 }}{% if not forloop.last %};{% endif %}{% endfor %}" }
+                        },
+                        { name: 'error_message', index: 'error_message', width: 60 },
+                        { name: 'created_by.display_name', index: 'created_by.display_name', width: 30 },
+                        { name: 'created_on', index: 'created_on', width: 40,
+                            sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-dTH:i:s', newformat: 'd-M-Y' },
+                            searchoptions: {
+                                attr:{ placeholder: 'Select date', readonly:'readonly'},
+                                dataInit: function (elem) {
+                                    $(elem).datepicker({
+                                        format: 'yyyy-mm-dd',
+                                        keyboardNavigation: false,
+                                        autoclose: true,
+                                        todayHighlight: true,
+                                    }).on('changeDate', function(e) {
+                                        $('#grid_datarecords')[0].triggerToolbar();
+                                    });
+                                }
+                            }
+                        },
+                    ],
+                    grouping:true,
+                    groupingView : {
+                        groupField : ['batch_id'],
+                        groupColumnShow : [false],
+                        groupText : ['<b>BatchID: {0}</b> - {1} Record(s)'],
+                        groupCollapse : true,
+                        groupOrder: ['asc']
+                    },
+                    caption: 'BSPs in queue',
+                    viewrecords: true,
+                    sortname: 'batch_id',
+                    sortorder: "asc",
+                    rowNum: 100,
+                    rowList: [50, 100, 250, 500, 100000],
+                    autowidth : true,
+                    height: '300px',
+                    shrinkToFit: true,
+                    hidegrid: false,
+                    ignoreCase:true,
+                    multiselect: true
+                },
+                filtertoolbar: {
+                    stringResult: true, searchOnEnter: false, defaultSearch: 'cn',
+                },
+                gridapi: {}
+            };
+
+
+            $scope.refresh_uploads = function() {
+                $scope.ui_flags.state = ST_AJAX.LOADING;
+                $scope.ui_flags.error_msg = null;
+                ServiceStoreroom.get('{{ request.curr_org.org_uid }}', 'bsp').then(
+                        function (response) {
+                            var records = response.objects;
+
+                            $scope.ui_flags.state = ST_AJAX.COMPLETED;
+
+                            // Preprocess
+                            for (var i = 0; i < records.length; i++) {
+                                var row = records[i];
+
+                                records[i]['created_by']['display_name'] = row['created_by']['first_name'] + ' ' + row['created_by']['last_name']
+
+                                var status_html = '';
+                                switch(row['status']){
+                                    case 'new': status_html='<span class="text-info"><i class="fa fa-asterisk"></i>&nbsp;New</span>'; break;
+                                    case 'processing': status_html='<span class="text-warning"><i class="fa fa-refresh fa-spin"></i>&nbsp;Processing</span>'; break;
+                                    case 'error': status_html='<span class="text-danger"><i class="fa fa-exclamation-triangle"></i>&nbsp;Error</span>'; break;
+                                }
+                                records[i]['status_html'] = status_html;
+                            }
+
+                            // Update grid
+                            $scope.list_datarecords = records;
+                            $scope.grid_datarecords.gridapi.clear();
+                            $scope.grid_datarecords.gridapi.insert(records);
+
+                        },
+                        function (response) {
+                            $scope.ui_flags.state = ST_AJAX.ERROR;
+
+                            if (response.status != -1) {
+                                $scope.ui_flags.error_msg = "Something went wrong. Our engineers will be informed.";
+                            } else {
+                                $scope.ui_flags.error_msg = "Please check your internet connection.";
+                            }
+
+                        }
+                );
+
+            };
+            $scope.refresh_uploads();
+
+        });
+    </script>
+{% endblock %}

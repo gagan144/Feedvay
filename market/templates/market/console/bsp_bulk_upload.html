@@ -256,7 +256,7 @@
                             showConfirmButton: true
                         },
                         function (isConfirm){
-                            $window.location.href = '{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/bsps';
+                            $window.location.href = '{% url 'console_market_bsp_bulk_upload_queue' %}?c={{ request.curr_org.org_uid }}';
                         });
                     }else{
                         $scope.flags.status = ST_AJAX.ERROR;

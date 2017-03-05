@@ -11,6 +11,8 @@ import json
 from mongoengine.document import *
 from mongoengine.fields import *
 
+from clients.models import Organization
+
 class DataRecord(Document):
     """
     Mongo model to store data of any schema. This model act as a buffer storage
@@ -44,7 +46,9 @@ class DataRecord(Document):
         (ST_ERROR, 'Error'),
     )
 
+    organization_id = IntField(help_text="(Optional) Organization to which this record belongs to.")
     batch_id    = StringField(required=True, help_text='Batch id of bulk upload for this record.')
+
     context     = StringField(required=True, choices=CH_CONTEXT, help_text="Context of the record.")
     filename    = StringField(help_text="Uploaded file name that created this record.")
     identifiers = DictField(required=True, help_text="Identifiers that describe this data record.")
@@ -53,6 +57,7 @@ class DataRecord(Document):
     status      = StringField(required=True, default=ST_NEW, choices=CH_STATUS, help_text="Status of this record.")
     error_message = StringField(help_text="Error details in case processing encountered any error.")
 
+    created_by  = IntField(required=True, help_text="Instance id of user :class:`django.contrib.auth.models.User` who created this record.")
     created_on  = DateTimeField(default=timezone.now, required=True, confidential=True, help_text='Date on which this record was created in the database.')
     modified_on = DateTimeField(default=None, confidential=True, help_text='Date on which this record was modified.')
 
@@ -60,9 +65,14 @@ class DataRecord(Document):
     def data_json(self):
         return json.loads(self.data)
 
+    @property
+    def organization(self):
+        return Organization.objects.get(id=self.organization_id)
+
     meta = {
-        'ordering': ['context', 'created_on'],
+        'ordering': ['context', 'batch_id'],
         'indexes':[
+            { 'fields':['organization_id'], 'cls':False, 'sparse': True },
             'batch_id',
             'context',
             'status',

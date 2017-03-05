@@ -13,6 +13,7 @@ from market.forms import *
 from market import operations as ops
 from market.models import *
 from market.importers import dump_bsp_bulk_upload
+from storeroom.models import DataRecord
 
 from utilities.api_utils import ApiResponse
 
@@ -389,7 +390,7 @@ def console_bsp_bulk_upload_post(request, org):
             bsp_type = request.POST['bsp_type']
             file_excel = request.FILES['file_upload']
 
-            count = dump_bsp_bulk_upload(file_excel, bsp_type, org)
+            count = dump_bsp_bulk_upload(file_excel, bsp_type, org, request.user)
 
             return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok. {} bsp queued.'.format(count)).gen_http_response()
         except MultiValueDictKeyError:
@@ -397,6 +398,23 @@ def console_bsp_bulk_upload_post(request, org):
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+@registered_user_only
+@organization_console('market.businessservicepoint.add_businessservicepoint')
+def console_bsp_bulk_upload_queue(request, org):
+    """
+    Django view to view all BSP bulk upload and their status.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    data = {
+        'app_name': 'app_bsp_bulk_upload_queue',
+        'DataRecord': DataRecord
+    }
+
+    return render(request, 'market/console/bsp_bulk_upload_in_queue.html', data)
 # --- /BusinessServicePoint ---
 
 

@@ -13,6 +13,7 @@ from clients import api as api_clients
 from market import api as api_market
 from surveys import views as views_surveys
 from surveys import api as api_surveys
+from storeroom import api as api_storeroom
 
 url_account = [
     url(r'^settings/$', views_accounts.console_account_settings, name='console_accounts_settings'),
@@ -69,6 +70,7 @@ url_bsp = [
     url(r'^bulk-upload/$', views_market.console_bsp_bulk_upload, name='console_market_bsp_bulk_upload'),
     url(r'^download-bulk-upload-format/$', views_market.console_bsp_download_bulk_upload_excel, name='console_market_bsp_download_bulk_upload_excel'),
     url(r'^bulk-upload/post/$', views_market.console_bsp_bulk_upload_post, name='console_market_bsp_bulk_upload_post'),
+    url(r'^bulk-upload/queue/$', views_market.console_bsp_bulk_upload_queue, name='console_market_bsp_bulk_upload_queue'),
 
 ]
 
@@ -96,6 +98,12 @@ url_surveys = [
     url(r'^api/', include(api_survey_response_trend.urls)),
 ]
 
+api_data_records_org = api_storeroom.DataRecordOrgAPI()
+url_storeroom = [
+    # Api
+    url(r'^api/', include(api_data_records_org.urls)),
+]
+
 urlpatterns = [
     url(r'^$', views.home, name='console_home'),
 
@@ -106,4 +114,5 @@ urlpatterns = [
     url(r'^brands/', include(url_brands)),
     url(r'^bsp/', include(url_bsp)),
     url(r'^surveys/', include(url_surveys)),
+    url(r'^storeroom/', include(url_storeroom)),
 ]

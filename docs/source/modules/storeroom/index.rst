@@ -13,3 +13,4 @@ Contents
        :titlesonly:
 
        models
+       api

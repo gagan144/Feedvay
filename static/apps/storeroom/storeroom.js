@@ -17,6 +17,23 @@ angular.module('feedvay.storeroom', [] )
         }).then(function (response) {
             return response.data;
         });
-    }
+    };
+
+    this.remove_uploads = function(c, list_ids){
+        if(!list_ids.length){
+            alert("Improper usage.");
+            return;
+        }
+
+        return $http.post(
+            '/console/bsp/bulk-upload/remove/',
+            $.param({
+                'c': c,
+                'list_ids': list_ids
+            })
+        ).then(function (response) {
+            return response.data;
+        });
+    };
 });
 // ---------- /Services ----------

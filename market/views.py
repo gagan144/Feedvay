@@ -6,6 +6,7 @@ from django.http.response import Http404
 from django.http import HttpResponseForbidden, HttpResponse
 from django.utils.datastructures import MultiValueDictKeyError
 from openpyxl import Workbook
+from django.db import transaction
 
 from accounts.decorators import registered_user_only, organization_console
 from market.models import Brand
@@ -415,6 +416,37 @@ def console_bsp_bulk_upload_queue(request, org):
     }
 
     return render(request, 'market/console/bsp_bulk_upload_in_queue.html', data)
+
+
+@registered_user_only
+@organization_console('market.businessservicepoint.add_businessservicepoint')
+def console_bsp_bulk_upload_remove(request, org):
+    """
+    Django view to remove BSP in upload queue. Since user with permission
+    ``add_businessservicepoint`` can add BSP, this view is protected by same permission,
+    meaning if user can can BSP, he can also remove those in queue as well.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        try:
+            list_ids = request.POST.getlist('list_ids[]')
+            if not (isinstance(list_ids, list) and len(list_ids)):
+                raise BadValueError("'list_ids' is not a list.")
+
+            with transaction.atomic():
+                count = DataRecord.objects.filter(pk__in=list_ids).exclude(status=DataRecord.ST_PROCESSING).delete()
+
+            partial = True if count != len(list_ids) else False
+
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok.', count_deleted=count, partial=partial).gen_http_response()
+        except (MultiValueDictKeyError, BadValueError):
+            return ApiResponse(status=ApiResponse.ST_BAD_REQUEST, message='One or more parameters are missing.').gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 # --- /BusinessServicePoint ---
 
 

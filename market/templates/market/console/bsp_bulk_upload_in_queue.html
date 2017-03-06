@@ -36,9 +36,9 @@
 {% endblock %}
 
 {% block content %}
-    <div class="wrapper wrapper-content" style="padding-top: 10px;">
+    <div class="wrapper wrapper-content" style="padding-top: 20px;">
         <div class="container" ng-cloak>
-            <div class="content_box" ng-controller="MainCtrl">
+            <div class="" ng-controller="MainCtrl">
 
                 <div ng-if="ui_flags.state==ST_AJAX.LOADING" class="loading_big" align="center" valign="middle">
                     <img src="{% get_static_prefix %}images/loading/spinner_1.gif" style="height: 40px">
@@ -61,7 +61,7 @@
                 </div>
 
                 <div ng-show="ui_flags.state==ST_AJAX.COMPLETED">
-                    <div ng-if="list_datarecords.length==0" class="alert alert-success">
+                    <div ng-if="list_datarecords.length==0" class="alert alert-success" style="margin-bottom: 0px;">
                         <table style="width: 100%">
                             <tr>
                                 <td valign="top" style="width: 90px;">
@@ -78,16 +78,38 @@
                     </div>
 
                     <div ng-show="list_datarecords.length">
-                        <!-- Response grid -->
-                        <ng-jqgrid
-                                config="grid_datarecords.config"
-                                modeldata="list_datarecords"
-                                gridid="{$ grid_datarecords.gridid $}"
-                                pagerid="{$ grid_datarecords.pagerid $}"
-                                api="grid_datarecords.gridapi"
-                                filtertoolbar="{stringResult: true, searchOnEnter: false, defaultSearch: 'cn'}"
-                        ></ng-jqgrid>
-                        <!-- /Response grid -->
+                        <style>
+                            .ui-jqgrid{
+                                border: none;
+                            }
+                        </style>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                BSPs in upload queue
+
+                                <div class="btn-group pull-right">
+                                    <button class="btn btn-primary btn-outline btn-xs" type="button" ng-click="refresh_uploads();">
+                                        <i class="fa fa-refresh"></i> Refresh
+                                    </button>
+                                    <button class="btn btn-primary btn-outline btn-xs" type="button" ng-click="remove_uploads()">
+                                        <i class="fa fa-trash-o"></i> Remove
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="panel-body" style="padding: 0px;">
+                                <!-- Response grid -->
+                                <ng-jqgrid
+                                        config="grid_datarecords.config"
+                                        modeldata="list_datarecords"
+                                        gridid="{$ grid_datarecords.gridid $}"
+                                        pagerid="{$ grid_datarecords.pagerid $}"
+                                        api="grid_datarecords.gridapi"
+                                        filtertoolbar="{stringResult: true, searchOnEnter: false, defaultSearch: 'cn'}"
+                                ></ng-jqgrid>
+                                <!-- /Response grid -->
+                            </div>
+                        </div>
+
                     </div>
 
                 </div>
@@ -198,7 +220,7 @@
                         groupCollapse : true,
                         groupOrder: ['asc']
                     },
-                    caption: 'BSPs in queue',
+{#                    caption: 'BSPs in queue',#}
                     viewrecords: true,
                     sortname: 'batch_id',
                     sortorder: "asc",
@@ -261,7 +283,44 @@
                 );
 
             };
+
+            $scope.remove_uploads = function(){
+                var $grid = $("#"+$scope.grid_datarecords.gridid);
+                var list_ids = $grid.jqGrid('getGridParam','selarrrow');
+                console.log(list_ids);
+
+                if(!list_ids.length){
+                    $.growl.warning({
+                        title: '<i class="fa fa-exclamation-triangle"></i> Denied!',
+                        message: 'Please select at least on upload.'
+                    });
+                    return;
+                }
+
+                ServiceStoreroom.remove_uploads('{{ request.curr_org.org_uid }}', list_ids).then(
+                    function (response){
+                        console.log(response);
+                        $scope.refresh_uploads();
+                    },
+                    function(response){
+                        var msg = '';
+                        if (response.status != -1) {
+                            msg = "Something went wrong. Our engineers will be informed.";
+                        } else {
+                            msg = "Please check your internet connection.";
+                        }
+
+                        $.growl.error({
+                            title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                            message: msg
+                        });
+                    }
+
+                );
+            };
+
             $scope.refresh_uploads();
+
 
         });
     </script>

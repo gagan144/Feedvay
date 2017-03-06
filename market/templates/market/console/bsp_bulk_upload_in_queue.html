@@ -6,7 +6,7 @@
 
     <title>BSP uploads in queue | {{ request.curr_org.name }}</title>
 
-{#    <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">#}
+    <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
     <link href="{% get_static_prefix %}ui/css/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet">
     <link href="{% get_static_prefix %}ui/css/plugins/datapicker/datepicker3.css" rel="stylesheet">
 {% endblock %}
@@ -119,9 +119,9 @@
 {% endblock %}
 
 {% block scripts %}
-{#    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>#}
-{#    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>#}
-{#    <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/uievents/event.js"></script>#}
+    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/uievents/event.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/datapicker/bootstrap-datepicker.js"></script>
 
     <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/i18n/grid.locale-en.js"></script>
@@ -143,8 +143,8 @@
             'ui.bootstrap',
             'angular-ladda',
             'angular-jqgrid',
-{#            'oitozero.ngSweetAlert',#}
-{#            'ui.event',#}
+            'oitozero.ngSweetAlert',
+            'ui.event',
         ])
         .run(function($rootScope, $http, $cookies) {
             $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
@@ -162,7 +162,7 @@
             $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
         });
 
-        APP.controller('MainCtrl', function($scope, $http, $window, ServiceStoreroom){
+        APP.controller('MainCtrl', function($scope, $http, $window, SweetAlert, ServiceStoreroom){
             $scope.ui_flags = {
                 state: null,
                 error_msg: null
@@ -287,9 +287,9 @@
             $scope.remove_uploads = function(){
                 var $grid = $("#"+$scope.grid_datarecords.gridid);
                 var list_ids = $grid.jqGrid('getGridParam','selarrrow');
-                console.log(list_ids);
 
-                if(!list_ids.length){
+                var count_requested = list_ids.length;
+                if(!count_requested){
                     $.growl.warning({
                         title: '<i class="fa fa-exclamation-triangle"></i> Denied!',
                         message: 'Please select at least on upload.'
@@ -297,30 +297,57 @@
                     return;
                 }
 
-                ServiceStoreroom.remove_uploads('{{ request.curr_org.org_uid }}', list_ids).then(
-                    function (response){
-                        console.log(response);
-                        $scope.refresh_uploads();
-                    },
-                    function(response){
-                        var msg = '';
-                        if (response.status != -1) {
-                            msg = "Something went wrong. Our engineers will be informed.";
-                        } else {
-                            msg = "Please check your internet connection.";
-                        }
+                SweetAlert.swal({
+                    title: "Are you sure?",
+                    text: "Do you want to remove these uploads?",
+                    type: 'warning',
+                    confirmButtonColor: "#DD6B55",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, remove!",
+                    cancelButtonText: "No, cancel!",
+                    closeOnConfirm: false,
+                    closeOnCancel: true,
+                    allowEscapeKey: false,
+                    showLoaderOnConfirm: true,
+                },
+                function (isConfirm) {
+                    if (isConfirm) {
+                        ServiceStoreroom.remove_uploads('{{ request.curr_org.org_uid }}', list_ids).then(
+                            function (response){
 
-                        $.growl.error({
-                            title: '<i class="fa fa-exclamation-triangle"></i> Error!',
-                            message: msg
-                        });
+                                if(response.partial){
+                                    SweetAlert.swal({
+                                        title: "Partial success!",
+                                        text: 'Some of the uploads in the queue were not removed possibily because they were being processed.<br/><b>' + response.count_deleted + '</b> of <b>' + count_requested + '</b> uploads were successfully removed while remaining were migrated to BSP.',
+                                        type: "warning",
+                                        html: true,
+                                        showConfirmButton: true
+                                    });
+                                }
+
+                                $scope.refresh_uploads();
+                            },
+                            function(response){
+                                var msg = '';
+                                if (response.status != -1) {
+                                    msg = "Something went wrong. Our engineers will be informed.";
+                                } else {
+                                    msg = "Please check your internet connection.";
+                                }
+
+                                $.growl.error({
+                                    title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                    message: msg
+                                });
+                            }
+
+                        );
                     }
+                });
 
-                );
             };
 
             $scope.refresh_uploads();
-
 
         });
     </script>

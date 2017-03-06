@@ -437,7 +437,7 @@ def console_bsp_bulk_upload_remove(request, org):
                 raise BadValueError("'list_ids' is not a list.")
 
             with transaction.atomic():
-                count = DataRecord.objects.filter(pk__in=list_ids).exclude(status=DataRecord.ST_PROCESSING).delete()
+                count = DataRecord.objects.filter(pk__in=list_ids, status__ne=DataRecord.ST_PROCESSING).delete()
 
             partial = True if count != len(list_ids) else False
 

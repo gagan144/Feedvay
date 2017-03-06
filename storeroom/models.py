@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-import json
+import ujson
 
 from mongoengine.document import *
 from mongoengine.fields import *
@@ -63,7 +63,7 @@ class DataRecord(Document):
 
     @property
     def data_json(self):
-        return json.loads(self.data)
+        return ujson.loads(self.data)
 
     @property
     def organization(self):

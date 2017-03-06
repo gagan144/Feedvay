@@ -39,10 +39,15 @@ class DataRecordOrgAPI(resources.MongoEngineResource):
 
         request.cache_users = {}
 
-        return base_object_list.exclude('data', 'modified_on')
+        return base_object_list.exclude('modified_on')
 
     def dehydrate(self, bundle):
         obj = bundle.obj
+
+        data_json = obj.data_json
+        bundle.data['data'] = {
+            'name': data_json.get('name', None)
+        }
 
         user = bundle.request.cache_users.get(obj.created_by, None)
         if user is None:

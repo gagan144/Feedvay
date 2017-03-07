@@ -7,18 +7,18 @@ from tastypie_mongoengine import resources
 from django.contrib.auth.models import User
 
 from clients.models import Organization
-from storeroom.models import DataRecord
+from storeroom.models import ImportRecord
 from utilities.tastypie_utils import OrgConsoleSessionAuthentication, NoPaginator
 
-class DataRecordOrgAPI(resources.MongoEngineResource):
+class ImportRecordOrgAPI(resources.MongoEngineResource):
     """
     An API resource to get all data records in storeroom for an organization.
 
     **Authors**: Gagandeep Singh
     """
     class Meta:
-        queryset = DataRecord.objects.all()
-        resource_name = 'data_records_org'
+        queryset = ImportRecord.objects.all()
+        resource_name = 'import_records_org'
         limit = 0
         max_limit = None
         allowed_methods = ('get',)

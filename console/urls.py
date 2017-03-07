@@ -98,10 +98,10 @@ url_surveys = [
     url(r'^api/', include(api_survey_response_trend.urls)),
 ]
 
-api_data_records_org = api_storeroom.DataRecordOrgAPI()
+api_import_records_org = api_storeroom.ImportRecordOrgAPI()
 url_storeroom = [
     # Api
-    url(r'^api/', include(api_data_records_org.urls)),
+    url(r'^api/', include(api_import_records_org.urls)),
 ]
 
 urlpatterns = [

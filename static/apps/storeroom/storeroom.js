@@ -12,7 +12,7 @@ angular.module('feedvay.storeroom', [] )
             params['context'] = context;
         }
 
-        return $http.get('/console/storeroom/api/data_records_org/?format=json', {
+        return $http.get('/console/storeroom/api/import_records_org/?format=json', {
             params: params
         }).then(function (response) {
             return response.data;

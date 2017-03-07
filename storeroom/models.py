@@ -13,7 +13,7 @@ from mongoengine.fields import *
 
 from clients.models import Organization
 
-class DataRecord(Document):
+class ImportRecord(Document):
     """
     Mongo model to store data of any schema. This model act as a buffer storage
     for bulk uploads where records can be stored and later picked-up by process
@@ -88,7 +88,7 @@ class DataRecord(Document):
         **Authors**: Gagandeep Singh
         """
         # Check status
-        if self.status == DataRecord.ST_ERROR and self.error_message in ["", None]:
+        if self.status == ImportRecord.ST_ERROR and self.error_message in ["", None]:
             raise ValidationError("Please specify error message.")
 
         # Check data json
@@ -100,6 +100,6 @@ class DataRecord(Document):
         if self.pk:
             self.modified_on = timezone.now()
 
-        return super(DataRecord, self).save(*args, **kwargs)
+        return super(ImportRecord, self).save(*args, **kwargs)
 
 

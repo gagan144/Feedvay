@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.db.models import Q
 
-from storeroom.models import DataRecord
+from storeroom.models import ImportRecord
 from clients.models import Organization
 from market.models import BusinessServicePoint, BspTypeCustomization
 from market.bsp_types import *
@@ -42,7 +42,7 @@ class Command(BaseCommand):
         cache_org_bsptypecustm = {}   # { "<org_id>__<bsp_type>": BspTypeCustomization, ... }
 
         count = 0
-        for record in DataRecord.objects.filter(context=DataRecord.CNTX_BSP, status=DataRecord.ST_NEW).limit(limit):
+        for record in ImportRecord.objects.filter(context=ImportRecord.CNTX_BSP, status=ImportRecord.ST_NEW).limit(limit):
             with transaction.atomic():
                 self.stdout.write(self.style.SUCCESS('\tProcessing: "{}"...'.format(record.pk)))
 
@@ -150,7 +150,7 @@ class Command(BaseCommand):
                     # Migration failure
                     self.stdout.write(self.style.SUCCESS('\t\tFailed! {}'.format(ex.message)))
 
-                    record.status = DataRecord.ST_ERROR
+                    record.status = ImportRecord.ST_ERROR
                     record.error_message = ex.message
                     record.save()
 

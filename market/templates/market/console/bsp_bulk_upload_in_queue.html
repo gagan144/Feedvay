@@ -193,7 +193,7 @@
                         { name: 'identifiers.bsp_type', index: 'identifiers.bsp_type', width: 30 },
                         { name: 'data.name', index: 'data.name', width: 30 },
                         { name: 'status_html', index: 'status', width: 25,
-                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for s in DataRecord.CH_STATUS %}{{ s.0 }}:{{ s.1 }}{% if not forloop.last %};{% endif %}{% endfor %}" }
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for s in ImportRecord.CH_STATUS %}{{ s.0 }}:{{ s.1 }}{% if not forloop.last %};{% endif %}{% endfor %}" }
                         },
                         { name: 'error_message', index: 'error_message', width: 60 },
                         { name: 'created_by.display_name', index: 'created_by.display_name', width: 30 },

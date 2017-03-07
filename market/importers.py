@@ -4,7 +4,7 @@
 from openpyxl import load_workbook
 import json, uuid
 
-from storeroom.models import DataRecord
+from storeroom.models import ImportRecord
 
 def dump_bsp_bulk_upload(file_excel, bsp_type, org, creator_user):
     """
@@ -44,10 +44,10 @@ def dump_bsp_bulk_upload(file_excel, bsp_type, org, creator_user):
 
         # Append to bulk insert list
         list_records.append(
-            DataRecord(
+            ImportRecord(
                 organization_id = org.id,
                 batch_id = batch_id,
-                context = DataRecord.CNTX_BSP,
+                context = ImportRecord.CNTX_BSP,
                 filename = file_excel._name,
                 identifiers = {
                     "bsp_type": bsp_type,
@@ -60,6 +60,6 @@ def dump_bsp_bulk_upload(file_excel, bsp_type, org, creator_user):
         count += 1
 
     # Insert in bulk
-    DataRecord.objects.insert(list_records)
+    ImportRecord.objects.insert(list_records)
 
     return count

@@ -14,7 +14,7 @@ from market.forms import *
 from market import operations as ops
 from market.models import *
 from market.importers import dump_bsp_bulk_upload
-from storeroom.models import DataRecord
+from storeroom.models import ImportRecord
 
 from utilities.api_utils import ApiResponse
 
@@ -412,7 +412,7 @@ def console_bsp_bulk_upload_queue(request, org):
     """
     data = {
         'app_name': 'app_bsp_bulk_upload_queue',
-        'DataRecord': DataRecord
+        'ImportRecord': ImportRecord
     }
 
     return render(request, 'market/console/bsp_bulk_upload_in_queue.html', data)
@@ -437,7 +437,7 @@ def console_bsp_bulk_upload_remove(request, org):
                 raise BadValueError("'list_ids' is not a list.")
 
             with transaction.atomic():
-                count = DataRecord.objects.filter(pk__in=list_ids, status__ne=DataRecord.ST_PROCESSING).delete()
+                count = ImportRecord.objects.filter(pk__in=list_ids, status__ne=ImportRecord.ST_PROCESSING).delete()
 
             partial = True if count != len(list_ids) else False
 

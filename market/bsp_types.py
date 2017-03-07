@@ -5,6 +5,8 @@ from django.core.exceptions import ValidationError
 from jsonobject import *
 from jsonobject.properties import SetProperty
 
+from datetime import datetime
+
 # ---------- General ----------
 class BspTypes:
     """
@@ -51,7 +53,7 @@ class PaymentMethods:
         (WALLETS, 'Wallets')
     )
 
-    help_text = 'Payment methods available.<br/>Values: '+", ".join(['<code>{}</code>'.format(pm[0]) for pm in choices])
+    help_text = '(Comma separated) Payment methods available.<br/>Values: '+", ".join(['<code>{}</code>'.format(pm[0]) for pm in choices])
 
 # ---------- BSP Types ----------
 class BaseBspType(JsonObject):
@@ -65,12 +67,49 @@ class BaseBspType(JsonObject):
 
     class ENUMS:
         HELP_TEXT = {
-            "highlights": "Any highlighting points.",
+            "highlights": "(Comma separated) Any highlighting points.",
             "recommendations": "Any recommendations.",
         }
 
     highlights  = SetProperty(unicode, exclude_if_none=True)    # Highlighting features
     recommendations = StringProperty(exclude_if_none=True)      # Any recommendations
+
+    @classmethod
+    def type_cast_value(cls, label, value):
+        """
+        Method to type cast value as per label property data type.
+
+        :param label: Attribute label
+        :param value: Value of the attribute
+        :return: Type casted value
+        """
+
+        attr = getattr(cls, label)
+        if attr is None:
+            raise Exception("Invalid label '{}'.".format(label))
+
+        if value is None:
+            return None
+        elif isinstance(attr, IntegerProperty):
+            return int(value)
+        elif isinstance(attr, FloatProperty) or isinstance(attr, DecimalProperty):
+            return float(value)
+        elif isinstance(attr, StringProperty):
+            return str(value)
+        elif isinstance(attr, BooleanProperty):
+            return bool(value)
+        elif isinstance(attr, DateTimeProperty):
+            return datetime.strptime("%Y-%m-%d %H:%M;%s", value)
+        elif isinstance(attr, DateProperty):
+            return datetime.strptime("%Y-%m-%d", value)
+        elif isinstance(attr, TimeProperty):
+            return datetime.strptime("%H:%M;%s", value)
+        elif isinstance(attr, DictProperty):
+            return dict(value)
+        elif isinstance(attr, ListProperty) or isinstance(attr, SetProperty):
+            return value.split(',')
+        else:
+            raise NotImplementedError("Type cast for attribute '{}' of property '{}' not implemented".format(label, attr))
 
 class Cafe(BaseBspType):
     """
@@ -90,7 +129,7 @@ class Cafe(BaseBspType):
 
     home_delivery   = BooleanProperty(default=False, required=True) # Home delivery available or not
     average_cost_2  = IntegerProperty(default=None, exclude_if_none=True)   # Average cost for two person in native currency
-    payment_methods = SetProperty(unicode, required=True)   # Mode of payments
+    payment_methods = SetProperty(unicode, exclude_if_none=True)   # Mode of payments
 
 class Restaurant(BaseBspType):
     """
@@ -163,9 +202,9 @@ class Restaurant(BaseBspType):
             return [f[0] for f in Restaurant.ENUMS.CH_FOOD_TYPE]
 
         HELP_TEXT = {
-            "category": 'Category of the restaurant.<br/>Values: ' + ', '.join(['<code>{}</code>'.format(catg[0]) for catg in CH_CATEGORIES]),
-            "food_type": 'Type of food served.<br/>Values: ' + ', '.join(['<code>{}</code>'.format(ft[0]) for ft in CH_FOOD_TYPE]),
-            "cuisines": "Cuisines served in the restaurant",
+            "category": '(Comma separated) Category of the restaurant.<br/>Values: ' + ', '.join(['<code>{}</code>'.format(catg[0]) for catg in CH_CATEGORIES]),
+            "food_type": '(Comma separated) Type of food served.<br/>Values: ' + ', '.join(['<code>{}</code>'.format(ft[0]) for ft in CH_FOOD_TYPE]),
+            "cuisines": "(Comma separated) Cuisines served in the restaurant",
             "home_delivery": "Whether home delivery is available.",
             "average_cost_2": "Average cost for two people",
             "payment_methods": PaymentMethods.help_text,
@@ -178,11 +217,11 @@ class Restaurant(BaseBspType):
     category    = SetProperty(unicode, required=True)   # Category of eatery
 
     food_type   = SetProperty(unicode, required=True) # Type of food; veg, non-veg, egg
-    cuisines    = SetProperty(unicode, required=True)
+    cuisines    = SetProperty(unicode)
 
     home_delivery   = BooleanProperty(default=False, required=True) # Home delivery available or not
     average_cost_2  = IntegerProperty(default=None, exclude_if_none=True)   # Average cost for two person in native currency
-    payment_methods = SetProperty(unicode, required=True)   # Mode of payments
+    payment_methods = SetProperty(unicode)   # Mode of payments
 
     # def __init__(self, _obj=None, **kwargs):
     #     super(Restaurants, self).__init__(_obj=_obj, **kwargs)

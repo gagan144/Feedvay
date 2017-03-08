@@ -218,7 +218,7 @@
 
             // --- Methods ---
             $scope.onchange_bsptype = function(){
-                ServiceBsp.get_labels($scope.data.bsp_type, 1).then(
+                ServiceBsp.get_labels($scope.data.bsp_type, 1, '{{ request.curr_org.org_uid }}').then(
                     function(response){
                         $scope.list_attributes = response.objects;
                     },

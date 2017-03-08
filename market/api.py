@@ -8,6 +8,7 @@ from django.db.models import Q
 
 from market.models import Brand, get_bsp_labels
 from utilities.tastypie_utils import NoPaginator, GenericTastypieObject
+from clients.models import Organization
 
 class BrandExistenceAPI(ModelResource):
     """
@@ -75,8 +76,14 @@ class BspLabelsAPI(Resource):
         bsp_type_code = bundle.request.GET['type']
         include_common = int(bundle.request.GET.get('include_common', 1))
 
+        org_uid = bundle.request.GET.get('c', None)
+        if org_uid:
+            org = Organization.objects.get(org_uid=org_uid)
+        else:
+            org = None
+
         data = []
-        for attr in get_bsp_labels(bsp_type_code):
+        for attr in get_bsp_labels(bsp_type_code, org):
             if (attr['is_common']==True and include_common) or attr['is_common']==False:
                 obj = GenericTastypieObject()
                 obj.label = attr['label']

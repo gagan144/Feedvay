@@ -133,6 +133,42 @@
             </h2>
             <hr style="margin-top: 15px;"/>
 
+            <!-- Filters -->
+            {$ filters_bsp $}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-filter"></i> Filters
+                </div>
+                <div class="panel-body">
+                    <form role="form" class="form-horizontal" novalidate>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <label>Name:</label>
+                                <input type="text" ng-model="filters_bsp.name__icontains" class="form-control"/>
+                            </div>
+                            <div class="col-xs-6">
+                                <label>BSP type:</label>
+                                <div>
+                                    <input type="text" ng-model="filters_bsp.type__in" class="form-control"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                        <div>
+                            <button type="button" class="btn btn-primary btn-sm ladda-button" ng-click="view_bsps()" ladda="ui_flags.loading" data-style="zoom-in">
+                                <i class="fa fa-search"></i>&nbsp;&nbsp;View
+                            </button>
+                            <button type="button" class="btn btn-default btn-sm " ng-click="filters_bsp={}">
+                                Clear
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+            <!-- /Filters -->
+
         </div>
     </script>
     <!-- /BSP -->
@@ -287,6 +323,8 @@
 
         // --- Bsp ---
         function BspCtrl($scope) {
+            $scope.filters_bsp = {};
+
 
         }
         // --- /Bsp ---

@@ -59,6 +59,7 @@ url_brands = [
     url(r'^save-changes/$', views_market.console_brand_save_changes, name='console_market_brand_save_changes'),
 ]
 
+api_org_bsp = api_market.OrgBspAPI()
 url_bsp = [
     url(r'^$', views_market.console_bsp_panel, name='console_market_bsp_panel'),
     url(r'^customize-type/new/$', views_market.console_bsp_customize_type, name='console_market_customize_type'),
@@ -72,6 +73,9 @@ url_bsp = [
     url(r'^import/upload-excel/$', views_market.console_bsp_import_upload_excel, name='console_market_bsp_import_upload_excel'),
     url(r'^import/queue/$', views_market.console_bsp_import_queue, name='console_market_bsp_import_queue'),
     url(r'^import/remove/$', views_market.console_bsp_import_remove, name='console_market_bsp_import_remove'),
+
+    # Api
+    url(r'^api/', include(api_org_bsp.urls)),
 ]
 
 api_survey_responses = api_surveys.SurveyResponsesAPI()

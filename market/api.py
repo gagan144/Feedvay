@@ -5,10 +5,12 @@ from tastypie.resources import ModelResource, Resource, ALL, ALL_WITH_RELATIONS
 from tastypie.authentication import SessionAuthentication
 from tastypie import fields
 from django.db.models import Q
+from tastypie_mongoengine import resources
 
-from market.models import Brand, get_bsp_labels
-from utilities.tastypie_utils import NoPaginator, GenericTastypieObject
+from market.models import Brand, BusinessServicePoint, get_bsp_labels
 from clients.models import Organization
+from utilities.tastypie_utils import OrgConsoleSessionAuthentication, NoPaginator, GenericTastypieObject
+
 
 class BrandExistenceAPI(ModelResource):
     """
@@ -94,4 +96,49 @@ class BspLabelsAPI(Resource):
 
                 data.append(obj)
 
+        return data
+
+class OrgBspAPI(resources.MongoEngineResource):
+    """
+    API resource to list all organization's BSP. Data include only basic fields along with
+    filters.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    class Meta:
+        queryset = BusinessServicePoint.objects.all()
+        resource_name = 'org_bsp'
+        limit = 0
+        max_limit = None
+        allowed_methods = ('get',)
+        fields = ('id', 'name', 'type', 'brand_id', 'avg_rating', 'open_status', 'active', 'created_by', 'created_on', 'modified_on')
+        authentication = OrgConsoleSessionAuthentication(['market.businessservicepoint.view_businessservicepoint'])
+        filtering = {
+            'name': ALL,
+            'type' : ALL,
+            'brand_id' : ALL,
+            'open_status' : ALL,
+            'active' : ALL,
+        }
+
+    def apply_filters(self, request, applicable_filters):
+        org_uid = request.GET['c']
+        org = Organization.objects.get(org_uid=org_uid)
+
+        applicable_filters['organization_id'] = org.id
+
+        base_object_list = super(self.__class__, self).apply_filters(request, applicable_filters)
+
+        # --- Advanced filters ---
+
+        # location, attributes
+        # --- /Advanced filters ---
+
+        return base_object_list.only(*self.Meta.fields)
+
+    def alter_list_data_to_serialize(self, request, data):
+        print request.curr_org
+        data['meta']['brands'] = {brand['id']:brand for brand in list(Brand.objects.filter(organization_id=request.curr_org.id).values('id', 'name', 'logo', 'icon'))}
         return data

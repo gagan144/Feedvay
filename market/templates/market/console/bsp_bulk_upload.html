@@ -4,7 +4,7 @@
 {% block head %}
     <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
 
-    <title>BSP bulk upload | {{ request.curr_org.name }}</title>
+    <title>Import BSPs | {{ request.curr_org.name }}</title>
 
     <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
 {% endblock %}
@@ -14,7 +14,7 @@
         <div class="col-xs-8">
             <h2>
                 <i class="fa fa-cloud-upload"></i>
-                BSP bulk upload
+                Import Business or Service Points
             </h2>
             <ol class="breadcrumb">
                 <li>
@@ -26,9 +26,17 @@
                     </a>
                 </li>
                 <li class="active">
-                    Bulk upload
+                    Import
                 </li>
             </ol>
+        </div>
+        <div class="col-xs-4">
+            <div class="title-action" style="padding-top: 20px !important;">
+                <a href="{% url 'console_market_bsp_import_queue' %}?c={{ request.curr_org.org_uid }}" class="btn btn-primary">
+                    <i class="fa fa-tasks"></i>
+                    &nbsp;View imports in queue
+                </a>
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -61,7 +69,7 @@
                                 Download the following excel file format and edit it accordingly and
                                 then upload.
                                 <p align="left" style="margin-top: 10px;padding-left: 30px;">
-                                    <a href="/console/bsp/download-bulk-upload-format/?c={{ request.curr_org.org_uid }}&type={$ data.bsp_type $}" target="_blank" class="btn btn-primary btn-sm">
+                                    <a href="{% url 'console_market_bsp_import_download_excel_format' %}?c={{ request.curr_org.org_uid }}&type={$ data.bsp_type $}" target="_blank" class="btn btn-primary btn-sm">
                                         <i class="fa fa-file-excel-o"></i>&nbsp;
                                         Download excel format
                                     </a>
@@ -237,7 +245,7 @@
 
                 $scope.flags.status = ST_AJAX.LOADING;
                 $http.post(
-                    "{% url 'console_market_bsp_bulk_upload_post' %}",
+                    "{% url 'console_market_bsp_import_upload_excel' %}",
                     fd,
                     {
                         transformRequest: angular.identity,
@@ -255,7 +263,7 @@
                             showConfirmButton: true
                         },
                         function (isConfirm){
-                            $window.location.href = '{% url 'console_market_bsp_bulk_upload_queue' %}?c={{ request.curr_org.org_uid }}';
+                            $window.location.href = '{% url 'console_market_bsp_import_queue' %}?c={{ request.curr_org.org_uid }}';
                         });
                     }else{
                         $scope.flags.status = ST_AJAX.ERROR;

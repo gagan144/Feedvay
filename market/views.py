@@ -328,9 +328,9 @@ def console_bsp_customize_type_remove(request, org, cust_id):
 
 @registered_user_only
 @organization_console('market.businessservicepoint.add_businessservicepoint')
-def console_bsp_bulk_upload(request, org):
+def console_bsp_import(request, org):
     """
-    Django view to open page for bulk upload for a bsp.
+    Django view to open page for bulk import of bsps.
 
     **Type**: GET
 
@@ -346,9 +346,9 @@ def console_bsp_bulk_upload(request, org):
 
 @registered_user_only
 @organization_console('market.businessservicepoint.add_businessservicepoint')
-def console_bsp_download_bulk_upload_excel(request, org):
+def console_bsp_import_download_excel_format(request, org):
     """
-    Django view to return excel filename for bsp bulk upload.
+    Django view to return excel filename for bsp import.
 
     **Type**: GET
 
@@ -377,9 +377,9 @@ def console_bsp_download_bulk_upload_excel(request, org):
 
 @registered_user_only
 @organization_console('market.businessservicepoint.add_businessservicepoint')
-def console_bsp_bulk_upload_post(request, org):
+def console_bsp_import_upload_excel(request, org):
     """
-    API view to process bsp bulk uploaded file.
+    API view to process uploaded file for BSP import.
 
     **Type**: POST
 
@@ -402,9 +402,9 @@ def console_bsp_bulk_upload_post(request, org):
 
 @registered_user_only
 @organization_console('market.businessservicepoint.add_businessservicepoint')
-def console_bsp_bulk_upload_queue(request, org):
+def console_bsp_import_queue(request, org):
     """
-    Django view to view all BSP bulk upload and their status.
+    Django view to view all imported BSP in queue and their status.
 
     **Type**: GET
 
@@ -420,9 +420,9 @@ def console_bsp_bulk_upload_queue(request, org):
 
 @registered_user_only
 @organization_console('market.businessservicepoint.add_businessservicepoint')
-def console_bsp_bulk_upload_remove(request, org):
+def console_bsp_import_remove(request, org):
     """
-    Django view to remove BSP in upload queue. Since user with permission
+    Django view to remove BSP in imports in queue. Since user with permission
     ``add_businessservicepoint`` can add BSP, this view is protected by same permission,
     meaning if user can can BSP, he can also remove those in queue as well.
 

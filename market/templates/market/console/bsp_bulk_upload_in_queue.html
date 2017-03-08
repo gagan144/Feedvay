@@ -4,7 +4,7 @@
 {% block head %}
     <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
 
-    <title>BSP uploads in queue | {{ request.curr_org.name }}</title>
+    <title>BSP imports in queue | {{ request.curr_org.name }}</title>
 
     <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
     <link href="{% get_static_prefix %}ui/css/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet">
@@ -16,7 +16,7 @@
         <div class="col-xs-8">
             <h2>
                 <i class="fa fa-tasks"></i>
-                BSP uploads in queue
+                BSP imports in queue
             </h2>
             <ol class="breadcrumb">
                 <li>
@@ -28,9 +28,17 @@
                     </a>
                 </li>
                 <li class="active">
-                    BSP uploads in queue
+                    BSP imports in queue
                 </li>
             </ol>
+        </div>
+        <div class="col-xs-4">
+            <div class="title-action" style="padding-top: 20px !important;">
+                <a href="{% url 'console_market_bsp_import' %}?c={{ request.curr_org.org_uid }}" class="btn btn-primary">
+                    <i class="fa fa-cloud-upload"></i>
+                    &nbsp;Import BSPs
+                </a>
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -42,7 +50,7 @@
 
                 <div ng-if="ui_flags.state==ST_AJAX.LOADING" class="loading_big" align="center" valign="middle">
                     <img src="{% get_static_prefix %}images/loading/spinner_1.gif" style="height: 40px">
-                    <h3 style="margin-top: 20px;font-weight: normal;">Loading pending uploads ...</h3>
+                    <h3 style="margin-top: 20px;font-weight: normal;">Loading pending imports ...</h3>
                 </div>
                 <div ng-if="ui_flags.state==ST_AJAX.ERROR" class="alert alert-danger">
                     <table style="width: 100%">
@@ -68,9 +76,9 @@
                                     <i class="fa fa-check-circle" style="font-size: 80px;"></i>
                                 </td>
                                 <td valign="top">
-                                    <h2 style="margin-top: 0px;">No pending uploads!</h2>
+                                    <h2 style="margin-top: 0px;">No pending imports!</h2>
                                     <div>
-                                        There are no pending uploads in the queue. All BSP have been created.
+                                        There are no pending imports in the queue. All imports have been processed.
                                     </div>
                                 </td>
                             </tr>
@@ -85,13 +93,13 @@
                         </style>
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                BSPs in upload queue
+                                Queue
 
                                 <div class="btn-group pull-right">
-                                    <button class="btn btn-primary btn-outline btn-xs" type="button" ng-click="refresh_uploads();">
+                                    <button class="btn btn-primary btn-outline btn-xs" type="button" ng-click="refresh_imports();">
                                         <i class="fa fa-refresh"></i> Refresh
                                     </button>
-                                    <button class="btn btn-primary btn-outline btn-xs" type="button" ng-click="remove_uploads()">
+                                    <button class="btn btn-primary btn-outline btn-xs" type="button" ng-click="remove_imports()">
                                         <i class="fa fa-trash-o"></i> Remove
                                     </button>
                                 </div>
@@ -242,7 +250,7 @@
             };
 
 
-            $scope.refresh_uploads = function() {
+            $scope.refresh_imports = function() {
                 $scope.ui_flags.state = ST_AJAX.LOADING;
                 $scope.ui_flags.error_msg = null;
                 ServiceStoreroom.get('{{ request.curr_org.org_uid }}', 'bsp').then(
@@ -286,7 +294,7 @@
 
             };
 
-            $scope.remove_uploads = function(){
+            $scope.remove_imports = function(){
                 var $grid = $("#"+$scope.grid_datarecords.gridid);
                 var list_ids = $grid.jqGrid('getGridParam','selarrrow');
 
@@ -294,14 +302,14 @@
                 if(!count_requested){
                     $.growl.warning({
                         title: '<i class="fa fa-exclamation-triangle"></i> Denied!',
-                        message: 'Please select at least on upload.'
+                        message: 'Please select at least one import.'
                     });
                     return;
                 }
 
                 SweetAlert.swal({
                     title: "Are you sure?",
-                    text: "Do you want to remove these uploads?",
+                    text: "Do you want to remove these imports?",
                     type: 'warning',
                     confirmButtonColor: "#DD6B55",
                     showCancelButton: true,
@@ -314,20 +322,20 @@
                 },
                 function (isConfirm) {
                     if (isConfirm) {
-                        ServiceStoreroom.remove_uploads('{{ request.curr_org.org_uid }}', list_ids).then(
+                        ServiceStoreroom.remove_imports('{{ request.curr_org.org_uid }}', list_ids).then(
                             function (response){
 
                                 if(response.partial){
                                     SweetAlert.swal({
                                         title: "Partial success!",
-                                        text: 'Some of the uploads in the queue were not removed possibily because they were being processed.<br/><b>' + response.count_deleted + '</b> of <b>' + count_requested + '</b> uploads were successfully removed while remaining were migrated to BSP.',
+                                        text: 'Some of the imports in the queue were not removed possibily because they were being processed.<br/><b>' + response.count_deleted + '</b> of <b>' + count_requested + '</b> imports were successfully removed while remaining were processed.',
                                         type: "warning",
                                         html: true,
                                         showConfirmButton: true
                                     });
                                 }
 
-                                $scope.refresh_uploads();
+                                $scope.refresh_imports();
                             },
                             function(response){
                                 var msg = '';
@@ -349,7 +357,7 @@
 
             };
 
-            $scope.refresh_uploads();
+            $scope.refresh_imports();
 
         });
     </script>

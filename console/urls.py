@@ -67,11 +67,11 @@ url_bsp = [
     url(r'^customize-type/edit-save/(?P<cust_id>[0-9]+)/$', views_market.console_bsp_customize_type_edit_save, name='console_market_customize_type_edit_save'),
     url(r'^customize-type/remove/(?P<cust_id>[0-9]+)/$', views_market.console_bsp_customize_type_remove, name='console_market_customize_type_remove'),
 
-    url(r'^bulk-upload/$', views_market.console_bsp_bulk_upload, name='console_market_bsp_bulk_upload'),
-    url(r'^download-bulk-upload-format/$', views_market.console_bsp_download_bulk_upload_excel, name='console_market_bsp_download_bulk_upload_excel'),
-    url(r'^bulk-upload/post/$', views_market.console_bsp_bulk_upload_post, name='console_market_bsp_bulk_upload_post'),
-    url(r'^bulk-upload/queue/$', views_market.console_bsp_bulk_upload_queue, name='console_market_bsp_bulk_upload_queue'),
-    url(r'^bulk-upload/remove/$', views_market.console_bsp_bulk_upload_remove, name='console_market_bsp_bulk_upload_remove'),
+    url(r'^import/$', views_market.console_bsp_import, name='console_market_bsp_import'),
+    url(r'^import/download-excel-format/$', views_market.console_bsp_import_download_excel_format, name='console_market_bsp_import_download_excel_format'),
+    url(r'^import/upload-excel/$', views_market.console_bsp_import_upload_excel, name='console_market_bsp_import_upload_excel'),
+    url(r'^import/queue/$', views_market.console_bsp_import_queue, name='console_market_bsp_import_queue'),
+    url(r'^import/remove/$', views_market.console_bsp_import_remove, name='console_market_bsp_import_remove'),
 ]
 
 api_survey_responses = api_surveys.SurveyResponsesAPI()

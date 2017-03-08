@@ -26,7 +26,7 @@ angular.module('feedvay.storeroom', [] )
         }
 
         return $http.post(
-            '/console/bsp/bulk-upload/remove/',
+            '/console/bsp/import/remove/',
             $.param({
                 'c': c,
                 'list_ids': list_ids

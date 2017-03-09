@@ -7,6 +7,8 @@ from tastypie import fields
 from django.db.models import Q
 from tastypie_mongoengine import resources
 
+from django.contrib.auth.models import User
+
 from market.models import Brand, BusinessServicePoint, get_bsp_labels
 from clients.models import Organization
 from utilities.tastypie_utils import OrgConsoleSessionAuthentication, NoPaginator, GenericTastypieObject
@@ -136,9 +138,28 @@ class OrgBspAPI(resources.MongoEngineResource):
         # location, attributes
         # --- /Advanced filters ---
 
+        request.cache_users = {}
+
         return base_object_list.only(*self.Meta.fields)
 
+    def dehydrate(self, bundle):
+        obj = bundle.obj
+
+        created_by = bundle.request.cache_users.get(obj.created_by, None)
+        if created_by is None:
+            created_by = User.objects.get(id=obj.created_by)
+            bundle.request.cache_users[obj.created_by] = created_by
+
+        bundle.data['created_by'] = {
+            'id': created_by.id,
+            'username': created_by.username,
+            'first_name': created_by.first_name,
+            'last_name': created_by.last_name,
+        }
+
+        return bundle
+
+
     def alter_list_data_to_serialize(self, request, data):
-        print request.curr_org
         data['meta']['brands'] = {brand['id']:brand for brand in list(Brand.objects.filter(organization_id=request.curr_org.id).values('id', 'name', 'logo', 'icon'))}
         return data

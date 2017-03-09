@@ -7,6 +7,7 @@ from django.http import HttpResponseForbidden, HttpResponse
 from django.utils.datastructures import MultiValueDictKeyError
 from openpyxl import Workbook
 from django.db import transaction
+from django.conf import settings
 
 from accounts.decorators import registered_user_only, organization_console
 from market.models import Brand
@@ -153,7 +154,11 @@ def console_bsp_panel(request, org):
 
     data = {
         'app_name': 'app_bsp_panel',
-        'list_custom_types': BspTypeCustomization.objects.filter(organization_id=org.id)
+        'list_custom_types': BspTypeCustomization.objects.filter(organization_id=org.id),
+        'list_brands': Brand.objects.filter(organization_id=org.id),
+        "BspTypes": BspTypes,
+        "BusinessServicePoint": BusinessServicePoint,
+        "AWS_S3_CUSTOM_DOMAIN": settings.AWS_S3_CUSTOM_DOMAIN
     }
 
     return render(request, 'market/console/bsp_panel.html', data)

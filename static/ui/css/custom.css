@@ -72,6 +72,10 @@
     font-size: 9px !important;
 }
 
+.ibox_bordered{
+    border: solid 1px #e7eaec;
+}
+
 /* ----- form loader ----- */
 .form-loading, .ps-container:hover.ps-in-scrolling.ps-in-scrolling, .ps-in-scrolling {
     pointer-events: none

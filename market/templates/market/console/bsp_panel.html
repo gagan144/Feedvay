@@ -13,6 +13,23 @@
     <link href="{% get_static_prefix %}ui/css/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet">
     <link href="{% get_static_prefix %}ui/css/plugins/datapicker/datepicker3.css" rel="stylesheet">
 
+    <link href="{% get_static_prefix %}lib/bootstrap_3/css/bootstrap-addons.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}lib/select2/css/select2.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% get_static_prefix %}lib/select2/css/select2-bootstrap.css">
+
+    <style>
+        .filter_section{
+            margin-bottom: 20px;
+        }
+
+        .checkbox-inline{
+            margin-right: 10px;
+        }
+
+        .brand_icon{
+            height: 16px;
+        }
+    </style>
 
     <!-- ========== Templates ========== -->
     <!-- CustomizeTypes -->
@@ -96,6 +113,11 @@
     <!-- /CustomizeTypes -->
 
     <!-- BSP -->
+    <script type="text/ng-template" id="tmpl_bsp_filters_boxtool">
+        <div class="ibox-tools" uib-dropdown>
+            <a ng-click="showhide()"> <i class="fa fa-chevron-up"></i></a>
+        </div>
+    </script>
     <script type="text/ng-template" id="tmpl_bsps">
         <div>
             <h2 style="margin-top: 0px;">
@@ -135,39 +157,152 @@
 
             <!-- Filters -->
             {$ filters_bsp $}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <i class="fa fa-filter"></i> Filters
+            <div class="ibox ibox_bordered collapsed float-e-margins">
+                <div class="ibox-title bg-muted">
+                    <h5>
+                        <i class="fa fa-filter"></i> Filters
+                    </h5>
+                    <span ng-if="filters_bsp | dictlength" class="label label-default" style="margin-left: 10px;">Applied</span>
+                    <div ibox-tools="tmpl_bsp_filters_boxtool"></div>
                 </div>
-                <div class="panel-body">
+                <div class="ibox-content" style="padding: 15px;">
                     <form role="form" class="form-horizontal" novalidate>
                         <div class="row">
-                            <div class="col-xs-6">
+                            <div class="col-md-4 filter_section">
                                 <label>Name:</label>
                                 <input type="text" ng-model="filters_bsp.name__icontains" class="form-control"/>
                             </div>
-                            <div class="col-xs-6">
+                            <div class="col-md-4 filter_section">
                                 <label>BSP type:</label>
                                 <div>
-                                    <input type="text" ng-model="filters_bsp.type__in" class="form-control"/>
+                                    <select ng-model="filters_bsp.type__in" class="form-control" select2="{ placeholder: 'Select type(s)', allowClear: true }" multiple="multiple">
+                                        {% for t in BspTypes.choices %}
+                                            <option value="{{ t.0 }}">{{ t.1 }}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
                             </div>
+
+                            <div ng-if="list_brands.length" class="col-md-4 filter_section">
+                                <label>Brands:</label>
+                                <div>
+                                    <div ng-repeat="brand in list_brands" class="checkbox checkbox-inline" >
+                                        <input id="chkbx_brand_{$ brand.id $}" type="checkbox" checklist-model="filters_bsp.brand_id__in" checklist-value="brand.id" >
+                                        <label for="chkbx_brand_{$ brand.id $}">
+                                            <img ng-src="{$ brand.icon_url $}" class="brand_icon">&nbsp;
+                                            {$ brand.name $}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 filter_section">
+                                <label>Open status:</label>
+                                <div>
+                                    <div ng-repeat="st in list_open_status" class="checkbox checkbox-inline" >
+                                        <input id="chkbx_opn_st_{$ st.id $}" type="checkbox" checklist-model="filters_bsp.open_status__in" checklist-value="st.id" >
+                                        <label for="chkbx_opn_st_{$ st.id $}">
+                                            {$ st.name $}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 filter_section">
+                                <label>Active:</label>
+                                <div>
+                                    <div class="radio radio-primary radio-inline">
+                                        <input type="radio"id="rd_active_yes" ng-model="filters_bsp.active" value="true">
+                                        <label for="rd_active_yes">
+                                            Yes
+                                        </label>
+                                    </div>
+                                    <div class="radio radio-primary radio-inline">
+                                        <input type="radio"id="rd_active_no" ng-model="filters_bsp.active" value="false">
+                                        <label for="rd_active_no">
+                                            No
+                                        </label>
+                                    </div>
+                                    <div class="radio radio-inline" style="padding-left: 5px;">
+                                        |
+                                        <button class="btn btn-link btn-xs" style="margin: 0px;" ng-click="filters_bsp.active=undefined;">
+                                            <i class="fa fa-times"></i> Clear
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
 
                         <div class="hr-line-dashed hr_line_dashed_m10"></div>
                         <div>
-                            <button type="button" class="btn btn-primary btn-sm ladda-button" ng-click="view_bsps()" ladda="ui_flags.loading" data-style="zoom-in">
-                                <i class="fa fa-search"></i>&nbsp;&nbsp;View
+                            <button type="button" class="btn btn-primary btn-sm ladda-button" ng-click="get_bsps()" ladda="ui_flags.state==ST_AJAX.LOADING" data-style="zoom-in">
+                                <i class="fa fa-search"></i>&nbsp;&nbsp;Filter & View
                             </button>
-                            <button type="button" class="btn btn-default btn-sm " ng-click="filters_bsp={}">
-                                Clear
+                            <button type="button" class="btn btn-default btn-sm ladda-button" ng-click="clear_filters()" ladda="ui_flags.state==ST_AJAX.LOADING" data-style="zoom-in">
+                                Clear all
                             </button>
                         </div>
 
                     </form>
                 </div>
+{#                <div class="ibox-footer">#}
+{#                    filters here#}
+{#                </div>#}
             </div>
             <!-- /Filters -->
+
+            <!-- Grid -->
+            <div ng-if="ui_flags.state==ST_AJAX.LOADING" class="loading_big" align="center" valign="middle">
+                <img src="{% get_static_prefix %}images/loading/spinner_1.gif" style="height: 40px">
+                <h3 style="margin-top: 20px;font-weight: normal;">Loading Business or Service Points ...</h3>
+            </div>
+            <div ng-if="ui_flags.state==ST_AJAX.ERROR" class="alert alert-danger">
+                <table style="width: 100%">
+                    <tr>
+                        <td valign="top" style="width: 90px;">
+                            <i class="fa fa-exclamation-triangle" style="font-size: 60px;"></i>
+                        </td>
+                        <td valign="top">
+                            <h2 style="margin-top: 0px;">Error!</h2>
+                            <div>
+                                {$ ui_flags.error_msg $}
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div ng-show="ui_flags.state==ST_AJAX.COMPLETED">
+                <div ng-if="list_bsps.length==0" class="alert alert-info">
+                    <table style="width: 100%">
+                        <tr>
+                            <td valign="top" style="width: 90px;">
+                                <i class="fa fa-info-circle" style="font-size: 80px;"></i>
+                            </td>
+                            <td valign="top">
+                                <h2 style="margin-top: 0px;">No Business or Service Points!</h2>
+                                <div>
+                                    No Business or Service Points found as per your filters. Try changing filters and then
+                                    try again.
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div ng-show="list_bsps.length">
+                    <ng-jqgrid
+                            config="grid_bsps.config"
+                            modeldata="list_bsps"
+                            gridid="{$ grid_bsps.gridid $}"
+                            pagerid="{$ grid_bsps.pagerid $}"
+                            api="grid_bsps.gridapi"
+                            filtertoolbar="{stringResult: true, searchOnEnter: false, defaultSearch: 'cn'}"
+                    ></ng-jqgrid>
+                </div>
+            </div>
+            <!-- /Grid -->
 
         </div>
     </script>
@@ -225,8 +360,12 @@
 
     <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/i18n/grid.locale-en.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/jquery.jqGrid.min.js"></script>
-
     <script src="{% get_static_prefix %}lib/angular/angular-jqgrid/angular-jqgrid.js"></script>
+
+    <script src="{% get_static_prefix %}lib/select2/js/select2.min.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/checklist-model.js"></script>
+
+    <script src="{% get_static_prefix %}apps/market/bsp.js"></script>
 
     <script>
         'use strict';
@@ -235,6 +374,7 @@
             'feedvay.uiapp',
             'feedvay.common',
             'feedvay.watchdog',
+            'feedvay.market.bsp',
 
             'ngCookies',
             'ngMessages',
@@ -244,6 +384,7 @@
             'datePicker',
             'angular-ladda',
             'angular-jqgrid',
+            'checklist-model',
         ])
         .config(function($interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             $interpolateProvider.startSymbol('{$');
@@ -272,7 +413,7 @@
                     templateUrl: "tmpl_bsps",
                     data: { pageTitle: 'BSP | {{ request.curr_org.name }}' },
                     controller: BspCtrl,
-                })
+                });
 
             // ----- /Routing -----
         })
@@ -322,10 +463,151 @@
         // --- /CustomizeTypeC ---
 
         // --- Bsp ---
-        function BspCtrl($scope) {
+        function BspCtrl($scope, ServiceBsp) {
             $scope.filters_bsp = {};
+            $scope.list_brands = [
+                {% for b in list_brands %}
+                    {"id": {{ b.id }}, "name": "{{ b.name }}", "logo_url":"{{ b.logo.url }}", "icon_url":"{{ b.icon.url }}"}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ];
+            $scope.list_open_status = [
+                {% for st in BusinessServicePoint.CH_OPEN_STATUS %}
+                    {"id": "{{ st.0 }}", "name": "{{ st.1 }}"}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ];
 
+            $scope.ui_flags = {
+                state: null,
+                error_msg: null
+            };
 
+            // Jqgrid
+            $scope.list_bsps = [];
+            $scope.grid_bsps = {
+                gridid: "grid_bsps",
+                pagerid: "grid_bsps_pager",
+                config: {
+                    datatype: "local",
+                    colNames: [
+                        '',
+                        'Name',
+                        'Type',
+                        'Brand',
+                        'Rating',
+                        'Open status',
+                        'Active',
+                        'Created by',
+                        'Created on',
+                        ''
+                    ],
+                    colModel: [
+                        { name: 'id', index: 'id', width: 20, hidden:true, search:false },
+                        { name: 'name', index: 'name', width: 40 },
+                        { name: 'type', index: 'type', width: 25,
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for t in BspTypes.choices %}{{ t.0 }}:{{ t.1 }}{% if not forloop.last %};{% endif %}{% endfor %}" }
+                        },
+                        { name: 'brand_html', index: 'brand_id', width: 30,
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for b in list_brands %}{{ b.id }}:{{ b.name }}{% if not forloop.last %};{% endif %}{% endfor %}" }
+                        },
+                        { name: 'avg_rating', index: 'avg_rating', width: 20 },
+                        { name: 'open_status', index: 'open_status', width: 25,
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for s in BusinessServicePoint.CH_OPEN_STATUS %}{{ s.0 }}:{{ s.1 }}{% if not forloop.last %};{% endif %}{% endfor %}" }
+                        },
+                        { name: 'active_html', index: 'active', width: 20, align:"center",
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;true:Yes;false:No" }
+                        },
+                        { name: 'created_by.display_name', index: 'created_by.display_name', width: 30 },
+                        { name: 'created_on', index: 'created_on', width: 30,
+                            sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-dTH:i:s', newformat: 'd-M-Y' },
+                            searchoptions: {
+                                attr:{ placeholder: 'Select date', readonly:'readonly'},
+                                dataInit: function (elem) {
+                                    $(elem).datepicker({
+                                        format: 'yyyy-mm-dd',
+                                        keyboardNavigation: false,
+                                        autoclose: true,
+                                        todayHighlight: true,
+                                    }).on('changeDate', function(e) {
+                                        $('#grid_bsps')[0].triggerToolbar();
+                                    });
+                                }
+                            }
+                        },
+                        { name: 'actions_html', index: 'actions_html', width: 20, search:false, sortable:false },
+                    ],
+                    viewrecords: true,
+                    sortname: 'registered_user.full_name',
+                    sortorder: "asc",
+                    rowNum: 50,
+                    rowList: [10, 50, 100, 100000],
+                    autowidth : true,
+                    height: '300px',
+                    shrinkToFit: true,
+                    hidegrid: false,
+                    ignoreCase:true
+                },
+                filtertoolbar: {
+                    stringResult: true, searchOnEnter: false, defaultSearch: 'cn',
+                },
+                gridapi: {}
+            };
+
+            // --- Methods ---
+            $scope.clear_filters = function(){
+                $scope.filters_bsp = {};
+                $scope.get_bsps();
+            };
+
+            $scope.get_bsps = function(){
+                $scope.ui_flags.state = ST_AJAX.LOADING;
+
+                // Prepare filters
+                var filters = angular.copy($scope.filters_bsp);
+                for(var key in filters){
+                    if(filters[key]=='' || filters[key]==[]){
+                        delete filters[key];
+                    }
+                }
+
+                ServiceBsp.get_org_bsps('{{ request.curr_org.org_uid }}', $scope.filters_bsp).then(
+                    function(response){
+                        var records = response.objects;
+                        $scope.ui_flags.state = ST_AJAX.COMPLETED;
+
+                        // Preprocess
+                        for(var i=0;i<records.length;i++){
+                            var row = records[i];
+
+                            var brand = response.meta.brands[row['brand_id']];
+
+                            if(brand){
+                                records[i]['brand_html'] = '<img src="{{ request.scheme }}://{{ AWS_S3_CUSTOM_DOMAIN }}/'+brand['icon']+'" class="brand_icon" />&nbsp;&nbsp;'+brand['name'];
+                            }
+                            records[i]['created_by']['display_name'] = row['created_by']['first_name'] + " " +row['created_by']['last_name'];
+                            records[i]['active_html'] = row['active']?'<i class="fa fa-check-circle text-success"></i>':'<i class="fa fa-times-circle text-danger"></i>';
+                        }
+
+                        // Update grid
+                        $scope.list_bsps = records;
+                        $scope.grid_bsps.gridapi.clear();
+                        $scope.grid_bsps.gridapi.insert(records);
+
+                    },
+                    function(response){
+                        $scope.ui_flags.state = ST_AJAX.ERROR;
+
+                        if(response.status != -1){
+                            $scope.ui_flags.error_msg = "Something went wrong. Our engineers will be informed.";
+                        }else{
+                            $scope.ui_flags.error_msg = "Please check your internet connection.";
+                        }
+
+                    }
+                );
+            };
+            // --- /Methods ---
+
+            $scope.get_bsps();
         }
         // --- /Bsp ---
 

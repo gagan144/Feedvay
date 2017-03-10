@@ -11,7 +11,7 @@ from accounts.utils import lookup_permission
 register = template.Library()
 
 @register.filter
-def jsonify(obj):
+def jsonify(obj, encoding=True):
     """
     Django template filter to obtain json string.
 
@@ -20,7 +20,10 @@ def jsonify(obj):
 
     **Authors**: Gagandeep Singh
     """
-    return ujson.dumps(obj, ensure_ascii=False).encode('utf8')
+    if encoding:
+        return ujson.dumps(obj, ensure_ascii=False).encode('utf8')
+    else:
+        return ujson.dumps(obj, ensure_ascii=False)
 
 @register.filter
 def get_item(dictionary, key):

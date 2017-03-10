@@ -8,7 +8,10 @@
     <!-- Favicon -->
     <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
 
-    <title>Edit {{ bsp.name }} | {{ request.curr_org.name }}</title>
+    <title>{{ bsp.name }} - Edit | {{ request.curr_org.name }}</title>
+
+    <link href="{% get_static_prefix %}lib/select2/css/select2.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% get_static_prefix %}lib/select2/css/select2-bootstrap.css">
 {% endblock %}
 
 {% block page_header %}
@@ -36,14 +39,89 @@
 {% block content %}
     <div class="wrapper wrapper-content">
         <div class="container">
-            <div class="content_box" style="padding-top: 30px;margin-bottom: 20px;" ng-cloak>
-                HERE
+            <div style="margin-bottom: 20px;" ng-cloak>
+
+                <form name="form_create_edit_bsp" class="form-horizontal" ng-controller="BspEditFormCtrl" novalidate>
+                    {$ data $}
+
+                    <!-- =============== Partial =============== -->
+
+                    <!-- Basic -->
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div>
+                                        <label>Name of the Business or Service Point<span class="required">*</span>:</label>
+                                        <input type="text" name="name" ng-model="data.name" class="form-control input-lg" placeholder="Enter here" required autocomplete="off"
+                                               ng-class="{'error': (form_create_edit_bsp.name.$dirty && form_create_edit_bsp.name.$invalid) || flags.val_errors.name }"
+                                        >
+                                        <div ng-messages="form_create_edit_bsp.name.$dirty && form_create_edit_bsp.name.$error" role="alert" class="error_messages">
+                                            <label ng-message="required" class="error">Please enter Business or Service Type name.</label>
+                                        </div>
+                                        <label ng-if="flags.val_errors.name" class="error">
+                                            {$ flags.val_errors.name.join(", "); $}
+                                        </label>
+                                    </div>
+
+                                    <div class="hr-line-dashed"></div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Type<span class="required">*</span>:</label>
+                                            <select ng-model="data.type" name="type" class="form-control" select2="{ placeholder: 'Select type', allowClear: true }" required>
+        {#                                            <option value="">Please Select</option>#}
+                                                {% for t in BspTypes.choices %}
+                                                    <option value="{{ t.0 }}">{{ t.1 }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <div ng-messages="form_create_edit_bsp.type.$dirty && form_create_edit_bsp.type.$error" role="alert" class="error_messages">
+                                                <label ng-message="required" class="error">Please select a Business or Service Point type.</label>
+                                            </div>
+                                            <label ng-if="flags.val_errors.type" class="error">
+                                                {$ flags.val_errors.type.join(", "); $}
+                                            </label>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label>Brand:</label>
+                                            <select ng-model="data.brand_id" name="brand_id" class="form-control">
+                                                <option value="">Please Select</option>
+                                                {% for b in list_brands %}
+                                                    <option value="{{ b.id }}">{{ b.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <div ng-messages="form_create_edit_bsp.brand_id.$dirty && form_create_edit_bsp.brand_id.$error" role="alert" class="error_messages">
+                                                <label ng-message="required" class="error">Please select a brand.</label>
+                                            </div>
+                                            <label ng-if="flags.val_errors.brand_id" class="error">
+                                                {$ flags.val_errors.brand_id.join(", "); $}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Description:</label>
+                                    <textarea summernote name="description" ng-model="data.description" config="summernote_config" required></textarea>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <!-- /Basic -->
+
+                    <!-- =============== /Partial =============== -->
+                </form>
+
             </div>
         </div>
     </div>
 {% endblock %}
 
 {% block scripts %}
+    <script src="{% get_static_prefix %}lib/select2/js/select2.min.js"></script>
     <script>
         'use strict';
 
@@ -51,7 +129,6 @@
             'feedvay.uiapp',
             'feedvay.common',
             'feedvay.watchdog',
-            'feedvay.market.brands',
 
             'ngCookies',
             'ngMessages',
@@ -72,8 +149,28 @@
             $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
         });
 
-        APP.controller('BspEditFormCtrl', function($scope, $http, $window, ServiceBrandExistence){
+        APP.controller('BspEditFormCtrl', function($scope, $http, $window){
+{#            $scope.list_brands = [#}
+{#                {% for b in list_brands %}#}
+{#                    {"id": {{ b.id }}, "name": "{{ b.name }}", "logo_url":"{{ b.logo.url }}", "icon_url":"{{ b.icon.url }}"}{% if not forloop.last %},{% endif %}#}
+{#                {% endfor %}#}
+{#            ];#}
+            // Variables
+            $scope.summernote_config = {
+                height: 150,
+                toolbar: [
+                    ['headline', ['style']],
+                    ['style', ['bold', 'italic', 'underline']],
+                    ['textsize', ['fontsize']],
+                    ['fontclr', ['color']],
+                    ['alignment', ['ul', 'ol', 'paragraph', 'lineheight']],
+                    ['height', ['height']],
+                    ['insert', ['link']],
+                    ['help', ['help']]
+                ]
+            };
 
+            $scope.data = {{ bsp.to_js_json|jsonify:False|safe }};
         });
     </script>
 {% endblock %}

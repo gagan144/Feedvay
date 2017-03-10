@@ -468,9 +468,17 @@ def console_bsp_edit(request, org):
     try:
         bsp = BusinessServicePoint.objects.get(organization_id=org.id, pk=request.GET['bsp_id'])
 
+        if bsp.brand_id:
+            list_brands = Brand.objects.filter(organization_id=org.id).filter(Q(active=True) | Q(id=int(bsp.brand_id)))
+        else:
+            list_brands = Brand.objects.filter(organization_id=org.id, active=True)
+
         data = {
             'app_name': 'app_bsp_edit',
-            'bsp': bsp
+            'bsp': bsp,
+            'list_brands': list_brands,
+            'BusinessServicePoint': BusinessServicePoint,
+            'BspTypes': BspTypes
         }
 
         return render(request, 'market/console/bsp_edit.html', data)

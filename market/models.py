@@ -22,7 +22,7 @@ from operator import itemgetter
 
 from mongoengine.document import *
 from mongoengine.fields import *
-from mongoengine.base.fields import BaseField
+from mongoengine.base.fields import BaseField, ObjectId
 
 from django.contrib.auth.models import User
 
@@ -775,6 +775,33 @@ class BusinessServicePoint(Document):
     @property
     def brand(self):
         return Brand.objects.get(id=self.brand_id)
+
+    @property
+    def created_by_user(self):
+        return User.objects.get(id=self.created_by) if self.created_by else None
+
+    def to_js_json(self, include_list_attr=False):
+        """
+        Method to convert model object to javascript JSON in equivalent python dict.
+
+        :param include_list_attr: If True, ``list_attributes`` is included.
+        :return: JSON
+
+        **Authors**: Gagandeep Singh
+        """
+        data = self.to_mongo().to_dict()
+
+        if not include_list_attr:
+            del data['list_attributes']
+
+        # Convert python types to js equivalent
+        for key, val in data.iteritems():
+            if isinstance(val, datetime):
+                data[key] = val.strftime("%Y-%m-%dT%H:%M:%S")
+            elif isinstance(val, ObjectId):
+                data[key] = str(val)
+
+        return data
 
     def save(self, update_attr=True, *args, **kwargs):
         """

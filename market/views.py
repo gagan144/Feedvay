@@ -475,10 +475,13 @@ def console_bsp_edit(request, org):
 
         data = {
             'app_name': 'app_bsp_edit',
+
             'bsp': bsp,
             'list_brands': list_brands,
+
             'BusinessServicePoint': BusinessServicePoint,
-            'BspTypes': BspTypes
+            'BspTypes': BspTypes,
+            'ContactEmbDoc': ContactEmbDoc
         }
 
         return render(request, 'market/console/bsp_edit.html', data)

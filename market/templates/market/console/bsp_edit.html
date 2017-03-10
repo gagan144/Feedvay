@@ -18,8 +18,9 @@
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-xs-12">
             <h2>
-                <i class="fa fa-university"></i>
+                <img src="{% get_static_prefix %}images/bsp_types/{{ bsp.type }}-md.png" style="height: 30px;">&nbsp;
                 {{ bsp.name }}
+                <small style="color: #bbb;font-size: 13px;">({{ bsp.type|title }})</small>
             </h2>
             <ol class="breadcrumb">
                 <li>
@@ -112,6 +113,101 @@
                     </div>
                     <!-- /Basic -->
 
+                    <!-- Attributes -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading panel_heading_2">
+                            Attributes
+                        </div>
+                        <div class="panel-body">
+
+                        </div>
+                    </div>
+                    <!-- /Attributes -->
+
+                    <!-- Contact -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading panel_heading_2">
+                            <i class="fa fa-info"></i>&nbsp;
+                            Contact Details
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div style="margin-bottom: 25px;">
+                                        <h4 style="margin-top: 0px;">
+                                            <i class="fa fa-phone"></i>&nbsp;&nbsp;Phone Number
+                                        </h4>
+                                        <table class="table">
+                                            <tbody>
+                                                <tr ng-repeat="contact in data.contacts">
+                                                    <td style="width: 90px;">
+                                                        <input type="text" name="contact_tel_code_{$ $index $}" ng-model="contact.tel_code" class="form-control input-sm" required ng-class="{'error':form_create_edit_bsp['contact_tel_code_'+$index].$invalid}" placeholder="Code">
+                                                    </td>
+                                                    <td style="padding-right: 15px;">
+                                                        <input type="text" name="contact_number_{$ $index $}" ng-model="contact.number" class="form-control input-sm" maxlength="10" required ng-class="{'error':form_create_edit_bsp['contact_number_'+$index].$invalid}" placeholder="Number">
+                                                        <div ng-messages="form_create_edit_bsp['contact_number_'+$index].$error" role="alert" class="error_messages">
+                                                            <label ng-message="required" class="error">Required</label>
+                                                        </div>
+                                                    </td>
+                                                    <td style="width: 120px;">
+                                                        <select ng-model="contact.type" name="contact_type_{$ $index $}" class="form-control input-sm" required ng-class="{'error':form_create_edit_bsp['contact_type_'+$index].$invalid}">
+                                                            <option value="">-- Select --</option>
+                                                            <option ng-repeat="ct in contact_types" value="{$ ct.id $}">{$ ct.name $}</option>
+                                                        </select>
+                                                        <div ng-messages="form_create_edit_bsp['contact_type_'+$index].$error" role="alert" class="error_messages">
+                                                            <label ng-message="required" class="error">Required</label>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-danger btn-outline btn-xs" ng-click="remove_contact($index);">
+                                                            <i class="fa fa-times"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="3">
+                                                        <button type="button" class="btn btn-primary btn-xs" ng-click="add_contact();">
+                                                            <i class="fa fa-plus"></i> Add new
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+
+                                    <div style="margin-bottom: 25px;">
+                                        <h4 style="margin-top: 0px;">
+                                            <i class="fa fa-envelope-o"></i>&nbsp;&nbsp;Emails
+                                        </h4>
+                                        <hr style="margin: 10px 0px;"/>
+                                        <input type="text" ng-model="data.emails" name="emails" class="form-control" select2="{ placeholder: 'Use comma or space to separate emails', tags: true, tokenSeparators: [',', ' '] }" tolist>
+                                    </div>
+
+                                    <div style="margin-bottom: 10px;">
+                                        <h4 style="margin-top: 0px;">
+                                            <i class="fa fa-globe"></i>&nbsp;&nbsp;Website/URL
+                                        </h4>
+                                        <hr style="margin: 10px 0px;"/>
+                                        <input type="url" name="website" ng-model="data.website" class="form-control">
+                                        <div ng-messages="form_create_edit_bsp.website.$error" role="alert" class="error_messages">
+                                            <label ng-message="required" class="error">Required</label>
+                                            <label ng-message="url" class="error">Please enter a valid URL.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <h4 style="margin-top: 0px;">
+                                        <i class="fa fa-map-marker"></i>&nbsp;&nbsp;Address
+                                    </h4>
+                                    <hr style="margin: 10px 0px;"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /Contact -->
+
                     <!-- =============== /Partial =============== -->
                 </form>
 
@@ -170,7 +266,24 @@
                 ]
             };
 
+            $scope.contact_types = [
+                {% for ct in ContactEmbDoc.CH_TYPE %}
+                    {"id":"{{ ct.0 }}", "name": "{{ ct.1 }}"}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ];
+
             $scope.data = {{ bsp.to_js_json|jsonify:False|safe }};
+
+            // --- Utils function ---
+            $scope.remove_contact = function(idx){
+                $scope.data.contacts.splice(idx, 1);
+            };
+
+            $scope.add_contact = function(){
+                $scope.data.contacts.push({"tel_code":"+91"});
+            };
+            // --- /Utils function ---
+
         });
     </script>
 {% endblock %}

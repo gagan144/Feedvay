@@ -172,6 +172,7 @@
                                 <label>Name:</label>
                                 <input type="text" ng-model="filters_bsp.name__icontains" class="form-control"/>
                             </div>
+
                             <div class="col-md-4 filter_section">
                                 <label>BSP type:</label>
                                 <div>
@@ -180,31 +181,6 @@
                                             <option value="{{ t.0 }}">{{ t.1 }}</option>
                                         {% endfor %}
                                     </select>
-                                </div>
-                            </div>
-
-                            <div ng-if="list_brands.length" class="col-md-4 filter_section">
-                                <label>Brands:</label>
-                                <div>
-                                    <div ng-repeat="brand in list_brands" class="checkbox checkbox-inline" >
-                                        <input id="chkbx_brand_{$ brand.id $}" type="checkbox" checklist-model="filters_bsp.brand_id__in" checklist-value="brand.id" >
-                                        <label for="chkbx_brand_{$ brand.id $}">
-                                            <img ng-src="{$ brand.icon_url $}" class="brand_icon">&nbsp;
-                                            {$ brand.name $}
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4 filter_section">
-                                <label>Open status:</label>
-                                <div>
-                                    <div ng-repeat="st in list_open_status" class="checkbox checkbox-inline" >
-                                        <input id="chkbx_opn_st_{$ st.id $}" type="checkbox" checklist-model="filters_bsp.open_status__in" checklist-value="st.id" >
-                                        <label for="chkbx_opn_st_{$ st.id $}">
-                                            {$ st.name $}
-                                        </label>
-                                    </div>
                                 </div>
                             </div>
 
@@ -228,6 +204,34 @@
                                         <button class="btn btn-link btn-xs" style="margin: 0px;" ng-click="filters_bsp.active=undefined;">
                                             <i class="fa fa-times"></i> Clear
                                         </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-4 filter_section">
+                                <label>Open status:</label>
+                                <div>
+                                    <div ng-repeat="st in list_open_status" class="checkbox checkbox-inline" >
+                                        <input id="chkbx_opn_st_{$ st.id $}" type="checkbox" checklist-model="filters_bsp.open_status__in" checklist-value="st.id" >
+                                        <label for="chkbx_opn_st_{$ st.id $}">
+                                            {$ st.name $}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div ng-if="list_brands.length" class="col-md-4 filter_section">
+                                <label>Brands:</label>
+                                <div>
+                                    <div ng-repeat="brand in list_brands" class="checkbox checkbox-inline" >
+                                        <input id="chkbx_brand_{$ brand.id $}" type="checkbox" checklist-model="filters_bsp.brand_id__in" checklist-value="brand.id" >
+                                        <label for="chkbx_brand_{$ brand.id $}">
+                                            <img ng-src="{$ brand.icon_url $}" class="brand_icon">&nbsp;
+                                            {$ brand.name $}
+                                        </label>
                                     </div>
                                 </div>
                             </div>

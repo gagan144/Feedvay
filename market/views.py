@@ -8,6 +8,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 from openpyxl import Workbook
 from django.db import transaction
 from django.conf import settings
+from mongoengine.queryset import DoesNotExist as DoesNotExist_mongo
 
 from accounts.decorators import registered_user_only, organization_console
 from market.models import Brand
@@ -452,6 +453,31 @@ def console_bsp_import_remove(request, org):
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+@registered_user_only
+@organization_console(['market.businessservicepoint.change_businessservicepoint', 'market.businessservicepoint.view_businessservicepoint'])
+def console_bsp_edit(request, org):
+    """
+    Django view to edit organization's BSP.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+
+    try:
+        bsp = BusinessServicePoint.objects.get(organization_id=org.id, pk=request.GET['bsp_id'])
+
+        data = {
+            'app_name': 'app_bsp_edit',
+            'bsp': bsp
+        }
+
+        return render(request, 'market/console/bsp_edit.html', data)
+
+    except (KeyError, DoesNotExist_mongo) as ex:
+        return Http404("Invalid link.")
+
 # --- /BusinessServicePoint ---
 
 

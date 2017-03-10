@@ -589,6 +589,7 @@
                             }
                             records[i]['created_by']['display_name'] = row['created_by']['first_name'] + " " +row['created_by']['last_name'];
                             records[i]['active_html'] = row['active']?'<i class="fa fa-check-circle text-success"></i>':'<i class="fa fa-times-circle text-danger"></i>';
+                            records[i]['actions_html'] = '<a href="{% url 'console_market_bsp_edit' %}?c={{ request.curr_org.org_uid }}&bsp_id=' + row['id'] + '" class="btn btn-primary btn-xs btn-outline grid_btn">View</a>';
                         }
 
                         // Update grid

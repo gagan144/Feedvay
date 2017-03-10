@@ -74,6 +74,8 @@ url_bsp = [
     url(r'^import/queue/$', views_market.console_bsp_import_queue, name='console_market_bsp_import_queue'),
     url(r'^import/remove/$', views_market.console_bsp_import_remove, name='console_market_bsp_import_remove'),
 
+    url(r'^edit/$', views_market.console_bsp_edit, name='console_market_bsp_edit'),
+
     # Api
     url(r'^api/', include(api_org_bsp.urls)),
 ]

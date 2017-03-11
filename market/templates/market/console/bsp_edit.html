@@ -137,7 +137,7 @@
                                         <h4 style="margin-top: 0px;">
                                             <i class="fa fa-phone"></i>&nbsp;&nbsp;Phone Number
                                         </h4>
-                                        <table class="table">
+                                        <table class="table" style="margin-left: 20px;">
                                             <tbody>
                                                 <tr ng-repeat="contact in data.contacts">
                                                     <td style="width: 90px;">
@@ -182,7 +182,9 @@
                                             <i class="fa fa-envelope-o"></i>&nbsp;&nbsp;Emails
                                         </h4>
                                         <hr style="margin: 10px 0px;"/>
-                                        <input type="text" ng-model="data.emails" name="emails" class="form-control" select2="{ placeholder: 'Use comma or space to separate emails', tags: true, tokenSeparators: [',', ' '] }" tolist>
+                                        <div style="margin-left: 20px;">
+                                            <input type="text" ng-model="data.emails" name="emails" class="form-control" select2="{ placeholder: 'Use comma or space to separate emails', tags: true, tokenSeparators: [',', ' '] }" tolist>
+                                        </div>
                                     </div>
 
                                     <div style="margin-bottom: 10px;">
@@ -190,10 +192,12 @@
                                             <i class="fa fa-globe"></i>&nbsp;&nbsp;Website/URL
                                         </h4>
                                         <hr style="margin: 10px 0px;"/>
-                                        <input type="url" name="website" ng-model="data.website" class="form-control">
-                                        <div ng-messages="form_create_edit_bsp.website.$error" role="alert" class="error_messages">
-                                            <label ng-message="required" class="error">Required</label>
-                                            <label ng-message="url" class="error">Please enter a valid URL.</label>
+                                        <div style="margin-left: 20px;">
+                                            <input type="url" name="website" ng-model="data.website" class="form-control">
+                                            <div ng-messages="form_create_edit_bsp.website.$error" role="alert" class="error_messages">
+                                                <label ng-message="required" class="error">Required</label>
+                                                <label ng-message="url" class="error">Please enter a valid URL.</label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -208,7 +212,172 @@
                     </div>
                     <!-- /Contact -->
 
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- Miscellaneous -->
+                            <div class="panel panel-default">
+                                <div class="panel-heading panel_heading_2">
+                                    <i class="fa fa-asterisk"></i>&nbsp;
+                                    Miscellaneous
+                                </div>
+                                <div class="panel-body">
+                                    <div style="margin-bottom: 30px;">
+                                        <h4 style="margin-top: 0px;">
+                                            <i class="fa fa-tags"></i>&nbsp;&nbsp;Tags/Keywords
+                                        </h4>
+                                        <hr style="margin: 10px 0px;"/>
+                                        <p class="help-block">
+                                            Tag your Business or Service Points with keywords for easy identification.
+                                        </p>
+                                        <div style="margin-left: 20px;">
+                                            <input type="text" ng-model="tags" name="tags" class="form-control" select2="{ placeholder: 'Use comma or space to separate tags', tags: true, tokenSeparators: [',', ' '] }" tolist>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 style="margin-top: 0px;">
+                                            <i class="fa fa-facebook-f"></i>&nbsp;&nbsp;Social Media
+                                        </h4>
+                                        <hr style="margin: 10px 0px;"/>
+                                        <p class="help-block">
+                                            Attach your Business or Service Points to social media pages.
+                                        </p>
+
+                                        <div style="margin-left: 20px;">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-addon">
+                                                    <i class="fa fa-facebook-official"></i>
+                                                </span>
+                                                <input type="url" name="social__facebook" ng-model="data.social.facebook" placeholder="Link to facebook page" class="form-control">
+                                            </div>
+                                            <div ng-messages="form_create_edit_bsp.social__facebook.$error" role="alert" class="error_messages">
+                                                <label ng-message="url" class="error">Please enter a valid URL.</label>
+                                            </div>
+
+                                            <div class="input-group input-group-sm" style="margin-top: 10px;">
+                                                <span class="input-group-addon">
+                                                    <i class="fa fa-twitter"></i>
+                                                </span>
+                                                <input type="url" name="social__twitter" ng-model="data.social.twitter" placeholder="Link to twiiter page" class="form-control">
+                                            </div>
+                                            <div ng-messages="form_create_edit_bsp.social__twitter.$error" role="alert" class="error_messages">
+                                                <label ng-message="url" class="error">Please enter a valid URL.</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /Miscellaneous -->
+                        </div>
+                        <div class="col-md-6">
+                            <!-- Status -->
+                            <div class="panel panel-default">
+                                <div class="panel-heading panel_heading_2">
+                                    <i class="fa fa-bolt"></i>&nbsp;
+                                    Status
+                                </div>
+                                <div class="panel-body">
+
+                                    <div style="margin-bottom: 30px;">
+                                        <h4 style="margin-top: 0px;">
+                                            <i class="fa fa-home"></i>&nbsp;&nbsp;Open status
+                                        </h4>
+                                        <hr style="margin: 10px 0px;"/>
+                                        <div style="margin-left: 20px;">
+                                            <div class="radio radio-primary">
+                                                <input type="radio"id="rd_opst_open" ng-model="data.open_status" value="{{ BusinessServicePoint.ST_OPN_OPEN }}" checked>
+                                                <label for="rd_opst_open">
+                                                    Open
+                                                    <br/><small>Currently open for customers or clients.</small>
+                                                </label>
+                                            </div>
+                                            <div class="radio radio-primary">
+                                                <input type="radio"id="rd_opst_coming_soon" ng-model="data.open_status" value="{{ BusinessServicePoint.ST_OPN_COMING_SOON }}">
+                                                <label for="rd_opst_coming_soon">
+                                                    Coming Soon
+                                                    <br/><small>Currently not in service but be shortly.</small>
+                                                </label>
+                                            </div>
+                                            <div class="radio radio-primary">
+                                                <input type="radio"id="rd_opst_closed" ng-model="data.open_status" value="{{ BusinessServicePoint.ST_OPN_CLOSED }}">
+                                                <label for="rd_opst_closed">
+                                                    Closed
+                                                    <br/><small>Closed or not in service.</small>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 style="margin-top: 0px;">
+                                            <i class="fa fa-check-circle"></i>&nbsp;&nbsp;Active
+
+                                            <span class="label label-danger pull-right" ng-if="!data.active">
+                                                Inactive
+                                            </span>
+                                        </h4>
+                                        <hr style="margin: 10px 0px;"/>
+                                        <p class="help-block">
+                                            This defines whether your Business or Service Point is active or not in the system.
+                                            In case you want to temporarily disable/hide/delete your business you can
+                                            uncheck the below checkbox. You can mark it active anytime you want.
+                                        </p>
+                                        <div style="margin-left: 20px;">
+                                            <div class="checkbox checkbox-primary" >
+                                                <input id="chkbx_active" type="checkbox" ng-model="data.active" >
+                                                <label for="chkbx_active">
+                                                    Is active
+                                                    <br/>Check to set this Business or Service Point as active.
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- /Status -->
+                        </div>
+                    </div>
+
                     <!-- =============== /Partial =============== -->
+
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td style="width: 40%;">
+                                        <label>Created By:</label>
+                                        {% with creator=bsp.created_by_user %}
+                                        <br/>{{ creator.first_name }} {{ creator.last_name }}
+                                        {% endwith %}
+                                    </td>
+                                    <td style="width: 40%;">
+                                        <label>Created On:</label>
+                                        <br/>{{ bsp.created_on|date:"d-M-Y h:i A" }}
+                                    </td>
+                                    <td style="width: 20%;">
+                                        <label>Last Modified On:</label>
+                                        <br/>{% if bsp.modified_on %}{{ bsp.modified_on|date:"d-M-Y h:i A" }}{% else %}<i>Not modified yet</i>{% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <hr class="hr-line-dashed"/>
+                    <div>
+                        <p ng-if="flags.error" class="text-danger">
+                            <i class="fa fa-exclamation-triangle"></i> {$ flags.err_msg $}
+                        </p>
+
+                        <button ladda="flags.status==ST_AJAX.LOADING" class="btn btn-primary btn-lg ladda-button" type="button" ng-disabled="form_create_edit_bsp.$invalid" ng-click="submit_bsp(form_create_edit_bsp);" data-style="zoom-in">
+                            Save
+                        </button>
+                        <a href="{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/bsps" class="btn btn-link btn-lg">
+                            Cancel
+                        </a>
+                    </div>
+
                 </form>
 
             </div>
@@ -231,11 +400,13 @@
             'ui.bootstrap',
             'angular-ladda'
         ])
-        .run(function($http, $cookies) {
+        .run(function($rootScope, $http, $cookies) {
             $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 
             $http.defaults.xsrfCookieName = 'csrftoken';
             $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+            $rootScope.ST_AJAX = ST_AJAX;
         })
         .config(function($interpolateProvider, $httpProvider) {
             $interpolateProvider.startSymbol('{$');

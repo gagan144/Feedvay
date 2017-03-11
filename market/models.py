@@ -659,9 +659,9 @@ class BusinessServicePoint(Document):
 
     # --- Enums ---
     ST_OPN_OPEN = 'open'
-    ST_OPN_COMING_SOON = 'comming_soon'
+    ST_OPN_COMING_SOON = 'coming_soon'
     ST_OPN_CLOSED = 'closed'
-    ST_OPEN_REMOVED = 'removed'
+    # ST_OPN_REMOVED = 'removed'
     CH_OPEN_STATUS = (
         (ST_OPN_OPEN, 'Open'),
         (ST_OPN_COMING_SOON, 'Coming Soon'),

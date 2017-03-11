@@ -1,0 +1,107 @@
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-nobordered" style="margin-bottom: 0px;">
+            <tr>
+                <td style="width: 150px;padding-top: 12px;" valign="top">
+                    <label>Category<span class="required">*</span>:</label>
+                </td>
+                <td style="border-top: none;" valign="top">
+                    <select name="attributes__category" ng-model="data.attributes.category" multiple select2="{ placeholder: 'Select categories...'}" style="width: 100% !important;" required>
+                        {% for c in bsp_type_class_ENUMS.CH_CATEGORIES %}
+                            <option value="{{ c.0 }}">{{ c.1|title }}</option>
+                        {% endfor %}
+                    </select>
+                    <div ng-messages="form_create_edit_bsp.attributes__category.$dirty && form_create_edit_bsp.attributes__category.$error" role="alert" class="error_messages">
+                        <label ng-message="required" class="error">Please select atleast one category.</label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Food type<span class="required">*</span>:</label>
+                </td>
+                <td>
+                    <div>
+                        <div class="checkbox checkbox-primary checkbox-inline" >
+                            <input id="chkbx_food_type_veg" type="checkbox" checklist-model="data.attributes.food_type" checklist-value="'veg'" ng-required="!data.attributes.food_type.length">
+                            <label for="chkbx_food_type_veg">
+                                Veg
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-primary checkbox-inline" >
+                            <input id="chkbx_food_type_egg" type="checkbox" checklist-model="data.attributes.food_type" checklist-value="'egg'" ng-required="!data.attributes.food_type.length">
+                            <label for="chkbx_food_type_egg">
+                                Egg
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-primary checkbox-inline" >
+                            <input id="chkbx_food_type_nonveg" type="checkbox" checklist-model="data.attributes.food_type" checklist-value="'non_veg'" ng-required="!data.attributes.food_type.length">
+                            <label for="chkbx_food_type_nonveg">
+                                Non Veg
+                            </label>
+                        </div>
+                    </div>
+                    <label ng-if="!(data.attributes.food_type && data.attributes.food_type.length)" class="error">Please select atleast one category.</label>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 150px;padding-top: 12px;" valign="top">
+                    <label>Cuisines:</label>
+                </td>
+                <td style="border-top: none;" valign="top">
+                    <select name="attributes__cuisines" ng-model="data.attributes.cuisines" multiple select2="{ placeholder: 'Select cuisines...'}" style="width: 100% !important;">
+                        {% for cn in list_cuisines %}
+                            <option value="{{ cn.name }}">{{ cn.name|title }}</option>
+                        {% endfor %}
+                    </select>
+                    <div ng-messages="form_create_edit_bsp.attributes__cuisines.$dirty && form_create_edit_bsp.attributes__cuisines.$error" role="alert" class="error_messages">
+                        <label ng-message="required" class="error">Please select atleast one cuisine.</label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 150px;padding-top: 12px;" valign="top">
+                    <label>Home delivery:</label>
+                </td>
+                <td style="border-top: none;" valign="top">
+                    <div class="checkbox checkbox-primary" >
+                        <input id="chkbx_cafe_home_delv" type="checkbox" name="attributes__home_delivery" ng-model="data.attributes.home_delivery" >
+                        <label for="chkbx_cafe_home_delv">
+                            Home delivery available
+                            <br/><small>Check if this cafe provides home delivery.</small>
+                        </label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <label>Average cost:</label>
+                </td>
+                <td>
+                    <p class="help-block" style="margin-top: 0px;">
+                        Average cost for two person:
+                    </p>
+                    <input type="number" class="form-control" ng-model="data.attributes.average_cost_2" style="width: 150px;">
+                </td>
+            </tr>
+            <tr>
+                <td >
+                    <label>Payment methods:</label>
+                </td>
+                <td>
+                    <p class="help-block" style="margin: 0px;">
+                        Select payments methods available:
+                    </p>
+                    {% include 'market/partials/payments.html' %}
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% if custom_attr %}
+        <div class="col-md-6">
+            <h4 style="margin-top: 0px;">Custom</h4>
+            <hr style="margin: 10px 0px;"/>
+            {% include 'market/partials/custom_attributes.html' %}
+        </div>
+    {% endif %}
+</div>

@@ -282,6 +282,13 @@
                                     <div style="margin-bottom: 30px;">
                                         <h4 style="margin-top: 0px;">
                                             <i class="fa fa-home"></i>&nbsp;&nbsp;Open status
+
+                                            <span class="label label-warning pull-right" ng-if="data.open_status=='{{ BusinessServicePoint.ST_OPN_COMING_SOON }}'">
+                                                Coming Soon
+                                            </span>
+                                            <span class="label label-danger pull-right" ng-if="data.open_status=='{{ BusinessServicePoint.ST_OPN_CLOSED }}'">
+                                                Closed
+                                            </span>
                                         </h4>
                                         <hr style="margin: 10px 0px;"/>
                                         <div style="margin-left: 20px;">

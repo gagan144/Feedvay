@@ -25,11 +25,11 @@
         <option value="$MODULE_DIR$/accounts/templates" />
         <option value="$MODULE_DIR$/console/templates" />
         <option value="$MODULE_DIR$/owlery/templates" />
-        <option value="$MODULE_DIR$/brands/templates" />
         <option value="$MODULE_DIR$/form_builder/templates" />
         <option value="$MODULE_DIR$/surveys/templates" />
         <option value="$MODULE_DIR$/clients/templates" />
         <option value="$MODULE_DIR$/market/templates" />
+        <option value="$MODULE_DIR$/languages/templates" />
       </list>
     </option>
   </component>

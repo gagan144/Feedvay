@@ -115,7 +115,7 @@ def console_brand_edit(request, org):
 
 
     except (KeyError, Brand.DoesNotExist) as ex:
-        return Http404("Invalid link.")
+        raise Http404("Invalid link.")
 
 @registered_user_only
 @organization_console(required_perms='market.brand.change_brand')
@@ -488,7 +488,7 @@ def console_bsp_edit(request, org):
         return render(request, 'market/console/bsp_edit.html', data)
 
     except (KeyError, DoesNotExist_mongo) as ex:
-        return Http404("Invalid link.")
+        raise Http404("Invalid link.")
 
 
 @login_required
@@ -500,16 +500,30 @@ def partial_bsp_type_attributes(request, bsp_type):
 
     **Authors**: Gagandeep Singh
     """
+    try:
+        bsp_type_class = MAPPING_BSP_CLASS[bsp_type]
+    except KeyError:
+        raise Http404("Invalid BSP type.")
+
+    # Custom attributes
     if request.GET.get('c', None):
-        #  'c' will automatically be checked in middleware
-        org = Organization.objects.get(org_uid=request.GET['c'])
-        custom_attr = BspTypeCustomization.objects.get(bsp_type=bsp_type, organization_id=org.id)
+        try:
+            #  'c' will automatically be checked in middleware
+            org = Organization.objects.get(org_uid=request.GET['c'])
+            custom_attr = BspTypeCustomization.objects.get(bsp_type=bsp_type, organization_id=org.id)
+        except BspTypeCustomization.DoesNotExist:
+            custom_attr = None
     else:
         custom_attr = None
 
     data = {
+        "bsp_type_class_ENUMS": bsp_type_class.ENUMS,
         "custom_attr": custom_attr
     }
+
+    if bsp_type == BspTypes.RESTAURANT:
+        data['list_cuisines'] = RestaurantCuisine.objects.filter(active=True)
+
     return render(request, 'market/partials/bsp_types/{}_attributes.html'.format(bsp_type), data)
 
 # --- /BusinessServicePoint ---

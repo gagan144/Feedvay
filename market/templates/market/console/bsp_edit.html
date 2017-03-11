@@ -86,8 +86,8 @@
 
                                         <div class="col-md-6">
                                             <label>Brand:</label>
-                                            <select ng-model="data.brand_id" name="brand_id" class="form-control">
-                                                <option value="">Please Select</option>
+                                            <select ng-model="data.brand_id" name="brand_id" class="form-control" select-int select2="{ placeholder: 'Select type', allowClear: true }">
+                                                <option value="">-- None --</option>
                                                 {% for b in list_brands %}
                                                     <option value="{{ b.id }}">{{ b.name }}</option>
                                                 {% endfor %}
@@ -116,10 +116,11 @@
                     <!-- Attributes -->
                     <div class="panel panel-default">
                         <div class="panel-heading panel_heading_2">
-                            Attributes
+                            <i class="fa fa-info"></i>&nbsp;
+                            Details
                         </div>
                         <div class="panel-body">
-
+                            <div ng-include="'/console/bsp/partials/bsp-type-attr/'+data.type+'/?c={{ request.curr_org.org_uid }}'"></div>
                         </div>
                     </div>
                     <!-- /Attributes -->
@@ -127,7 +128,7 @@
                     <!-- Contact -->
                     <div class="panel panel-default">
                         <div class="panel-heading panel_heading_2">
-                            <i class="fa fa-info"></i>&nbsp;
+                            <i class="fa fa-phone-square"></i>&nbsp;
                             Contact Details
                         </div>
                         <div class="panel-body">
@@ -387,6 +388,7 @@
 
 {% block scripts %}
     <script src="{% get_static_prefix %}lib/select2/js/select2.min.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/checklist-model.js"></script>
     <script>
         'use strict';
 
@@ -398,7 +400,8 @@
             'ngCookies',
             'ngMessages',
             'ui.bootstrap',
-            'angular-ladda'
+            'angular-ladda',
+            'checklist-model',
         ])
         .run(function($rootScope, $http, $cookies) {
             $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
@@ -416,12 +419,8 @@
             $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
         });
 
+
         APP.controller('BspEditFormCtrl', function($scope, $http, $window){
-{#            $scope.list_brands = [#}
-{#                {% for b in list_brands %}#}
-{#                    {"id": {{ b.id }}, "name": "{{ b.name }}", "logo_url":"{{ b.logo.url }}", "icon_url":"{{ b.icon.url }}"}{% if not forloop.last %},{% endif %}#}
-{#                {% endfor %}#}
-{#            ];#}
             // Variables
             $scope.summernote_config = {
                 height: 150,

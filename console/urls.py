@@ -76,6 +76,9 @@ url_bsp = [
 
     url(r'^edit/$', views_market.console_bsp_edit, name='console_market_bsp_edit'),
 
+    # Partials
+    url(r'^partials/bsp-type-attr/(?P<bsp_type>.*)/$', views_market.partial_bsp_type_attributes, name='console_market_bsp_type_attr'),
+
     # Api
     url(r'^api/', include(api_org_bsp.urls)),
 ]

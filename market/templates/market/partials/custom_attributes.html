@@ -1,0 +1,23 @@
+<table class="table table-nobordered" style="margin-bottom: 0px;">
+    {% for attr in custom_attr.schema %}
+        <tr>
+            <td style="width: 150px;padding-top: 12px;" valign="top">
+                <label>{{ attr.name }}:</label>
+            </td>
+            <td style="border-top: none;" valign="top">
+                {% if attr.dtype == 'text' %}
+                    <input type="text" name="custom_attributes__{{ attr.label }}" ng-model="data.custom_attributes.{{ attr.label }}" class="form-control input-sm">
+                {% elif attr.dtype == 'int' or attr.dtype == 'float' %}
+                    <input type="number" name="custom_attributes__{{ attr.label }}" ng-model="data.custom_attributes.{{ attr.label }}" class="form-control input-sm" step="{% if attr.dtype == 'int' %}1{% else %}0.05{% endif %}">
+                {% elif attr.dtype == 'bool' %}
+                    <div class="checkbox checkbox-primary" >
+                        <input id="chkbx_cusAttr_{{ attr.label }}" type="checkbox" name="custom_attributes__{{ attr.label }}" ng-model="data.custom_attributes.{{ attr.label }}" >
+                        <label for="chkbx_cusAttr_{{ attr.label }}">
+                            {{ attr.name }}
+                        </label>
+                    </div>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+</table>

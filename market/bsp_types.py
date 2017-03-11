@@ -18,7 +18,7 @@ class BspTypes:
         - Create type enum in this class and add to ``choices`` keepng the order.
         - Create new BSP type class by extending :class:`market.bsp_types.BaseBspType`
         - Add mapping in ``MAPPING_BSP_CLASS``
-
+        - Create bsp edit partial in directory and as: ``market/templates/market/partials/bsp_types/<bsp_type_code>_attributes.html``
 
     **Authors**: Gagandeep Singh
     """

@@ -1,0 +1,49 @@
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-nobordered" style="margin-bottom: 0px;">
+            <tr>
+                <td style="width: 150px;padding-top: 12px;" valign="top">
+                    <label>Home delivery:</label>
+                </td>
+                <td style="border-top: none;" valign="top">
+                    <div class="checkbox checkbox-primary" >
+                        <input id="chkbx_cafe_home_delv" type="checkbox" name="attributes__home_delivery" ng-model="data.attributes.home_delivery" >
+                        <label for="chkbx_cafe_home_delv">
+                            Home delivery available
+                            <br/><small>Check if this cafe provides home delivery.</small>
+                        </label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <label>Average cost:</label>
+                </td>
+                <td>
+                    <p class="help-block" style="margin-top: 0px;">
+                        Average cost for two person:
+                    </p>
+                    <input type="number" class="form-control" ng-model="data.attributes.average_cost_2" style="width: 150px;">
+                </td>
+            </tr>
+            <tr>
+                <td >
+                    <label>Payment methods:</label>
+                </td>
+                <td>
+                    <p class="help-block" style="margin: 0px;">
+                        Select payments methods available:
+                    </p>
+                    {% include 'market/partials/payments.html' %}
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% if custom_attr %}
+        <div class="col-md-6">
+            <h4 style="margin-top: 0px;">Custom</h4>
+            <hr style="margin: 10px 0px;"/>
+            {% include 'market/partials/custom_attributes.html' %}
+        </div>
+    {% endif %}
+</div>

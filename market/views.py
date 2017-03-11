@@ -8,6 +8,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 from openpyxl import Workbook
 from django.db import transaction
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from mongoengine.queryset import DoesNotExist as DoesNotExist_mongo
 
 from accounts.decorators import registered_user_only, organization_console
@@ -488,6 +489,28 @@ def console_bsp_edit(request, org):
 
     except (KeyError, DoesNotExist_mongo) as ex:
         return Http404("Invalid link.")
+
+
+@login_required
+def partial_bsp_type_attributes(request, bsp_type):
+    """
+    Django view to return partial for a BSP type attributes.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.GET.get('c', None):
+        #  'c' will automatically be checked in middleware
+        org = Organization.objects.get(org_uid=request.GET['c'])
+        custom_attr = BspTypeCustomization.objects.get(bsp_type=bsp_type, organization_id=org.id)
+    else:
+        custom_attr = None
+
+    data = {
+        "custom_attr": custom_attr
+    }
+    return render(request, 'market/partials/bsp_types/{}_attributes.html'.format(bsp_type), data)
 
 # --- /BusinessServicePoint ---
 

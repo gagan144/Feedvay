@@ -19,7 +19,7 @@ The session expiry time depends upon the type of user which has logged in:
 
         - **Remember me is selected**: Session expires when:
 
-            - Login age exceeds ``settings.SESSION_COOKIE_AGE_PUBLIC`` seconds (24 Hours).
+            - Login age exceeds ``settings.SESSION_COOKIE_AGE_PUBLIC`` seconds (1 Week).
 
             .. warning::
                 Session does **NOT** expire after browser is closed when user selects 'Remember me' option.

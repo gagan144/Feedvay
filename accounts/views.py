@@ -159,12 +159,14 @@ def logout(request):
 
     **Authors**: Gagandeep Singh
     """
+    if request.user.is_authenticated():
+        # Only if user is currently logged in
+        # Delete permission cache
+        request.user.registereduser.delete_permission_cache()
 
-    # Delete permission cache
-    request.user.registereduser.delete_permission_cache()
+        # Logout
+        auth.logout(request)
 
-    # Logout
-    auth.logout(request)
     return HttpResponseRedirect(reverse('accounts_login'))
 # ---------- /Login ----------
 

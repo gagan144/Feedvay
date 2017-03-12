@@ -231,7 +231,7 @@
                                             Tag your Business or Service Points with keywords for easy identification.
                                         </p>
                                         <div style="margin-left: 20px;">
-                                            <input type="text" ng-model="tags" name="tags" class="form-control" select2="{ placeholder: 'Use comma or space to separate tags', tags: true, tokenSeparators: [',', ' '] }" tolist>
+                                            <input type="text" ng-model="data.tags" name="tags" class="form-control" select2="{ placeholder: 'Use comma or space to separate tags', tags: true, tokenSeparators: [',', ' '] }" tolist>
                                         </div>
                                     </div>
 
@@ -374,8 +374,8 @@
 
                     <hr class="hr-line-dashed"/>
                     <div>
-                        <p ng-if="flags.error" class="text-danger">
-                            <i class="fa fa-exclamation-triangle"></i> {$ flags.err_msg $}
+                        <p ng-if="flags.status==ST_AJAX.ERROR" class="text-danger">
+                            <i class="fa fa-exclamation-triangle"></i> {$ flags.error_msg $}
                         </p>
 
                         <button ladda="flags.status==ST_AJAX.LOADING" class="btn btn-primary btn-lg ladda-button" type="button" ng-disabled="form_create_edit_bsp.$invalid" ng-click="submit_bsp(form_create_edit_bsp);" data-style="zoom-in">
@@ -460,6 +460,57 @@
                 $scope.data.contacts.push({"tel_code":"+91"});
             };
             // --- /Utils function ---
+
+            $scope.flags = {
+                status: null,
+                error_msg: null,
+                errors: null
+            };
+            $scope.submit_bsp = function(form_obj) {
+                if (form_obj.$invalid) {
+                    return false;
+                }
+
+                // Prepare data
+                var data = {
+                    "data": angular.toJson( $scope.data ), //JSON.stringify($scope.data),
+                    "c": "{{ request.curr_org.org_uid }}"
+                };
+
+                $scope.flags.status = ST_AJAX.LOADING;
+                $scope.flags.error_msg = null;
+                $scope.flags.errors = null;
+
+                $http.post(
+                    "{% url 'console_market_bsp_edit_save' bsp.id %}",
+                    $.param(data)
+                )
+                .success(function (response, status, headers, config) {
+                    if(response.status=='success'){
+                        $window.location.href = '{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/bsps';
+                    }else{
+                        $scope.flags.status = ST_AJAX.ERROR;
+                        $scope.flags.error_msg = response.message;
+                        if(response.status == 'failed'){
+                            $scope.flags.errors = response.errors;
+                        }
+                    }
+                })
+                .error(function (response, status, headers, config) {
+                    if(status != -1){
+                        $scope.flags.status = ST_AJAX.ERROR;
+                        $scope.flags.error_msg = "Something went wrong. Our engineers will be informed.";
+                    }else{
+                        $scope.flags.status = null;
+                        $.growl.error({
+                            title: '<i class="fa fa-signal"></i> Network error!',
+                            message: "Please check your internet connection."
+                        });
+                    }
+                });
+
+
+            };
 
         });
     </script>

@@ -75,6 +75,7 @@ url_bsp = [
     url(r'^import/remove/$', views_market.console_bsp_import_remove, name='console_market_bsp_import_remove'),
 
     url(r'^edit/$', views_market.console_bsp_edit, name='console_market_bsp_edit'),
+    url(r'^edit-save/(?P<bsp_id>.*)/$', views_market.console_bsp_edit_save, name='console_market_bsp_edit_save'),
 
     # Partials
     url(r'^partials/bsp-type-attr/(?P<bsp_type>.*)/$', views_market.partial_bsp_type_attributes, name='console_market_bsp_type_attr'),

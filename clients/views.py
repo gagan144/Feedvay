@@ -3,6 +3,7 @@
 # permission of Gagandeep Singh.
 from django.shortcuts import render
 from django.http import HttpResponseForbidden
+import copy
 
 from clients.models import Organization, OrganizationMember
 from clients import operations
@@ -149,7 +150,7 @@ def console_organization_role_edit(request, org, org_role_id):
     **Authors**: Gagandeep Singh
     """
     try:
-        filters = request.permissions['accounts.organizationrole']['data_access']
+        filters = copy.deepcopy(request.permissions['accounts.organizationrole']['data_access'])
         filters['organization_id'] = org.id
         filters['id'] = org_role_id
 
@@ -179,7 +180,7 @@ def console_organization_role_edit_save(request, org, org_role_id):
     """
     if request.method.lower() == 'post':
         try:
-            filters = request.permissions['accounts.organizationrole']['data_access']
+            filters = copy.deepcopy(request.permissions['accounts.organizationrole']['data_access'])
             filters['organization_id'] = org.id
             filters['id'] = org_role_id
 
@@ -282,7 +283,7 @@ def console_member_edit(request, org, org_mem_id):
     **Authors**: Gagandeep Singh
     """
     try:
-        filters = request.permissions['clients.organizationmember']['data_access']
+        filters = copy.deepcopy(request.permissions['clients.organizationmember']['data_access'])
 
         filters['organization_id'] = org.id
         filters['id'] = org_mem_id
@@ -360,7 +361,7 @@ def console_member_remove(request, org, org_mem_id):
     """
     if request.method.lower() == 'post':
         try:
-            filters = request.permissions['clients.organizationmember']['data_access']
+            filters = copy.deepcopy(request.permissions['clients.organizationmember']['data_access'])
 
             filters['organization_id'] = org.id
             filters['id'] = org_mem_id

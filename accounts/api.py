@@ -4,6 +4,7 @@
 from tastypie.resources import ModelResource, Resource, ALL, ALL_WITH_RELATIONS
 from tastypie.authentication import SessionAuthentication
 from tastypie.authorization import DjangoAuthorization
+import copy
 
 from clients.models import Organization
 from accounts.models import OrganizationRole
@@ -33,7 +34,7 @@ class OrganizationRolesAPI(ModelResource):
         org_uid = request.GET['c']
         org = Organization.objects.get(org_uid=org_uid)
 
-        filter_org = request.permissions['accounts.organizationrole']['data_access']
+        filter_org = copy.deepcopy(request.permissions['accounts.organizationrole']['data_access'])
         if filter_org is None:
             return []
         else:

@@ -2,6 +2,7 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from django import forms
+from mongoengine import *
 
 from market.models import Brand, BspTypeCustomization, BusinessServicePoint
 from market.bsp_types import *
@@ -156,5 +157,113 @@ class BspTypeCustomizationForm(forms.ModelForm):
             self.instance.organization = organization
             self.instance.created_by = created_by
         super(self.__class__, self).save(commit=True)
+
+
+class BusinessServicePointForm(object):
+    """
+    Form to create/edit Business or Service Point.
+
+    **Points**:
+
+        - ``errors`` and ``cleaned_data`` are available only after call is ``is_valid()`` method.
+        - ``Save()`` method automatically calls ``is_valid()``
+
+    **Authors**: Gagandeep Singh
+    """
+
+    exclude = ['id', 'organization_id', 'list_attributes', 'created_by', 'created_on', 'modified_on']
+
+    def __init__(self, data, files=None, instance=None):
+        self.data = data
+        self.files = files
+        self.instance = instance if instance else BusinessServicePoint()
+        self.errors = None
+        self.cleaned_data = None
+
+    def is_valid(self):
+        """
+        Method to validate data.
+        This also sets ``self.errors`` if any errors are found.
+
+        :return: True if no errors are found else False
+        """
+
+        errors = {}
+        cleaned_data = {}
+
+        # Loop over all fields
+        for fld_name, field in BusinessServicePoint._fields.iteritems():
+            # Skip excluded ones
+            if fld_name in self.exclude:
+                continue
+
+            # Get value
+            value = self.data.get(fld_name, None)
+
+            # Is required and None, [], {}
+            if field.required and value in [None, [], {}]:
+                errors[fld_name] = ["Field required"]
+            else:
+                # Only if value is not None
+                if value is not None:
+                    # Check embedded documents & embedded document list
+                    has_value_err = False
+                    if isinstance(field, EmbeddedDocumentListField):
+                        try:
+                            value = [ field.field.document_type(**row) for row in value ]
+                        except FieldDoesNotExist as ex:
+                            errors[fld_name] = [ex.message]
+                            has_value_err = True
+                    elif isinstance(field, EmbeddedDocumentField):
+                        try:
+                            value = field.document_type(**value)
+                        except FieldDoesNotExist as ex:
+                            errors[fld_name] = [ex.message]
+                            has_value_err = True
+
+                    # Validate value only if previous error was not found
+                    if not has_value_err:
+                        try:
+                            field._validate(value)
+                        except ValidationError as ex:
+                            errors[fld_name] = [ex.message]
+
+                cleaned_data[fld_name] = value
+
+        if len(errors):
+            # Has errors
+            self.errors = errors
+            self.cleaned_data = None
+            return False
+        else:
+            # Ok! No errors
+            self.errors = None
+            self.cleaned_data = cleaned_data
+            return True
+
+
+    def save(self, organization=None, created_by=None):
+        """
+        Method to save BSP.
+
+        :param organization: Organization instance used only when new instance is being created
+        :param created_by: User instance used only when new instance is being created
+        :return: :class:`market.models.BusinessServicePoint` instance
+        """
+        self.is_valid()
+        instance = self.instance
+
+        for fld_name, value in self.cleaned_data.iteritems():
+            setattr(instance, fld_name, value)
+
+        if instance.pk is None:
+            instance.organization_id = organization.id
+            instance.created_by = created_by.id
+
+        instance.save()
+
+        return instance
+
+
 
 

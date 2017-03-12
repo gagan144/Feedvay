@@ -10,6 +10,8 @@ from django.db import transaction
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from mongoengine.queryset import DoesNotExist as DoesNotExist_mongo
+import copy
+import json
 
 from accounts.decorators import registered_user_only, organization_console
 from market.models import Brand
@@ -34,7 +36,7 @@ def console_brands(request, org):
     **Authors**: Gagandeep Singh
     """
 
-    filter_brands = request.permissions['market.brand']['data_access']
+    filter_brands = copy.deepcopy(request.permissions['market.brand']['data_access'])
     if filter_brands is None:
         list_brands = []
     else:
@@ -234,7 +236,7 @@ def console_bsp_customize_type_edit(request, org, cust_id):
     """
 
     try:
-        filters = request.permissions['market.bsptypecustomization']['data_access']
+        filters = copy.deepcopy(request.permissions['market.bsptypecustomization']['data_access'])
         filters['organization_id'] = org.id
         filters['id'] = cust_id
 
@@ -275,14 +277,14 @@ def console_bsp_customize_type_edit_save(request, org, cust_id):
     """
     if request.method.lower() == 'post':
         try:
-            filters = request.permissions['market.bsptypecustomization']['data_access']
+            filters = copy.deepcopy(request.permissions['market.bsptypecustomization']['data_access'])
             filters['organization_id'] = org.id
             filters['id'] = cust_id
 
             cust_bsp = BspTypeCustomization.objects.get(**filters)
         except (TypeError, BspTypeCustomization.DoesNotExist):
             # TypeError: If filters is None
-            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="You do not have permissions to edit this customization.")
+            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="You do not have permissions to edit this customization.").gen_http_response()
 
 
         data = request.POST.copy()
@@ -311,7 +313,7 @@ def console_bsp_customize_type_remove(request, org, cust_id):
     """
     if request.method.lower() == 'post':
         try:
-            filters = request.permissions['market.bsptypecustomization']['data_access']
+            filters = copy.deepcopy(request.permissions['market.bsptypecustomization']['data_access'])
 
             filters['organization_id'] = org.id
             filters['id'] = cust_id
@@ -319,7 +321,7 @@ def console_bsp_customize_type_remove(request, org, cust_id):
             cust_bsp = BspTypeCustomization.objects.get(**filters)
         except (TypeError, BspTypeCustomization.DoesNotExist):
             # TypeError: If filters is None
-            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="You do not have permissions to remove this customization.")
+            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="You do not have permissions to remove this customization.").gen_http_response()
 
 
         confirm = int(request.POST.get('confirm', 0))
@@ -467,6 +469,35 @@ def console_bsp_edit(request, org):
     """
 
     try:
+        filters = copy.deepcopy(request.permissions['market.businessservicepoint']['data_access'])
+        filters['organization_id'] = org.id
+        filters['pk'] = request.GET['bsp_id']
+
+        bsp = BusinessServicePoint.objects.get(**filters)
+    except (TypeError, DoesNotExist_mongo):
+        # TypeError: If filters is None
+        return HttpResponseForbidden("You do not have permissions to access this page.")
+
+    if bsp.brand_id:
+        list_brands = Brand.objects.filter(organization_id=org.id).filter(Q(active=True) | Q(id=int(bsp.brand_id)))
+    else:
+        list_brands = Brand.objects.filter(organization_id=org.id, active=True)
+
+    data = {
+        'app_name': 'app_bsp_edit',
+
+        'bsp': bsp,
+        'list_brands': list_brands,
+
+        'BusinessServicePoint': BusinessServicePoint,
+        'BspTypes': BspTypes,
+        'ContactEmbDoc': ContactEmbDoc
+    }
+
+    return render(request, 'market/console/bsp_edit.html', data)
+
+    """
+    try:
         bsp = BusinessServicePoint.objects.get(organization_id=org.id, pk=request.GET['bsp_id'])
 
         if bsp.brand_id:
@@ -489,6 +520,42 @@ def console_bsp_edit(request, org):
 
     except (KeyError, DoesNotExist_mongo) as ex:
         raise Http404("Invalid link.")
+    """
+
+@registered_user_only
+@organization_console('market.businessservicepoint.change_businessservicepoint')
+def console_bsp_edit_save(request, org, bsp_id):
+    """
+    API view to save edited bsp information.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        try:
+            filters = copy.deepcopy(request.permissions['market.businessservicepoint']['data_access'])
+            filters['organization_id'] = org.id
+            filters['pk'] = bsp_id
+
+            bsp = BusinessServicePoint.objects.get(**filters)
+        except (TypeError, DoesNotExist_mongo):
+            # TypeError: If filters is None
+            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="You do not have permissions to edit this Business or Service Point.").gen_http_response()
+
+
+        data = json.loads(request.POST.copy()['data'])
+        form_bsp = BusinessServicePointForm(data, instance=bsp)
+
+        if form_bsp.is_valid():
+            form_bsp.save()
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok.').gen_http_response()
+        else:
+            errors = dict(form_bsp.errors)
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
 
 @login_required

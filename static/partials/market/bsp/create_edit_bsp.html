@@ -84,7 +84,7 @@
                     <h4 style="margin-top: 0px;">
                         <i class="fa fa-phone"></i>&nbsp;&nbsp;Phone Number
                     </h4>
-                    <table class="table" style="margin-left: 20px;">
+                    <table class="table table-condensed" style="margin-left: 20px;">
                         <tbody>
                             <tr ng-repeat="contact in data.contacts">
                                 <td style="width: 90px;">
@@ -140,7 +140,7 @@
                     </h4>
                     <hr style="margin: 10px 0px;"/>
                     <div style="margin-left: 20px;">
-                        <input type="url" name="website" ng-model="data.website" class="form-control">
+                        <input type="url" name="website" ng-model="data.website" class="form-control" placeholder="E.g. http://example.com/path/">
                         <div ng-messages="form_create_edit_bsp.website.$error" role="alert" class="error_messages">
                             <label ng-message="required" class="error">Required</label>
                             <label ng-message="url" class="error">Please enter a valid URL.</label>

@@ -39,9 +39,46 @@
 {% block content %}
     <div class="wrapper wrapper-content">
         <div class="container">
-            <div style="margin-bottom: 20px;" ng-cloak>
+            <div ng-controller="BspAddFormCtrl" style="margin-bottom: 20px;" ng-cloak>
 
-                <form name="form_create_edit_bsp" class="form-horizontal" ng-controller="BspAddFormCtrl" novalidate>
+                <div ng-if="data.type==null">
+                    <style>
+                        .bsp_icon{
+                            height: 90px;
+                        }
+
+                        .panel_brand{
+                            padding: 10px;
+                            width: 100% !important;
+                        }
+
+                        .bsp_type_title{
+                            font-size: larger;
+                            margin-top: 10px;;
+                        }
+                    </style>
+                    <h2 align="center" class="text-primary">Select the type of Business or Service Point you want to add</h2>
+                    <hr class="hr_dark hr_line_dashed_m15"/>
+
+                    <div class="row">
+                        {% for type in BspTypes.choices %}
+                            <div class="col-md-3 col-xs-6">
+                                <a ng-click="data.type='{{ type.0 }}'">
+                                    <div class="panel_brand" align="center">
+                                        <img src="{% get_static_prefix %}images/bsp_types/{{ type.0 }}-md.png" class="bsp_icon">
+
+                                        <div align="center" class="bsp_type_title">
+                                            {{ type.1|title }}
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+
+                <form ng-if="data.type!=null" name="form_create_edit_bsp" class="form-horizontal" novalidate>
 
                     <div ng-include="'{% get_static_prefix %}partials/market/bsp/create_edit_bsp.html'" ng-init="ACTION='edit'"></div>
 

@@ -156,13 +156,14 @@
             <hr style="margin-top: 15px;"/>
 
             <!-- Filters -->
-            {$ filters_bsp $}
             <div class="ibox ibox_bordered collapsed float-e-margins">
                 <div class="ibox-title bg-muted">
                     <h5>
                         <i class="fa fa-filter"></i> Filters
                     </h5>
-                    <span ng-if="filters_bsp | dictlength" class="label label-default" style="margin-left: 10px;">Applied</span>
+                    <span ng-if="is_applied_filters" class="label label-default" style="margin-left: 10px;">
+                        Applied
+                    </span>
                     <div ibox-tools="tmpl_bsp_filters_boxtool"></div>
                 </div>
                 <div class="ibox-content" style="padding: 15px;">
@@ -170,7 +171,7 @@
                         <div class="row">
                             <div class="col-md-4 filter_section">
                                 <label>Name:</label>
-                                <input type="text" ng-model="filters_bsp.name__icontains" class="form-control"/>
+                                <input type="text" ng-model="filters_bsp.name__icontains" ng-model-options="{ updateOn: 'blur' }" class="form-control"/>
                             </div>
 
                             <div class="col-md-4 filter_section">
@@ -469,6 +470,27 @@
         // --- Bsp ---
         function BspCtrl($scope, ServiceBsp) {
             $scope.filters_bsp = {};
+            $scope.is_applied_filters = false;
+            $scope.$watch('filters_bsp', function(newValue, oldValue) {
+
+                for(var key in $scope.filters_bsp){
+                    var val = $scope.filters_bsp[key];
+
+                    if(val==null){
+                        delete $scope.filters_bsp[key];
+                    }
+                    else if(val==""){
+                        delete $scope.filters_bsp[key];
+                    }
+                    else if(val.length==0){
+                        delete $scope.filters_bsp[key];
+                    }
+                }
+
+                $scope.is_applied_filters = Object.keys($scope.filters_bsp).length?true:false;
+
+            }, true);
+
             $scope.list_brands = [
                 {% for b in list_brands %}
                     {"id": {{ b.id }}, "name": "{{ b.name }}", "logo_url":"{{ b.logo.url }}", "icon_url":"{{ b.icon.url }}"}{% if not forloop.last %},{% endif %}
@@ -573,7 +595,7 @@
                     }
                 }
 
-                ServiceBsp.get_org_bsps('{{ request.curr_org.org_uid }}', $scope.filters_bsp).then(
+                ServiceBsp.get_org_bsps('{{ request.curr_org.org_uid }}', filters).then(
                     function(response){
                         var records = response.objects;
                         $scope.ui_flags.state = ST_AJAX.COMPLETED;

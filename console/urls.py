@@ -74,7 +74,9 @@ url_bsp = [
     url(r'^import/queue/$', views_market.console_bsp_import_queue, name='console_market_bsp_import_queue'),
     url(r'^import/remove/$', views_market.console_bsp_import_remove, name='console_market_bsp_import_remove'),
 
-    url(r'^edit/$', views_market.console_bsp_edit, name='console_market_bsp_edit'),
+    url(r'^new/$', views_market.console_bsp_new, name='console_market_bsp_new'),
+    url(r'^create/$', views_market.console_bsp_create, name='console_market_bsp_create'),
+    url(r'^edit/(?P<bsp_id>.*)/$', views_market.console_bsp_edit, name='console_market_bsp_edit'),
     url(r'^edit-save/(?P<bsp_id>.*)/$', views_market.console_bsp_edit_save, name='console_market_bsp_edit_save'),
 
     # Partials

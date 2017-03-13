@@ -8,7 +8,7 @@
     <!-- Favicon -->
     <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
 
-    <title>{{ bsp.name }} - Edit | {{ request.curr_org.name }}</title>
+    <title>New Business or Service Point | {{ request.curr_org.name }}</title>
 
     <link href="{% get_static_prefix %}lib/select2/css/select2.css" rel="stylesheet">
     <link rel="stylesheet" href="{% get_static_prefix %}lib/select2/css/select2-bootstrap.css">
@@ -18,9 +18,8 @@
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-xs-12">
             <h2>
-                <img src="{% get_static_prefix %}images/bsp_types/{{ bsp.type }}-md.png" style="height: 30px;">&nbsp;
-                {{ bsp.name }}
-                <small style="color: #bbb;font-size: 13px;">({{ bsp.type|title }})</small>
+                <i class="fa fa-plus"></i>&nbsp;
+                New Business or Service Point
             </h2>
             <ol class="breadcrumb">
                 <li>
@@ -30,7 +29,7 @@
                     <a href="{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/bsps">Business or Service Point</a>
                 </li>
                 <li class="active">
-                    {{ bsp.name }}
+                    New Business or Service Point
                 </li>
             </ol>
         </div>
@@ -42,32 +41,9 @@
         <div class="container">
             <div style="margin-bottom: 20px;" ng-cloak>
 
-                <form name="form_create_edit_bsp" class="form-horizontal" ng-controller="BspEditFormCtrl" novalidate>
+                <form name="form_create_edit_bsp" class="form-horizontal" ng-controller="BspAddFormCtrl" novalidate>
 
                     <div ng-include="'{% get_static_prefix %}partials/market/bsp/create_edit_bsp.html'" ng-init="ACTION='edit'"></div>
-
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <table style="width: 100%">
-                                <tr>
-                                    <td style="width: 40%;">
-                                        <label>Created By:</label>
-                                        {% with creator=bsp.created_by_user %}
-                                        <br/>{{ creator.first_name }} {{ creator.last_name }}
-                                        {% endwith %}
-                                    </td>
-                                    <td style="width: 40%;">
-                                        <label>Created On:</label>
-                                        <br/>{{ bsp.created_on|date:"d-M-Y h:i A" }}
-                                    </td>
-                                    <td style="width: 20%;">
-                                        <label>Last Modified On:</label>
-                                        <br/>{% if bsp.modified_on %}{{ bsp.modified_on|date:"d-M-Y h:i A" }}{% else %}<i>Not modified yet</i>{% endif %}
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
 
                     <hr class="hr-line-dashed"/>
                     <div>
@@ -76,7 +52,7 @@
                         </p>
 
                         <button ladda="flags.status==ST_AJAX.LOADING" class="btn btn-primary btn-lg ladda-button" type="button" ng-disabled="form_create_edit_bsp.$invalid" ng-click="submit_bsp(form_create_edit_bsp);" data-style="zoom-in">
-                            Save
+                            Create
                         </button>
                         <a href="{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/bsps" class="btn btn-link btn-lg">
                             Cancel
@@ -124,7 +100,7 @@
         });
 
 
-        APP.controller('BspEditFormCtrl', function($scope, $http, $window){
+        APP.controller('BspAddFormCtrl', function($scope, $http, $window){
             // Variables
             $scope.summernote_config = {
                 height: 150,
@@ -160,7 +136,10 @@
 
             $scope.ORG_UID = '{{ request.curr_org.org_uid }}';
 
-            $scope.data = {{ bsp.to_js_json|jsonify:False|safe }};
+            $scope.data = {
+                "open_status": "open",
+                "active": true
+            };
 
             // --- Utils function ---
             $scope.remove_contact = function(idx){
@@ -168,6 +147,9 @@
             };
 
             $scope.add_contact = function(){
+                if($scope.data.contacts == null){
+                    $scope.data.contacts = [];
+                }
                 $scope.data.contacts.push({"tel_code":"+91"});
             };
             // --- /Utils function ---
@@ -193,7 +175,7 @@
                 $scope.flags.errors = null;
 
                 $http.post(
-                    "{% url 'console_market_bsp_edit_save' bsp.id %}",
+                    "{% url 'console_market_bsp_create' %}",
                     $.param(data)
                 )
                 .success(function (response, status, headers, config) {

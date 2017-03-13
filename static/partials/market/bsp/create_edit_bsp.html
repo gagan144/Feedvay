@@ -1,0 +1,294 @@
+<!-- Basic -->
+<div class="panel panel-default">
+    <div class="panel-body">
+
+        <div class="row">
+            <div class="col-md-6">
+                <div>
+                    <label>Name of the Business or Service Point<span class="required">*</span>:</label>
+                    <input type="text" name="name" ng-model="data.name" class="form-control input-lg" placeholder="Enter name here" required autocomplete="off"
+                           ng-class="{'error': (form_create_edit_bsp.name.$dirty && form_create_edit_bsp.name.$invalid) || flags.val_errors.name }"
+                    >
+                    <div ng-messages="form_create_edit_bsp.name.$dirty && form_create_edit_bsp.name.$error" role="alert" class="error_messages">
+                        <label ng-message="required" class="error">Please enter Business or Service Type name.</label>
+                    </div>
+                    <label ng-if="flags.val_errors.name" class="error">
+                        {$ flags.val_errors.name.join(", "); $}
+                    </label>
+                </div>
+
+                <div class="hr-line-dashed"></div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Type<span class="required">*</span>:</label>
+                        <select ng-model="data.type" name="type" class="form-control" select2="{ placeholder: 'Select type', allowClear: true }" required>
+                            <option value="{$ type.id $}" ng-repeat="type in list_bsp_type">{$ type.name $}</option>
+                        </select>
+                        <div ng-messages="form_create_edit_bsp.type.$dirty && form_create_edit_bsp.type.$error" role="alert" class="error_messages">
+                            <label ng-message="required" class="error">Please select a Business or Service Point type.</label>
+                        </div>
+                        <label ng-if="flags.val_errors.type" class="error">
+                            {$ flags.val_errors.type.join(", "); $}
+                        </label>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Brand:</label>
+                        <select ng-model="data.brand_id" name="brand_id" class="form-control" select-int select2="{ placeholder: 'Select type', allowClear: true }">
+                            <option value="">-- None --</option>
+                            <option value="{$ b.id $}" ng-repeat="b in list_brands">{$ b.name $}</option>
+                        </select>
+                        <div ng-messages="form_create_edit_bsp.brand_id.$dirty && form_create_edit_bsp.brand_id.$error" role="alert" class="error_messages">
+                            <label ng-message="required" class="error">Please select a brand.</label>
+                        </div>
+                        <label ng-if="flags.val_errors.brand_id" class="error">
+                            {$ flags.val_errors.brand_id.join(", "); $}
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label>Description:</label>
+                <textarea summernote name="description" ng-model="data.description" config="summernote_config" required></textarea>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<!-- /Basic -->
+
+<!-- Attributes -->
+<div class="panel panel-default">
+    <div class="panel-heading panel_heading_2">
+        <i class="fa fa-info"></i>&nbsp;
+        Details
+    </div>
+    <div class="panel-body">
+        <div ng-include="'/console/bsp/partials/bsp-type-attr/'+data.type+'/?c='+ORG_UID"></div>
+    </div>
+</div>
+<!-- /Attributes -->
+
+<!-- Contact -->
+<div class="panel panel-default">
+    <div class="panel-heading panel_heading_2">
+        <i class="fa fa-phone-square"></i>&nbsp;
+        Contact Details
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-5">
+                <div style="margin-bottom: 25px;">
+                    <h4 style="margin-top: 0px;">
+                        <i class="fa fa-phone"></i>&nbsp;&nbsp;Phone Number
+                    </h4>
+                    <table class="table" style="margin-left: 20px;">
+                        <tbody>
+                            <tr ng-repeat="contact in data.contacts">
+                                <td style="width: 90px;">
+                                    <input type="text" name="contact_tel_code_{$ $index $}" ng-model="contact.tel_code" class="form-control input-sm" required ng-class="{'error':form_create_edit_bsp['contact_tel_code_'+$index].$invalid}" placeholder="Code">
+                                </td>
+                                <td style="padding-right: 15px;">
+                                    <input type="text" name="contact_number_{$ $index $}" ng-model="contact.number" class="form-control input-sm" maxlength="10" required ng-class="{'error':form_create_edit_bsp['contact_number_'+$index].$invalid}" placeholder="Number">
+                                    <div ng-messages="form_create_edit_bsp['contact_number_'+$index].$error" role="alert" class="error_messages">
+                                        <label ng-message="required" class="error">Required</label>
+                                    </div>
+                                </td>
+                                <td style="width: 120px;">
+                                    <select ng-model="contact.type" name="contact_type_{$ $index $}" class="form-control input-sm" required ng-class="{'error':form_create_edit_bsp['contact_type_'+$index].$invalid}">
+                                        <option value="">-- Select --</option>
+                                        <option ng-repeat="ct in contact_types" value="{$ ct.id $}">{$ ct.name $}</option>
+                                    </select>
+                                    <div ng-messages="form_create_edit_bsp['contact_type_'+$index].$error" role="alert" class="error_messages">
+                                        <label ng-message="required" class="error">Required</label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-outline btn-xs" ng-click="remove_contact($index);">
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3">
+                                    <button type="button" class="btn btn-primary btn-xs" ng-click="add_contact();">
+                                        <i class="fa fa-plus"></i> Add new
+                                    </button>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <h4 style="margin-top: 0px;">
+                        <i class="fa fa-envelope-o"></i>&nbsp;&nbsp;Emails
+                    </h4>
+                    <hr style="margin: 10px 0px;"/>
+                    <div style="margin-left: 20px;">
+                        <input type="text" ng-model="data.emails" name="emails" class="form-control" select2="{ placeholder: 'Use comma or space to separate emails', tags: true, tokenSeparators: [',', ' '] }" tolist>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 10px;">
+                    <h4 style="margin-top: 0px;">
+                        <i class="fa fa-globe"></i>&nbsp;&nbsp;Website/URL
+                    </h4>
+                    <hr style="margin: 10px 0px;"/>
+                    <div style="margin-left: 20px;">
+                        <input type="url" name="website" ng-model="data.website" class="form-control">
+                        <div ng-messages="form_create_edit_bsp.website.$error" role="alert" class="error_messages">
+                            <label ng-message="required" class="error">Required</label>
+                            <label ng-message="url" class="error">Please enter a valid URL.</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <h4 style="margin-top: 0px;">
+                    <i class="fa fa-map-marker"></i>&nbsp;&nbsp;Address
+                </h4>
+                <hr style="margin: 10px 0px;"/>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Contact -->
+
+<div class="row">
+    <div class="col-md-6">
+        <!-- Miscellaneous -->
+        <div class="panel panel-default">
+            <div class="panel-heading panel_heading_2">
+                <i class="fa fa-asterisk"></i>&nbsp;
+                Miscellaneous
+            </div>
+            <div class="panel-body">
+                <div style="margin-bottom: 30px;">
+                    <h4 style="margin-top: 0px;">
+                        <i class="fa fa-tags"></i>&nbsp;&nbsp;Tags/Keywords
+                    </h4>
+                    <hr style="margin: 10px 0px;"/>
+                    <p class="help-block">
+                        Tag your Business or Service Points with keywords for easy identification.
+                    </p>
+                    <div style="margin-left: 20px;">
+                        <input type="text" ng-model="data.tags" name="tags" class="form-control" select2="{ placeholder: 'Use comma or space to separate tags', tags: true, tokenSeparators: [',', ' '] }" tolist>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 style="margin-top: 0px;">
+                        <i class="fa fa-facebook-f"></i>&nbsp;&nbsp;Social Media
+                    </h4>
+                    <hr style="margin: 10px 0px;"/>
+                    <p class="help-block">
+                        Attach your Business or Service Points to social media pages.
+                    </p>
+
+                    <div style="margin-left: 20px;">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <i class="fa fa-facebook-official"></i>
+                            </span>
+                            <input type="url" name="social__facebook" ng-model="data.social.facebook" placeholder="Link to facebook page" class="form-control">
+                        </div>
+                        <div ng-messages="form_create_edit_bsp.social__facebook.$error" role="alert" class="error_messages">
+                            <label ng-message="url" class="error">Please enter a valid URL.</label>
+                        </div>
+
+                        <div class="input-group input-group-sm" style="margin-top: 10px;">
+                            <span class="input-group-addon">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                            <input type="url" name="social__twitter" ng-model="data.social.twitter" placeholder="Link to twiiter page" class="form-control">
+                        </div>
+                        <div ng-messages="form_create_edit_bsp.social__twitter.$error" role="alert" class="error_messages">
+                            <label ng-message="url" class="error">Please enter a valid URL.</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Miscellaneous -->
+    </div>
+    <div class="col-md-6">
+        <!-- Status -->
+        <div class="panel panel-default">
+            <div class="panel-heading panel_heading_2">
+                <i class="fa fa-bolt"></i>&nbsp;
+                Status
+            </div>
+            <div class="panel-body">
+
+                <div style="margin-bottom: 30px;">
+                    <h4 style="margin-top: 0px;">
+                        <i class="fa fa-home"></i>&nbsp;&nbsp;Open status
+
+                        <span class="label label-warning pull-right" ng-if="data.open_status=='coming_soon'">
+                            Coming Soon
+                        </span>
+                        <span class="label label-danger pull-right" ng-if="data.open_status=='closed'">
+                            Closed
+                        </span>
+                    </h4>
+                    <hr style="margin: 10px 0px;"/>
+                    <div style="margin-left: 20px;">
+                        <div class="radio radio-primary">
+                            <input type="radio"id="rd_opst_open" ng-model="data.open_status" value="open" checked>
+                            <label for="rd_opst_open">
+                                Open
+                                <br/><small>Currently open for customers or clients.</small>
+                            </label>
+                        </div>
+                        <div class="radio radio-primary">
+                            <input type="radio"id="rd_opst_coming_soon" ng-model="data.open_status" value="coming_soon">
+                            <label for="rd_opst_coming_soon">
+                                Coming Soon
+                                <br/><small>Currently not in service but be shortly.</small>
+                            </label>
+                        </div>
+                        <div class="radio radio-primary">
+                            <input type="radio"id="rd_opst_closed" ng-model="data.open_status" value="closed">
+                            <label for="rd_opst_closed">
+                                Closed
+                                <br/><small>Closed or not in service.</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 style="margin-top: 0px;">
+                        <i class="fa fa-check-circle"></i>&nbsp;&nbsp;Active
+
+                        <span class="label label-danger pull-right" ng-if="!data.active">
+                            Inactive
+                        </span>
+                    </h4>
+                    <hr style="margin: 10px 0px;"/>
+                    <p class="help-block">
+                        This defines whether your Business or Service Point is active or not in the system.
+                        In case you want to temporarily disable/hide/delete your business you can
+                        uncheck the below checkbox. You can mark it active anytime you want.
+                    </p>
+                    <div style="margin-left: 20px;">
+                        <div class="checkbox checkbox-primary" >
+                            <input id="chkbx_active" type="checkbox" ng-model="data.active" >
+                            <label for="chkbx_active">
+                                Is active
+                                <br/>Check to set this Business or Service Point as active.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- /Status -->
+    </div>
+</div>

@@ -457,9 +457,61 @@ def console_bsp_import_remove(request, org):
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
+
+@registered_user_only
+@organization_console('market.businessservicepoint.add_businessservicepoint')
+def console_bsp_new(request, org):
+    """
+    Django view to open form for new BSP
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+
+    list_brands = Brand.objects.filter(organization_id=org.id, active=True)
+
+    data = {
+        'app_name': 'app_bsp_edit',
+
+        'list_brands': list_brands,
+
+        'BusinessServicePoint': BusinessServicePoint,
+        'BspTypes': BspTypes,
+        'ContactEmbDoc': ContactEmbDoc
+    }
+
+    return render(request, 'market/console/bsp_new.html', data)
+
+
+@registered_user_only
+@organization_console('market.businessservicepoint.add_businessservicepoint')
+def console_bsp_create(request, org):
+    """
+    API view to create new BSP for submitted form.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        data = json.loads(request.POST.copy()['data'])
+        form_bsp = BusinessServicePointForm(data)
+
+        if form_bsp.is_valid():
+            form_bsp.save(organization=org, created_by=request.user)
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok.').gen_http_response()
+        else:
+            errors = dict(form_bsp.errors)
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Please correct marked errors.', errors=errors).gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+
 @registered_user_only
 @organization_console(['market.businessservicepoint.change_businessservicepoint', 'market.businessservicepoint.view_businessservicepoint'])
-def console_bsp_edit(request, org):
+def console_bsp_edit(request, org, bsp_id):
     """
     Django view to edit organization's BSP.
 
@@ -471,7 +523,7 @@ def console_bsp_edit(request, org):
     try:
         filters = copy.deepcopy(request.permissions['market.businessservicepoint']['data_access'])
         filters['organization_id'] = org.id
-        filters['pk'] = request.GET['bsp_id']
+        filters['pk'] = bsp_id
 
         bsp = BusinessServicePoint.objects.get(**filters)
     except (TypeError, DoesNotExist_mongo):
@@ -496,31 +548,6 @@ def console_bsp_edit(request, org):
 
     return render(request, 'market/console/bsp_edit.html', data)
 
-    """
-    try:
-        bsp = BusinessServicePoint.objects.get(organization_id=org.id, pk=request.GET['bsp_id'])
-
-        if bsp.brand_id:
-            list_brands = Brand.objects.filter(organization_id=org.id).filter(Q(active=True) | Q(id=int(bsp.brand_id)))
-        else:
-            list_brands = Brand.objects.filter(organization_id=org.id, active=True)
-
-        data = {
-            'app_name': 'app_bsp_edit',
-
-            'bsp': bsp,
-            'list_brands': list_brands,
-
-            'BusinessServicePoint': BusinessServicePoint,
-            'BspTypes': BspTypes,
-            'ContactEmbDoc': ContactEmbDoc
-        }
-
-        return render(request, 'market/console/bsp_edit.html', data)
-
-    except (KeyError, DoesNotExist_mongo) as ex:
-        raise Http404("Invalid link.")
-    """
 
 @registered_user_only
 @organization_console('market.businessservicepoint.change_businessservicepoint')

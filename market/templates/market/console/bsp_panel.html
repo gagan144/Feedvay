@@ -126,7 +126,7 @@
 
                 {% if request.permissions|has_permission:"market.businessservicepoint.add_businessservicepoint" %}
                     <div class="btn-group btn-group-sm pull-right">
-                        <a href="#?c={{ request.curr_org.org_uid }}" class="btn btn-primary">
+                        <a href="{% url 'console_market_bsp_new' %}?c={{ request.curr_org.org_uid }}" class="btn btn-primary">
                             <i class="fa fa-plus"></i>
                             &nbsp;Add new BSP
                         </a>
@@ -589,7 +589,7 @@
                             }
                             records[i]['created_by']['display_name'] = row['created_by']['first_name'] + " " +row['created_by']['last_name'];
                             records[i]['active_html'] = row['active']?'<i class="fa fa-check-circle text-success"></i>':'<i class="fa fa-times-circle text-danger"></i>';
-                            records[i]['actions_html'] = '<a href="{% url 'console_market_bsp_edit' %}?c={{ request.curr_org.org_uid }}&bsp_id=' + row['id'] + '" class="btn btn-primary btn-xs btn-outline grid_btn">View</a>';
+                            records[i]['actions_html'] = '<a href="' + '{% url 'console_market_bsp_edit' 'BSP_ID' %}?c={{ request.curr_org.org_uid }}'.replace('BSP_ID', row['id']) + '" class="btn btn-primary btn-xs btn-outline grid_btn">View</a>';
                         }
 
                         // Update grid

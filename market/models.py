@@ -704,7 +704,7 @@ class BusinessServicePoint(Document):
 
     # Attributes
     attributes  = DictField(required=True, confidential=True, help_text='Pre-defined attributes of BSP according to BspType. Use this for reporting or display.')
-    custom_attributes = DictField(required=True, confidential=True, help_text='Any other custom attributes. These are free to be updated.')
+    custom_attributes = DictField(confidential=True, help_text='Any other custom attributes. These are free to be updated.')
     timings     = EmbeddedDocumentListField(DayTiming, avoid=True, help_text='Week day wise timings. This can have multiple timings for a day.')
 
     list_attributes = EmbeddedDocumentListField(Attribute, required=True, confidential=True, help_text="List of all attributes from various fields. These are populated by 'attributes' so do not update here. Use this for analytics.")

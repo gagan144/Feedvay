@@ -326,6 +326,7 @@
 
 .custom_tooltip{
     cursor: help;
+    color: #bbbbbb !important;
 }
 
 /* ----- Sentencify ----- */

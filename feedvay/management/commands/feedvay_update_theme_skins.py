@@ -20,6 +20,10 @@ class Command(BaseCommand):
     paramters from the model and create/updates all skin files using '/template/theme/inspinia-style-template.css'
     into their respective directories.
 
+    Command::
+
+        python manage.py feedvay_update_theme_skins
+
     **Authors**: Gagandeep Singh
     """
     help = "Command to create/update Feedvay theme css."

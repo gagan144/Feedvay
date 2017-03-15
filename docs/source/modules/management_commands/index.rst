@@ -12,4 +12,5 @@ cron process.
 
     Main <feedvay.rst>
     Accounts <accounts.rst>
+    Store Room <storeroom.rst>
 

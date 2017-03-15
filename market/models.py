@@ -550,6 +550,7 @@ class BusinessServicePoint(Document):
         - Each BSP is associated with one type that defines its attributes.
           Type cannot be changed once selected.
         - Field ``list_attributes``:
+
             - Contains list of all attributes from various fields in form of list of name-value dict.
             - Useful for analytics and querying since it has indexes.
             - This field must not be changed directly as it will be overridden during save.

@@ -15,12 +15,22 @@ from utilities.abstract_models.mongodb import ContactEmbDoc, AddressEmbDoc
 
 class Command(BaseCommand):
     """
-    Django management command to ....
+    Django management command to migrate all imported BSP from storeroom(:class:`storeroom.models.ImportRecord`)
+    to actual instances (:class:`market.models.BusinessServicePoint`).
+
+    **Parameters:**
+
+        - ``limit``: (Default 10) Number od imports to be processed.
+
+
+    Command::
+
+        python manage.py storeroom_process_bsps --limit 100
 
     **Authors**: Gagandeep Singh
     """
-    help = "Command to migrate all imported BSP records to BSP."
-    # requires_system_checks = True
+    help = "Command to migrate all imported BSP records to actual BSP."
+    requires_system_checks = True
     can_import_settings = True
 
     def add_arguments(self, parser):
@@ -39,7 +49,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Retrieving pending BSP records (limit: {})...'.format(limit)))
 
         # Caches
-        cache_org_bsptypecustm = {}   # { "<org_id>__<bsp_type>": BspTypeCustomization, ... }
+        cache_org_bsptypecustm = {}   # Format: { "<org_id>__<bsp_type>": BspTypeCustomization, ... }
 
         count = 0
         for record in ImportRecord.objects.filter(context=ImportRecord.CNTX_BSP, status=ImportRecord.ST_NEW).limit(limit):

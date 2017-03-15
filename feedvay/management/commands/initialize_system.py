@@ -19,6 +19,10 @@ class Command(BaseCommand):
     This must be run after the ssytem has been perfectly configured. This
     command mostly includes database data initialization.
 
+    Command::
+
+        python manage.py initialize_system
+
     **Authors**: Gagandeep Singh
     """
     help = 'Initialises system and creates all necessary database entries. ' \

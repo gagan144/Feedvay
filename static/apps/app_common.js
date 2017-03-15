@@ -411,9 +411,42 @@ function scrollToItem() {
 // ---------- /Directives ----------
 
 angular.module('feedvay.common',[])
-.run(function($rootScope){
-    $rootScope.sentencify = sentencify;
+.config(function ($httpProvider) {
+    $httpProvider.interceptors.push('templateInterceptor');
 })
+.run(function($rootScope){
+    // Make sure to include '/static/js/common.js' before including this app.
+    $rootScope.sentencify = sentencify;
+    $rootScope.ST_AJAX = ST_AJAX;
+})
+
+// ----- Partial Intercept -----
+.factory('templateInterceptor', function($q) {
+    return {
+        'responseError': function(rejection) {
+            var isTemplate = !!rejection.config.url.match(/partials/g); // URL must contain word 'partials' to be qualified as partial url.
+            if (isTemplate) {
+                rejection.data = '<div class="alert alert-danger"><template-error url="\''+ (rejection.config.url) + '\'"><i class="fa fa-exclamation-triangle"></i> <strong>Error</strong> loading section possiblity because of network issue. Please <a href="javascript: window.location.reload();">refresh</a> the page before continuing.</template-error></div>';
+                return rejection;
+            } else {
+                return $q.reject(rejection);
+            }
+        }
+    }
+})
+.directive('templateError', function() {
+    return {
+        restrict: 'E',
+        scope: {
+            'url': '='
+        },
+        link: function(scope) {
+            scope.$emit('templateError', {url:scope.url});
+        }
+    };
+})
+// ----- /Partial Intercept -----
+
 .filter('unhtml', unhtml)
 .filter('dictlength', dictlength)
 .filter('range', range)

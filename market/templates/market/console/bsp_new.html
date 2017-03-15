@@ -88,7 +88,7 @@
                             <i class="fa fa-exclamation-triangle"></i> {$ flags.error_msg $}
                         </p>
 
-                        <button ladda="flags.status==ST_AJAX.LOADING" class="btn btn-primary btn-lg ladda-button" type="button" ng-disabled="form_create_edit_bsp.$invalid" ng-click="submit_bsp(form_create_edit_bsp);" data-style="zoom-in">
+                        <button ladda="flags.status==ST_AJAX.LOADING" class="btn btn-primary btn-lg ladda-button" type="button" ng-disabled="form_create_edit_bsp.$invalid || templateError" ng-click="submit_bsp(form_create_edit_bsp);" data-style="zoom-in">
                             Create
                         </button>
                         <a href="{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/bsps" class="btn btn-link btn-lg">
@@ -138,6 +138,11 @@
 
 
         APP.controller('BspAddFormCtrl', function($scope, $http, $window){
+            $scope.$on('templateError', function(e, data) {
+                $scope.templateError = true;
+{#                $scope.templateErrorUrl = data.url;#}
+            });
+
             // Variables
             $scope.summernote_config = {
                 height: 150,

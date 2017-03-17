@@ -57,8 +57,36 @@ class AdministrativeDivision:
 
 '''
 
+class GeoDataSource(Document):
+    """
+    Collection to store referneces to various data sources used for creating
+    geographical database.
 
-class Location(Document):
+    **Authors**: Gagandeep Singh
+    """
+    codename    = StringField(required=True, unique=True, help_text='Unique codename for this data source.')
+    name        = StringField(required=True, help_text='Name of the data source.')
+    reference   = StringField(required=True, help_text='Book/URL/White paper etc reference.')
+
+    # meta = {
+    #     'indexes':[
+    #         'codename'
+    #     ]
+    # }
+
+    def __unicode__(self):
+        return self.name
+
+    def delete(self, **write_concern):
+        """
+        Pre-delete method. (Not allowed)
+
+        **Authors**: Gagandeep Singh
+        """
+        raise ValidationError("You cannot delete a geo data source record.")
+
+
+class GeoLocation(Document):
     """
     MongoDb collection that stores location or terrain or to be precise administrative division such as a
     Country, State, City, Town, Village, Locality, District etc.
@@ -75,13 +103,15 @@ class Location(Document):
     **Uniqueness**:
 
         - ``name``, ``division_type`` : Name cannot be duplicate for same division type.
-        - ``code_iso_3166`` : ISO 3166 codes must be unique for non null values
+        - ``code_iso`` : ISO 3166 codes must be unique for non null values
         - ``pk``, ``hierarchies.hierarchy``, ``hierarchies.level_id`` : Location cannot be at various level under a hierarchy.
 
     .. warning::
         This collection is **STATIC** and is not subjected to often changes since most of the data has already been verified.
         Please be careful while updating data as this ORM does not provide any triggers or validations to check consistency.
         Careless amendments can result into unusual behavior. Please read the document carefully.
+
+        **DO NOT** use mongo generated id to refer location. Use ``code`` instead.
 
     **Authors**: Gagandeep Singh
     """
@@ -121,8 +151,8 @@ class Location(Document):
     division_type = StringField(required=True, unique_with='name', help_text='Administrative division type in terms of Country/State/City/Town/Village etc.')
 
     # codes
-    code_iso_3166 = StringField(required=False, sparse=True, unique=True, help_text='Code as per ISO 3166. (ISO 3166-1: For country, ISO 3166-2: For country subdivisions)')
-    code        = StringField(required=True, unique=True, help_text="Unique code for this location. Can be equal to ``code_iso_3166``.")
+    code_iso    = StringField(required=False, sparse=True, unique=True, help_text='Code as per ISO 3166. (ISO 3166-1: For country, ISO 3166-2: For country subdivisions)')
+    code        = StringField(required=True, unique=True, help_text="Unique code for this location. Can be equal to ``code_iso``.")
 
     hierarchies = EmbeddedDocumentListField(AdministrativeHierarchy, help_text="Administrative division hierarchies for this location.")
 
@@ -134,7 +164,7 @@ class Location(Document):
     shape       = PolygonField(help_text='Shape of this location.')
 
     # Misc
-    sources     = ListField(required=True, help_text='List of sources from where the data was compiled.')
+    data_sources = ListField(required=True, help_text='List of sources from where the data was compiled. These are raw codename reference to :class:`geography.models.GeoDataSource`.')
     dated       = DateTimeField(required=True, help_text='Date on which this data was generated.')
     modified_on = DateTimeField(help_text="Date on which data for this terrain was last modified.")
 
@@ -142,13 +172,13 @@ class Location(Document):
         'indexes':[
             '$name',
             ('name', 'division_type'),
-            { 'fields':['code_iso_3166'], 'cls':False, 'sparse': True },
+            { 'fields': ['code_iso'], 'cls':False, 'sparse': True },
             'code',
-            { 'fields':['pk', 'hierarchies.hierarchy', 'hierarchies.level_id'], 'cls':False, 'sparse': True },
-            { 'fields':['post_office.pincode'], 'cls':False, 'sparse': True },
-            { 'fields':['centroid'], 'cls':False, 'sparse': True },
-            { 'fields':['shape'], 'cls':False, 'sparse': True },
-            'sources'
+            { 'fields': ['pk', 'hierarchies.hierarchy', 'hierarchies.level_id'], 'cls':False, 'sparse': True },
+            { 'fields': ['post_office.pincode'], 'cls':False, 'sparse': True },
+            { 'fields': ['centroid'], 'cls':False, 'sparse': True },
+            { 'fields': ['shape'], 'cls':False, 'sparse': True },
+            'data_sources'
         ]
     }
 

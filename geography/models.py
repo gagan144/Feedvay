@@ -122,6 +122,7 @@ class AdministrativeHierarchy(Document):
     is_global   = BooleanField(default=False, help_text='If true, it means this hierarchy is applicable in all countries.')
     country_codes = ListField(help_text='List of country code (ISO 3166) specifiing countries for which this is applicable.')
 
+    active      = BooleanField(default=True, help_text='Set false to deactivate this hierarchy. Tose in use will not be affected')
     dated       = DateTimeField(required=True, help_text='Date on which this hierarchy was created.')
 
     meta = {
@@ -129,11 +130,21 @@ class AdministrativeHierarchy(Document):
             'hierarchy_id',
             'is_global',
             { 'fields': ['country_codes'], 'cls':False, 'sparse': True },
+            'active'
         ]
     }
 
     def __unicode__(self):
         return self.name
+
+    def delete(self, **write_concern):
+        """
+        Pre-delete method. (Not allowed)
+
+        **Authors**: Gagandeep Singh
+        """
+        raise ValidationError("You cannot delete a hierarchy record.")
+
 
 class GeoLocation(Document):
     """

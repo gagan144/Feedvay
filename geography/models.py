@@ -100,8 +100,13 @@ class AdministrativeHierarchy(Document):
         Schema: ['country', 'state', ['city', 'town', 'village'], 'locality']
 
 
+    **Conventions**:
+        - ``hierarchy_id`` uses conventions same as that of variable declaration. Label must start with a letter
+          followed by one or more letters, digits or underscore all in lower cases.
+        - For ``hierarchy_id`` for a particular country, use country code prefix followed by heirarchy label
+
     .. warning::
-        This is static model and is not subjected to change. Please be careful which making
+        This is **STATIC MODEL** and is not subjected to change. Please be careful which making
         any changes as these will be update corresponding location is :class:`geography.models.GeoLocation`
         instances which may lead to inconsistencies. Any change here requires manual updates in GeoLocation
         collection.
@@ -109,7 +114,7 @@ class AdministrativeHierarchy(Document):
     **Authors**: Gagandeep Singh
     """
 
-    hierarchy_id = StringField(required=True, unique=True, help_text='Unique codename or label of the hierarchy used for referencing.')
+    hierarchy_id = StringField(required=True, unique=True, help_text='Unique codename or label of the hierarchy used for referencing. Use conventions of variable declaration.')
     name        = StringField(required=True, unique=True, help_text='Name of the hierarchy.')
     description = StringField(help_text='Description about the hierarchy.')
     schema      = ListField(required=True, help_text="List of division types defining the schema. First being the top level and so on. Those on same level must be in a list.")
@@ -169,7 +174,7 @@ class GeoLocation(Document):
         """
         hierarchy   = StringField(required=True, help_text='Codename of the administrative division hierarchy.')
         parent_id   = StringField(required=True, help_text='Code of parent GeoLocation.')
-        level_id    = IntField(required=True, help_text='Integer value representing level in the hierarchy.')
+        level_id    = IntField(required=True, help_text='Integer value representing level in the hierarchy.')   #TODO: Check with mptt
         path        = StringField(required=True, help_text="'+' (Plus) separated path in the hierarchy.")
 
         statistics  = DictField(help_text='Statistics or information relate to the location in this hierarchy.')

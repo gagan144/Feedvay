@@ -9,53 +9,40 @@ from django.core.exceptions import ValidationError
 from mongoengine.document import *
 from mongoengine.fields import *
 
-'''
-class AdministrativeDivision:
+from geography.schema import *
+
+# ----- Enums -----
+class DivisionType:
     """
-    Static class to define administrative division. It essentially defines hierarchies between various levels of the division.
-    Each levels is associated with integer value with lowest being higher level.
+    Enum class to define various administrative division types such as Country, State, City etc.
 
     **Authors**: Gagandeep Singh
     """
+    COUNTRY = 'country'
+    STATE   = 'state'
+    UT      = 'union_territory'
+    DISTRICT = 'district'
+    SUB_DISTRICT = 'sub_district'
+    CITY    = 'city'
+    TOWN    = 'town'
+    VILLAGE = 'village'
+    LOCALITY = 'locality'
+    WARD    = 'ward'
 
-    # --- Enums ---
-    LVL_COUNTRY = 'country'
-    LVL_STATE   = 'state'
-    LVL_CITY    = 'city'
-    LVL_TOWN    = 'town'
-    LVL_VILLAGE = 'village'
-    LVL_LOCALITY = 'locality'
-
-    CH_LEVELS = (
-        (LVL_COUNTRY, 'Country'),
-        (LVL_STATE, 'State'),
-        (LVL_CITY, 'City'),
-        (LVL_TOWN, 'Town'),
-        (LVL_VILLAGE, 'Village'),
-        (LVL_LOCALITY, 'Locality')
+    choices = (
+        (COUNTRY, 'Country'),
+        (STATE, 'State'),
+        (UT, 'Union Territory'),
+        (DISTRICT, 'Dsitrict'),
+        (SUB_DISTRICT, 'Sub District'),
+        (CITY, 'City'),
+        (TOWN, 'Town'),
+        (VILLAGE, 'Village'),
+        (LOCALITY, 'Locality'),
+        (WARD, 'Ward'),
     )
+# ----- /Enums -----
 
-    # --- Hierarchies ---
-    HIER_ST_CTY_LCLTY = 'state_city_locality'
-
-    CH_TREES = (
-        (HIER_ST_CTY_LCLTY, 'State-City-Locality'),
-    )
-
-    HIERARCHIES = {
-        HIER_ST_CTY_LCLTY: {
-            LVL_COUNTRY: 0,
-            LVL_STATE: 1,
-
-            LVL_CITY: 2,
-            LVL_TOWN: 2,
-            LVL_VILLAGE: 2,
-
-            LVL_LOCALITY: 3
-        }
-    }
-
-'''
 
 class GeoDataSource(Document):
     """
@@ -86,12 +73,70 @@ class GeoDataSource(Document):
         raise ValidationError("You cannot delete a geo data source record.")
 
 
+class AdministrativeHierarchy(Document):
+    """
+    MongoDb collection to define administrative division hierarchy schema.
+    This does not contains data but rather schema definition of the hierarchy.
+
+    Any :class:`geography.models.GeoLocation` instance as a part of some hierarchy contains
+    reference to document of this collection which can be used to determine nature of the hierarchy.
+
+    Administrative hierarchies are tagged with country code which can be used to filter out
+    all hierarchy applicable for a country.
+
+    Schema
+    ------
+
+    The schema of the hierarchy is defined by list of of division types.
+    Te first division is considered to be at root level followed by second division as its child
+    and so on. For example:
+
+        Hierarchy: Country > State > City > Locality
+        Schema: ['country', 'state', 'city', 'locality']
+
+    However, there can be two division types on same level. In such a case, the element in this list must
+    be a **list** instead of string. For example:
+
+        Hierarchy: Country > State > City/Town/Village > Locality
+        Schema: ['country', 'state', ['city', 'town', 'village'], 'locality']
+
+
+    .. warning::
+        This is static model and is not subjected to change. Please be careful which making
+        any changes as these will be update corresponding location is :class:`geography.models.GeoLocation`
+        instances which may lead to inconsistencies. Any change here requires manual updates in GeoLocation
+        collection.
+
+    **Authors**: Gagandeep Singh
+    """
+
+    hierarchy_id = StringField(required=True, unique=True, help_text='Unique codename or label of the hierarchy used for referencing.')
+    name        = StringField(required=True, unique=True, help_text='Name of the hierarchy.')
+    description = StringField(help_text='Description about the hierarchy.')
+    schema      = ListField(required=True, help_text="List of division types defining the schema. First being the top level and so on. Those on same level must be in a list.")
+
+    is_global   = BooleanField(default=False, help_text='If true, it means this hierarchy is applicable in all countries.')
+    country_codes = ListField(help_text='List of country code (ISO 3166) specifiing countries for which this is applicable.')
+
+    dated       = DateTimeField(required=True, help_text='Date on which this hierarchy was created.')
+
+    meta = {
+        'indexes':[
+            'hierarchy_id',
+            'is_global',
+            { 'fields': ['country_codes'], 'cls':False, 'sparse': True },
+        ]
+    }
+
+    def __unicode__(self):
+        return self.name
+
 class GeoLocation(Document):
     """
     MongoDb collection that stores location or terrain or to be precise administrative division such as a
     Country, State, City, Town, Village, Locality, District etc.
 
-    **Schema Design**:
+    **Collection Design**:
 
         - Each entity/row/document in this collection defines a location or a terrain of some administrative division type (Country/State/City etc).
         - Each location can be associated or can be a part of one or more administrative division hierarchy. These are maintained in
@@ -124,6 +169,7 @@ class GeoLocation(Document):
         **Authors**: Gagandeep Singh
         """
         hierarchy   = StringField(required=True, help_text='Codename of the administrative division hierarchy.')
+        parent_id   = StringField(required=True, help_text='Code of parent GeoLocation.')
         level_id    = IntField(required=True, help_text='Integer value representing level in the hierarchy.')
         path        = StringField(required=True, help_text="'+' (Plus) separated path in the hierarchy.")
 
@@ -148,7 +194,7 @@ class GeoLocation(Document):
 
     # --- Fields ---
     name        = StringField(required=True, help_text='Name of the location (May be duplicate).')
-    division_type = StringField(required=True, unique_with='name', help_text='Administrative division type in terms of Country/State/City/Town/Village etc.')
+    division_type = StringField(required=True, choices=DivisionType.choices, unique_with='name', help_text='Administrative division type in terms of Country/State/City/Town/Village etc.')
 
     # codes
     code_iso    = StringField(required=False, sparse=True, unique=True, help_text='Code as per ISO 3166. (ISO 3166-1: For country, ISO 3166-2: For country subdivisions)')

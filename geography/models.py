@@ -9,7 +9,6 @@ from django.core.exceptions import ValidationError
 from mongoengine.document import *
 from mongoengine.fields import *
 
-from geography.schema import *
 
 # ----- Enums -----
 class DivisionType:

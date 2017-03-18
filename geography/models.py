@@ -54,11 +54,11 @@ class GeoDataSource(Document):
     name        = StringField(required=True, help_text='Name of the data source.')
     reference   = StringField(required=True, help_text='Book/URL/White paper etc reference.')
 
-    # meta = {
-    #     'indexes':[
-    #         'codename'
-    #     ]
-    # }
+    meta = {
+        'indexes':[
+            'codename'
+        ]
+    }
 
     def __unicode__(self):
         return self.name
@@ -101,9 +101,9 @@ class AdministrativeHierarchy(Document):
 
 
     **Conventions**:
-        - ``hierarchy_id`` uses conventions same as that of variable declaration. Label must start with a letter
+        - ``hierarchy_uid`` uses conventions same as that of variable declaration. Label must start with a letter
           followed by one or more letters, digits or underscore all in lower cases.
-        - For ``hierarchy_id`` for a particular country, use country code prefix followed by heirarchy label
+        - For ``hierarchy_uid`` for a particular country, use country code prefix followed by heirarchy label
 
     .. warning::
         This is **STATIC MODEL** and is not subjected to change. Please be careful which making
@@ -114,7 +114,7 @@ class AdministrativeHierarchy(Document):
     **Authors**: Gagandeep Singh
     """
 
-    hierarchy_id = StringField(required=True, unique=True, help_text='Unique codename or label of the hierarchy used for referencing. Use conventions of variable declaration.')
+    hierarchy_uid = StringField(required=True, unique=True, help_text='Unique id of the hierarchy used for referencing. Use conventions of variable declaration.')
     name        = StringField(required=True, unique=True, help_text='Name of the hierarchy.')
     description = StringField(help_text='Description about the hierarchy.')
     schema      = ListField(required=True, help_text="List of division types defining the schema. First being the top level and so on. Those on same level must be in a list.")
@@ -127,7 +127,7 @@ class AdministrativeHierarchy(Document):
 
     meta = {
         'indexes':[
-            'hierarchy_id',
+            'hierarchy_uid',
             'is_global',
             { 'fields': ['country_codes'], 'cls':False, 'sparse': True },
             'active'
@@ -164,7 +164,7 @@ class GeoLocation(Document):
 
         - ``name``, ``division_type`` : Name cannot be duplicate for same division type.
         - ``code_iso`` : ISO 3166 codes must be unique for non null values
-        - ``pk``, ``hierarchies.hierarchy``, ``hierarchies.level_id`` : Location cannot be at various level under a hierarchy.
+        - ``pk``, ``hierarchies.hierarchy``, ``hierarchies.level`` : Location cannot be at various level under a hierarchy.
 
     .. warning::
         This collection is **STATIC** and is not subjected to often changes since most of the data has already been verified.
@@ -179,19 +179,20 @@ class GeoLocation(Document):
     # --- Embedded classes ---
     class AdministrativeHierarchy(EmbeddedDocument):
         """
-        Mongo embedded document to define location node in administrative division hierarchy.
+        MongoDb embedded document to define location node in administrative division hierarchy.
 
         **Authors**: Gagandeep Singh
         """
-        hierarchy   = StringField(required=True, help_text='Codename of the administrative division hierarchy.')
-        parent_id   = StringField(required=True, help_text='Code of parent GeoLocation.')
-        level_id    = IntField(required=True, help_text='Integer value representing level in the hierarchy.')   #TODO: Check with mptt
+        hierarchy_uid = StringField(required=True, help_text='Codename of the administrative division hierarchy.')
+        parent      = StringField(required=True, help_text='Code of parent GeoLocation.')
+        level       = IntField(required=True, help_text='Integer value representing level in the hierarchy.')
         path        = StringField(required=True, help_text="'+' (Plus) separated path in the hierarchy.")
+        isLeaf      = BooleanField(required=True, default=False, help_text='If true, it means it is leaf node with no descendants.')
 
         statistics  = DictField(help_text='Statistics or information relate to the location in this hierarchy.')
 
         def __unicode__(self):
-            return "{}".format(self.path)
+            return "{} - {}".format(self.hierarchy_uid, self.path)
 
     class PostOffice(EmbeddedDocument):
         """
@@ -208,12 +209,12 @@ class GeoLocation(Document):
             return "{}".format(self.pincode)
 
     # --- Fields ---
-    name        = StringField(required=True, help_text='Name of the location (May be duplicate).')
-    division_type = StringField(required=True, choices=DivisionType.choices, unique_with='name', help_text='Administrative division type in terms of Country/State/City/Town/Village etc.')
-
-    # codes
     code_iso    = StringField(required=False, sparse=True, unique=True, help_text='Code as per ISO 3166. (ISO 3166-1: For country, ISO 3166-2: For country subdivisions)')
     code        = StringField(required=True, unique=True, help_text="Unique code for this location. Can be equal to ``code_iso``.")
+
+    name        = StringField(required=True, help_text='Name of the location (May be duplicate).')
+    names_alias = ListField(help_text='List of any other alias name for this geo location.')
+    division_type = StringField(required=True, choices=DivisionType.choices, unique_with='name', help_text='Administrative division type in terms of Country/State/City/Town/Village etc.')
 
     hierarchies = EmbeddedDocumentListField(AdministrativeHierarchy, help_text="Administrative division hierarchies for this location.")
 
@@ -232,10 +233,11 @@ class GeoLocation(Document):
     meta = {
         'indexes':[
             '$name',
+            'names_alias',
             ('name', 'division_type'),
             { 'fields': ['code_iso'], 'cls':False, 'sparse': True },
             'code',
-            { 'fields': ['pk', 'hierarchies.hierarchy', 'hierarchies.level_id'], 'cls':False, 'sparse': True },
+            { 'fields': ['pk', 'hierarchies.hierarchy_uid', 'hierarchies.level'], 'cls':False, 'sparse': True },
             { 'fields': ['post_office.pincode'], 'cls':False, 'sparse': True },
             { 'fields': ['centroid'], 'cls':False, 'sparse': True },
             { 'fields': ['shape'], 'cls':False, 'sparse': True },

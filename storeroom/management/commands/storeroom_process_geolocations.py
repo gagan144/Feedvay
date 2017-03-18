@@ -63,7 +63,6 @@ class Command(BaseCommand):
                     update_dict = {
                         "set__code_iso": data["code_iso"],
                         "set__name": data["name"],
-                        "add_to_set__names_alias": data.get("names_alias", None),
                         "set__division_type": data["division_type"],
                         "add_to_set__hierarchies": [data["hierarchies"]],    # Just one hierarchy doc
                         "set__post_office": data.get("post_office", None),
@@ -74,6 +73,13 @@ class Command(BaseCommand):
 
                         "upsert": True
                     }
+
+                    if data.get("names_alias", None):
+                        update_dict["add_to_set__names_alias"] = data["names_alias"].split(",")
+                    if data.get("data_sources", None):
+                        update_dict["add_to_set__data_sources"] = data["data_sources"].split(",")
+
+
 
                     if data.get('shape_id', None):
                         shape_id = data['shape_id']

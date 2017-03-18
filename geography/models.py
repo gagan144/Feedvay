@@ -159,6 +159,7 @@ class GeoLocation(Document):
         - Location may have a post office. If so details are maintained in embedded field ``post_office`` with pincode etc. This is usually
           applicable for location of type ``locality``.
         - Location may have some geographical details such as centroid GPS location or a geographical shape.
+        - Use ``code`` a primary key to identify a record.
 
     **Uniqueness**:
 
@@ -210,7 +211,7 @@ class GeoLocation(Document):
 
     # --- Fields ---
     code_iso    = StringField(required=False, sparse=True, unique=True, help_text='Code as per ISO 3166. (ISO 3166-1: For country, ISO 3166-2: For country subdivisions)')
-    code        = StringField(required=True, unique=True, help_text="Unique code for this location. Can be equal to ``code_iso``.")
+    code        = StringField(required=True, unique=True, help_text="(Pk) Unique code for this location. Can be equal to ``code_iso``.")
 
     name        = StringField(required=True, help_text='Name of the location (May be duplicate).')
     names_alias = ListField(help_text='List of any other alias name for this geo location.')
@@ -223,7 +224,7 @@ class GeoLocation(Document):
 
     # Geographical details
     centroid    = GeoPointField(help_text='Centroid GPS coordinates of this location.')
-    shape       = PolygonField(help_text='Shape of this location.')
+    shape       = PolygonField(required=False, help_text='Shape of this location.')
 
     # Misc
     data_sources = ListField(required=True, help_text='List of sources from where the data was compiled. These are raw codename reference to :class:`geography.models.GeoDataSource`.')

@@ -32,8 +32,8 @@ pyopenssl
 ndg-httpsclient
 pyasn1
 openpyxl
-
-
+pyshp
+geojson
 
 # ----- Documentation -----
 # sphinx

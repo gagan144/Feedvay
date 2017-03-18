@@ -99,11 +99,11 @@ class BaseBspType(JsonObject):
         elif isinstance(attr, BooleanProperty):
             return bool(value)
         elif isinstance(attr, DateTimeProperty):
-            return datetime.strptime("%Y-%m-%d %H:%M;%s", value)
+            return datetime.strptime("%Y-%m-%d %H:%M:%s", value)
         elif isinstance(attr, DateProperty):
             return datetime.strptime("%Y-%m-%d", value)
         elif isinstance(attr, TimeProperty):
-            return datetime.strptime("%H:%M;%s", value)
+            return datetime.strptime("%H:%M:%s", value)
         elif isinstance(attr, DictProperty):
             return dict(value)
         elif isinstance(attr, ListProperty) or isinstance(attr, SetProperty):

@@ -33,8 +33,10 @@ class ImportRecord(Document):
     """
 
     CNTX_BSP = 'bsp'
+    CNTX_GEO_LOC = 'geo_location'
     CH_CONTEXT = (
         (CNTX_BSP, 'BSP'),
+        (CNTX_GEO_LOC, 'GeoLocation'),
     )
 
     ST_NEW = 'new'
@@ -51,13 +53,13 @@ class ImportRecord(Document):
 
     context     = StringField(required=True, choices=CH_CONTEXT, help_text="Context of the record.")
     filename    = StringField(help_text="Uploaded file name that created this record.")
-    identifiers = DictField(required=True, help_text="Identifiers that describe this data record.")
+    identifiers = DictField(help_text="Identifiers that describe this data record.")
     data        = StringField(required=True, help_text="JSON dict string containing actual data for the record. This is string because mongo does not allow dot in keys.")
 
     status      = StringField(required=True, default=ST_NEW, choices=CH_STATUS, help_text="Status of this record.")
     error_message = StringField(help_text="Error details in case processing encountered any error.")
 
-    created_by  = IntField(required=True, help_text="Instance id of user :class:`django.contrib.auth.models.User` who created this record.")
+    created_by  = IntField(help_text="Instance id of user :class:`django.contrib.auth.models.User` who created this record.")
     created_on  = DateTimeField(default=timezone.now, required=True, confidential=True, help_text='Date on which this record was created in the database.')
     modified_on = DateTimeField(default=None, confidential=True, help_text='Date on which this record was modified.')
 

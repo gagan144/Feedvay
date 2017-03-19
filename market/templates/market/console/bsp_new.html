@@ -12,6 +12,8 @@
 
     <link href="{% get_static_prefix %}lib/select2/css/select2.css" rel="stylesheet">
     <link rel="stylesheet" href="{% get_static_prefix %}lib/select2/css/select2-bootstrap.css">
+
+    <link rel="stylesheet" href="{% get_static_prefix %}ui/css/plugins/ui-select/select.min.css">
 {% endblock %}
 
 {% block page_header %}
@@ -106,6 +108,10 @@
 {% block scripts %}
     <script src="{% get_static_prefix %}lib/select2/js/select2.min.js"></script>
     <script src="{% get_static_prefix %}lib/angular/checklist-model.js"></script>
+
+    <script src="{% get_static_prefix %}ui/js/plugins/ui-select/select.min.js"></script>
+
+    <script src="{% get_static_prefix %}apps/geography/geography.js"></script>
     <script>
         'use strict';
 
@@ -113,12 +119,15 @@
             'feedvay.uiapp',
             'feedvay.common',
             'feedvay.watchdog',
+            'feedvay.geography',
 
             'ngCookies',
             'ngMessages',
             'ui.bootstrap',
             'angular-ladda',
             'checklist-model',
+            'ui.select',
+            'ngSanitize'
         ])
         .run(function($rootScope, $http, $cookies) {
             $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
@@ -137,7 +146,7 @@
         });
 
 
-        APP.controller('BspAddFormCtrl', function($scope, $http, $window){
+        APP.controller('BspAddFormCtrl', function($scope, $http, $window, ServiceGeoLocation){
             $scope.$on('templateError', function(e, data) {
                 $scope.templateError = true;
 {#                $scope.templateErrorUrl = data.url;#}
@@ -194,6 +203,22 @@
                 }
                 $scope.data.contacts.push({"tel_code":"+91"});
             };
+
+            // Geolocation
+            $scope.searchRes_geolocation = [];
+            $scope.search_geolocation = function ($select) {
+                if($select.search.length>=3) {
+                    return ServiceGeoLocation.search_geolocation($select.search, 'locality').then(
+                        function (response) {
+                            $scope.searchRes_geolocation = response.objects;
+                        }
+                    );
+                }
+            };
+
+            $scope.clear_address = function(){
+                delete $scope.data.address;
+            };
             // --- /Utils function ---
 
             $scope.flags = {
@@ -207,8 +232,22 @@
                 }
 
                 // Prepare data
+                var bsp_data = angular.copy($scope.data);
+                if(bsp_data['address'] && bsp_data['address']['geolocation']){
+                    var split_addr = bsp_data['address']['geolocation']['full_address'].split(", ");
+
+                    bsp_data['address']['location_code'] = bsp_data['address']['geolocation']['code'];
+                    bsp_data['address']['locality'] = split_addr[0];
+                    bsp_data['address']['city'] = split_addr[1];
+                    bsp_data['address']['state'] = split_addr[2];
+                    bsp_data['address']['country'] = split_addr[3];
+                    bsp_data['address']['pincode'] = bsp_data['address']['geolocation']['pincode'];
+
+                    delete bsp_data['address']['geolocation'];
+                }
+
                 var data = {
-                    "data": angular.toJson( $scope.data ), //JSON.stringify($scope.data),
+                    "data": angular.toJson( bsp_data ), //JSON.stringify($scope.data),
                     "c": "{{ request.curr_org.org_uid }}"
                 };
 

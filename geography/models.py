@@ -114,7 +114,10 @@ class AdministrativeHierarchy(Document):
 
     **Authors**: Gagandeep Singh
     """
+    # --- Enums ---
+    DEFAULT = 'location'
 
+    # --- Fields ---
     hierarchy_uid = StringField(required=True, unique=True, help_text='Unique id of the hierarchy used for referencing. Use conventions of variable declaration.')
     name        = StringField(required=True, unique=True, help_text='Name of the hierarchy.')
     description = StringField(help_text='Description about the hierarchy.')

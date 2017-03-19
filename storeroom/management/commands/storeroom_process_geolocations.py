@@ -13,6 +13,7 @@ from mongoengine.queryset import DoesNotExist as DoesNotExist_mongo
 
 from storeroom.models import ImportRecord
 from geography.models import *
+from geography.utilities import generate_fulladdr_from_path
 
 
 class Command(BaseCommand):
@@ -60,6 +61,9 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS('\tProcessing: "{} - {}"...'.format(record.pk, data['name'])))
 
                 try:
+                    # Add full address as per path
+                    data["hierarchies"]["full_address"] = generate_fulladdr_from_path(data["hierarchies"]["path"])
+
                     update_dict = {
                         "set__code_iso": data.get("code_iso", None),
                         "set__name": data["name"],

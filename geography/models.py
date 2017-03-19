@@ -189,9 +189,10 @@ class GeoLocation(Document):
         **Authors**: Gagandeep Singh
         """
         hierarchy_uid = StringField(required=True, help_text='Codename of the administrative division hierarchy.')
-        parent      = StringField(required=True, help_text='Code of parent GeoLocation.')
+        parent      = StringField(help_text='Code of parent GeoLocation.')
         level       = IntField(required=True, help_text='Integer value representing level in the hierarchy.')
         path        = StringField(required=True, help_text="'+' (Plus) separated path in the hierarchy.")
+        full_address = StringField(help_text="Comma separated full address.")
         isLeaf      = BooleanField(required=True, default=False, help_text='If true, it means it is leaf node with no descendants.')
 
         statistics  = DictField(help_text='Statistics or information relate to the location in this hierarchy.')

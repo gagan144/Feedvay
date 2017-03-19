@@ -175,7 +175,7 @@
                 <div style="margin-bottom: 10px;">
                     <label class="semi_bold">Locality:</label>
                     <ui-select ng-model="data.address.geolocation" name="address__geolocation">
-                        <ui-select-match allow-clear="true" placeholder="Search for locality">{$ $select.selected.path $} {$ $select.selected.pincode $}</ui-select-match>
+                        <ui-select-match allow-clear="true" placeholder="Search for locality">{$ $select.selected.full_address $} {$ $select.selected.pincode $}</ui-select-match>
                         <ui-select-choices refresh="search_geolocation($select)" refresh-delay="300" repeat="geoloc in searchRes_geolocation">
                             <span ng-bind-html="geoloc.name | highlight: $select.search"></span>
                             <span ng-bind-html="geoloc.pincode" class="pull-right"></span>

@@ -119,7 +119,7 @@ def search_geolocation(request):
                     "hierarchy_uid": "$hierarchies.hierarchy_uid",
                     "parent": "$hierarchies.parent",
                     "level": "$hierarchies.level",
-                    "path": "$hierarchies.path",
+                    "full_address": "$hierarchies.full_address",
                     "pincode": "$post_office.pincode",
                     "office_name": "$post_office.office_name",
                     "isLeaf": "$hierarchies.isLeaf",

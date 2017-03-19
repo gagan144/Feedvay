@@ -46,7 +46,7 @@
             <div style="margin-bottom: 20px;" ng-cloak>
 
                 <form name="form_create_edit_bsp" class="form-horizontal" ng-controller="BspEditFormCtrl" novalidate>
-
+                    {$ data.address $}
                     <div ng-include="'{% get_static_prefix %}partials/market/bsp/create_edit_bsp.html'" ng-init="ACTION='edit'"></div>
 
                     <div class="panel panel-default">
@@ -200,6 +200,9 @@
                 }
             };
 
+            $scope.clear_address = function(){
+                delete $scope.data.address;
+            };
             // --- /Utils function ---
 
             $scope.flags = {
@@ -213,8 +216,22 @@
                 }
 
                 // Prepare data
+                var bsp_data = angular.copy($scope.data);
+                if(bsp_data['address'] && bsp_data['address']['geolocation']){
+                    var split_addr = bsp_data['address']['geolocation']['full_address'].split(", ");
+
+                    bsp_data['address']['location_code'] = bsp_data['address']['geolocation']['code'];
+                    bsp_data['address']['locality'] = split_addr[0];
+                    bsp_data['address']['city'] = split_addr[1];
+                    bsp_data['address']['state'] = split_addr[2];
+                    bsp_data['address']['country'] = split_addr[3];
+                    bsp_data['address']['pincode'] = bsp_data['address']['geolocation']['pincode'];
+
+                    delete bsp_data['address']['geolocation'];
+                }
+
                 var data = {
-                    "data": angular.toJson( $scope.data ), //JSON.stringify($scope.data),
+                    "data": angular.toJson( bsp_data ), //JSON.stringify($scope.data),
                     "c": "{{ request.curr_org.org_uid }}"
                 };
 

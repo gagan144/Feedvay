@@ -151,6 +151,10 @@
             <div class="col-md-7" style="padding-left: 40px;">
                 <h4 style="margin-top: 0px;">
                     <i class="fa fa-map-marker"></i>&nbsp;&nbsp;Address
+
+                    <button type="button" class="btn btn-danger btn-outline btn-xs pull-right" ng-click="clear_address();">
+                        <i class="fa fa-times"></i>
+                    </button>
                 </h4>
                 <hr style="margin: 10px 0px;"/>
 
@@ -174,6 +178,9 @@
 
                 <div style="margin-bottom: 10px;">
                     <label class="semi_bold">Locality:</label>
+                    <p ng-if="data.address.location_code" style="padding-left: 10px;">
+                        {$ data.address.locality $}, {$ data.address.city $}, {$ data.address.state $}, {$ data.address.country $} {$ data.address.pincode $}
+                    </p>
                     <ui-select ng-model="data.address.geolocation" name="address__geolocation">
                         <ui-select-match allow-clear="true" placeholder="Search for locality">{$ $select.selected.full_address $} {$ $select.selected.pincode $}</ui-select-match>
                         <ui-select-choices refresh="search_geolocation($select)" refresh-delay="300" repeat="geoloc in searchRes_geolocation">

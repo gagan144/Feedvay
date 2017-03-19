@@ -27,11 +27,11 @@ class AddressEmbDoc(EmbeddedDocument):
     street_address = StringField(required=True, help_text="Street address that mostly includes house/flat number.")
     landmark    = StringField(help_text='Landmarks for this address.')
 
-    locality    = StringField(required=True, help_text="As per location model instance.")
-    city        = StringField(required=True, help_text="As per location model instance.")
-    state       = StringField(required=True, help_text="As per location model instance.")
-    country     = StringField(required=True, help_text="As per location model instance.")
-    pincode     = StringField(required=True, help_text="As per location model instance.")
+    locality    = StringField(help_text="As per location model instance.")
+    city        = StringField(help_text="As per location model instance.")
+    state       = StringField(help_text="As per location model instance.")
+    country     = StringField(help_text="As per location model instance.")
+    pincode     = StringField(help_text="As per location model instance.")
 
     coordinates = GeoPointField(sparse=True)
 

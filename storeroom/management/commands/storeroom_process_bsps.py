@@ -137,7 +137,7 @@ class Command(BaseCommand):
                         custom_attributes = dict_custom_attributes,
 
                         contacts = list_contacts,
-                        address = None, # address,  #TODO: Address location_id
+                        address = None, # address,  #TODO: Address location_code
                         emails = data['emails'].split(',') if data.get('emails', None) else None,
                         website = data.get('website', None),
 

@@ -22,7 +22,7 @@ class AddressEmbDoc(EmbeddedDocument):
         "coordinates": "GPS location in order of longitude and latitude separated by comma e.g. <lng>,<lat>"
     }
 
-    location_id = StringField(required=True, confidential=True, help_text='Instance id of Location model.')
+    location_code = StringField(required=True, confidential=True, help_text='Code of :class:`geography.models.GeoLocation`.')
 
     street_address = StringField(required=True, help_text="Street address that mostly includes house/flat number.")
     landmark    = StringField(help_text='Landmarks for this address.')
@@ -31,7 +31,7 @@ class AddressEmbDoc(EmbeddedDocument):
     city        = StringField(required=True, help_text="As per location model instance.")
     state       = StringField(required=True, help_text="As per location model instance.")
     country     = StringField(required=True, help_text="As per location model instance.")
-    pincode     = IntField(min_value=100000, max_value=999999, help_text="As per location model instance.")
+    pincode     = StringField(required=True, help_text="As per location model instance.")
 
     coordinates = GeoPointField(sparse=True)
 

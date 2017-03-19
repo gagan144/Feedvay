@@ -12,6 +12,9 @@
 
     <link href="{% get_static_prefix %}lib/select2/css/select2.css" rel="stylesheet">
     <link rel="stylesheet" href="{% get_static_prefix %}lib/select2/css/select2-bootstrap.css">
+
+    <link rel="stylesheet" href="{% get_static_prefix %}ui/css/plugins/ui-select/select.min.css">
+
 {% endblock %}
 
 {% block page_header %}
@@ -93,6 +96,11 @@
 {% block scripts %}
     <script src="{% get_static_prefix %}lib/select2/js/select2.min.js"></script>
     <script src="{% get_static_prefix %}lib/angular/checklist-model.js"></script>
+
+    <script src="{% get_static_prefix %}ui/js/plugins/ui-select/select.min.js"></script>
+
+    <script src="{% get_static_prefix %}apps/geography/geography.js"></script>
+
     <script>
         'use strict';
 
@@ -100,12 +108,15 @@
             'feedvay.uiapp',
             'feedvay.common',
             'feedvay.watchdog',
+            'feedvay.geography',
 
             'ngCookies',
             'ngMessages',
             'ui.bootstrap',
             'angular-ladda',
             'checklist-model',
+            'ui.select',
+            'ngSanitize'
         ])
         .run(function($rootScope, $http, $cookies) {
             $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
@@ -124,7 +135,8 @@
         });
 
 
-        APP.controller('BspEditFormCtrl', function($scope, $http, $window){
+        APP.controller('BspEditFormCtrl', function($scope, $http, $window, ServiceGeoLocation){
+
             $scope.$on('templateError', function(e, data) {
                 $scope.templateError = true;
 {#                $scope.templateErrorUrl = data.url;#}
@@ -175,6 +187,19 @@
             $scope.add_contact = function(){
                 $scope.data.contacts.push({"tel_code":"+91"});
             };
+
+            // Geolocation
+            $scope.searchRes_geolocation = [];
+            $scope.search_geolocation = function ($select) {
+                if($select.search.length>=3) {
+                    return ServiceGeoLocation.search_geolocation($select.search, 'locality').then(
+                        function (response) {
+                            $scope.searchRes_geolocation = response.objects;
+                        }
+                    );
+                }
+            };
+
             // --- /Utils function ---
 
             $scope.flags = {

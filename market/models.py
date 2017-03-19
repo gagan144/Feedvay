@@ -754,7 +754,7 @@ class BusinessServicePoint(Document):
             { 'fields':['timings.day', 'timings.closed'], 'cls':False, 'sparse': True },
 
             { 'fields':['address.coordinates'], 'cls':False, 'sparse': True },
-            { 'fields':['address.location_id'], 'cls':False, 'sparse': True },
+            { 'fields':['address.location_code'], 'cls':False, 'sparse': True },
 
             { 'fields':['avg_rating'], 'cls':False, 'sparse': True },
             { 'fields':['tags'], 'cls':False, 'sparse': True },

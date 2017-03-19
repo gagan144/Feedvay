@@ -148,11 +148,49 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-7">
+            <div class="col-md-7" style="padding-left: 40px;">
                 <h4 style="margin-top: 0px;">
                     <i class="fa fa-map-marker"></i>&nbsp;&nbsp;Address
                 </h4>
                 <hr style="margin: 10px 0px;"/>
+
+                <div class="row" style="margin-bottom: 10px;">
+                    <div class="col-xs-6">
+                        <label class="semi_bold">Street address:</label>
+                        <input type="text" ng-model="data.address.street_address" name="address__street_address" class="form-control" placeholder="Flat/Block/Street name">
+                        <div ng-messages="form_create_edit_bsp.address__street_address.$dirty && form_create_edit_bsp.address__street_address.$error" role="alert" class="error_messages">
+                            <label ng-message="required" class="error">Please enter street address.</label>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-6">
+                        <label class="semi_bold">Landmark (If any):</label>
+                        <input type="text" ng-model="data.address.landmark" name="address__landmark" class="form-control" placeholder="Any landmark that might help to locate this BSP quicker.">
+                        <div ng-messages="form_create_edit_bsp.landmark.$dirty && form_create_edit_bsp.address__landmark.$error" role="alert" class="error_messages">
+                            <label ng-message="required" class="error">Please enter a landmark.</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 10px;">
+                    <label class="semi_bold">Locality:</label>
+                    <ui-select ng-model="data.address.geolocation" name="address__geolocation">
+                        <ui-select-match allow-clear="true" placeholder="Search for locality">{$ $select.selected.path $} {$ $select.selected.pincode $}</ui-select-match>
+                        <ui-select-choices refresh="search_geolocation($select)" refresh-delay="300" repeat="geoloc in searchRes_geolocation">
+                            <span ng-bind-html="geoloc.name | highlight: $select.search"></span>
+                            <span ng-bind-html="geoloc.pincode" class="pull-right"></span>
+                        </ui-select-choices>
+                    </ui-select>
+                    <div ng-messages="form_create_edit_bsp.address__geolocation.$dirty && form_create_edit_bsp.address__geolocation.$error" role="alert" class="error_messages">
+                        <label ng-message="required" class="error">Please select a locality.</label>
+                    </div>
+                </div>
+
+                <div>
+                    <!-- Map -->
+                    <!-- Map -->
+                </div>
+
             </div>
         </div>
     </div>

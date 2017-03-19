@@ -61,13 +61,12 @@ class Command(BaseCommand):
 
                 try:
                     update_dict = {
-                        "set__code_iso": data["code_iso"],
+                        "set__code_iso": data.get("code_iso", None),
                         "set__name": data["name"],
                         "set__division_type": data["division_type"],
                         "add_to_set__hierarchies": [data["hierarchies"]],    # Just one hierarchy doc
                         "set__post_office": data.get("post_office", None),
                         "set__centroid": data.get("centroid", None),
-                        # "set__shape": shape,
                         "add_to_set__data_sources": data["data_sources"],
                         "set__dated": timezone.datetime.strptime(data["dated"], "%Y-%m-%dT%H:%M:%S"),
 

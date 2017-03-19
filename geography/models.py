@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 from mongoengine.document import *
 from mongoengine.fields import *
@@ -210,7 +211,7 @@ class GeoLocation(Document):
             return "{}".format(self.pincode)
 
     # --- Fields ---
-    code_iso    = StringField(required=False, sparse=True, unique=True, help_text='Code as per ISO 3166. (ISO 3166-1: For country, ISO 3166-2: For country subdivisions)')
+    code_iso    = StringField(required=False, help_text='Code as per ISO 3166. (ISO 3166-1: For country, ISO 3166-2: For country subdivisions)')
     code        = StringField(required=True, unique=True, help_text="(Pk) Unique code for this location. Can be equal to ``code_iso``.")
 
     name        = StringField(required=True, help_text='Name of the location (May be duplicate).')
@@ -232,13 +233,15 @@ class GeoLocation(Document):
     modified_on = DateTimeField(help_text="Date on which data for this terrain was last modified.")
 
     meta = {
+        'ordering': ['hierarchies.hierarchy_uid', 'hierarchies.level', 'name'],
         'indexes':[
             '$name',
             'names_alias',
             ('name', 'division_type'),
             { 'fields': ['code_iso'], 'cls':False, 'sparse': True },
             'code',
-            { 'fields': ['pk', 'hierarchies.hierarchy_uid', 'hierarchies.level'], 'cls':False, 'sparse': True },
+            { 'fields': ['pk', 'hierarchies.hierarchy_uid', 'hierarchies.level'], 'unique': True, 'cls':False, 'sparse': True },
+            { 'fields': ['hierarchies.hierarchy_uid', 'hierarchies.level', 'name'], 'cls':False, 'sparse': True },
             { 'fields': ['post_office.pincode'], 'cls':False, 'sparse': True },
             { 'fields': ['centroid'], 'cls':False, 'sparse': True },
             { 'fields': ['shape'], 'cls':False, 'sparse': True },

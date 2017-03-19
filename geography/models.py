@@ -211,8 +211,8 @@ class GeoLocation(Document):
             return "{}".format(self.pincode)
 
     # --- Fields ---
-    code_iso    = StringField(required=False, help_text='Code as per ISO 3166. (ISO 3166-1: For country, ISO 3166-2: For country subdivisions)')
     code        = StringField(required=True, unique=True, help_text="(Pk) Unique code for this location. Can be equal to ``code_iso``.")
+    code_iso    = StringField(required=False, help_text='Code as per ISO 3166. (ISO 3166-1: For country, ISO 3166-2: For country subdivisions)')
 
     name        = StringField(required=True, help_text='Name of the location (May be duplicate).')
     names_alias = ListField(help_text='List of any other alias name for this geo location.')

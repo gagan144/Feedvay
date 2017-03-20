@@ -13,7 +13,7 @@ from mongoengine.queryset import DoesNotExist as DoesNotExist_mongo
 
 from storeroom.models import ImportRecord
 from geography.models import *
-from geography.utilities import generate_fulladdr_from_path
+from geography.utils import generate_fulladdr_from_path
 
 
 class Command(BaseCommand):

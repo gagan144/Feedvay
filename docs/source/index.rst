@@ -15,6 +15,7 @@ Topics
    modules/clients/index
    modules/console/index
    modules/form_builder/index
+   modules/geography/index
    modules/languages/index
    modules/market/index
    modules/owlery/index

@@ -46,7 +46,7 @@
             <div style="margin-bottom: 20px;" ng-cloak>
 
                 <form name="form_create_edit_bsp" class="form-horizontal" ng-controller="BspEditFormCtrl" novalidate>
-                    {$ data.address $}
+
                     <div ng-include="'{% get_static_prefix %}partials/market/bsp/create_edit_bsp.html'" ng-init="ACTION='edit'"></div>
 
                     <div class="panel panel-default">
@@ -96,6 +96,8 @@
 {% block scripts %}
     <script src="{% get_static_prefix %}lib/select2/js/select2.min.js"></script>
     <script src="{% get_static_prefix %}lib/angular/checklist-model.js"></script>
+    <script src="https://maps.google.com/maps/api/js?libraries=placeses,visualization,drawing,geometry,places"></script>
+    <script src="{% get_static_prefix %}lib/maps/ng-map/ng-map.min.js"></script>
 
     <script src="{% get_static_prefix %}ui/js/plugins/ui-select/select.min.js"></script>
 
@@ -116,7 +118,8 @@
             'angular-ladda',
             'checklist-model',
             'ui.select',
-            'ngSanitize'
+            'ngSanitize',
+            'ngMap'
         ])
         .run(function($rootScope, $http, $cookies) {
             $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
@@ -202,6 +205,15 @@
 
             $scope.clear_address = function(){
                 delete $scope.data.address;
+            };
+
+            $scope.onclick_map = function(event){
+                var coord = event.latLng;
+                $scope.data.address.coordinates = [coord.lng(), coord.lat()];
+            };
+            $scope.ondragged_curr_location = function(){
+                var coord = this.getPosition();
+                $scope.data.address.coordinates = [coord.lng(), coord.lat()];
             };
             // --- /Utils function ---
 

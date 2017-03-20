@@ -195,6 +195,10 @@
 
                 <div>
                     <!-- Map -->
+                    <!-- <ng-map center="{$ data.address.geolocation.full_address?data.address.geolocation.full_address:[20.5937,78.9629] $}" zoom="{$ data.address.geolocation.full_address?15:4 $}" on-click="onclick_map()"> -->
+                    <ng-map center="{$ data.address.geolocation.full_address?data.address.geolocation.full_address:(data.address.coordinates?[data.address.coordinates[1], data.address.coordinates[0]]:[20.5937,78.9629]) $}" zoom="{$ (data.address.coordinates || data.address.geolocation.full_address)?15:4 $}" on-click="onclick_map()">
+                        <marker ng-if="data.address.coordinates" position="{$ [data.address.coordinates[1], data.address.coordinates[0]] $}" centered="true" draggable="true" on-dragend="ondragged_curr_location()"></marker>
+                    </ng-map>
                     <!-- Map -->
                 </div>
 

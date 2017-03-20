@@ -46,7 +46,6 @@
 
 
 ------------- Infra ---------
-- Geography (Country tel code)
 - Elasticsearch
 
 ---------- Note -----------

@@ -14,24 +14,25 @@ class AddressEmbDoc(EmbeddedDocument):
     HELP_TEXT = {
         "street_address": "Flat/Block/Street address",
         "landmark": "Landmark near the address.",
-        "locality": "Locality",
-        "city": "City/Town/Village",
-        "state": "State",
-        "country": "Country",
-        "pincode": "Pincode or Postal code",
-        "coordinates": "GPS location in order of longitude and latitude separated by comma e.g. <lng>,<lat>"
+        # "locality": "Locality",
+        # "city": "City/Town/Village",
+        # "state": "State",
+        # "country": "Country",
+        # "pincode": "Pincode or Postal code",
+        "location_code": 'Feedvay locality code. Use the <a href="#locality_search_tool">search tool</a> to get the code.',
+        "coordinates": "GPS location in order of longitude and latitude separated by comma e.g. [lng],[lat]"
     }
 
-    location_code = StringField(required=True, confidential=True, help_text='Code of :class:`geography.models.GeoLocation`.')
+    location_code = StringField(required=True, help_text='Code of :class:`geography.models.GeoLocation`.')
 
     street_address = StringField(required=True, help_text="Street address that mostly includes house/flat number.")
     landmark    = StringField(help_text='Landmarks for this address.')
 
-    locality    = StringField(help_text="As per location model instance.")
-    city        = StringField(help_text="As per location model instance.")
-    state       = StringField(help_text="As per location model instance.")
-    country     = StringField(help_text="As per location model instance.")
-    pincode     = StringField(help_text="As per location model instance.")
+    locality    = StringField(confidential=True, help_text="As per location model instance.")
+    city        = StringField(confidential=True, help_text="As per location model instance.")
+    state       = StringField(confidential=True, help_text="As per location model instance.")
+    country     = StringField(confidential=True, help_text="As per location model instance.")
+    pincode     = StringField(confidential=True, help_text="As per location model instance.")
 
     coordinates = GeoPointField(sparse=True)
 

@@ -7,6 +7,8 @@
     <title>Import BSPs | {{ request.curr_org.name }}</title>
 
     <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% get_static_prefix %}ui/css/plugins/ui-select/select.min.css">
 {% endblock %}
 
 {% block page_header %}
@@ -126,6 +128,24 @@
                                                     {% endfor %}
                                                 </tbody>
                                             </table>
+
+                                            <div id="locality_search_tool">
+                                                <h3>Locality search tool:</h3>
+                                                <hr style="margin: 10px 0px;"/>
+
+                                                <div style="margin-right: 20px;">
+                                                    <ui-select ng-model="searched_locality.selected">
+                                                        <ui-select-match allow-clear="true" placeholder="Search for locality">{$ $select.selected.full_address $} {$ $select.selected.pincode $}</ui-select-match>
+                                                        <ui-select-choices refresh="search_geolocation($select)" refresh-delay="300" repeat="geoloc in searchRes_geolocation">
+                                                            <span ng-bind-html="geoloc.name | highlight: $select.search"></span>
+                                                            <span ng-bind-html="geoloc.pincode" class="pull-right"></span>
+                                                        </ui-select-choices>
+                                                    </ui-select>
+                                                    <div ng-if="searched_locality.selected" style="padding: 10px;">
+                                                        <b>Code:</b> {$ searched_locality.selected.code $}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -171,7 +191,10 @@
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/uievents/event.js"></script>
 
+    <script src="{% get_static_prefix %}ui/js/plugins/ui-select/select.min.js"></script>
+
     <script src="{% get_static_prefix %}apps/market/bsp.js"></script>
+    <script src="{% get_static_prefix %}apps/geography/geography.js"></script>
     <script>
         'use strict';
 
@@ -180,6 +203,7 @@
             'feedvay.common',
             'feedvay.watchdog',
             'feedvay.market.bsp',
+            'feedvay.geography',
 
             'ngCookies',
             'ngMessages',
@@ -188,6 +212,8 @@
             'angular-ladda',
             'oitozero.ngSweetAlert',
             'ui.event',
+            'ui.select',
+            'ngSanitize',
         ])
         .run(function($rootScope, $http, $cookies) {
             $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
@@ -205,7 +231,7 @@
             $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
         });
 
-        APP.controller('BspBulkUpload', function($scope, $http, $window, SweetAlert, ServiceBsp){
+        APP.controller('BspBulkUpload', function($scope, $http, $window, SweetAlert, ServiceBsp, ServiceGeoLocation){
             $scope.view_specs = false;
             $scope.list_attributes = [];
             $scope.flags = {
@@ -213,6 +239,20 @@
                 error_msg: null,
                 errors: null
             };
+
+            // Locality Search tool
+            $scope.searched_locality = {};
+            $scope.searchRes_geolocation = [];
+            $scope.search_geolocation = function ($select) {
+                if($select.search.length>=3) {
+                    return ServiceGeoLocation.search_geolocation($select.search, 'locality').then(
+                        function (response) {
+                            $scope.searchRes_geolocation = response.objects;
+                        }
+                    );
+                }
+            };
+
 
             $scope.data = {};
 

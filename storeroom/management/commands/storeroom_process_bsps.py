@@ -6,10 +6,13 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.db.models import Q
 
+from mongoengine.queryset import DoesNotExist as DoesNotExist_mongo
+
 from storeroom.models import ImportRecord
 from clients.models import Organization
 from market.models import BusinessServicePoint, BspTypeCustomization
 from market.bsp_types import *
+from geography.models import GeoLocation, AdministrativeHierarchy
 from utilities.abstract_models.mongodb import ContactEmbDoc, AddressEmbDoc
 
 
@@ -81,21 +84,22 @@ class Command(BaseCommand):
                     dict_address = {}
                     dict_social = {}
                     for col_name, value in data.iteritems():
-                        if col_name.startswith('attributes.'):
-                            label = col_name.split('.')[1]
-                            dict_attributes[label] = bsp_type_class.type_cast_value(label, value)
-                        elif col_name.startswith('custom_attributes.') and bsp_custm:
-                            label = col_name.split('.')[1]
-                            dict_custom_attributes[label] = value
-                        elif col_name.startswith('contacts.'):
-                            label = col_name.split('.')[1]
-                            dict_contact[label] = value
-                        elif col_name.startswith('address.'):
-                            label = col_name.split('.')[1]
-                            dict_address[label] = value
-                        elif col_name.startswith('social.'):
-                            label = col_name.split('.')[1]
-                            dict_social[label] = value
+                        if value is not None:
+                            if col_name.startswith('attributes.'):
+                                label = col_name.split('.')[1]
+                                dict_attributes[label] = bsp_type_class.type_cast_value(label, value)
+                            elif col_name.startswith('custom_attributes.') and bsp_custm:
+                                label = col_name.split('.')[1]
+                                dict_custom_attributes[label] = value
+                            elif col_name.startswith('contacts.'):
+                                label = col_name.split('.')[1]
+                                dict_contact[label] = value
+                            elif col_name.startswith('address.'):
+                                label = col_name.split('.')[1]
+                                dict_address[label] = value
+                            elif col_name.startswith('social.'):
+                                label = col_name.split('.')[1]
+                                dict_social[label] = value
 
 
                     # Create BSP Type class instance for attributes
@@ -118,7 +122,32 @@ class Command(BaseCommand):
 
                     # Create address (Optional)
                     if dict_address.__len__():
-                        address = AddressEmbDoc(**dict_address)
+                        # Get GeoLocation record and fill other details
+                        try:
+                            code = dict_address['location_code']
+                            geo_loc = GeoLocation.objects.get(code=code)
+
+                            hier = None
+                            for h in geo_loc.hierarchies:
+                                if h.hierarchy_uid == AdministrativeHierarchy.DEFAULT:
+                                    hier = h
+                                    break
+
+                            path_split = hier.path.split("+")
+                            dict_address['locality'] = path_split[3]
+                            dict_address['city'] = path_split[2]
+                            dict_address['state'] = path_split[1]
+                            dict_address['country'] = path_split[0]
+                            dict_address['pincode'] = getattr(geo_loc.post_office, 'pincode', None)
+
+                            if dict_address['coordinates']:
+                                dict_address['coordinates'] = [float(i) for i in dict_address['coordinates'].split(',')]
+
+                            address = AddressEmbDoc(**dict_address)
+                        except KeyError:
+                            raise Exception("'address.location_code' is missing.")
+                        except DoesNotExist_mongo:
+                            raise Exception("'address.location_code': Invalid code '{}'.".format(code))
                     else:
                         address = None
 
@@ -137,7 +166,7 @@ class Command(BaseCommand):
                         custom_attributes = dict_custom_attributes,
 
                         contacts = list_contacts,
-                        address = None, # address,  #TODO: Address location_code
+                        address = address,
                         emails = data['emails'].split(',') if data.get('emails', None) else None,
                         website = data.get('website', None),
 

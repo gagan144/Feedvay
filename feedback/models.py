@@ -5,11 +5,11 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django_mysql import models as models57
-from jsonobject import *
 
 from django.contrib.auth.models import User
 
-from form_builder.models import *
+from clients.models import Organization
+from form_builder.models import Form
 
 
 # ========== BSP Feedback ==========
@@ -30,7 +30,7 @@ class BspFeedbackForm(Form):
           Any BSP attached to it uses this for displaying questionnaire form.
         - This nature allows few flexibilities:
 
-            - All BSPs are not contrained to have common questionnaire. Different types of
+            - All BSPs are not constrained to have common questionnaire. Different types of
               BSP or different categories of same BSP type can have different questionnaire.
               For example, restaurants for a state can have separate questionnaire tahn BSPs for some
               other state.
@@ -58,6 +58,8 @@ class BspFeedbackForm(Form):
     **Authors**: Gagandeep Singh
     """
     # --- Fields ---
+    organization = models.ForeignKey(Organization, db_index=True, help_text='Organization to which this feedback form belongs to.')
+
     tags        = models57.JSONField(blank=True, help_text='Name-Value pair dictionary specifying tags.')
     created_by  = models.ForeignKey(User, editable=False, help_text='User that created this feedback questionnaire.')
 

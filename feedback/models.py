@@ -5,10 +5,13 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django_mysql import models as models57
+from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 from django.contrib.auth.models import User
 
 from clients.models import Organization
+from market.models import BusinessServicePoint
 from form_builder.models import Form
 
 
@@ -60,8 +63,59 @@ class BspFeedbackForm(Form):
     # --- Fields ---
     organization = models.ForeignKey(Organization, db_index=True, help_text='Organization to which this feedback form belongs to.')
 
-    tags        = models57.JSONField(blank=True, help_text='Name-Value pair dictionary specifying tags.')
+    # tags        = models57.JSONField(blank=True, help_text='Name-Value pair dictionary of tags for this form.')
     created_by  = models.ForeignKey(User, editable=False, help_text='User that created this feedback questionnaire.')
+
+    def delete(self, using=None, keep_parents=False):
+        raise ValidationError("You cannot delete BSP feedback questionnaire.")
+
+
+class BspFeedbackAssociation(models.Model):
+    """
+    Model to associate a :class:`market.models.BusinessServicePoint` to a :class:`feedback.models.BspFeedbackForm`.
+
+    At a given instance of time, a BSP can be associated with only on feedback form.
+
+    **Authors**: Gagandeep Singh
+    """
+    bsp_id  = models.CharField(max_length=64, db_index=True, help_text="BusinessServicePoint ID which is being associated.")
+    form    = models.ForeignKey(BspFeedbackForm, db_index=True, help_text='Bsp Feedback form to be associated to BSP.')
+
+    created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
+    modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
+
+    @property
+    def bsp(self):
+        return BusinessServicePoint.objects.get(pk=self.bsp_id)
+
+    class Meta:
+        unique_together = ('bsp_id', 'form')
+
+    def __unicode__(self):
+        return "{} - {}".format(self.form.title, self.bsp_id)
+
+    def clean(self):
+        """
+        Method to clean & validate data fields.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        if self.pk:
+            # Update modified date
+            self.modified_on = timezone.now()
+
+        super(self.__class__, self).clean()
+
+    def save(self, update_theme=False, *args, **kwargs):
+        """
+        Pre-save method for this model.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        self.clean()
+        super(self.__class__, self).save(*args, **kwargs)
 
 
 # ========== /BSP Feedback ==========

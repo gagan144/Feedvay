@@ -32,7 +32,7 @@
                 Feedback Questionnaires
 
                 {% if request.permissions|has_permission:"feedback.bspfeedbackform.add_bspfeedbackform" %}
-                    <a href="#?c={{ request.curr_org.org_uid }}" class="btn btn-primary btn-sm pull-right">
+                    <a href="{% url 'console_feedback_bsp_new' %}?c={{ request.curr_org.org_uid }}" class="btn btn-primary btn-sm pull-right">
                         <i class="fa fa-plus"></i>
                         &nbsp;Create new questionnaire
                     </a>

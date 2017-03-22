@@ -89,6 +89,7 @@ url_bsp = [
 
 url_feedback = [
     url(r'^bsp/$', views_feedback.console_bsp_feedback_panel, name='console_feedback_bsp_panel'),
+    url(r'^bsp/new-feedback/$', views_feedback.console_bsp_new_feedback, name='console_feedback_bsp_new'),
 ]
 
 api_survey_responses = api_surveys.SurveyResponsesAPI()

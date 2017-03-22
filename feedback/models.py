@@ -66,6 +66,11 @@ class BspFeedbackForm(Form):
     # tags        = models57.JSONField(blank=True, help_text='Name-Value pair dictionary of tags for this form.')
     created_by  = models.ForeignKey(User, editable=False, help_text='User that created this feedback questionnaire.')
 
+    class Meta:
+        permissions = (
+            ("view_bspfeedbackform", "Can view BSP feedback questionnaire"),
+        )
+
     def delete(self, using=None, keep_parents=False):
         raise ValidationError("You cannot delete BSP feedback questionnaire.")
 
@@ -90,6 +95,9 @@ class BspFeedbackAssociation(models.Model):
 
     class Meta:
         unique_together = ('bsp_id', 'form')
+        permissions = (
+            ("view_bspfeedbackassociation", "Can associate BSP with feedback questionnaire"),
+        )
 
     def __unicode__(self):
         return "{} - {}".format(self.form.title, self.bsp_id)

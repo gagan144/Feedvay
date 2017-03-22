@@ -30,6 +30,7 @@
         <option value="$MODULE_DIR$/clients/templates" />
         <option value="$MODULE_DIR$/market/templates" />
         <option value="$MODULE_DIR$/languages/templates" />
+        <option value="$MODULE_DIR$/feedback/templates" />
       </list>
     </option>
   </component>

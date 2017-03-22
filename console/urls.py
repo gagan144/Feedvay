@@ -7,6 +7,7 @@ from console import views
 from accounts import views as views_accounts
 from clients import views as views_clients
 from market import views as views_market
+from feedback import views as views_feedback
 
 from accounts import api as api_accounts
 from clients import api as api_clients
@@ -86,6 +87,10 @@ url_bsp = [
     url(r'^api/', include(api_org_bsp.urls)),
 ]
 
+url_feedback = [
+    url(r'^bsp/$', views_feedback.console_bsp_feedback_panel, name='console_feedback_bsp_panel'),
+]
+
 api_survey_responses = api_surveys.SurveyResponsesAPI()
 api_survey_response_trend = api_surveys.SurveyResponseTrendAPI()
 url_surveys = [
@@ -125,6 +130,7 @@ urlpatterns = [
     url(r'^team/', include(url_team)),
     url(r'^brands/', include(url_brands)),
     url(r'^bsp/', include(url_bsp)),
+    url(r'^feedback/', include(url_feedback)),
     url(r'^surveys/', include(url_surveys)),
     url(r'^storeroom/', include(url_storeroom)),
 ]

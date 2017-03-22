@@ -20,7 +20,7 @@ class BspFeedbackFormAdmin(FormAdmin):
 @admin.register(BspFeedbackAssociation)
 class BspFeedbackAssociationAdmin(admin.ModelAdmin):
     """
-    Django admin clas for BspFeedbackAssociation.
+    Django admin class for BspFeedbackAssociation.
 
     **Authors**: Gagandeep Singh
     """

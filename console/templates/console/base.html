@@ -12,7 +12,7 @@
 
     <!-- Basic -->
     <link href="{% get_static_prefix %}ui/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{% get_static_prefix %}ui/font-awesome/css/font-awesome.css" rel="stylesheet">
+{#    <link href="{% get_static_prefix %}ui/font-awesome/css/font-awesome.css" rel="stylesheet">#}
     <link href="{% get_static_prefix %}ui/css/animate.css" rel="stylesheet">
 
     <link href="{% get_static_prefix %}ui/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css" rel="stylesheet">
@@ -20,6 +20,9 @@
     <link rel="stylesheet" href="{% get_static_prefix %}lib/summernote/summernote.css">
     <link href="{% get_static_prefix %}ui/css/plugins/datapicker/angular-datapicker.css" rel="stylesheet">
     <link href="{% get_static_prefix %}ui/css/plugins/ladda/ladda-themeless.min.css" rel="stylesheet">
+
+    <link href="{% get_static_prefix %}lib/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}lib/ionicons/css/ionicons.min.css" rel="stylesheet">
 
     <!-- JqGrid -->
     <link href="{% get_static_prefix %}ui/css/plugins/jQueryUI/jquery-ui-1.10.4.custom.min.css" rel="stylesheet">
@@ -121,6 +124,13 @@
                                     <ul role="menu" class="dropdown-menu">
                                         <li><a href="{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/customize_types">Customize BSP types</a></li>
                                         <li><a href="{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/bsps">Business or Service Points</a></li>
+                                    </ul>
+                                </li>
+
+                                <li class="dropdown">
+                                    <a aria-expanded="false" role="button" href="javascript: void(0);" class="dropdown-toggle" data-toggle="dropdown"> Feedbacks <span class="caret"></span></a>
+                                    <ul role="menu" class="dropdown-menu">
+                                        <li><a href="{% url 'console_feedback_bsp_panel' %}?c={{ request.curr_org.org_uid }}">BSP Feedback</a></li>
                                     </ul>
                                 </li>
 

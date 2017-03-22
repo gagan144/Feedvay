@@ -22,5 +22,13 @@
   "market.businessservicepoint":{
     "permissions": ["add_businessservicepoint", "view_businessservicepoint", "change_businessservicepoint", "delete_businessservicepoint"],
     "data_access": {}
+  },
+  "feedback.bspfeedbackform":{
+    "permissions": ["add_bspfeedbackform", "view_bspfeedbackform", "change_bspfeedbackform", "delete_bspfeedbackform"],
+    "data_access": {}
+  },
+  "feedback.bspfeedbackassociation":{
+    "permissions": ["add_bspfeedbackassociation", "view_bspfeedbackassociation", "change_bspfeedbackassociation", "delete_bspfeedbackassociation"],
+    "data_access": {}
   }
 }

@@ -46,6 +46,7 @@ def create_update_form(form, form_data, translation):
                 )
 
         # --- Form save ---
+        form.title = form_data['title']
         form.description = lookup_trans_id.get(form_data.get('description', None), None)
         form.instructions = lookup_trans_id.get(form_data.get('instructions', None), None)
         form.user_notes = form_data.get('user_notes', None)
@@ -59,7 +60,7 @@ def create_update_form(form, form_data, translation):
                 list_langs.append(lang)
             form.languages = list_langs
         else:
-            form.languages.remove()
+            form.languages.clear()
 
         # -- Constants --
         constants_corrected =  form_data.get('constants', [])

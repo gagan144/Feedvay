@@ -402,9 +402,9 @@ def console_survey_phase_form_save(request, survey, phase_id):
             form_data = json.loads(request.POST['form_data'])
             translation = json.loads(request.POST['translations'])
 
-            ops.create_update_form(form, form_data, translation)
+            saved_form = ops.create_update_form(form, form_data, translation)
 
-            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok', is_ready=True).gen_http_response()
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok', is_ready=saved_form.is_ready).gen_http_response()
         except SurveyPhase.DoesNotExist:
             return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Invalid/unauthorized access.').gen_http_response()
     else:

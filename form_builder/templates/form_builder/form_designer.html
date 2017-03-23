@@ -17,7 +17,7 @@
             Edit {{ survey.title }} | Feedvay
         {%  elif TYPE == 'BSP_FEEDBACK' %}
             {% if form %}
-                Edit - {{ form.name }} | {{ request.curr_org.name }}
+                Edit - {{ form.title }} | {{ request.curr_org.name }}
             {% else %}
                 New BSP Feedback Questionnaire | {{ request.curr_org.name }}
             {% endif %}
@@ -237,7 +237,7 @@
                     </li>
                 </ol>
             {% elif TYPE == 'BSP_FEEDBACK' %}
-                <h2><i class="ion-clipboard"></i> {% if form %} Edit - {{ form.name }}{% else %}New BSP Feedback Questionnaire{% endif %}</h2>
+                <h2><i class="ion-clipboard"></i> {% if form %} Edit - {{ form.title }}{% else %}New BSP Feedback Questionnaire{% endif %}</h2>
 
                 <ol class="breadcrumb">
                     <li>
@@ -1622,8 +1622,11 @@
                 {% if TYPE == 'SURVEY' %}
                     var URL = '{% url 'console_survey_phase_form_save' survey.survey_uid phase.id %}';
                 {% elif TYPE == 'BSP_FEEDBACK' %}
-                    alert("Not implementated yet!");
-                    return;
+                    {% if form %}
+                        var URL = '{% url 'console_feedback_bsp_edit_save' form.id %}?c={{ request.curr_org.org_uid }}';
+                    {% else %}
+                        var URL = '{% url 'console_feedback_bsp_create' %}?c={{ request.curr_org.org_uid }}';
+                    {% endif %}
                 {% endif %}
 
                 $scope.flags.loading = true;
@@ -1649,7 +1652,14 @@
                                 showConfirmButton: false
                             });
 
-                            $window.location.reload();
+                            if(response.data.form_id){
+                                // New form was created; Redirect to edit page
+                                $window.location.href = '{% url 'console_feedback_bsp_edit' 999999 %}?c={{ request.curr_org.org_uid }}'.replace('999999', response.data.form_id);
+                            }else{
+                                // Form was updated; Refresh page
+                                $window.location.reload();
+                            }
+
                         }else{
                             SweetAlert.swal({
                                 title: "Unable to save changes!",

@@ -405,7 +405,7 @@ class Form(models57.Model):
         if self.id:
             self.updated_on = datetime.now()
 
-        super(self.__class__,self).clean()
+        super(Form, self).clean()
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -414,7 +414,7 @@ class Form(models57.Model):
             self.version = uuid.uuid4()
 
         #self.validate_form()
-        return super(self.__class__, self).save(*args, **kwargs)
+        return super(Form, self).save(*args, **kwargs)
 
     @classmethod
     def post_save(cls, sender, instance, **kwargs):

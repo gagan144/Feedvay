@@ -5,9 +5,22 @@
 {% load static commontags %}
 
 {% block head %}
+    <!-- Favicon -->
+    {% if request.curr_org %}
+        <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
+    {% else %}
+        <link rel="shortcut icon" href="{% get_static_prefix %}images/favicon.png"/>
+    {% endif %}
+
     <title>
         {% if TYPE == 'SURVEY' %}
             Edit {{ survey.title }} | Feedvay
+        {%  elif TYPE == 'BSP_FEEDBACK' %}
+            {% if form %}
+                Edit - {{ form.name }} | {{ request.curr_org.name }}
+            {% else %}
+                New BSP Feedback Questionnaire | {{ request.curr_org.name }}
+            {% endif %}
         {% endif %}
     </title>
 
@@ -223,13 +236,27 @@
                         Questionnaire
                     </li>
                 </ol>
+            {% elif TYPE == 'BSP_FEEDBACK' %}
+                <h2><i class="ion-clipboard"></i> {% if form %} Edit - {{ form.name }}{% else %}New BSP Feedback Questionnaire{% endif %}</h2>
+
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="{% url 'console_home' %}">Home</a>
+                    </li>
+                    <li>Feedback</li>
+                    <li>
+                        <a href="{% url 'console_feedback_bsp_panel' %}?c={{ request.curr_org.org_uid }}">Business or Service Point Feedback</a>
+                    </li>
+                    <li class="active">
+                        Questionnaire
+                    </li>
+                </ol>
             {% endif %}
         </div>
         <div class="col-xs-2">
             <div class="title-action" style="padding-top: 20px !important;">
                 <button class="btn btn-primary ladda-button" ladda="flags.loading" data-style="zoom-in" ng-click="save_continue()">
-{#                    <i class="fa fa-save"></i>&nbsp;&nbsp;#}
-                    Save & continue
+                    {% if form %}Save & continue{% else %}<i class="fa fa-save"></i>&nbsp;&nbsp;Save{% endif %}
                 </button>
             </div>
         </div>
@@ -410,7 +437,7 @@
                 </script>
                 <!-- /Modals Templates -->
 
-
+                {% if form %}
                 <div class="alert alert-warning" ng-if="!IS_READY" ng-controller="MsgController">
                     <table style="width: 100%">
                         <tr>
@@ -428,6 +455,7 @@
                         </tr>
                     </table>
                 </div>
+                {% endif %}
 
                 <div class="tabs-container animated fadeInRight">
                     <ul class="nav nav-tabs">
@@ -497,7 +525,11 @@
                                         <div class="col-sm-8">
                                             <input type="text" class="form-control" ng-model="FormData.title" name="title" required>
                                             <p class="help-block m-b-none">
-                                                Title of the form that will be display on the top.
+                                                {% if TYPE == 'BSP_FEEDBACK' %}
+                                                    Name of the feedback questionnaire. This will not be displayed to the users.
+                                                {% else %}
+                                                    Title of the questionnaire that will be display on the top.
+                                                {% endif %}
                                             </p>
                                             <div ng-messages="form_general.title.$dirty && form_general.title.$error" role="alert">
                                                 <label ng-message="required" class="error">Please enter a title for this form.</label>
@@ -525,7 +557,7 @@
                                                 </div>
                                             </div>
                                             <p class="help-block m-b-none">
-                                                Some description about this form.
+                                                Some description about this questionnaire. Describe purpose or aim of this questionnaire.
                                             </p>
                                         </div>
                                     </div>
@@ -549,7 +581,7 @@
                                                 </div>
                                             </div>
                                             <p class="help-block m-b-none">
-                                                Any relevant instructions to fill this form.
+                                                Any relevant instructions to fill this questionnaire.
                                             </p>
                                         </div>
                                     </div>
@@ -620,7 +652,7 @@
                                                 <h3>Basic</h3>
                                                 <hr/>
                                                 <p class="description">
-                                                    Basic settings to customize your form.
+                                                    Basic settings to customize your questionnaire.
                                                 </p>
                                                 <table>
                                                     <tr>
@@ -653,8 +685,8 @@
                                                 <h3>Timmer</h3>
                                                 <hr/>
                                                 <p class="description">
-                                                    Add timmer to your form by specifying maximum time before which user must
-                                                    complete the form. On exceeding the time, form is suspended by displaying an appropriate
+                                                    Add timer to your questionnaire by specifying maximum time before which user must
+                                                    complete the it. On exceeding the time, questionnaire is suspended by displaying an appropriate
                                                     message and option to exit.
                                                 </p>
                                                 <table>
@@ -673,7 +705,7 @@
                                                                 <div class="checkbox checkbox-primary checkbox-inline">
                                                                     <input id="fld_show_timer" type="checkbox" ng-model="FormData.show_timer" ng-disabled="!FormData.timeout">
                                                                     <label for="fld_show_timer">
-                                                                        Show timer in the form
+                                                                        Show timer in the questionnaire
                                                                     </label>
                                                                 </div>
                                                             </div>
@@ -798,15 +830,15 @@
                                                 </h3>
                                                 <hr style="margin: 5px 0px 10px 0px;"/>
                                                 <p>
-                                                    A constant is a identifier with an associated value which does not alter during the form.
-                                                    You can introduce a set of constants into your form which can be used to display a question
+                                                    A constant is a identifier with an associated value which does not alter during the questionnaire.
+                                                    You can introduce a set of constants into your questionnaire which can be used to display a question
                                                     conditionally or can be used to evalute caluclated fields.
                                                 </p>
 
                                                 <div class="alert alert-info" ng-if="!FormData.constants.length">
-                                                    You have no constants defined for your form. Click below button to add one:
+                                                    You have no constants defined for your questionnaire. Click below button to add one:
                                                     <br/><br/>
-                                                    <button class="btn btn-primary btn-sm" ng-click="edit_constant(null, null);">
+                                                    <button class="btn btn-info btn-sm" ng-click="edit_constant(null, null);">
                                                         <i class="fa fa-plus"></i>&nbsp;
                                                         Add Constant
                                                     </button>
@@ -875,15 +907,15 @@
                                                 </h3>
                                                 <hr style="margin: 5px 0px 10px 0px;"/>
                                                 <p style="text-align: justify;">
-                                                    A question is an information that you collect from the user through this form. It is here,
-                                                    where you build the main structure of your form by defining set of questions using various
+                                                    A question is an information that you collect from the user through this questionnaire. It is here,
+                                                    where you build the main structure of your questionnaire by defining set of questions using various
                                                     answer types, their properties and define branching logic based on the answer to previous
                                                     question.
                                                 </p>
 
                                                 <p ng-if="FormData.schema.length" style="font-size:11px;text-align: justify;">
-                                                    <span><i class="fa fa-info"></i> <b>Note:</b></span> The below view just gives a rough look-n-feel of the form.
-                                                    The actual look and the behavior of the form will differ greatly as compared to final form.
+                                                    <span><i class="fa fa-info"></i> <b>Note:</b></span> The below view just gives a rough look-n-feel of the questionnaire.
+                                                    The actual look and the behavior of the questionnaire will differ greatly as compared to final questionnaire.
                                                     Kindly preview before concluding.
                                                 </p>
 
@@ -893,7 +925,7 @@
                                                             <td style="padding-right: 10px;" valign="top">
                                                                 <!-- QuestionSchema -->
                                                                 <div class="alert alert-info" ng-if="!FormData.schema.length">
-                                                                    You have no questions defined for your form. Click below button to add one:
+                                                                    You have no questions defined for your questionnaire. Click below button to add one:
                                                                 </div>
 
                                                                 <div ng-if="FormData.schema.length">
@@ -1588,57 +1620,62 @@
                 var data_translation = angular.copy($rootScope.Translations);
 
                 {% if TYPE == 'SURVEY' %}
-                    $scope.flags.loading = true;
-                    return $http.post(
-                        '{% url 'console_survey_phase_form_save' survey.survey_uid phase.id %}',
-                        $.param({
-                            'form_data': JSON.stringify(data_form_data),
-                            'translations': JSON.stringify(data_translation)
-                        })
-                    ).then(
-                        function (response) {
-                            $scope.flags.loading = false;
-                            console.log(response);
-
-                            if (response.data.status == 'success') {
-                                $rootScope.IS_READY = response.data.is_ready;
-
-                                SweetAlert.swal({
-                                    title: "Saved!",
-                                    text: "Your questionnaire has been saved. <br/>Refreshing now ...",
-                                    type: "success",
-                                    html: true,
-                                    showConfirmButton: false
-                                });
-
-                                $window.location.reload();
-                            }else{
-                                SweetAlert.swal({
-                                    title: "Unable to save changes!",
-                                    text: response.data.message,
-                                    type: "error",
-                                    html: true,
-                                });
-                            }
-                        },
-                        function (response){
-{#                            $scope.flags.loading = false;#}
-                            if (response.status != -1) {
-                                $.growl.error({
-                                    title: '<i class="fa fa-exclamation-triangle"></i> Error!',
-                                    message: 'Something went wrong. Our engineers will be informed.'
-                                });
-                            } else {
-                                $.growl.error({
-                                    title: '<i class="fa fa-signal"></i> Network error!',
-                                    message: "Please check your internet connection."
-                                });
-                            }
-                        }
-                    );
+                    var URL = '{% url 'console_survey_phase_form_save' survey.survey_uid phase.id %}';
+                {% elif TYPE == 'BSP_FEEDBACK' %}
+                    alert("Not implementated yet!");
+                    return;
                 {% endif %}
 
-            }
+                $scope.flags.loading = true;
+                return $http.post(
+                    URL,
+                    $.param({
+                        'form_data': JSON.stringify(data_form_data),
+                        'translations': JSON.stringify(data_translation)
+                    })
+                ).then(
+                    function (response) {
+                        $scope.flags.loading = false;
+{#                        console.log(response);#}
+
+                        if (response.data.status == 'success') {
+                            $rootScope.IS_READY = response.data.is_ready;
+
+                            SweetAlert.swal({
+                                title: "Saved!",
+                                text: "Your questionnaire has been saved. <br/>Refreshing now ...",
+                                type: "success",
+                                html: true,
+                                showConfirmButton: false
+                            });
+
+                            $window.location.reload();
+                        }else{
+                            SweetAlert.swal({
+                                title: "Unable to save changes!",
+                                text: response.data.message,
+                                type: "error",
+                                html: true,
+                            });
+                        }
+                    },
+                    function (response){
+{#                            $scope.flags.loading = false;#}
+                        if (response.status != -1) {
+                            $.growl.error({
+                                title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                message: 'Something went wrong. Our engineers will be informed.'
+                            });
+                        } else {
+                            $.growl.error({
+                                title: '<i class="fa fa-signal"></i> Network error!',
+                                message: "Please check your internet connection."
+                            });
+                        }
+                    }
+                );
+            };
+
         });
 
         // ---------- GeneralController ----------

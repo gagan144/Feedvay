@@ -15,6 +15,7 @@ from market import api as api_market
 from surveys import views as views_surveys
 from surveys import api as api_surveys
 from storeroom import api as api_storeroom
+from feedback import api as api_feedback
 
 url_account = [
     url(r'^settings/$', views_accounts.console_account_settings, name='console_accounts_settings'),
@@ -87,12 +88,16 @@ url_bsp = [
     url(r'^api/', include(api_org_bsp.urls)),
 ]
 
+api_bsp_feedback_forms = api_feedback.BspFeedbackFormsAPI()
 url_feedback = [
     url(r'^bsp-feedback/$', views_feedback.console_bsp_feedback_panel, name='console_feedback_bsp_panel'),
     url(r'^bsp-feedback/new/$', views_feedback.console_bsp_feedback_new, name='console_feedback_bsp_new'),
     url(r'^bsp-feedback/create/$', views_feedback.console_bsp_feedback_create, name='console_feedback_bsp_create'),
     url(r'^bsp-feedback/edit/(?P<form_id>[0-9]+)/$', views_feedback.console_bsp_feedback_edit, name='console_feedback_bsp_edit'),
     url(r'^bsp-feedback/edit-save/(?P<form_id>[0-9]+)/$', views_feedback.console_bsp_feedback_edit_save, name='console_feedback_bsp_edit_save'),
+
+    # Api
+    url(r'^api/', include(api_bsp_feedback_forms.urls)),
 ]
 
 api_survey_responses = api_surveys.SurveyResponsesAPI()

@@ -10,6 +10,9 @@
 
     <title page-title></title>
 
+    <link href="{% get_static_prefix %}ui/css/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/css/plugins/datapicker/datepicker3.css" rel="stylesheet">
+
     <!-- ========== Templates ========== -->
     <!-- Dashboard -->
     <script type="text/ng-template" id="tmpl_dashboard">
@@ -39,6 +42,58 @@
                 {% endif %}
             </h2>
             <hr style="margin-top: 15px;"/>
+
+            <!-- Grid -->
+            <div ng-if="ui_flags.state==ST_AJAX.LOADING" class="loading_big" align="center" valign="middle">
+                <img src="{% get_static_prefix %}images/loading/spinner_1.gif" style="height: 40px">
+                <h3 style="margin-top: 20px;font-weight: normal;">Loading BSP feedback questionnaires...</h3>
+            </div>
+            <div ng-if="ui_flags.state==ST_AJAX.ERROR" class="alert alert-danger">
+                <table style="width: 100%">
+                    <tr>
+                        <td valign="top" style="width: 90px;">
+                            <i class="fa fa-exclamation-triangle" style="font-size: 60px;"></i>
+                        </td>
+                        <td valign="top">
+                            <h2 style="margin-top: 0px;">Error!</h2>
+                            <div>
+                                {$ ui_flags.error_msg $}
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div ng-show="ui_flags.state==ST_AJAX.COMPLETED">
+                <div ng-if="list_questionnaires.length==0" class="alert alert-info">
+                    <table style="width: 100%">
+                        <tr>
+                            <td valign="top" style="width: 90px;">
+                                <i class="fa fa-info-circle" style="font-size: 80px;"></i>
+                            </td>
+                            <td valign="top">
+                                <h2 style="margin-top: 0px;">No Questionnaires have been created yet!</h2>
+                                <div>
+                                    No Business or Service Points feedback questionnaires have been created. You must create
+                                    atleast one questionnaire to allow feedbacks on your business or service points.
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div ng-show="list_questionnaires.length">
+                    <ng-jqgrid
+                            config="grid_questionnaires.config"
+                            modeldata="list_questionnaires"
+                            gridid="{$ grid_questionnaires.gridid $}"
+                            pagerid="{$ grid_questionnaires.pagerid $}"
+                            api="grid_questionnaires.gridapi"
+                            filtertoolbar="{stringResult: true, searchOnEnter: false, defaultSearch: 'cn'}"
+                    ></ng-jqgrid>
+                </div>
+            </div>
+            <!-- /Grid -->
 
         </div>
     </script>
@@ -94,12 +149,14 @@
 
 
 {% block scripts %}
+    <script src="{% get_static_prefix %}ui/js/plugins/datapicker/bootstrap-datepicker.js"></script>
     <script src="{% get_static_prefix %}ui/js/ui-router/angular-ui-router.min.js"></script>
 
     <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/i18n/grid.locale-en.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/jquery.jqGrid.min.js"></script>
     <script src="{% get_static_prefix %}lib/angular/angular-jqgrid/angular-jqgrid.js"></script>
 
+    <script src="{% get_static_prefix %}apps/feedback/bsp_feedback.js"></script>
     <script>
         'use strict';
 
@@ -107,12 +164,15 @@
             'feedvay.uiapp',
             'feedvay.common',
             'feedvay.watchdog',
+            'feedvay.feedback.bsp',
 
             'ngCookies',
             'ngMessages',
             'ui.router',                    // Routing
             'oc.lazyLoad',                  // ocLazyLoad
             'angular-ladda',
+            'datePicker',
+            'angular-jqgrid',
         ])
         .config(function($interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             $interpolateProvider.startSymbol('{$');
@@ -191,7 +251,133 @@
         // --- /Dashboard ---
 
         // --- Questionnaires ---
-        function QuestionnairesCtrl($scope) {
+        function QuestionnairesCtrl($scope, $filter, ServiceBspFeedback) {
+            $scope.ui_flags = {
+                state: null,
+                error_msg: null
+            };
+
+            // Jqgrid
+            $scope.list_questionnaires = [];
+            $scope.grid_questionnaires = {
+                gridid: "grid_questionnaires",
+                pagerid: "grid_questionnaires_pager",
+                config: {
+                    datatype: "local",
+                    colNames: [
+                        '',
+                        'Title',
+                        'Notes',
+                        'Attached BSPs',
+                        'Is ready',
+                        'Created by',
+                        'Created on',
+                        'Updated on',
+                        ''
+                    ],
+                    colModel: [
+                        { name: 'id', index: 'id', width: 20, hidden:true, search:false },
+                        { name: 'title', index: 'title', width: 40, valign:"top" },
+                        { name: 'user_notes', index: 'user_notes', width: 50 },
+                        { name: 'attached_bsps', index: 'attached_bsps', sorttype:'int', align:'right', width: 20 },
+                        { name: 'is_ready_html', index: 'is_ready', width: 20, align:"center",
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;true:Yes;false:No" }
+                        },
+                        { name: 'created_by.display_name', index: 'created_by.display_name', width: 30 },
+                        { name: 'created_on', index: 'created_on', width: 30,
+                            sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-dTH:i:s', newformat: 'd-M-Y' },
+                            searchoptions: {
+                                attr:{ placeholder: 'Select date', readonly:'readonly'},
+                                dataInit: function (elem) {
+                                    $(elem).datepicker({
+                                        format: 'yyyy-mm-dd',
+                                        keyboardNavigation: false,
+                                        autoclose: true,
+                                        todayHighlight: true,
+                                    }).on('changeDate', function(e) {
+                                        $('#grid_questionnaires')[0].triggerToolbar();
+                                    });
+                                }
+                            }
+                        },
+                        { name: 'updated_on', index: 'updated_on', width: 30,
+                            sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-dTH:i:s', newformat: 'd-M-Y' },
+                            searchoptions: {
+                                attr:{ placeholder: 'Select date', readonly:'readonly'},
+                                dataInit: function (elem) {
+                                    $(elem).datepicker({
+                                        format: 'yyyy-mm-dd',
+                                        keyboardNavigation: false,
+                                        autoclose: true,
+                                        todayHighlight: true,
+                                    }).on('changeDate', function(e) {
+                                        $('#grid_questionnaires')[0].triggerToolbar();
+                                    });
+                                }
+                            }
+                        },
+                        { name: 'actions_html', index: 'actions_html', width: 30, search:false, sortable:false },
+                    ],
+                    viewrecords: true,
+                    sortname: 'registered_user.full_name',
+                    sortorder: "asc",
+                    rowNum: 50,
+                    rowList: [10, 50, 100, 100000],
+                    autowidth : true,
+                    height: '250px',
+                    shrinkToFit: true,
+                    hidegrid: false,
+                    ignoreCase:true,
+                    gridComplete: function() { $("td[role='gridcell']").attr('valign', 'top'); }
+                },
+                filtertoolbar: {
+                    stringResult: true, searchOnEnter: false, defaultSearch: 'cn',
+                },
+                gridapi: {}
+            };
+
+            // --- Methods ---
+            $scope.get_questionnaires = function(){
+                $scope.ui_flags.state = ST_AJAX.LOADING;
+
+
+                ServiceBspFeedback.get_questionnaires('{{ request.curr_org.org_uid }}').then(
+                    function(response){
+                        var records = response.objects;
+                        $scope.ui_flags.state = ST_AJAX.COMPLETED;
+
+                        // Preprocess
+                        for(var i=0;i<records.length;i++){
+                            var row = records[i];
+
+                            records[i]['user_notes'] = $filter('unhtml')(row['user_notes']);
+                            records[i]['created_by']['display_name'] = row['created_by']['first_name'] + " " +row['created_by']['last_name'];
+                            records[i]['is_ready_html'] = row['is_ready']?'<i class="fa fa-check-circle text-success"></i>':'<i class="fa fa-times-circle text-danger"></i>';
+                            records[i]['actions_html'] = '<a href="' + '#?c={{ request.curr_org.org_uid }}'.replace('999999', row['id']) + '" class="btn btn-primary btn-xs btn-outline grid_btn">Manage</a>' +
+                                '&nbsp;<a href="' + '{% url 'console_feedback_bsp_edit' 999999 %}?c={{ request.curr_org.org_uid }}'.replace('999999', row['id']) + '" class="btn btn-primary btn-xs btn-outline grid_btn">Edit</a>';
+                        }
+
+                        // Update grid
+                        $scope.list_questionnaires = records;
+                        $scope.grid_questionnaires.gridapi.clear();
+                        $scope.grid_questionnaires.gridapi.insert(records);
+
+                    },
+                    function(response){
+                        $scope.ui_flags.state = ST_AJAX.ERROR;
+
+                        if(response.status != -1){
+                            $scope.ui_flags.error_msg = "Something went wrong. Our engineers will be informed.";
+                        }else{
+                            $scope.ui_flags.error_msg = "Please check your internet connection.";
+                        }
+
+                    }
+                );
+            };
+            // --- /Methods ---
+
+            $scope.get_questionnaires();
 
         }
         // --- /Questionnaires ---

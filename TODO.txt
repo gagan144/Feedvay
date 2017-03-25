@@ -28,7 +28,6 @@
     - Create: survey title already existing - autocomplete type options
     - API - Access authentication
 
-
 - Data privacy conventions (public, encypted, client shared etc)
 
 - Crons

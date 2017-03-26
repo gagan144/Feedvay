@@ -10,8 +10,89 @@
 
     <title>Manage - {{ form.title }} | {{ request.curr_org.name }}</title>
 
+    <link href="{% get_static_prefix %}lib/bootstrap_3/css/bootstrap-addons.css" rel="stylesheet">
     <link href="{% get_static_prefix %}ui/css/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet">
     <link href="{% get_static_prefix %}ui/css/plugins/datapicker/datepicker3.css" rel="stylesheet">
+
+    <style>
+        .brand_icon{
+            height: 16px;
+        }
+    </style>
+
+    <!-- ========== Templates ========== -->
+    <script type="text/ng-template" id="tmpl_attach_bsp">
+        <div class="inmodal">
+            <div class="modal-header" style="padding: 20px 15px;">
+                <button type="button" class="close" ng-click="close()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" style="font-size: 22px !important;">
+                    <i class="fa fa-link"></i>&nbsp;
+                    Attach Business or Service Points
+                </h4>
+            </div>
+            <div class="modal-body" style="padding: 10px 20px;">
+                <!-- Grid -->
+                <div ng-if="ui_flags.state==ST_AJAX.LOADING" class="loading_big" align="center" valign="middle">
+                    <img src="{% get_static_prefix %}images/loading/spinner_1.gif" style="height: 40px">
+                    <h3 style="margin-top: 20px;font-weight: normal;">Loading Business or Service Points ...</h3>
+                </div>
+                <div ng-if="ui_flags.state==ST_AJAX.ERROR" class="alert alert-danger">
+                    <table style="width: 100%">
+                        <tr>
+                            <td valign="top" style="width: 90px;">
+                                <i class="fa fa-exclamation-triangle" style="font-size: 60px;"></i>
+                            </td>
+                            <td valign="top">
+                                <h2 style="margin-top: 0px;">Error!</h2>
+                                <div>
+                                    {$ ui_flags.error_msg $}
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div ng-show="ui_flags.state==ST_AJAX.COMPLETED">
+                    <div ng-if="list_bsps.length==0" class="alert alert-warning">
+                        <table style="width: 100%">
+                            <tr>
+                                <td valign="top" style="width: 90px;">
+                                    <i class="fa fa-info-circle" style="font-size: 80px;"></i>
+                                </td>
+                                <td valign="top">
+                                    <h2 style="margin-top: 0px;">No associated Business or Service Points!</h2>
+                                    <div>
+                                        This questionnaire is not currently associated with any Business or Service Point.
+                                        Kindly attach this questionnaire to atleast one Business or Service Point.
+
+                                        <br/><br/>
+                                        <button class="btn btn-warning btn-sm" ng-click="open_attach_bsp()">Attach BSP</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div ng-show="list_bsps.length">
+                        <ng-jqgrid
+                                config="grid_bsps.config"
+                                modeldata="list_bsps"
+                                gridid="{$ grid_bsps.gridid $}"
+                                pagerid="{$ grid_bsps.pagerid $}"
+                                api="grid_bsps.gridapi"
+                                filtertoolbar="{stringResult: true, searchOnEnter: false, defaultSearch: 'cn'}"
+                        ></ng-jqgrid>
+                    </div>
+                </div>
+                <!-- /Grid -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" ng-click="close()">Ok</button>
+            </div>
+        </div>
+    </script>
+    <!-- ========== /Templates ========== -->
+
 {% endblock %}
 
 {% block page_header %}
@@ -156,7 +237,7 @@
                                         Kindly attach this questionnaire to atleast one Business or Service Point.
 
                                         <br/><br/>
-                                        <button class="btn btn-warning btn-sm">Attach BSP</button>
+                                        <button class="btn btn-warning btn-sm" ng-click="open_attach_bsp()">Attach BSP</button>
                                     </div>
                                 </td>
                             </tr>
@@ -206,6 +287,7 @@
             'angular-ladda',
             'datePicker',
             'angular-jqgrid',
+            'ui.bootstrap',
         ])
         .config(function($interpolateProvider, $httpProvider) {
             $interpolateProvider.startSymbol('{$');
@@ -222,7 +304,7 @@
         });
 
 
-        APP.controller('MainCtrl', function($scope, ServiceBsp){
+        APP.controller('MainCtrl', function($scope, ServiceBsp, $uibModal){
             $scope.ui_flags = {
                 state: null,
                 error_msg: null
@@ -283,7 +365,7 @@
                         { name: 'actions_html', index: 'actions_html', width: 20, search:false, sortable:false },
                     ],
                     viewrecords: true,
-                    sortname: 'registered_user.full_name',
+                    sortname: 'name',
                     sortorder: "asc",
                     rowNum: 50,
                     rowList: [10, 50, 100, 100000],
@@ -344,10 +426,182 @@
                     }
                 );
             };
+
+            $scope.open_attach_bsp = function(){
+                var modalInstance = $uibModal.open({
+                    animation: true,
+                    templateUrl: 'tmpl_attach_bsp',
+                    controller: 'AttachBspCtrl',
+                    size: 'xlg',
+                    backdrop: 'static',
+                    windowClass: 'modal_win_editor',
+{#                    resolve: {#}
+{#                        question: function() {#}
+{#                            return angular.copy(question);#}
+{#                        },#}
+{#                        answer_type: function() {#}
+{#                            return answer_type;#}
+{#                        }#}
+{#                    }#}
+                });
+
+                modalInstance.result.then(
+                    function (result) {
+                        console.log(result);
+                    }, function () {
+                        // Modal Closed
+                    }
+                );
+            };
             // --- /Methods ---
 
             $scope.get_associated_bsps();
 
+        });
+
+        APP.controller('AttachBspCtrl', function($scope, $rootScope, $uibModalInstance, ServiceBsp){
+            $scope.testing = 'hello';
+
+            $scope.ui_flags = {
+                state: null,
+                error_msg: null
+            };
+
+            // Jqgrid
+            $scope.list_bsps = [];
+            $scope.grid_bsps = {
+                gridid: "grid_bsps",
+                pagerid: "grid_bsps_pager",
+                config: {
+                    datatype: "local",
+                    colNames: [
+                        '',
+                        'Name',
+                        'Type',
+                        'Brand',
+                        'Rating',
+                        'Open status',
+                        'Active',
+                        'Attached Form',
+                        'Attached on',
+                        ''
+                    ],
+                    colModel: [
+                        { name: 'id', index: 'id', width: 20, hidden:true, search:false },
+                        { name: 'name', index: 'name', width: 40 },
+                        { name: 'type', index: 'type', width: 25,
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for t in BspTypes.choices %}{{ t.0 }}:{{ t.1 }}{% if not forloop.last %};{% endif %}{% endfor %}" }
+                        },
+                        { name: 'brand_html', index: 'brand_id', width: 30,
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for b in list_brands %}{{ b.id }}:{{ b.name }}{% if not forloop.last %};{% endif %}{% endfor %}" }
+                        },
+                        { name: 'avg_rating', index: 'avg_rating', width: 20 },
+                        { name: 'open_status', index: 'open_status', width: 25,
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for s in BusinessServicePoint.CH_OPEN_STATUS %}{{ s.0 }}:{{ s.1 }}{% if not forloop.last %};{% endif %}{% endfor %}" }
+                        },
+                        { name: 'active_html', index: 'active', width: 20, align:"center",
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;true:Yes;false:No" }
+                        },
+                        { name: 'feedback_form.title', index: 'feedback_form.title', width: 30 },
+                        { name: 'feedback_form.dated', index: 'feedback_form.dated', width: 30,
+                            sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-dTH:i:s', newformat: 'd-M-Y' },
+                            searchoptions: {
+                                attr:{ placeholder: 'Select date', readonly:'readonly'},
+                                dataInit: function (elem) {
+                                    $(elem).datepicker({
+                                        format: 'yyyy-mm-dd',
+                                        keyboardNavigation: false,
+                                        autoclose: true,
+                                        todayHighlight: true,
+                                    }).on('changeDate', function(e) {
+                                        $('#grid_bsps')[0].triggerToolbar();
+                                    });
+                                }
+                            }
+                        },
+                        { name: 'actions_html', index: 'actions_html', width: 15, search:false, sortable:false },
+                    ],
+                    viewrecords: true,
+                    sortname: 'name',
+                    sortorder: "asc",
+                    rowNum: 50,
+                    rowList: [10, 50, 100, 100000],
+                    autowidth : true,
+                    height: '250px',
+                    shrinkToFit: true,
+                    hidegrid: false,
+                    ignoreCase:true,
+                    multiselect: true
+                },
+                filtertoolbar: {
+                    stringResult: true, searchOnEnter: false, defaultSearch: 'cn',
+                },
+                gridapi: {}
+            };
+
+            $scope.get_bsps = function(){
+                $scope.ui_flags.state = ST_AJAX.LOADING;
+
+                // Prepare filters
+                var filters = {
+                };
+
+                ServiceBsp.get_org_bsps('{{ request.curr_org.org_uid }}', filters).then(
+                    function(response){
+                        var records = response.objects;
+                        $scope.ui_flags.state = ST_AJAX.COMPLETED;
+
+                        // Preprocess
+                        for(var i=0;i<records.length;i++){
+                            var row = records[i];
+
+                            var brand = response.meta.brands[row['brand_id']];
+
+                            if(brand){
+                                records[i]['brand_html'] = '<img src="{{ request.scheme }}://{{ AWS_S3_CUSTOM_DOMAIN }}/'+brand['icon']+'" class="brand_icon" />&nbsp;&nbsp;'+brand['name'];
+                            }
+                            records[i]['active_html'] = row['active']?'<i class="fa fa-check-circle text-success"></i>':'<i class="fa fa-times-circle text-danger"></i>';
+                            records[i]['actions_html'] = '<a target="_blank" href="' + '{% url 'console_market_bsp_edit' 'BSP_ID' %}?c={{ request.curr_org.org_uid }}'.replace('BSP_ID', row['id']) + '" class="btn btn-primary btn-xs btn-outline grid_btn">View</a>';
+                        }
+
+                        // Update grid
+                        $scope.list_bsps = records;
+                        $scope.grid_bsps.gridapi.clear();
+                        $scope.grid_bsps.gridapi.insert(records);
+
+                    },
+                    function(response){
+                        $scope.ui_flags.state = ST_AJAX.ERROR;
+
+                        if(response.status != -1){
+                            $scope.ui_flags.error_msg = "Something went wrong. Our engineers will be informed.";
+                        }else{
+                            $scope.ui_flags.error_msg = "Please check your internet connection.";
+                        }
+
+                    }
+                );
+            };
+
+            $scope.get_bsps();
+
+            // --- Dialog methods ---
+            $scope.save = function (form_obj) {
+                if(form_obj.$invalid){
+                    return false;
+                }
+                // close modal
+{#                $uibModalInstance.close();#}
+                $uibModalInstance.close({
+                    "question": angular.copy($scope.question),
+                    "ques_translations": angular.copy($scope.ques_translations)
+                });
+            };
+
+            $scope.close = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+            // --- /Dialog methods ---
         });
 
     </script>

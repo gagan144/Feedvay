@@ -13,6 +13,7 @@ from form_builder.models import ThemeSkin
 from form_builder.utils import GeoLocation
 from form_builder import operations as ops
 from feedback.models import BspFeedbackForm
+from market.models import BusinessServicePoint, BspTypes, Brand
 from utilities.api_utils import ApiResponse
 
 # ==================== Console ====================
@@ -106,6 +107,11 @@ def console_bsp_feedback_manage(request, org, form_id):
     data = {
         'app_name': 'app_bspfeedback_manage',
         'form': bsp_fdbk_form,
+
+        'list_brands': Brand.objects.filter(organization_id=org.id),
+        "BusinessServicePoint": BusinessServicePoint,
+        "BspTypes": BspTypes,
+        "AWS_S3_CUSTOM_DOMAIN": settings.AWS_S3_CUSTOM_DOMAIN
     }
 
     return render(request, 'feedback/console/bsp_feedback_manage.html', data)

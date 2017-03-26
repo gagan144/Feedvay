@@ -658,6 +658,44 @@ class BusinessServicePoint(Document):
         facebook    = URLField(help_text='Link to facebook page.')
         twitter     = URLField(help_text='Link to twitter page.')
 
+
+    class FeedbackForm(EmbeddedDocument):
+        """
+        Mongodb embedded document to store attached BSP feedback form as well as its
+        change history.
+
+        **Authors**: Gagandeep Singh
+        """
+
+        class ChangeHistory(EmbeddedDocument):
+            """
+            Mongodb embedded document to store BSP feedback form change history.
+
+            **Authors**: Gagandeep Singh
+            """
+            form_id     = IntField(help_text="Instance ID of :class:`feedback.models.BspFeedbackForm` which is currently attached.")
+            dated       = DateTimeField(help_text="Date on which the form was attached.")
+
+            @property
+            def form(self):
+                from feedback.models import BspFeedbackForm
+                return BspFeedbackForm.objects.get(id=self.form_id)
+
+            def __unicode__(self):
+                return "{}".format(self.form_id)
+
+        form_id     = IntField(help_text="Instance ID of :class:`feedback.models.BspFeedbackForm` which is currently attached.")
+        dated       = DateTimeField(help_text="Date on which the form was attached.")
+        change_history = EmbeddedDocumentListField(ChangeHistory, help_text="Feedback form change history. This also includes currently attached form.")
+
+        @property
+        def form(self):
+            from feedback.models import BspFeedbackForm
+            return BspFeedbackForm.objects.get(id=self.form_id)
+
+        def __unicode__(self):
+            return "{}".format(self.form_id)
+
     # --- Enums ---
     ST_OPN_OPEN = 'open'
     ST_OPN_COMING_SOON = 'coming_soon'
@@ -730,7 +768,8 @@ class BusinessServicePoint(Document):
     social      = EmbeddedDocumentField(SocialMedia, avoid=True, help_text='Social media page links.')
     other_details = StringField(help_text='Any other details regarding this BSP.')
 
-    feedback_form_id = IntField(help_text="Feedback form attached to this BSP. Instance ID of :class:`feedback.models.BspFeedbackForm`.")
+    # feedback_form_id = IntField(help_text="Feedback form attached to this BSP. Instance ID of :class:`feedback.models.BspFeedbackForm`.")
+    feedback_form = EmbeddedDocumentField(FeedbackForm, help_text="Fedeback form attached to it.")
 
     # Statuses
     # verification_status = StringField(required=True, confidential=True, help_text='Verification status of the BSP.')
@@ -744,13 +783,13 @@ class BusinessServicePoint(Document):
     modified_on = DateTimeField(default=None, confidential=True, help_text='Date on which this record was modified.')
 
 
-    @property
-    def feedback_form(self):
-        if self.feedback_form_id:
-            from feedback.models import BspFeedbackForm
-            return BspFeedbackForm.objects.get(id=self.feedback_form_id)
-        else:
-            return None
+    # @property
+    # def feedback_form(self):
+    #     if self.feedback_form_id:
+    #         from feedback.models import BspFeedbackForm
+    #         return BspFeedbackForm.objects.get(id=self.feedback_form_id)
+    #     else:
+    #         return None
 
     meta = {
         'indexes':[
@@ -770,7 +809,8 @@ class BusinessServicePoint(Document):
             { 'fields':['avg_rating'], 'cls':False, 'sparse': True },
             { 'fields':['tags'], 'cls':False, 'sparse': True },
 
-            { 'fields':['feedback_form_id'], 'cls':False, 'sparse': True },
+            # { 'fields':['feedback_form_id'], 'cls':False, 'sparse': True },
+            { 'fields':['feedback_form.form_id'], 'cls':False, 'sparse': True },
 
             # 'verification_status',
             'open_status',

@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from market.models import Brand, BusinessServicePoint, get_bsp_labels
 from clients.models import Organization
 from utilities.tastypie_utils import OrgConsoleSessionAuthentication, NoPaginator, GenericTastypieObject
-
+from feedback.models import BspFeedbackForm
 
 class BrandExistenceAPI(ModelResource):
     """
@@ -115,7 +115,7 @@ class OrgBspAPI(resources.MongoEngineResource):
         limit = 0
         max_limit = None
         allowed_methods = ('get',)
-        fields = ('id', 'name', 'type', 'brand_id', 'avg_rating', 'open_status', 'feedback_form_id', 'active', 'created_by', 'created_on', 'modified_on')
+        fields = ('id', 'name', 'type', 'brand_id', 'avg_rating', 'open_status', 'active', 'created_by', 'created_on', 'modified_on')
         authentication = OrgConsoleSessionAuthentication(['market.businessservicepoint.view_businessservicepoint'])
         filtering = {
             'name': ALL,
@@ -123,7 +123,6 @@ class OrgBspAPI(resources.MongoEngineResource):
             'brand_id' : ALL,
             'open_status' : ALL,
             'active' : ALL,
-            'feedback_form_id': ALL
         }
 
     def apply_filters(self, request, applicable_filters):
@@ -135,13 +134,30 @@ class OrgBspAPI(resources.MongoEngineResource):
         base_object_list = super(self.__class__, self).apply_filters(request, applicable_filters)
 
         # --- Advanced filters ---
+        filters_adv = {}
+
+        # Feedback Form
+        feedback_form_id = request.GET.get('feedback_form_id', None)
+        if feedback_form_id:
+            feedback_form_id = None if feedback_form_id == 'None' else int(feedback_form_id)
+            filters_adv['feedback_form.form_id'] = feedback_form_id
 
         # location, attributes
+
+        # Apply
+        if len(filters_adv):
+            base_object_list = base_object_list.filter(__raw__=filters_adv)
         # --- /Advanced filters ---
 
+        # Caches
         request.cache_users = {}
+        list_form_ids = BusinessServicePoint.objects.filter(organization_id=1).distinct('feedback_form.form_id')
+        if len(list_form_ids):
+            request.feedback_forms = BspFeedbackForm.objects.in_bulk(list_form_ids)
+        else:
+            request.feedback_forms = {}
 
-        return base_object_list.only(*self.Meta.fields)
+        return base_object_list.only(*(self.Meta.fields+('feedback_form.form_id',)))
 
     def dehydrate(self, bundle):
         obj = bundle.obj
@@ -157,6 +173,18 @@ class OrgBspAPI(resources.MongoEngineResource):
             'first_name': created_by.first_name,
             'last_name': created_by.last_name,
         }
+
+        if obj.feedback_form and obj.feedback_form.form_id:
+            form_id = obj.feedback_form.form_id
+            bundle.data['feedback_form'] = {
+                "form_id": form_id,
+                "title": bundle.request.feedback_forms[form_id]
+            }
+        else:
+            bundle.data['feedback_form'] = {
+                "form_id": None,
+                "title": None
+            }
 
         return bundle
 

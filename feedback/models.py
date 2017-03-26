@@ -77,7 +77,8 @@ class BspFeedbackForm(Form):
         :return: List<:class:`market.models.BusinessServicePoint`>
         """
         from market.models import BusinessServicePoint
-        return BusinessServicePoint.objects.filter(feedback_form_id=self.id)
+        # return BusinessServicePoint.objects.filter(feedback_form_id=self.id)
+        return BusinessServicePoint.objects.filter(feedback_form__form_id=self.id)
 
     def delete(self, using=None, keep_parents=False):
         raise ValidationError("You cannot delete BSP feedback questionnaire.")

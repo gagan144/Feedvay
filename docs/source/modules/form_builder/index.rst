@@ -31,4 +31,5 @@ Contents
        utils
        views
        templatetags
+       operations
 

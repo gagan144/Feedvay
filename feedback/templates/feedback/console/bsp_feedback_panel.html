@@ -353,8 +353,11 @@
                             records[i]['user_notes'] = $filter('unhtml')(row['user_notes']);
                             records[i]['created_by']['display_name'] = row['created_by']['first_name'] + " " +row['created_by']['last_name'];
                             records[i]['is_ready_html'] = row['is_ready']?'<i class="fa fa-check-circle text-success"></i>':'<i class="fa fa-times-circle text-danger"></i>';
-                            records[i]['actions_html'] = '<a href="' + '#?c={{ request.curr_org.org_uid }}'.replace('999999', row['id']) + '" class="btn btn-primary btn-xs btn-outline grid_btn">Manage</a>' +
+
+                            {% if request.permissions|has_permission:"feedback.bspfeedbackform.change_bspfeedbackform" %}
+                            records[i]['actions_html'] = '<a href="' + '{% url 'console_feedback_bsp_manage' 999999 %}?c={{ request.curr_org.org_uid }}'.replace('999999', row['id']) + '" class="btn btn-primary btn-xs btn-outline grid_btn">Manage</a>' +
                                 '&nbsp;<a href="' + '{% url 'console_feedback_bsp_edit' 999999 %}?c={{ request.curr_org.org_uid }}'.replace('999999', row['id']) + '" class="btn btn-primary btn-xs btn-outline grid_btn">Edit</a>';
+                            {% endif %}
                         }
 
                         // Update grid

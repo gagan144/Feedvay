@@ -70,6 +70,15 @@ class BspFeedbackForm(Form):
             ("view_bspfeedbackform", "Can view BSP feedback questionnaire"),
         )
 
+    def get_attached_bsps(self):
+        """
+        Method to return all BSPs attached to this feedback form.
+
+        :return: List<:class:`market.models.BusinessServicePoint`>
+        """
+        from market.models import BusinessServicePoint
+        return BusinessServicePoint.objects.filter(feedback_form_id=self.id)
+
     def delete(self, using=None, keep_parents=False):
         raise ValidationError("You cannot delete BSP feedback questionnaire.")
 

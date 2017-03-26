@@ -84,6 +84,35 @@ def console_bsp_feedback_create(request, org):
 
 @registered_user_only
 @organization_console('feedback.bspfeedbackform.change_bspfeedbackform')
+def console_bsp_feedback_manage(request, org, form_id):
+    """
+    Django view to manage BSP Feedback form. This page allows user to associate BSP to the form.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+
+    try:
+        filters = copy.deepcopy(request.permissions['feedback.bspfeedbackform']['data_access'])
+        filters['organization_id'] = org.id
+        filters['id'] = form_id
+
+        bsp_fdbk_form = BspFeedbackForm.objects.get(**filters)
+    except (TypeError, BspFeedbackForm.DoesNotExist):
+        # TypeError: If filters is None
+        return HttpResponseForbidden("You do not have permissions to access this page.")
+
+    data = {
+        'app_name': 'app_bspfeedback_manage',
+        'form': bsp_fdbk_form,
+    }
+
+    return render(request, 'feedback/console/bsp_feedback_manage.html', data)
+
+
+@registered_user_only
+@organization_console('feedback.bspfeedbackform.change_bspfeedbackform')
 def console_bsp_feedback_edit(request, org, form_id):
     """
     Django view to edit BSP Feedback form.

@@ -1,0 +1,352 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'console/base.html' %}
+{% load static commontags %}
+
+{% block head %}
+    <!-- Favicon -->
+    <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
+
+    <title>Manage - {{ form.title }} | {{ request.curr_org.name }}</title>
+
+    <link href="{% get_static_prefix %}ui/css/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}ui/css/plugins/datapicker/datepicker3.css" rel="stylesheet">
+{% endblock %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-8">
+            <h2>
+                <i class="ion-clipboard"></i>&nbsp;
+                Manage - {{ form.title }}
+            </h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">Home</a>
+                </li>
+                <li>
+                    Feedback
+                </li>
+                <li>
+                    <a href="{% url 'console_feedback_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/questionnaires">Business or Service Point Feedback</a>
+                </li>
+                <li class="active">
+                    Manage
+                </li>
+            </ol>
+        </div>
+        <div class="col-xs-4">
+            <div class="title-action" style="padding-top: 20px !important;">
+                <a href="{% url 'console_feedback_bsp_edit' form.id %}?c={{ request.curr_org.org_uid }}" class="btn btn-primary">
+                    <i class="fa fa-pencil"></i>
+                    <span class="mobile_hide">&nbsp;Edit questionnaire</span>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+    <div class="wrapper wrapper-content">
+        <div class="container" ng-cloak>
+
+            {% if not form.is_ready %}
+                <div class="alert alert-warning">
+                    <table style="width: 100%">
+                        <tr>
+                            <td valign="top" style="width: 60px;">
+                                <i class="fa fa-exclamation-triangle" style="font-size: 40px;"></i>
+                            </td>
+                            <td valign="top">
+                                <h3 style="margin-top: 0px;margin-bottom: 5px;">
+                                    Your feedback questionnaire is not ready!
+                                </h3>
+                                <div>
+                                    All Business or Service Point using this questionnaire will not display the questionnaire to
+                                    gather user feedback. Please <a href="{% url 'console_feedback_bsp_edit' form.id %}?c={{ request.curr_org.org_uid }}">resolve</a> this quickly.
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            {% endif %}
+
+            <div class="content_box" ng-controller="MainCtrl">
+                <h3 style="margin-top: 0px;">
+                    <i class="fa fa-info"></i>&nbsp;&nbsp;Basic Information
+                </h3>
+                <hr style="margin: 15px 0px 10px 0px;">
+
+                <table class="table table-nobordered" style="margin: 0px 10px;">
+                    <tr>
+                        <td style="font-weight: bold;width: 80px;">
+                            Notes:
+                        </td>
+                        <td>
+                            <div style="border: 1px solid #e5e6e7; border-radius: 3px;padding: 10px;">
+                                {{ form.user_notes|safe }}
+                            </div>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="row">
+                                <div class="col-md-4" align="center">
+                                    <label>Created by:</label>
+                                    <br/>{{ form.created_by.first_name }} {{ form.created_by.last_name }}
+                                </div>
+                                <div class="col-md-4" align="center">
+                                    <label>Created on:</label>
+                                    <br/>{{ form.created_on | date:"d-M-y h:i a" }}
+                                </div>
+                                <div class="col-md-4" align="center">
+                                    <label>Updated on:</label>
+                                    <br/>{{ form.updated_on | date:"d-M-y h:i a" }}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- ===== Associations ===== -->
+                <h3 style="margin-top: 40px;">
+                    <i class="fa fa-link"></i>&nbsp;&nbsp;Association to Business or Service Points
+
+                    <span class="badge badge-primary pull-right">{{ form.get_attached_bsps.count|default:"" }}</span>
+                </h3>
+                <hr style="margin: 15px 0px 10px 0px;">
+
+                <!-- Grid -->
+                <div ng-if="ui_flags.state==ST_AJAX.LOADING" class="loading_big" align="center" valign="middle">
+                    <img src="{% get_static_prefix %}images/loading/spinner_1.gif" style="height: 40px">
+                    <h3 style="margin-top: 20px;font-weight: normal;">Loading Business or Service Points ...</h3>
+                </div>
+                <div ng-if="ui_flags.state==ST_AJAX.ERROR" class="alert alert-danger">
+                    <table style="width: 100%">
+                        <tr>
+                            <td valign="top" style="width: 90px;">
+                                <i class="fa fa-exclamation-triangle" style="font-size: 60px;"></i>
+                            </td>
+                            <td valign="top">
+                                <h2 style="margin-top: 0px;">Error!</h2>
+                                <div>
+                                    {$ ui_flags.error_msg $}
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div ng-show="ui_flags.state==ST_AJAX.COMPLETED">
+                    <div ng-if="list_associated_bsps.length==0" class="alert alert-warning">
+                        <table style="width: 100%">
+                            <tr>
+                                <td valign="top" style="width: 90px;">
+                                    <i class="fa fa-info-circle" style="font-size: 80px;"></i>
+                                </td>
+                                <td valign="top">
+                                    <h2 style="margin-top: 0px;">No associated Business or Service Points!</h2>
+                                    <div>
+                                        This questionnaire is not currently associated with any Business or Service Point.
+                                        Kindly attach this questionnaire to atleast one Business or Service Point.
+
+                                        <br/><br/>
+                                        <button class="btn btn-warning btn-sm">Attach BSP</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div ng-show="list_associated_bsps.length">
+                        <ng-jqgrid
+                                config="grid_associated_bsps.config"
+                                modeldata="list_associated_bsps"
+                                gridid="{$ grid_associated_bsps.gridid $}"
+                                pagerid="{$ grid_associated_bsps.pagerid $}"
+                                api="grid_associated_bsps.gridapi"
+                                filtertoolbar="{stringResult: true, searchOnEnter: false, defaultSearch: 'cn'}"
+                        ></ng-jqgrid>
+                    </div>
+                </div>
+                <!-- /Grid -->
+                <!-- ===== /Associations ===== -->
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block scripts %}
+    <script src="{% get_static_prefix %}ui/js/plugins/datapicker/bootstrap-datepicker.js"></script>
+    <script src="{% get_static_prefix %}ui/js/ui-router/angular-ui-router.min.js"></script>
+
+    <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/i18n/grid.locale-en.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/jquery.jqGrid.min.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/angular-jqgrid/angular-jqgrid.js"></script>
+
+    <script src="{% get_static_prefix %}apps/market/bsp.js"></script>
+    <script>
+        'use strict';
+
+        var APP = angular.module('{{ app_name }}',[
+            'feedvay.uiapp',
+            'feedvay.common',
+            'feedvay.watchdog',
+            'feedvay.market.bsp',
+
+            'ngCookies',
+            'ngMessages',
+            'angular-ladda',
+            'datePicker',
+            'angular-jqgrid',
+        ])
+        .config(function($interpolateProvider, $httpProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+
+            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+        })
+        .run(function($http, $cookies) {
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+            $http.defaults.xsrfCookieName = 'csrftoken';
+            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+        });
+
+
+        APP.controller('MainCtrl', function($scope, ServiceBsp){
+            $scope.ui_flags = {
+                state: null,
+                error_msg: null
+            };
+
+            // Jqgrid
+            $scope.list_associated_bsps = [];
+            $scope.grid_associated_bsps = {
+                gridid: "grid_associated_bsps",
+                pagerid: "grid_associated_bsps_pager",
+                config: {
+                    datatype: "local",
+                    colNames: [
+                        '',
+                        'Name',
+                        'Type',
+                        'Brand',
+                        'Rating',
+                        'Open status',
+                        'Active',
+                        'Created by',
+                        'Created on',
+                        ''
+                    ],
+                    colModel: [
+                        { name: 'id', index: 'id', width: 20, hidden:true, search:false },
+                        { name: 'name', index: 'name', width: 40 },
+                        { name: 'type', index: 'type', width: 25,
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for t in BspTypes.choices %}{{ t.0 }}:{{ t.1 }}{% if not forloop.last %};{% endif %}{% endfor %}" }
+                        },
+                        { name: 'brand_html', index: 'brand_id', width: 30,
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for b in list_brands %}{{ b.id }}:{{ b.name }}{% if not forloop.last %};{% endif %}{% endfor %}" }
+                        },
+                        { name: 'avg_rating', index: 'avg_rating', width: 20 },
+                        { name: 'open_status', index: 'open_status', width: 25,
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for s in BusinessServicePoint.CH_OPEN_STATUS %}{{ s.0 }}:{{ s.1 }}{% if not forloop.last %};{% endif %}{% endfor %}" }
+                        },
+                        { name: 'active_html', index: 'active', width: 20, align:"center",
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;true:Yes;false:No" }
+                        },
+                        { name: 'created_by.display_name', index: 'created_by.display_name', width: 30 },
+                        { name: 'created_on', index: 'created_on', width: 30,
+                            sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-dTH:i:s', newformat: 'd-M-Y' },
+                            searchoptions: {
+                                attr:{ placeholder: 'Select date', readonly:'readonly'},
+                                dataInit: function (elem) {
+                                    $(elem).datepicker({
+                                        format: 'yyyy-mm-dd',
+                                        keyboardNavigation: false,
+                                        autoclose: true,
+                                        todayHighlight: true,
+                                    }).on('changeDate', function(e) {
+                                        $('#grid_associated_bsps')[0].triggerToolbar();
+                                    });
+                                }
+                            }
+                        },
+                        { name: 'actions_html', index: 'actions_html', width: 20, search:false, sortable:false },
+                    ],
+                    viewrecords: true,
+                    sortname: 'registered_user.full_name',
+                    sortorder: "asc",
+                    rowNum: 50,
+                    rowList: [10, 50, 100, 100000],
+                    autowidth : true,
+                    height: '300px',
+                    shrinkToFit: true,
+                    hidegrid: false,
+                    ignoreCase:true
+                },
+                filtertoolbar: {
+                    stringResult: true, searchOnEnter: false, defaultSearch: 'cn',
+                },
+                gridapi: {}
+            };
+
+            $scope.get_associated_bsps = function(){
+                $scope.ui_flags.state = ST_AJAX.LOADING;
+
+                // Prepare filters
+                var filters = {
+                    "feedback_form_id": {{ form.id }}
+                };
+
+                ServiceBsp.get_org_bsps('{{ request.curr_org.org_uid }}', filters).then(
+                    function(response){
+                        var records = response.objects;
+                        $scope.ui_flags.state = ST_AJAX.COMPLETED;
+
+                        // Preprocess
+                        for(var i=0;i<records.length;i++){
+                            var row = records[i];
+
+                            var brand = response.meta.brands[row['brand_id']];
+
+                            if(brand){
+                                records[i]['brand_html'] = '<img src="{{ request.scheme }}://{{ AWS_S3_CUSTOM_DOMAIN }}/'+brand['icon']+'" class="brand_icon" />&nbsp;&nbsp;'+brand['name'];
+                            }
+                            records[i]['created_by']['display_name'] = row['created_by']['first_name'] + " " +row['created_by']['last_name'];
+                            records[i]['active_html'] = row['active']?'<i class="fa fa-check-circle text-success"></i>':'<i class="fa fa-times-circle text-danger"></i>';
+                            records[i]['actions_html'] = '<a target="_blank" href="' + '{% url 'console_market_bsp_edit' 'BSP_ID' %}?c={{ request.curr_org.org_uid }}'.replace('BSP_ID', row['id']) + '" class="btn btn-primary btn-xs btn-outline grid_btn">View</a>';
+                        }
+
+                        // Update grid
+                        $scope.list_associated_bsps = records;
+                        $scope.grid_associated_bsps.gridapi.clear();
+                        $scope.grid_associated_bsps.gridapi.insert(records);
+
+                    },
+                    function(response){
+                        $scope.ui_flags.state = ST_AJAX.ERROR;
+
+                        if(response.status != -1){
+                            $scope.ui_flags.error_msg = "Something went wrong. Our engineers will be informed.";
+                        }else{
+                            $scope.ui_flags.error_msg = "Please check your internet connection.";
+                        }
+
+                    }
+                );
+            };
+            // --- /Methods ---
+
+            $scope.get_associated_bsps();
+
+        });
+
+    </script>
+{% endblock %}

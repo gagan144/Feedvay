@@ -115,7 +115,7 @@ class OrgBspAPI(resources.MongoEngineResource):
         limit = 0
         max_limit = None
         allowed_methods = ('get',)
-        fields = ('id', 'name', 'type', 'brand_id', 'avg_rating', 'open_status', 'active', 'created_by', 'created_on', 'modified_on')
+        fields = ('id', 'name', 'type', 'brand_id', 'avg_rating', 'open_status', 'feedback_form_id', 'active', 'created_by', 'created_on', 'modified_on')
         authentication = OrgConsoleSessionAuthentication(['market.businessservicepoint.view_businessservicepoint'])
         filtering = {
             'name': ALL,
@@ -123,6 +123,7 @@ class OrgBspAPI(resources.MongoEngineResource):
             'brand_id' : ALL,
             'open_status' : ALL,
             'active' : ALL,
+            'feedback_form_id': ALL
         }
 
     def apply_filters(self, request, applicable_filters):
@@ -161,5 +162,7 @@ class OrgBspAPI(resources.MongoEngineResource):
 
 
     def alter_list_data_to_serialize(self, request, data):
-        data['meta']['brands'] = {brand['id']:brand for brand in list(Brand.objects.filter(organization_id=request.curr_org.id).values('id', 'name', 'logo', 'icon'))}
+        if len(data['objects']):
+            data['meta']['brands'] = {brand['id']:brand for brand in list(Brand.objects.filter(organization_id=request.curr_org.id).values('id', 'name', 'logo', 'icon'))}
+
         return data

@@ -80,6 +80,7 @@
                 <hr style="margin: 15px 0px 10px 0px;">
 
                 <table class="table table-nobordered" style="margin: 0px 10px;">
+                    {% if form.user_notes %}
                     <tr>
                         <td style="font-weight: bold;width: 80px;">
                             Notes:
@@ -91,6 +92,7 @@
 
                         </td>
                     </tr>
+                    {% endif %}
                     <tr>
                         <td colspan="2">
                             <div class="row">

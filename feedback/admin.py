@@ -15,21 +15,3 @@ class BspFeedbackFormAdmin(FormAdmin):
     """
     def has_delete_permission(self, request, obj=None):
         return False
-
-
-@admin.register(BspFeedbackAssociation)
-class BspFeedbackAssociationAdmin(admin.ModelAdmin):
-    """
-    Django admin class for BspFeedbackAssociation.
-
-    **Authors**: Gagandeep Singh
-    """
-    list_display = ('form', 'bsp_id')
-    search_fields = ('form__name', 'bsp_id')
-    list_per_page = 20
-
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = self.readonly_fields
-        readonly_fields += tuple([field.name for field in self.model._meta.fields if not field.editable])
-
-        return readonly_fields

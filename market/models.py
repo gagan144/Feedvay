@@ -730,6 +730,8 @@ class BusinessServicePoint(Document):
     social      = EmbeddedDocumentField(SocialMedia, avoid=True, help_text='Social media page links.')
     other_details = StringField(help_text='Any other details regarding this BSP.')
 
+    feedback_form_id = IntField(help_text="Feedback form attached to this BSP. Instance ID of :class:`feedback.models.BspFeedbackForm`.")
+
     # Statuses
     # verification_status = StringField(required=True, confidential=True, help_text='Verification status of the BSP.')
     open_status = StringField(required=True, confidential=True, default=ST_OPN_OPEN, choices=CH_OPEN_STATUS, help_text='Open status of BSP.')
@@ -740,6 +742,15 @@ class BusinessServicePoint(Document):
     # Dates
     created_on  = DateTimeField(default=timezone.now, required=True, confidential=True, help_text='Date on which this record was created in the database.')
     modified_on = DateTimeField(default=None, confidential=True, help_text='Date on which this record was modified.')
+
+
+    @property
+    def feedback_form(self):
+        if self.feedback_form_id:
+            from feedback.models import BspFeedbackForm
+            return BspFeedbackForm.objects.get(id=self.feedback_form_id)
+        else:
+            return None
 
     meta = {
         'indexes':[
@@ -758,6 +769,8 @@ class BusinessServicePoint(Document):
 
             { 'fields':['avg_rating'], 'cls':False, 'sparse': True },
             { 'fields':['tags'], 'cls':False, 'sparse': True },
+
+            { 'fields':['feedback_form_id'], 'cls':False, 'sparse': True },
 
             # 'verification_status',
             'open_status',

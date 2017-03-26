@@ -6,7 +6,8 @@ from utilities.tastypie_utils import OrgConsoleSessionAuthentication, NoPaginato
 import copy
 
 from clients.models import Organization
-from feedback.models import BspFeedbackForm, BspFeedbackAssociation
+from feedback.models import BspFeedbackForm
+from market.models import BusinessServicePoint
 
 class BspFeedbackFormsAPI(ModelResource):
     """
@@ -37,6 +38,24 @@ class BspFeedbackFormsAPI(ModelResource):
         else:
             filters['organization_id'] = org.id
 
+            # Get cache form attachment counts
+            result_aggr = BusinessServicePoint._get_collection().aggregate([
+                {
+                    "$match": { "organization_id": org.id }
+                },
+                {
+                    "$group":{
+                        "_id": { "feedback_form_id": "$feedback_form_id" },
+                        "count": { "$sum": 1 }
+                    }
+                }
+            ])
+            data_form_count = {}
+            for row in result_aggr:
+                data_form_count[row["_id"]["feedback_form_id"]] = row["count"]
+            request.data_form_count = data_form_count
+
+
             base_object_list = base_object_list.filter(**filters)
             return base_object_list.select_related('created_by').only(*self.Meta.fields)
 
@@ -50,6 +69,6 @@ class BspFeedbackFormsAPI(ModelResource):
             'last_name': obj.created_by.last_name,
         }
 
-        bundle.data['attached_bsps'] = BspFeedbackAssociation.objects.filter(form_id=obj.id).count()
+        bundle.data['attached_bsps'] = bundle.request.data_form_count.get(obj.id, None)
 
         return bundle

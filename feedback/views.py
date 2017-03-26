@@ -12,7 +12,7 @@ from languages.models import Language
 from form_builder.models import ThemeSkin
 from form_builder.utils import GeoLocation
 from form_builder import operations as ops
-from feedback.models import BspFeedbackForm, BspFeedbackAssociation
+from feedback.models import BspFeedbackForm
 from utilities.api_utils import ApiResponse
 
 # ==================== Console ====================

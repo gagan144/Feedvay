@@ -96,6 +96,8 @@ url_feedback = [
     url(r'^bsp-feedback/manage/(?P<form_id>[0-9]+)/$', views_feedback.console_bsp_feedback_manage, name='console_feedback_bsp_manage'),
     url(r'^bsp-feedback/edit/(?P<form_id>[0-9]+)/$', views_feedback.console_bsp_feedback_edit, name='console_feedback_bsp_edit'),
     url(r'^bsp-feedback/edit-save/(?P<form_id>[0-9]+)/$', views_feedback.console_bsp_feedback_edit_save, name='console_feedback_bsp_edit_save'),
+    url(r'^bsp-feedback/associate-bsp/(?P<form_id>[0-9]+)/$', views_feedback.console_bsp_feedback_associate_bsp, name='console_feedback_bsp_associate_bsp'),
+    url(r'^bsp-feedback/deassociate-bsp/(?P<form_id>[0-9]+)/$', views_feedback.console_bsp_feedback_deassociate_bsp, name='console_feedback_bsp_deassociate_bsp'),
 
     # Api
     url(r'^api/', include(api_bsp_feedback_forms.urls)),

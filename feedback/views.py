@@ -168,7 +168,7 @@ def console_bsp_feedback_edit_save(request, org, form_id):
             bsp_fdbk_form = BspFeedbackForm.objects.get(**filters)
         except (TypeError, BspFeedbackForm.DoesNotExist):
             # TypeError: If filters is None
-            return HttpResponseForbidden("You do not have permissions to access this page.")
+            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="You do not have permissions to access this page.").gen_http_response()
 
         form_data = json.loads(request.POST['form_data'])
         translation = json.loads(request.POST['translations'])
@@ -179,6 +179,133 @@ def console_bsp_feedback_edit_save(request, org, form_id):
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+
+@registered_user_only
+@organization_console(['feedback.bspfeedbackform.change_bspfeedbackform', 'feedback.bspfeedbackform.add_bspfeedbackform', 'feedback.bspfeedbackform.change_bspfeedbackform'], all_required=False)
+def console_bsp_feedback_associate_bsp(request, org, form_id):
+    """
+    API view to associate BSP to Bsp Feedback Form. User submits selected bsp ids from
+    UI and post request.
+
+    .. note::
+        It is necessary that all requested bsp gets attached. Some might be ignored
+        due to the fact that they have already been associated to the form or user
+        did not have access to some bsps as per his data access filter.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        # Check access to form
+        try:
+            filters = copy.deepcopy(request.permissions['feedback.bspfeedbackform']['data_access'])
+            filters['organization_id'] = org.id
+            filters['id'] = form_id
+
+            bsp_fdbk_form = BspFeedbackForm.objects.get(**filters)
+        except (TypeError, BspFeedbackForm.DoesNotExist):
+            # TypeError: If filters is None
+            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="You do not have permissions to access this page.").gen_http_response()
+
+        # Get all BSP as per access filters
+        try:
+            filters_bsp = copy.deepcopy(request.permissions['market.businessservicepoint']['data_access'])
+            filters_bsp['organization_id'] = org.id
+
+            list_bsp_ids = request.POST.getlist('list_bsp_ids[]')
+            if not len(list_bsp_ids):
+                raise KeyError("'list_bsp_ids' is empty.")
+
+            # Check if data access has pk__in
+            if filters_bsp.has_key('pk__in'):
+                # Take intersection
+                list_bsp_ids = set(filters_bsp['pk__in']).intersection(list_bsp_ids)
+                list_bsp_ids = list(list_bsp_ids)
+
+            filters_bsp['pk__in'] = list_bsp_ids
+        except KeyError:
+            # list_bsp_ids not present in post params or was empty
+            return ApiResponse(status=ApiResponse.ST_BAD_REQUEST, message='Missing parameters.').gen_http_response()
+
+        filters_bsp['feedback_form__form_id__ne'] = bsp_fdbk_form.id
+
+        # Attach bsp to the form
+        list_bsps = BusinessServicePoint.objects.filter(**filters_bsp)
+        count = 0
+        for bsp in list_bsps:
+            bsp.associate_feedback_form(bsp_fdbk_form, request.user)
+            count += 1
+
+        return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok', count=count).gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+
+@registered_user_only
+@organization_console(['feedback.bspfeedbackform.change_bspfeedbackform', 'feedback.bspfeedbackform.add_bspfeedbackform', 'feedback.bspfeedbackform.change_bspfeedbackform'], all_required=False)
+def console_bsp_feedback_deassociate_bsp(request, org, form_id):
+    """
+    API view to de-associate BSP from Bsp Feedback Form. User submits selected bsp ids from
+    UI and post request.
+
+    .. note::
+        It is necessary that all requested bsp gets detached. Some might be ignored
+        due to the fact that they have already been de-associated or user
+        did not have access to some bsps as per his data access filter.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        # Check access to form
+        try:
+            filters = copy.deepcopy(request.permissions['feedback.bspfeedbackform']['data_access'])
+            filters['organization_id'] = org.id
+            filters['id'] = form_id
+
+            bsp_fdbk_form = BspFeedbackForm.objects.get(**filters)
+        except (TypeError, BspFeedbackForm.DoesNotExist):
+            # TypeError: If filters is None
+            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="You do not have permissions to access this page.").gen_http_response()
+
+        # Get all BSP as per access filters
+        try:
+            filters_bsp = copy.deepcopy(request.permissions['market.businessservicepoint']['data_access'])
+            filters_bsp['organization_id'] = org.id
+
+            list_bsp_ids = request.POST.getlist('list_bsp_ids[]')
+            if not len(list_bsp_ids):
+                raise KeyError("'list_bsp_ids' is empty.")
+
+            # Check if data access has pk__in
+            if filters_bsp.has_key('pk__in'):
+                # Take intersection
+                list_bsp_ids = set(filters_bsp['pk__in']).intersection(list_bsp_ids)
+                list_bsp_ids = list(list_bsp_ids)
+
+            filters_bsp['pk__in'] = list_bsp_ids
+        except KeyError:
+            # list_bsp_ids not present in post params or was empty
+            return ApiResponse(status=ApiResponse.ST_BAD_REQUEST, message='Missing parameters.').gen_http_response()
+
+        filters_bsp['feedback_form__form_id'] = bsp_fdbk_form.id
+
+        # Attach bsp to the form
+        list_bsps = BusinessServicePoint.objects.filter(**filters_bsp)
+        count = 0
+        for bsp in list_bsps:
+            bsp.deassociate_feedback_form(confirm=True)
+            count += 1
+
+        return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok', count=count).gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
 # --- /BSP Feedback ---
 # ==================== /Console ====================
 

@@ -659,7 +659,7 @@ class BusinessServicePoint(Document):
         twitter     = URLField(help_text='Link to twitter page.')
 
 
-    class FeedbackForm(EmbeddedDocument):
+    class FeedbackFormEmbd(EmbeddedDocument):
         """
         Mongodb embedded document to store attached BSP feedback form as well as its
         change history.
@@ -674,6 +674,7 @@ class BusinessServicePoint(Document):
             **Authors**: Gagandeep Singh
             """
             form_id     = IntField(help_text="Instance ID of :class:`feedback.models.BspFeedbackForm` which is currently attached.")
+            associated_by_id = IntField(help_text='Instance ID of User who associated this form.')
             dated       = DateTimeField(help_text="Date on which the form was attached.")
 
             @property
@@ -681,10 +682,15 @@ class BusinessServicePoint(Document):
                 from feedback.models import BspFeedbackForm
                 return BspFeedbackForm.objects.get(id=self.form_id)
 
+            @property
+            def associated_by(self):
+                return User.objects.get(id=self.associated_by_id)
+
             def __unicode__(self):
                 return "{}".format(self.form_id)
 
         form_id     = IntField(help_text="Instance ID of :class:`feedback.models.BspFeedbackForm` which is currently attached.")
+        associated_by_id = IntField(help_text='Instance ID of User who associated this form.')
         dated       = DateTimeField(help_text="Date on which the form was attached.")
         change_history = EmbeddedDocumentListField(ChangeHistory, help_text="Feedback form change history. This also includes currently attached form.")
 
@@ -692,6 +698,10 @@ class BusinessServicePoint(Document):
         def form(self):
             from feedback.models import BspFeedbackForm
             return BspFeedbackForm.objects.get(id=self.form_id)
+
+        @property
+        def associated_by(self):
+            return User.objects.get(id=self.associated_by_id)
 
         def __unicode__(self):
             return "{}".format(self.form_id)
@@ -769,7 +779,7 @@ class BusinessServicePoint(Document):
     other_details = StringField(help_text='Any other details regarding this BSP.')
 
     # feedback_form_id = IntField(help_text="Feedback form attached to this BSP. Instance ID of :class:`feedback.models.BspFeedbackForm`.")
-    feedback_form = EmbeddedDocumentField(FeedbackForm, help_text="Fedeback form attached to it.")
+    feedback_form = EmbeddedDocumentField(FeedbackFormEmbd, help_text="Fedeback form attached to it.")
 
     # Statuses
     # verification_status = StringField(required=True, confidential=True, help_text='Verification status of the BSP.')
@@ -782,6 +792,17 @@ class BusinessServicePoint(Document):
     created_on  = DateTimeField(default=timezone.now, required=True, confidential=True, help_text='Date on which this record was created in the database.')
     modified_on = DateTimeField(default=None, confidential=True, help_text='Date on which this record was modified.')
 
+    @property
+    def organization(self):
+        return Organization.objects.get(id=self.organization_id)
+
+    @property
+    def brand(self):
+        return Brand.objects.get(id=self.brand_id)
+
+    @property
+    def created_by_user(self):
+        return User.objects.get(id=self.created_by) if self.created_by else None
 
     # @property
     # def feedback_form(self):
@@ -822,17 +843,65 @@ class BusinessServicePoint(Document):
         'ordering': ['name']
     }
 
-    @property
-    def organization(self):
-        return Organization.objects.get(id=self.organization_id)
+    def __unicode__(self):
+        return "{}".format(self.name)
 
-    @property
-    def brand(self):
-        return Brand.objects.get(id=self.brand_id)
+    # --- Feedback form methods ---
+    def associate_feedback_form(self, form, user):
+        """
+        Method to associate BspFeedbackForm to this BSP.
 
-    @property
-    def created_by_user(self):
-        return User.objects.get(id=self.created_by) if self.created_by else None
+        :param form: Instance of :class:`feedback.models.BspFeedbackForm` that is to be attached.
+        :param user: Instance of :class:`django.contrib.auth.models.User` who attached this form.
+
+        **Authors**: Gagandeep Singh
+        """
+        from feedback.models import BspFeedbackForm
+        if not isinstance(form, BspFeedbackForm):
+            raise ValidationError("'form' is not an instance of BspFeedbackForm.")
+
+        now = timezone.now()
+        embd_feedback_form = self.feedback_form
+        if embd_feedback_form is None:
+            embd_feedback_form = BusinessServicePoint.FeedbackFormEmbd()
+
+        embd_feedback_form.form_id = form.id
+        embd_feedback_form.associated_by_id = user.id
+        embd_feedback_form.dated = now
+        embd_feedback_form.change_history.append(
+            BusinessServicePoint.FeedbackFormEmbd.ChangeHistory(
+                form_id = form.id,
+                associated_by_id = user.id,
+                dated = now,
+            )
+        )
+
+        self.feedback_form = embd_feedback_form
+        self.save()
+
+    def deassociate_feedback_form(self, confirm=False):
+        """
+        Method to de-associate currently attached feedback form. This will
+        ignore if frm is already detached.
+
+        :return: True if action was taken else False
+
+        **Authors**: Gagandeep Singh
+        """
+        if not confirm:
+            raise ValidationError("Please confirm your action.")
+
+        if self.feedback_form and self.feedback_form.form_id:
+            self.feedback_form.form_id = None
+            self.feedback_form.associated_by_id = None
+            self.feedback_form.dated = None
+
+            self.save()
+            return True
+
+        return False
+
+    # --- /Feedback form methods ---
 
     def to_js_json(self, include_list_attr=False):
         """

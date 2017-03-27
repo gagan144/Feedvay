@@ -6,6 +6,7 @@ from tastypie.authentication import SessionAuthentication
 from tastypie import fields
 from django.db.models import Q
 from tastypie_mongoengine import resources
+import copy
 
 from django.contrib.auth.models import User
 
@@ -105,6 +106,11 @@ class OrgBspAPI(resources.MongoEngineResource):
     API resource to list all organization's BSP. Data include only basic fields along with
     filters.
 
+    **Points**:
+
+        - Param ``show_all`` can be used to ignore user data access filters on BSP. This is allowed here
+          so that user can view all bsp in special cases like viewing list of BSP associated to a feedback form.
+
     **Type**: GET
 
     **Authors**: Gagandeep Singh
@@ -116,7 +122,7 @@ class OrgBspAPI(resources.MongoEngineResource):
         max_limit = None
         allowed_methods = ('get',)
         fields = ('id', 'name', 'type', 'brand_id', 'avg_rating', 'open_status', 'active', 'created_by', 'created_on', 'modified_on')
-        authentication = OrgConsoleSessionAuthentication(['market.businessservicepoint.view_businessservicepoint'])
+        authentication = OrgConsoleSessionAuthentication(['market.businessservicepoint'])
         filtering = {
             'name': ALL,
             'type' : ALL,
@@ -130,6 +136,12 @@ class OrgBspAPI(resources.MongoEngineResource):
         org = Organization.objects.get(org_uid=org_uid)
 
         applicable_filters['organization_id'] = org.id
+
+        # data access filters
+        if request.GET.get('show_all', None) is None:
+            filters_bsp = copy.deepcopy(request.permissions['market.businessservicepoint']['data_access'])
+            for key, val in filters_bsp.iteritems():
+                applicable_filters[key] = val
 
         base_object_list = super(self.__class__, self).apply_filters(request, applicable_filters)
 
@@ -157,7 +169,7 @@ class OrgBspAPI(resources.MongoEngineResource):
         else:
             request.feedback_forms = {}
 
-        return base_object_list.only(*(self.Meta.fields+('feedback_form.form_id',)))
+        return base_object_list.only(*(self.Meta.fields+('feedback_form',)))
 
     def dehydrate(self, bundle):
         obj = bundle.obj
@@ -175,15 +187,17 @@ class OrgBspAPI(resources.MongoEngineResource):
         }
 
         if obj.feedback_form and obj.feedback_form.form_id:
-            form_id = obj.feedback_form.form_id
+            fd_form = obj.feedback_form
             bundle.data['feedback_form'] = {
-                "form_id": form_id,
-                "title": bundle.request.feedback_forms[form_id]
+                "form_id": fd_form.form_id,
+                "title": bundle.request.feedback_forms[fd_form.form_id],
+                "dated": fd_form.dated.strftime("%Y-%m-%dT%H:%M:%S")
             }
         else:
             bundle.data['feedback_form'] = {
                 "form_id": None,
-                "title": None
+                "title": None,
+                "dated": None
             }
 
         return bundle

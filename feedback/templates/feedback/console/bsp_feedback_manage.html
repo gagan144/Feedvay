@@ -13,6 +13,8 @@
     <link href="{% get_static_prefix %}lib/bootstrap_3/css/bootstrap-addons.css" rel="stylesheet">
     <link href="{% get_static_prefix %}ui/css/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet">
     <link href="{% get_static_prefix %}ui/css/plugins/datapicker/datepicker3.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}lib/sweetalert/sweetalert.css" rel="stylesheet">
+
 
     <style>
         .brand_icon{
@@ -87,7 +89,8 @@
                 <!-- /Grid -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-white" ng-click="close()">Ok</button>
+                <button type="button" class="btn btn-primary" ng-click="attach_bsp()">Attach Selected BSPs</button>
+                <button type="button" class="btn btn-white" ng-click="close()">Close</button>
             </div>
         </div>
     </script>
@@ -198,7 +201,7 @@
                 <h3 style="margin-top: 40px;">
                     <i class="fa fa-link"></i>&nbsp;&nbsp;Association to Business or Service Points
 
-                    <span class="badge badge-primary pull-right">{{ form.get_attached_bsps.count|default:"" }}</span>
+                    <span class="text-primary pull-right">Total: {$ list_associated_bsps.length $}</span>
                 </h3>
                 <hr style="margin: 15px 0px 10px 0px;">
 
@@ -237,7 +240,7 @@
                                         Kindly attach this questionnaire to atleast one Business or Service Point.
 
                                         <br/><br/>
-                                        <button class="btn btn-warning btn-sm" ng-click="open_attach_bsp()">Attach BSP</button>
+                                        <button class="btn btn-warning btn-sm" ng-click="open_attach_bsp()">Associate BSP</button>
                                     </div>
                                 </td>
                             </tr>
@@ -245,6 +248,16 @@
                     </div>
 
                     <div ng-show="list_associated_bsps.length">
+                        <div style="margin-bottom: 10px;">
+                            <button class="btn btn-primary btn-outline btn-sm" ng-click="open_attach_bsp()">
+                                <i class="fa fa-link"></i> Associate more BSP
+                            </button>
+
+                            <button class="btn btn-danger btn-outline btn-sm" ng-click="deassociate_bsp()">
+                                <i class="fa fa-unlink"></i> De-associate BSP
+                            </button>
+                        </div>
+
                         <ng-jqgrid
                                 config="grid_associated_bsps.config"
                                 modeldata="list_associated_bsps"
@@ -272,6 +285,9 @@
     <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/jquery.jqGrid.min.js"></script>
     <script src="{% get_static_prefix %}lib/angular/angular-jqgrid/angular-jqgrid.js"></script>
 
+    <script src="{% get_static_prefix %}lib/sweetalert/sweetalert.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
+
     <script src="{% get_static_prefix %}apps/market/bsp.js"></script>
     <script>
         'use strict';
@@ -288,6 +304,7 @@
             'datePicker',
             'angular-jqgrid',
             'ui.bootstrap',
+            'oitozero.ngSweetAlert',
         ])
         .config(function($interpolateProvider, $httpProvider) {
             $interpolateProvider.startSymbol('{$');
@@ -304,7 +321,7 @@
         });
 
 
-        APP.controller('MainCtrl', function($scope, ServiceBsp, $uibModal){
+        APP.controller('MainCtrl', function($scope, $http, $uibModal, SweetAlert, ServiceBsp){
             $scope.ui_flags = {
                 state: null,
                 error_msg: null
@@ -327,11 +344,10 @@
                         'Active',
                         'Created by',
                         'Created on',
-                        ''
                     ],
                     colModel: [
                         { name: 'id', index: 'id', width: 20, hidden:true, search:false },
-                        { name: 'name', index: 'name', width: 40 },
+                        { name: 'name_html', index: 'name', width: 40 },
                         { name: 'type', index: 'type', width: 25,
                             stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for t in BspTypes.choices %}{{ t.0 }}:{{ t.1 }}{% if not forloop.last %};{% endif %}{% endfor %}" }
                         },
@@ -362,7 +378,6 @@
                                 }
                             }
                         },
-                        { name: 'actions_html', index: 'actions_html', width: 20, search:false, sortable:false },
                     ],
                     viewrecords: true,
                     sortname: 'name',
@@ -373,7 +388,8 @@
                     height: '300px',
                     shrinkToFit: true,
                     hidegrid: false,
-                    ignoreCase:true
+                    ignoreCase:true,
+                    multiselect: true
                 },
                 filtertoolbar: {
                     stringResult: true, searchOnEnter: false, defaultSearch: 'cn',
@@ -386,7 +402,8 @@
 
                 // Prepare filters
                 var filters = {
-                    "feedback_form_id": {{ form.id }}
+                    "feedback_form_id": {{ form.id }},
+                    "show_all": true
                 };
 
                 ServiceBsp.get_org_bsps('{{ request.curr_org.org_uid }}', filters).then(
@@ -398,14 +415,14 @@
                         for(var i=0;i<records.length;i++){
                             var row = records[i];
 
-                            var brand = response.meta.brands[row['brand_id']];
+                            records[i]['name_html'] = '<a target="_blank" href="' + '{% url 'console_market_bsp_edit' 'BSP_ID' %}?c={{ request.curr_org.org_uid }}'.replace('BSP_ID', row['id']) + '">' + row['name'] + '</a>';
 
+                            var brand = response.meta.brands[row['brand_id']];
                             if(brand){
                                 records[i]['brand_html'] = '<img src="{{ request.scheme }}://{{ AWS_S3_CUSTOM_DOMAIN }}/'+brand['icon']+'" class="brand_icon" />&nbsp;&nbsp;'+brand['name'];
                             }
                             records[i]['created_by']['display_name'] = row['created_by']['first_name'] + " " +row['created_by']['last_name'];
                             records[i]['active_html'] = row['active']?'<i class="fa fa-check-circle text-success"></i>':'<i class="fa fa-times-circle text-danger"></i>';
-                            records[i]['actions_html'] = '<a target="_blank" href="' + '{% url 'console_market_bsp_edit' 'BSP_ID' %}?c={{ request.curr_org.org_uid }}'.replace('BSP_ID', row['id']) + '" class="btn btn-primary btn-xs btn-outline grid_btn">View</a>';
                         }
 
                         // Update grid
@@ -434,24 +451,102 @@
                     controller: 'AttachBspCtrl',
                     size: 'xlg',
                     backdrop: 'static',
-                    windowClass: 'modal_win_editor',
-{#                    resolve: {#}
-{#                        question: function() {#}
-{#                            return angular.copy(question);#}
-{#                        },#}
-{#                        answer_type: function() {#}
-{#                            return answer_type;#}
-{#                        }#}
-{#                    }#}
+                    keyboard: false,
                 });
 
                 modalInstance.result.then(
                     function (result) {
-                        console.log(result);
+                        if(result.refresh_grid){
+                            $scope.get_associated_bsps();
+                        }
+
                     }, function () {
                         // Modal Closed
                     }
                 );
+            };
+
+
+            $scope.deassociate_bsp = function(){
+                var list_bsp_ids = jQuery("#grid_associated_bsps").jqGrid('getGridParam','selarrrow');
+                if(list_bsp_ids.length==0){
+                    SweetAlert.swal({
+                        title: "Denied!",
+                        text: "Please select atleast one Business or Service Point.",
+                        type: 'error'
+                    });
+                    return;
+                }
+
+                SweetAlert.swal({
+                    title: "De-associate selected Business or service Points?",
+                    text: "Are you sure you want to detach <b>"+list_bsp_ids.length + "</b> BSPs from this '{{ form.title }}' feedback questionnaire?",
+                    type: 'warning',
+                    html: true,
+                    confirmButtonColor: "#DD6B55",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, attach!",
+                    cancelButtonText: "No, cancel!",
+                    closeOnConfirm: false,
+                    closeOnCancel: true,
+                    allowEscapeKey: false,
+                    showLoaderOnConfirm: true,
+                },
+                function (isConfirm) {
+                    if (isConfirm) {
+
+                        $http.post(
+                            "{% url 'console_feedback_bsp_deassociate_bsp' form.id %}?c={{ request.curr_org.org_uid }}",
+                            $.param({"list_bsp_ids": list_bsp_ids})
+                        )
+                        .success(function (response, status, headers, config) {
+                            if(response.status=='success'){
+                                var count = response.count;
+
+                                var title = 'Success!';
+                                var text = '<b>' + count + "</b> Business or Service Point(s) were successfully de-associated.";
+
+                                if(response.count != list_bsp_ids.length){
+                                    title = 'Partial success!';
+                                    text = '<b>' + count + '/' + list_bsp_ids.length + '</b> BSP requested where successfully de-associated. This is' +
+                                            ' because some were already de-associated or you did not have permissions to access them.';
+                                }
+
+                                SweetAlert.swal({
+                                    title: title,
+                                    text: text,
+                                    type: 'success',
+                                    html: true
+                                });
+
+                                $scope.get_associated_bsps();
+
+                            }else{
+                                swal.close();
+                                $.growl.error({
+                                    title: '<i class="fa fa-ban"></i> Denied!',
+                                    message: response.message
+                                });
+                            }
+                        })
+                        .error(function (response, status, headers, config) {
+                            swal.close();
+                            if(status != -1){
+                                $.growl.error({
+                                    title: '<i class="fa fa-signal"></i> Network error!',
+                                    message: "Please check your internet connection."
+                                });
+                            }else{
+                                $.growl.error({
+                                    title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                    message: "Something went wrong. Our engineers will be informed."
+                                });
+                            }
+                        });
+
+                    }
+
+                });
             };
             // --- /Methods ---
 
@@ -459,7 +554,7 @@
 
         });
 
-        APP.controller('AttachBspCtrl', function($scope, $rootScope, $uibModalInstance, ServiceBsp){
+        APP.controller('AttachBspCtrl', function($scope, $rootScope, $http, $uibModalInstance, SweetAlert,ServiceBsp){
             $scope.testing = 'hello';
 
             $scope.ui_flags = {
@@ -484,11 +579,10 @@
                         'Active',
                         'Attached Form',
                         'Attached on',
-                        ''
                     ],
                     colModel: [
                         { name: 'id', index: 'id', width: 20, hidden:true, search:false },
-                        { name: 'name', index: 'name', width: 40 },
+                        { name: 'name_html', index: 'name', width: 40 },
                         { name: 'type', index: 'type', width: 25,
                             stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for t in BspTypes.choices %}{{ t.0 }}:{{ t.1 }}{% if not forloop.last %};{% endif %}{% endfor %}" }
                         },
@@ -502,7 +596,7 @@
                         { name: 'active_html', index: 'active', width: 20, align:"center",
                             stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;true:Yes;false:No" }
                         },
-                        { name: 'feedback_form.title', index: 'feedback_form.title', width: 30 },
+                        { name: 'feedback_form.title', index: 'feedback_form.title', width: 40 },
                         { name: 'feedback_form.dated', index: 'feedback_form.dated', width: 30,
                             sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-dTH:i:s', newformat: 'd-M-Y' },
                             searchoptions: {
@@ -519,7 +613,6 @@
                                 }
                             }
                         },
-                        { name: 'actions_html', index: 'actions_html', width: 15, search:false, sortable:false },
                     ],
                     viewrecords: true,
                     sortname: 'name',
@@ -531,7 +624,7 @@
                     shrinkToFit: true,
                     hidegrid: false,
                     ignoreCase:true,
-                    multiselect: true
+                    multiselect: true,
                 },
                 filtertoolbar: {
                     stringResult: true, searchOnEnter: false, defaultSearch: 'cn',
@@ -555,13 +648,13 @@
                         for(var i=0;i<records.length;i++){
                             var row = records[i];
 
-                            var brand = response.meta.brands[row['brand_id']];
+                            records[i]['name_html'] = '<a target="_blank" href="' + '{% url 'console_market_bsp_edit' 'BSP_ID' %}?c={{ request.curr_org.org_uid }}'.replace('BSP_ID', row['id']) + '">' + row['name'] + '</a>';
 
+                            var brand = response.meta.brands[row['brand_id']];
                             if(brand){
                                 records[i]['brand_html'] = '<img src="{{ request.scheme }}://{{ AWS_S3_CUSTOM_DOMAIN }}/'+brand['icon']+'" class="brand_icon" />&nbsp;&nbsp;'+brand['name'];
                             }
                             records[i]['active_html'] = row['active']?'<i class="fa fa-check-circle text-success"></i>':'<i class="fa fa-times-circle text-danger"></i>';
-                            records[i]['actions_html'] = '<a target="_blank" href="' + '{% url 'console_market_bsp_edit' 'BSP_ID' %}?c={{ request.curr_org.org_uid }}'.replace('BSP_ID', row['id']) + '" class="btn btn-primary btn-xs btn-outline grid_btn">View</a>';
                         }
 
                         // Update grid
@@ -586,16 +679,89 @@
             $scope.get_bsps();
 
             // --- Dialog methods ---
-            $scope.save = function (form_obj) {
-                if(form_obj.$invalid){
-                    return false;
+            $scope.attach_bsp = function () {
+                var list_bsp_ids = jQuery("#grid_bsps").jqGrid('getGridParam','selarrrow');
+                if(list_bsp_ids.length==0){
+                    SweetAlert.swal({
+                        title: "Denied!",
+                        text: "Please select atleast one Business or Service Point.",
+                        type: 'error'
+                    });
+                    return;
                 }
-                // close modal
-{#                $uibModalInstance.close();#}
-                $uibModalInstance.close({
-                    "question": angular.copy($scope.question),
-                    "ques_translations": angular.copy($scope.ques_translations)
+
+                SweetAlert.swal({
+                    title: "Associate selected Business or service Points?",
+                    text: "Are you sure you want to attach <b>"+list_bsp_ids.length + "</b> BSPs to '{{ form.title }}' feedback questionnaire?",
+                    type: 'warning',
+                    html: true,
+                    confirmButtonColor: "#DD6B55",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, attach!",
+                    cancelButtonText: "No, cancel!",
+                    closeOnConfirm: false,
+                    closeOnCancel: true,
+                    allowEscapeKey: false,
+                    showLoaderOnConfirm: true,
+                },
+                function (isConfirm) {
+                    if (isConfirm) {
+
+                        $http.post(
+                            "{% url 'console_feedback_bsp_associate_bsp' form.id %}?c={{ request.curr_org.org_uid }}",
+                            $.param({"list_bsp_ids": list_bsp_ids})
+                        )
+                        .success(function (response, status, headers, config) {
+                            if(response.status=='success'){
+                                var count = response.count;
+
+                                var title = 'Success!';
+                                var text = '<b>' + count + "</b> Business or Service Point(s) were successfully associated.";
+
+                                if(response.count != list_bsp_ids.length){
+                                    title = 'Partial success!';
+                                    text = '<b>' + count + '/' + list_bsp_ids.length + '</b> BSP requested where successfully associated. This is' +
+                                            ' because some were already associated or you did not have permissions to access them.';
+                                }
+
+                                SweetAlert.swal({
+                                    title: title,
+                                    text: text,
+                                    type: 'success',
+                                    html: true
+                                });
+
+                                $uibModalInstance.close({
+                                    "refresh_grid": true
+                                });
+
+                            }else{
+                                swal.close();
+                                $.growl.error({
+                                    title: '<i class="fa fa-ban"></i> Denied!',
+                                    message: response.message
+                                });
+                            }
+                        })
+                        .error(function (response, status, headers, config) {
+                            swal.close();
+                            if(status != -1){
+                                $.growl.error({
+                                    title: '<i class="fa fa-signal"></i> Network error!',
+                                    message: "Please check your internet connection."
+                                });
+                            }else{
+                                $.growl.error({
+                                    title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                    message: "Something went wrong. Our engineers will be informed."
+                                });
+                            }
+                        });
+
+                    }
+
                 });
+
             };
 
             $scope.close = function () {

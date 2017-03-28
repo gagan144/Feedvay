@@ -52,7 +52,7 @@ def create_update_form(form, form_data, translation):
         form.user_notes = form_data.get('user_notes', None)
 
         # -- languages --
-        language_codes = form_data['language_codes']
+        language_codes = form_data.get('language_codes', [])
         if len(language_codes):
             list_langs = []
             for code in language_codes:

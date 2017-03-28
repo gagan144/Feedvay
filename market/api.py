@@ -149,10 +149,22 @@ class OrgBspAPI(resources.MongoEngineResource):
         filters_adv = {}
 
         # Feedback Form
-        feedback_form_id = request.GET.get('feedback_form_id', None)
-        if feedback_form_id:
+        if request.GET.get('feedback_form_id', None):
+            feedback_form_id = request.GET['feedback_form_id']
             feedback_form_id = None if feedback_form_id == 'None' else int(feedback_form_id)
             filters_adv['feedback_form.form_id'] = feedback_form_id
+        elif request.GET.get('feedback_form_id__ne', None):
+            feedback_form_id = request.GET['feedback_form_id__ne']
+            if feedback_form_id == 'None':
+                pass
+            else:
+                try:
+                    filters_adv['feedback_form.form_id'] = {
+                        "$ne": int(feedback_form_id)
+                    }
+                except ValueError:
+                    # Int parse error
+                    pass
 
         # location, attributes
 

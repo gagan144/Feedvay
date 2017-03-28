@@ -637,6 +637,7 @@
 
                 // Prepare filters
                 var filters = {
+                    "feedback_form_id__ne": "{{ form.id }}"
                 };
 
                 ServiceBsp.get_org_bsps('{{ request.curr_org.org_uid }}', filters).then(

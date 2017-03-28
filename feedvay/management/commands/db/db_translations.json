@@ -538,5 +538,39 @@
         "always_include_in_form": true, 
         "unique_id": "error-invalid-values", 
         "is_paragraph": false
+    },
+    {
+        "sentence": "Please provide your rating:",
+        "translations": {
+            "guj": "તમારી રેટિંગ પ્રદાન કરો:",
+            "pan": "ਆਪਣੇ ਰੇਟਿੰਗ ਪ੍ਰਦਾਨ ਕਰੋ:",
+            "hin": "Āpaṇē rēṭiga pradāna karō:"
+        },
+        "is_public": true,
+        "list_language_codes": [
+            "guj",
+            "hin",
+            "pan"
+        ],
+        "always_include_in_form": true,
+        "unique_id": "feedback-rating",
+        "is_paragraph": false
+    },
+    {
+        "sentence": "Please write your review:",
+        "translations": {
+            "guj": "તમારી સમીક્ષા લખો કૃપા કરીને",
+            "pan": "ਆਪਣੇ ਸਮੀਖਿਆ ਲਿਖਣ ਦੀ ਕਿਰਪਾ:",
+            "hin": "कृपया अपनी समीक्षा लिखें:"
+        },
+        "is_public": true,
+        "list_language_codes": [
+            "guj",
+            "hin",
+            "pan"
+        ],
+        "always_include_in_form": true,
+        "unique_id": "feedback-write-review",
+        "is_paragraph": false
     }
 ]

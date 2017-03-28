@@ -13,6 +13,7 @@ from form_builder.models import ThemeSkin
 from form_builder.utils import GeoLocation
 from form_builder import operations as ops
 from feedback.models import BspFeedbackForm
+from feedback.fixed_questions import *
 from market.models import BusinessServicePoint, BspTypes, Brand
 from utilities.api_utils import ApiResponse
 
@@ -49,7 +50,8 @@ def console_bsp_feedback_new(request, org):
         'app_name': 'app_form_builder',
         'TYPE': 'BSP_FEEDBACK',
         'list_languages': Language.objects.filter(active=True),
-        'GeoLocation': GeoLocation
+        'GeoLocation': GeoLocation,
+        'BspFixedQuestions': BspFixedQuestions
     }
 
     return render(request, 'form_builder/form_designer.html', data)
@@ -143,7 +145,8 @@ def console_bsp_feedback_edit(request, org, form_id):
         'TYPE': 'BSP_FEEDBACK',
         'form': bsp_fdbk_form,
         'list_languages': Language.objects.filter(active=True),
-        'GeoLocation': GeoLocation
+        'GeoLocation': GeoLocation,
+        'BspFixedQuestions': BspFixedQuestions
     }
 
     return render(request, 'form_builder/form_designer.html', data)

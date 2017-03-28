@@ -1,6 +1,6 @@
 <div ui-tree-handle class="form_component_content">
-    <a class="pull-right btn btn-white btn-xs component_controls" data-nodrag ng-click="remove_question(this, component)"><span class="fa fa-trash"></span></a>
-    <a class="pull-right btn btn-white btn-xs component_controls" data-nodrag ng-click="edit_question(this, component)"><span class="fa fa-pencil"></span></a>
+    <a ng-if="!disable_edit" class="pull-right btn btn-white btn-xs component_controls" data-nodrag ng-click="remove_question(this, component)"><span class="fa fa-trash"></span></a>
+    <a ng-if="!disable_edit" class="pull-right btn btn-white btn-xs component_controls" data-nodrag ng-click="edit_question(this, component)"><span class="fa fa-pencil"></span></a>
 
     <div class="form-group" ng-init="trans_text = Translations[component.text_translation_id]" id="component_{$ component.label $}">
         <label for="fld_{$ component.label $}" class="control-label">

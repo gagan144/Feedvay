@@ -21,9 +21,6 @@
     - BSP
         - Purpose of visit -------- ???
 
-- Form builder
-    - Datetime to be changed to timezone
-
 - Survey
     - Create: survey title already existing - autocomplete type options
     - API - Access authentication

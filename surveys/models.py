@@ -350,7 +350,7 @@ class Survey(models.Model):
             self.update_qrcode(auto_save=False)
 
         # Check surveyor type
-        if self.surveyor_type == Survey.SURVYR_COMPANY:
+        if self.surveyor_type == Survey.SURVYR_ORGANIZATION:
             raise NotImplementedError("Surveyor as company is not implemented yet.")
         elif self.surveyor_type == Survey.SURVYR_BRAND:
             if self.brand is None:

@@ -7,11 +7,15 @@ from django.db import models
 from django_mysql import models as models57
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.db.models.signals import post_save
+
+from mongoengine.document import *
+from mongoengine.fields import *
 
 from django.contrib.auth.models import User
 
 from clients.models import Organization
-from form_builder.models import Form
+from form_builder.models import Form, BaseResponse
 
 
 # ========== BSP Feedback ==========
@@ -82,5 +86,17 @@ class BspFeedbackForm(Form):
 
     def delete(self, using=None, keep_parents=False):
         raise ValidationError("You cannot delete BSP feedback questionnaire.")
+post_save.connect(BspFeedbackForm.post_save, sender=BspFeedbackForm)
+
+
+class BspFeedbackResponse(BaseResponse):
+    """
+    Model to store BSP feedback response. It inherits all properties of :class:`form_builder.models.BaseResponse`.
+
+    **Authors**: Gagandeep Singh
+    """
+    @property
+    def form(self):
+        return BspFeedbackForm.objects.get(id=self.form_id)
 
 # ========== /BSP Feedback ==========

@@ -105,7 +105,7 @@
                 <!-- Info Cards -->
                 <div class="col-sm-3">
                     <!-- Respondent -->
-                    {% with reg_user=response.get_respondent %}
+                    {% with user=response.respondent %}
 
                     <div class="panel panel-default">
                         <div class="panel-heading panel_heading_white ">
@@ -113,12 +113,12 @@
                         </div>
                         <div class="panel-body">
                             <h3 style="margin-top: 0px;">
-                                {{ reg_user.user.first_name }} {{ reg_user.user.last_name }}
+                                {{ user.first_name }} {{ user.last_name }}
                             </h3>
                             <p style="line-height: 1.6;padding-left: 10px;margin-bottom: 0px;">
-                                <i class="fa fa-phone list_md_icon"></i> {{ reg_user.user.username }}
-                                {% if reg_user.user.email %}
-                                    <br/><i class="fa fa-envelope list_md_icon"></i> {{ reg_user.user.email }}
+                                <i class="fa fa-phone list_md_icon"></i> {{ user.username }}
+                                {% if user.email %}
+                                    <br/><i class="fa fa-envelope list_md_icon"></i> {{ user.email }}
                                 {% endif %}
                             </p>
 

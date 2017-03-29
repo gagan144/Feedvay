@@ -12,6 +12,10 @@ class Command(BaseCommand):
     """
     Django management command to apply all algorithms on pending surveys responses.
 
+    Command::
+
+        python manage.py apply_algo_surveys
+
     **Authors**: Gagandeep Singh
     """
     help = "Apply all algorithms on pending survey responses."

@@ -25,6 +25,8 @@ from django.conf import settings
 import random
 from django.forms.models import model_to_dict
 
+from django.contrib.auth.models import User
+
 from accounts.models import RegisteredUser
 from form_builder import form_schema
 from form_builder.form_exceptions import DuplicateVariableName, ExpressionCompileError
@@ -97,7 +99,7 @@ class Theme(models.Model):
         self.code = slugify(self.code)
 
         if self.id:
-            self.updated_on = datetime.now()
+            self.updated_on = timezone.now()
         return super(self.__class__, self).save(*args, **kwargs)
 
 def post_save_Theme(sender, instance, **kwargs):
@@ -150,7 +152,7 @@ class ThemeSkin(models.Model):
 
     def save(self, *args, **kwargs):
         if self.id:
-            self.updated_on = datetime.now()
+            self.updated_on = timezone.now()
         return super(self.__class__, self).save(*args, **kwargs)
 
 
@@ -403,7 +405,7 @@ class Form(models57.Model):
             raise ValidationError("GPS must be enabled before it is marked as mandatory.")
 
         if self.id:
-            self.updated_on = datetime.now()
+            self.updated_on = timezone.now()
 
         super(Form, self).clean()
 
@@ -421,7 +423,7 @@ class Form(models57.Model):
         schema_obj = instance.schema_obj
         if schema_obj is not None and len(schema_obj) != 0:
             for fld in iterate_form_fields(schema_obj):
-                print "\tPushing :" , fld.label
+                # print "\tPushing :" , fld.label
                 FormQuestion.objects.update_or_create(
                     form_id = instance.id,
                     label = fld.label,
@@ -444,7 +446,7 @@ class Form(models57.Model):
                 #     text_translation_id = fld.text_translation_id,
                 #     required = fld.required,
                 #     request_response = fld.request_response,
-                #     dated = datetime.now(),
+                #     dated = timezone.now(),
                 #     upsert = True
                 # )
 post_save.connect(Form.post_save, sender=Form)
@@ -765,8 +767,16 @@ class BaseResponse(Document):
     process_flags   = EmbeddedDocumentField(ProcessFlags, help_text='Flags containing logs for process that are yet to be applied.As the process get completed, key is marked false.')
 
     # Dates
-    created_on      = DateTimeField(default=datetime.now, required=True, help_text='Date on which this record was created in the database.')
+    created_on      = DateTimeField(default=timezone.now, required=True, help_text='Date on which this record was created in the database.')
     updated_on      = DateTimeField(default=None, help_text='Date on which this record was modified.')
+
+    @property
+    def form(self):
+        return Form.objects.get(id=self.form_id)
+
+    @property
+    def respondent(self):
+        return User.objects.get(username=self.user.username)
 
     meta = {
         'abstract': True,
@@ -796,20 +806,20 @@ class BaseResponse(Document):
     def __unicode__(self):
         return "{} - {}".format(self.form_id, str(self.pk))
 
-    def get_respondent(self):
-        """
-        Method to get respondent that is, :class:`accounts.models.RegisteredUser` instance.
+    # def get_respondent(self):
+    #     """
+    #     Method to get respondent that is, :class:`accounts.models.RegisteredUser` instance.
+    #
+    #     **Authors**: Gagandeep Singh
+    #     """
+    #     return RegisteredUser.objects.get(user__username=self.user.username)
 
-        **Authors**: Gagandeep Singh
-        """
-        return RegisteredUser.objects.get(user__username=self.user.username)
-
-    def get_form(self):
-        """
-        Method to get form to which this response belongs to.
-        :return: Instance of :class:`form_builder.models.Form`
-        """
-        return Form.objects.get(id=self.form_id)
+    # def get_form(self):
+    #     """
+    #     Method to get form to which this response belongs to.
+    #     :return: Instance of :class:`form_builder.models.Form`
+    #     """
+    #     return Form.objects.get(id=self.form_id)
 
     def get_duration_time(self):
         """
@@ -885,7 +895,7 @@ class BaseResponse(Document):
         """
 
         if self.pk:
-            self.updated_on = datetime.now()
+            self.updated_on = timezone.now()
 
         # Timezone validation
         if not validate_timezone_offset_string(self.timezone_offset):
@@ -898,7 +908,8 @@ class BaseResponse(Document):
         if self.pk is None:
             # Cache all current form questions
             cache_curr_questions = {}
-            form = self.get_form()
+            # form = self.get_form()
+            form = self.form
             for fq in form.get_formquestions(only_current=True): # Current questions
                 cache_curr_questions[fq.label] = fq
             # Old questions must not be included since processing for them has now been turned off.
@@ -955,7 +966,7 @@ class BaseResponse(Document):
                 )
 
                 if has_ai:
-                        answer_doc.ai = ai
+                    answer_doc.ai = ai
 
                 list_answers.append(answer_doc)
 

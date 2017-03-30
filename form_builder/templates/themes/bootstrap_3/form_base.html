@@ -398,6 +398,18 @@
                             {% endfor %}
                         {% endtree %}
 
+                        {% if context == 'BSP_FEEDBACK' %}
+                            <div>
+                                <hr style="margin-top: 0px;"/>
+                                {% for ques in FIXED_QUESTIONS %}
+                                    {% with template_name=ques.widget|stringformat:"s"|add:".html" %}
+                                        {% include "themes/bootstrap_3/fields/"|add:template_name with node=ques form_name="form_test" %}
+                                    {% endwith %}
+                                {% endfor %}
+
+                            </div>
+                        {% endif %}
+
                         <div ng-if="!form_submitted">
                             <hr/>
                             <div class="alert alert-danger" style="padding: 10px;" ng-show="form_test.$submitted && form_test.$invalid">

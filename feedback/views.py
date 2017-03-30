@@ -2,10 +2,12 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from django.shortcuts import render
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponse
 from django.conf import settings
 import json
 import copy
+
+from mongoengine.queryset import DoesNotExist as DoesNotExist_mongo
 
 from accounts.decorators import registered_user_only, organization_console
 from languages.models import Language
@@ -15,7 +17,67 @@ from form_builder import operations as ops
 from feedback.models import BspFeedbackForm
 from feedback.fixed_questions import *
 from market.models import BusinessServicePoint, BspTypes, Brand
+from accounts.models import RegisteredUser
 from utilities.api_utils import ApiResponse
+
+#TODO: Mobile/Web access checks
+def open_bsp_feedback(request, bsp_id):
+    """
+    View to open BSP feedback form. Incase where there is no feedback form associated
+    with BSP, Rating-Review page is displayed.
+
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    # Gather data
+    try:
+        username = request.GET['username']
+
+        bsp = BusinessServicePoint.objects.get(pk=bsp_id)
+    except KeyError, DoesNotExist_mongo:
+        # Key Error: username not present,  DoesNotExist_mongo: Invalid BSP
+        return HttpResponseForbidden("Invalid page request.")
+
+    # Get feedback form.
+    try:
+        form = bsp.feedback_form.form
+    except AttributeError:
+        # AttributeError: bsp.feedback_form is None
+        form = None
+
+    # Check form exists and is ready
+    if form and form.is_ready:
+        # Feedback form found, prepare form render data
+        template = 'themes/{}/form_base.html'.format(form.theme_skin.theme.code)
+
+        lookup_translations = form.get_translation_lookup()
+        for ques in BspFixedQuestions.questions:
+            trans = ques.translation
+            # print trans.pk
+            lookup_translations[str(trans.pk)] = trans
+
+        data = {
+            'context': 'BSP_FEEDBACK',
+            'form': form,
+            'title': bsp.name,
+            'lookup_translations': lookup_translations,
+            'FIXED_QUESTIONS': BspFixedQuestions.questions,
+            'DEFAULT_LANGUAGE_CODE': Language.DEFAULT_LANGUAGE_CODE,    # Fallback language incase translation not found
+
+            # TODO: Set user properties
+            'reg_user': RegisteredUser.objects.get(user__username=username),
+            'USER_DEFAULT_LANG_CODE': 'eng'
+        }
+        return render(request, template, data)
+    else:
+        # Form is None; render default rating-review form.
+        raise NotImplementedError("No Feedback Form associated: Render rating-review form.")  #TODO: Render rating-review form
+
+
+
+
 
 # ==================== Console ====================
 # --- BSP Feedback ---
@@ -311,4 +373,5 @@ def console_bsp_feedback_deassociate_bsp(request, org, form_id):
 
 # --- /BSP Feedback ---
 # ==================== /Console ====================
+
 

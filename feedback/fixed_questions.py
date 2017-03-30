@@ -10,6 +10,7 @@ class BspFixedQuestions(object):
         RatingFormField(
             label = 'rating',
             text_translation_id = str(Translation.objects.get(unique_id='feedback-rating').pk),
+            default_error_message = 'Rating required.',
             required = True,
             choice_type = MCQ_Types.INT,
             max_score = 5,
@@ -18,7 +19,7 @@ class BspFixedQuestions(object):
         TextAreaFormField(
             label = 'review',
             text_translation_id = str(Translation.objects.get(unique_id='feedback-write-review').pk),
-            description = 'Please write your review',
+            default_error_message = 'Please write something',
             widget = FieldWidgets.HTML_TEXTAREA,
             ai_directives = None,
         )

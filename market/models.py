@@ -696,8 +696,11 @@ class BusinessServicePoint(Document):
 
         @property
         def form(self):
-            from feedback.models import BspFeedbackForm
-            return BspFeedbackForm.objects.get(id=self.form_id)
+            if self.form_id:
+                from feedback.models import BspFeedbackForm
+                return BspFeedbackForm.objects.get(id=self.form_id)
+            else:
+                return None
 
         @property
         def associated_by(self):

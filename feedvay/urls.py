@@ -33,6 +33,7 @@ urlpatterns = [
     url(r'^forms/', include('form_builder.urls')),
     url(r'^surveys/', include('surveys.urls')),
     url(r'^geography/', include('geography.urls')),
+    url(r'^feedback/', include('feedback.urls')),
 
     # Admin and staff
     url(r'^admin/', admin.site.urls),

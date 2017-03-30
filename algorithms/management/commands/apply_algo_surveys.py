@@ -10,7 +10,7 @@ from algorithms.text import *
 
 class Command(BaseCommand):
     """
-    Django management command to apply all algorithms on pending surveys responses.
+    Django management command to apply all algorithms on surveys responses which are yet not processed.
 
     Command::
 
@@ -22,10 +22,23 @@ class Command(BaseCommand):
     requires_system_checks = True
     can_import_settings = True
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--limit",
+            dest = "limit",
+            help = "Limit size of records to be processed. Default: 10",
+            type = int,
+            default = 10
+        )
+
     # ----- Main executor -----
     def handle(self, *args, **options):
+        limit = int(options['limit'])
+
+        self.stdout.write(self.style.SUCCESS('Retrieving pending survey responses (limit: {})...'.format(limit)))
+
         # Get all pending survey responses
-        list_responses = SurveyResponse.objects.filter(process_flags__text_analysis=True)[:1]
+        list_responses = SurveyResponse.objects.filter(process_flags__text_analysis=True)[:limit]
 
 
         summary = {

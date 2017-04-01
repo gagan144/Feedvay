@@ -62,10 +62,12 @@ var MobileAPI = {
         console.log("Response Json:", response_dict_str);
 
         var url = null;
-        if(context=='SURVEY'){
-            url = '/surveys/submit-response/';
+        switch (context){
+            case 'SURVEY': url='/surveys/submit-response/'; break;
+            case 'BSP_FEEDBACK': url='/feedback/submit-bsp-response/'; break;
         }
-        else{
+
+        if(url == null){
             alert("Invalid form context");
             return;
         }

@@ -95,6 +95,14 @@ class BspFeedbackResponse(BaseResponse):
 
     **Authors**: Gagandeep Singh
     """
+    bsp_id      = StringField(required=True, help_text='BSP ID for which feedback was made.')
+
+    meta = {
+        'indexes':[
+            'bsp_id',
+        ]
+    }
+
     @property
     def form(self):
         return BspFeedbackForm.objects.get(id=self.form_id)

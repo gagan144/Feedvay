@@ -7,4 +7,5 @@ from feedback import views
 
 urlpatterns = [
     url(r'^bsp/(?P<bsp_id>\w+)/$', views.open_bsp_feedback, name='feedback_open_bsp'),
+    url(r'^submit-bsp-response/$', views.submit_bsp_feedback_response, name='feedback_submit_bsp_response')
 ]

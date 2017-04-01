@@ -44,7 +44,7 @@ class Like(Document):
     object_id   = StringField(required=True, help_text='Instance ID of the entity which is liked.')
 
     user_id     = IntField(required=True, help_text='Instance ID of User who rated the entity.')
-    created_on  = DateTimeField(required=True, default=timezone.now, help_text='Date on which this review was made.')
+    dated       = DateTimeField(required=True, help_text='Date on which this review was made.')
 
     @property
     def user(self):
@@ -54,7 +54,7 @@ class Like(Document):
         'indexes':[
             { 'fields':['content_type', 'object_id', 'user_id'], 'cls':False, 'unique': True },
             'user_id',
-            'created_on'
+            '-dated'
         ]
     }
 
@@ -133,7 +133,11 @@ class Rating(Document):
     )
 
     CH_RATING = (
-        (i,i) for i in range(1, 6, 1)
+        (1, 1),
+        (2, 2),
+        (3, 3),
+        (4, 4),
+        (5, 5),
     )
 
     # --- Fields ---
@@ -143,7 +147,7 @@ class Rating(Document):
     rating      = IntField(choices=CH_RATING, help_text='Rating on the scale of 1-5.')
 
     user_id     = IntField(required=True, help_text='Instance ID of User who rated the entity.')
-    created_on  = DateTimeField(required=True, default=timezone.now, help_text='Date on which this review was made.')
+    dated       = DateTimeField(required=True, help_text='Date on which this review was made.')
 
     @property
     def user(self):
@@ -156,7 +160,7 @@ class Rating(Document):
         'indexes':[
             ['content_type', 'object_id'],
             'user_id',
-            'created_on'
+            '-dated'
         ]
     }
 
@@ -219,7 +223,7 @@ class Comment(Document):
     user_id     = IntField(required=True, help_text='Instance ID of User who rated the entity.')
 
     hidden      = BooleanField(default=False, help_text='Set true to hide this review.')
-    created_on  = DateTimeField(required=True, default=timezone.now, help_text='Date on which this record was created.')
+    dated       = DateTimeField(required=True, help_text='Date on which this record was created.')
     modified_on = DateTimeField(default=None, help_text='Date on which this record was modified.')
 
     @property
@@ -235,7 +239,7 @@ class Comment(Document):
             { 'fields':['ai_pending'], 'cls':False, 'sparse': True },
             'user_id',
             'hidden',
-            'created_on'
+            '-dated'
         ]
     }
 

@@ -130,7 +130,7 @@ def submit_survey_response(request):
                     language_code   = response_json["language_code"],
 
                     response_uid    = response_uid,
-                    constants       = response_json['constants'],
+                    constants       = response_json.get('constants', None),
                     answers         = response_json['answers'],
                     answers_other   = response_json['answers_other'],
                     calculated_fields = response_json['calculated_fields'],

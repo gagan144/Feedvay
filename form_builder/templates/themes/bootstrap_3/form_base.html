@@ -917,13 +917,15 @@
                             {% if context == 'SURVEY' %}
                                 survey_uid: '{{ survey.survey_uid }}',
                                 phase_id: '{{ phase.id }}',
+                            {% elif context == 'BSP_FEEDBACK' %}
+                                bsp_id: '{{ bsp.pk }}',
                             {% endif %}
                             form_id : '{{ form.id }}',
                             form_version : '{{ form.version }}',
 
                             app_version: MobileAPI.app_version(),
                             user : {
-                                "user_id": "{{ reg_user.id }}",
+                                "user_id": "{{ reg_user.user.id }}",
                                 "username": "{{ reg_user.user.username }}",
                                 "user_fullname": "{{ reg_user.user.first_name }} {{ reg_user.user.last_name }}"
                             },

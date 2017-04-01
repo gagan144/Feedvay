@@ -6,6 +6,7 @@ from django.http import HttpResponseForbidden, HttpResponse
 from django.conf import settings
 import json
 import copy
+from django.views.decorators.csrf import csrf_exempt
 
 from mongoengine.queryset import DoesNotExist as DoesNotExist_mongo
 
@@ -18,6 +19,7 @@ from feedback.models import BspFeedbackForm
 from feedback.fixed_questions import *
 from market.models import BusinessServicePoint, BspTypes, Brand
 from accounts.models import RegisteredUser
+from storeroom.models import ResponseQueue
 from utilities.api_utils import ApiResponse
 
 #TODO: Mobile/Web access checks
@@ -60,6 +62,8 @@ def open_bsp_feedback(request, bsp_id):
 
         data = {
             'context': 'BSP_FEEDBACK',
+            'bsp': bsp,
+
             'form': form,
             'title': bsp.name,
             'lookup_translations': lookup_translations,
@@ -77,6 +81,32 @@ def open_bsp_feedback(request, bsp_id):
 
 
 
+# TODO: Mobile/Web access checks
+@csrf_exempt
+def submit_bsp_feedback_response(request):
+    """
+    API view to submit BSP feedback response. This view receives response
+    submitted by the user and is queued for processing.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+
+    if request.method.lower() == 'post':
+        token = request.POST['token']
+
+        response_data = request.POST['response']
+
+        resp_queue = ResponseQueue.objects.create(
+            context = ResponseQueue.CT_BSP_FEEDBACK,
+            data    = response_data,
+        )
+
+        return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Response queued for processing.').gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
 
 # ==================== Console ====================

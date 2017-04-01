@@ -215,5 +215,5 @@ class ResponseQueue(Document):
         if self.status == ResponseQueue.ST_NEW:
             raise ValidationError("You cannot delete response with status 'new'")
 
-        return super(ResponseQueue, self).delete(write_concern)
+        return super(ResponseQueue, self).delete(**write_concern)
 

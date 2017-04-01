@@ -104,6 +104,7 @@ class Like(Document):
         **Authors**: Gagandeep Singh
         """
         if document.content_type == Entities.COMMENT:
+            # Comment
             entity = Entities.get_model(document.content_type)
 
             entity._get_collection().find_one_and_update(
@@ -112,9 +113,10 @@ class Like(Document):
                     '$inc':{
                         'total_likes': -1
                     },
-                    '$set': {
-                        'modified_on': timezone.now()
-                    },
+                    # Not modifying 'modified_on' field here
+                    # '$set': {
+                    #     'modified_on': timezone.now()
+                    # },
                 }
             )
 
@@ -164,6 +166,62 @@ class Rating(Document):
         ]
     }
 
+    def save(self, *args, **kwargs):
+        """
+        Save method for this model.
+
+        **Authors**: Gagandeep Singh
+        """
+        if self.pk is not None:
+            raise ValidationError("You cannot update rating record.")
+
+        return super(Rating, self).save(*args, **kwargs)
+
+    @classmethod
+    def post_save(cls, sender, document, **kwargs):
+        """
+        Post-save method for this model.
+
+        **Authors**: Gagandeep Singh
+        """
+        # Only if like is newly created
+        if kwargs.get('created', False):
+            if document.content_type == Entities.BSP:
+                # Business or Service Point
+                entity_model = Entities.get_model(document.content_type)
+
+                # Get average rating
+                result_aggr = Rating._get_collection().aggregate([
+                    {
+                        "$match": {
+                            "content_type": Entities.BSP,
+                            "object_id": document.object_id
+                        }
+                    },
+                    {
+                        "$group": {
+                            "_id": None, "avg_rating" : { "$avg": "$rating" }
+                        }
+                    }
+                ])
+
+                avg_rating = 0
+                for row in result_aggr:
+                    avg_rating = row["avg_rating"]
+                    break
+                print avg_rating
+
+                entity_model._get_collection().find_one_and_update(
+                    filter = {'_id': ObjectId(document.object_id)},
+                    update = {
+                        '$set':{
+                            'avg_rating': avg_rating
+                        }
+                        # Not modifying 'modified_on' field here
+                    }
+                )
+
+
     def delete(self, **write_concern):
         """
         Pre-delete method. (Not allowed)
@@ -171,6 +229,7 @@ class Rating(Document):
         **Authors**: Gagandeep Singh
         """
         raise ValidationError("You cannot delete this record.")
+mongo_signals.post_save.connect(Rating.post_save, sender=Rating)
 
 
 class Comment(Document):

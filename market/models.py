@@ -691,6 +691,7 @@ class BusinessServicePoint(Document):
 
         form_id     = IntField(help_text="Instance ID of :class:`feedback.models.BspFeedbackForm` which is currently attached.")
         associated_by_id = IntField(help_text='Instance ID of User who associated this form.')
+        ai_comment_directives = DictField(help_text='AI directives (:class:`form_builder.fields.AiTextDirectives`) specifying AI to be applied on feedback comments.')
         dated       = DateTimeField(help_text="Date on which the form was attached.")
         change_history = EmbeddedDocumentListField(ChangeHistory, help_text="Feedback form change history. This also includes currently attached form.")
 
@@ -850,11 +851,12 @@ class BusinessServicePoint(Document):
         return "{}".format(self.name)
 
     # --- Feedback form methods ---
-    def associate_feedback_form(self, form, user):
+    def associate_feedback_form(self, form, ai_directives, user):
         """
         Method to associate BspFeedbackForm to this BSP.
 
         :param form: Instance of :class:`feedback.models.BspFeedbackForm` that is to be attached.
+        :param ai_directives: Instance of :class:`form_builder.fields.AiTextDirectives` for comments. If 'None' settings are not changed.
         :param user: Instance of :class:`django.contrib.auth.models.User` who attached this form.
 
         **Authors**: Gagandeep Singh
@@ -870,6 +872,9 @@ class BusinessServicePoint(Document):
 
         embd_feedback_form.form_id = form.id
         embd_feedback_form.associated_by_id = user.id
+        if ai_directives is not None:
+            embd_feedback_form.ai_comment_directives = ai_directives.to_json()
+
         embd_feedback_form.dated = now
         embd_feedback_form.change_history.append(
             BusinessServicePoint.FeedbackFormEmbd.ChangeHistory(

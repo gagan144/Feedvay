@@ -80,6 +80,206 @@
         </div>
     </script>
     <!-- /EditDetails -->
+
+    <!-- Feedback Questionnaire -->
+    <script type="text/ng-template" id="tmpl_feedback_questionnaire">
+        <div>
+            <h2 style="margin-top: 0px;">
+                <i class="ion-clipboard"></i>&nbsp;&nbsp;
+                Feedback Questionnaire
+            </h2>
+            <hr style="margin: 15px 0px 10px 0px;"/>
+
+            <div>
+                {% if bsp.feedback_form.form_id %}
+                    <table class="table table-nobordered" style="font-size: 17px;">
+                        <tbody>
+                            <tr>
+                                <td class="semi_bold" style="width: 150px;" valign="top">Questionnaire:</td>
+                                <td valign="top">
+                                    <a href="{% url 'console_feedback_bsp_manage' bsp.feedback_form.form_id %}?c={{ request.curr_org.org_uid }}" target="_blank" style="color: inherit !important;"> {{ bsp.feedback_form.form.title }}</a>
+
+                                    <div style="font-size: 12px !important;margin-top: 5px;">
+                                        <a ng-show="!select_questionnaire" href="javascript: void(0);" ng-click="select_questionnaire=true;">
+                                            <i class="fa fa-pencil"></i>&nbsp;
+                                            Change
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="alert alert-info">
+                        <table style="width: 100%">
+                            <tr>
+                                <td valign="top" style="width: 90px;">
+                                    <i class="fa fa-info-circle" style="font-size: 80px;"></i>
+                                </td>
+                                <td valign="top">
+                                    <h2 style="margin-top: 0px;">No feedback questionnaire associated!</h2>
+                                    <div>
+                                        <b>{{ bsp.name }}</b> is not associated with any feedback questionnaire. So, as per now
+                                        only <b>Rating</b> and <b>Review</b> are captured from customer as feedback.
+                                        <br/><br/>
+                                        <button class="btn btn-info btn-xs">Associate Questionnaire</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                {% endif %}
+
+                <div ng-show="select_questionnaire" class="panel panel-default">
+                    <div class="panel-heading">
+                        Change feedback questionnaire
+                        <a href="javascript: void(0);" class="close-link pull-right" style="color: inherit" ng-click="select_questionnaire=false">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                    <div class="panel-body">
+                        {$ data $}
+                        <form name="form_change_questnr" class="form-horizontal" novalidate>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Questionnaire<span class="required">*</span>:</label>
+                                <div class="col-sm-8">
+                                    <select ng-model="data.form_id" name="form_id" class="form-control" required>
+                                        <option value="">Select type</option>
+                                        {% for form in list_feedback_forms %}
+                                            {% if form.id != bsp.feedback_form.form_id %}
+                                                <option value="{{ form.id }}">{{ form.title }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                    <p class="help-block">
+                                        Select feedback questionnaire that you want to associated with '{{ bsp.name }}'.
+                                    </p>
+
+                                    <div ng-messages="form_change_questnr.form_id.$dirty && form_change_questnr.form_id.$error" role="alert" class="error_messages">
+                                        <label ng-message="required" class="error">Please select a feedback questionnaire.</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Artificial Intelligence:</label>
+                                <div class="col-sm-8" style="padding-top: 7px;">
+                                    <p>
+                                        Select the following AI to be applied on <b>review</b> given by the customer during
+                                        feedback.
+                                    </p>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">
+                                            Sentiment:
+                                        </label>
+                                        <div class="col-sm-9">
+                                            <div class="checkbox checkbox-primary">
+                                                <input id="fld_ai_text_sentiment" type="checkbox" ng-model="data.ai_directives.text_sentiment">
+                                                <label for="fld_ai_text_sentiment">
+                                                    Quickly and efficiently determine if text is positive or negative.
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">
+                                            Emotion:
+                                        </label>
+                                        <div class="col-sm-9">
+                                            <div class="checkbox checkbox-primary">
+                                                <input id="fld_ai_text_emotion" type="checkbox" ng-model="data.ai_directives.text_emotion">
+                                                <label for="fld_ai_text_emotion">
+                                                    Predicts the emotion expressed by the respondent in the answer.
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">
+                                            Personality:
+                                        </label>
+                                        <div class="col-sm-9">
+                                            <div class="checkbox checkbox-primary">
+                                                <input id="fld_ai_text_personality" type="checkbox" ng-model="data.ai_directives.text_personality">
+                                                <label for="fld_ai_text_personality">
+                                                    Predicts the personality traits of the respondent based on his answers.
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">
+                                            Personas:
+                                        </label>
+                                        <div class="col-sm-9">
+                                            <div class="checkbox checkbox-primary">
+                                                <input id="fld_ai_text_personas" type="checkbox" ng-model="data.ai_directives.text_personas">
+                                                <label for="fld_ai_text_personas">
+                                                    Predicts the Myers Briggs persona of the respondent
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                            <div class="form-group">
+                                <div class="col-sm-8 col-sm-offset-2">
+                                    <p ng-if="flags.status==ST_AJAX.ERROR" class="text-danger">
+                                        <i class="fa fa-exclamation-triangle"></i> {$ flags.error_msg $}
+                                    </p>
+
+                                    <button ladda="flags.status==ST_AJAX.LOADING" class="btn btn-primary ladda-button" type="button" ng-disabled="form_change_questnr.$invalid || templateError" ng-click="submit_change_questnr(form_change_questnr);" data-style="zoom-in">
+                                        Change
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+            {% if bsp.feedback_form.change_history|length %}
+            <div style="margin-top: 40px;">
+                <h3 class="semi_bold"><i class="fa fa-history"></i> Change History</h3>
+                <hr style="margin: 10px 0px;"/>
+
+                <table class="table table-stripped table-condensed">
+                    <thead>
+                        <tr>
+                            <th style="width: 170px;">Date</th>
+                            <th>Questionnaire</th>
+                            <th style="width: 200px;">Associated By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ch in bsp.feedback_form.change_history %}
+                            <tr>
+                                <td>{{ ch.dated|date:"d-M-y h:i A" }}</td>
+                                <td>
+                                    <a href="{% url 'console_feedback_bsp_manage' ch.form_id %}?c={{ request.curr_org.org_uid }}" target="_blank">{{ ch.form.title }}</a>
+                                </td>
+                                <td>
+                                    {% with user=ch.associated_by %}
+                                        {{ user.first_name }} {{ user.last_name }}
+                                    {% endwith %}
+                                </td>
+
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+
+        </div>
+    </script>
+    <!-- /Feedback Questionnaire -->
+
     <!-- ========== /Templates ========== -->
 {% endblock %}
 
@@ -117,6 +317,9 @@
                         </a>
                         <a ui-sref="edit" class="list-group-item" ng-class="{'active': $state.current.name=='edit'}">
                             <i class="fa fa-pencil list_md_icon"></i> Edit Details
+                        </a>
+                        <a ui-sref="feedback_questionnaire" class="list-group-item" ng-class="{'active': $state.current.name=='feedback_questionnaire'}">
+                            <i class="ion-clipboard list_md_icon"></i> Feedback Questionnaire
                         </a>
                     </div>
                 </td>
@@ -194,6 +397,12 @@
                     templateUrl: "tmpl_edit_details",
                     data: { pageTitle: 'Edit - {{ bsp.name }} | {{ request.curr_org.name }}' },
                     controller: EditDetailsCtrl,
+                })
+                .state('feedback_questionnaire', {
+                    url: "/feedback_questionnaire",
+                    templateUrl: "tmpl_feedback_questionnaire",
+                    data: { pageTitle: 'Feedback Questionnaire - {{ bsp.name }} | {{ request.curr_org.name }}' },
+                    controller: FeedbackQuestionnaireCtrl,
                 });
 
             // ----- /Routing -----
@@ -391,5 +600,58 @@
 
         }
         // --- /Edit Details ---
+
+        // --- FeedbackQuestionnaireCtrl ---
+        function FeedbackQuestionnaireCtrl($scope, $http, $window){
+            $scope.flags = {
+                status: null,
+                error_msg: null
+            };
+
+            $scope.data = {
+                {% if bsp.feedback_form.ai_comment_directives %}
+                ai_directives: {{ bsp.feedback_form.ai_comment_directives|jsonify|safe }}
+                {% endif %}
+            };
+
+            $scope.submit_change_questnr = function(form_obj){
+                if (form_obj.$invalid) {
+                    return false;
+                }
+
+                $scope.flags.status = ST_AJAX.LOADING;
+                $scope.flags.error_msg = null;
+
+                $http.post(
+                    "{% url 'console_feedback_bsp_associate_form' bsp.id %}?c={{ request.curr_org.org_uid }}",
+                    $.param({
+                        "data": JSON.stringify($scope.data)
+                    })
+                )
+                .success(function (response, status, headers, config) {
+                    if(response.status=='success'){
+                        $window.location.reload();
+                    }else{
+                        $scope.flags.status = ST_AJAX.ERROR;
+                        $scope.flags.error_msg = response.message;
+                    }
+                })
+                .error(function (response, status, headers, config) {
+                    if(status != -1){
+                        $scope.flags.status = ST_AJAX.ERROR;
+                        $scope.flags.error_msg = "Something went wrong. Our engineers will be informed.";
+                    }else{
+                        $scope.flags.status = null;
+                        $.growl.error({
+                            title: '<i class="fa fa-signal"></i> Network error!',
+                            message: "Please check your internet connection."
+                        });
+                    }
+                });
+
+
+            }
+        }
+        // --- /FeedbackQuestionnaireCtrl ---
     </script>
 {% endblock %}

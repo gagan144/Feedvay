@@ -15,6 +15,7 @@ from languages.models import Language
 from form_builder.models import ThemeSkin
 from form_builder.utils import GeoLocation
 from form_builder import operations as ops
+from form_builder.fields import AiTextDirectives
 from feedback.models import BspFeedbackForm
 from feedback.fixed_questions import *
 from market.models import BusinessServicePoint, BspTypes, Brand
@@ -330,7 +331,7 @@ def console_bsp_feedback_associate_bsp(request, org, form_id):
         list_bsps = BusinessServicePoint.objects.filter(**filters_bsp)
         count = 0
         for bsp in list_bsps:
-            bsp.associate_feedback_form(bsp_fdbk_form, request.user)
+            bsp.associate_feedback_form(bsp_fdbk_form, None, request.user)
             count += 1
 
         return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok', count=count).gen_http_response()
@@ -397,6 +398,48 @@ def console_bsp_feedback_deassociate_bsp(request, org, form_id):
             count += 1
 
         return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok', count=count).gen_http_response()
+    else:
+        # GET Forbidden
+        return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+@registered_user_only
+@organization_console('market.businessservicepoint.change_businessservicepoint')
+def console_bsp_feedback_associate_form(request, org, bsp_id):
+    """
+    API view to associate BSP feedback form to a BSP.
+
+    **Type**: POST
+
+    **Authors**: Gagandeep Singh
+    """
+    if request.method.lower() == 'post':
+        # Check access to bsp
+        try:
+            filters = copy.deepcopy(request.permissions['market.businessservicepoint']['data_access'])
+            filters['organization_id'] = org.id
+            filters['pk'] = bsp_id
+
+            bsp = BusinessServicePoint.objects.get(**filters)
+        except (TypeError, DoesNotExist_mongo):
+            # TypeError: If filters is None
+            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="You do not have permissions to access this page.").gen_http_response()
+
+        try:
+            data = json.loads(request.POST['data'])
+
+            form = BspFeedbackForm.objects.get(id=data['form_id'])
+            ai_directives_json = data.get('ai_directives', {})
+            ai_directives = AiTextDirectives(ai_directives_json)
+
+            bsp.associate_feedback_form(form, ai_directives, request.user)
+
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok').gen_http_response()
+
+        except KeyError:
+            return ApiResponse(status=ApiResponse.ST_BAD_REQUEST, message='Missing parameters.').gen_http_response()
+        except BspFeedbackForm.DoesNotExist:
+            return ApiResponse(status=ApiResponse.ST_BAD_REQUEST, message='Invalid BSP.').gen_http_response()
+
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()

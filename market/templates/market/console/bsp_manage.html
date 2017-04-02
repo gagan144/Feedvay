@@ -1,0 +1,395 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'console/base.html' %}
+{% load static commontags %}
+
+{% block head %}
+    <!-- Favicon -->
+    <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
+
+    <title page-title></title>
+
+    <link href="{% get_static_prefix %}lib/select2/css/select2.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% get_static_prefix %}lib/select2/css/select2-bootstrap.css">
+
+    <link rel="stylesheet" href="{% get_static_prefix %}ui/css/plugins/ui-select/select.min.css">
+
+    <!-- ========== Templates ========== -->
+    <!-- Dashboard -->
+    <script type="text/ng-template" id="tmpl_dashboard">
+        <div>
+            <h2 style="margin-top: 0px;">
+                <i class="fa fa-dashboard"></i>&nbsp;
+                Dashboard
+            </h2>
+            <hr style="margin-top: 15px;"/>
+        </div>
+    </script>
+    <!-- /Dashboard -->
+
+    <!-- EditDetails -->
+    <script type="text/ng-template" id="tmpl_edit_details">
+        <div>
+            <h2 style="margin-top: 0px;">
+                <i class="fa fa-pencil"></i>&nbsp;
+                Edit Details
+            </h2>
+            <hr style="margin-top: 15px;"/>
+
+            <form name="form_create_edit_bsp" class="form-horizontal" novalidate>
+
+                <div ng-include="'{% get_static_prefix %}partials/market/bsp/create_edit_bsp.html'" ng-init="ACTION='edit'"></div>
+
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <table style="width: 100%">
+                            <tr>
+                                <td style="width: 40%;">
+                                    <label>Created By:</label>
+                                    {% with creator=bsp.created_by_user %}
+                                    <br/>{{ creator.first_name }} {{ creator.last_name }}
+                                    {% endwith %}
+                                </td>
+                                <td style="width: 40%;">
+                                    <label>Created On:</label>
+                                    <br/>{{ bsp.created_on|date:"d-M-Y h:i A" }}
+                                </td>
+                                <td style="width: 20%;">
+                                    <label>Last Modified On:</label>
+                                    <br/>{% if bsp.modified_on %}{{ bsp.modified_on|date:"d-M-Y h:i A" }}{% else %}<i>Not modified yet</i>{% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <hr class="hr-line-dashed"/>
+                <div>
+                    <p ng-if="flags.status==ST_AJAX.ERROR" class="text-danger">
+                        <i class="fa fa-exclamation-triangle"></i> {$ flags.error_msg $}
+                    </p>
+
+                    <button ladda="flags.status==ST_AJAX.LOADING" class="btn btn-primary ladda-button" type="button" ng-disabled="form_create_edit_bsp.$invalid || templateError" ng-click="submit_bsp(form_create_edit_bsp);" data-style="zoom-in">
+                        Save
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </script>
+    <!-- /EditDetails -->
+    <!-- ========== /Templates ========== -->
+{% endblock %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-12">
+            <h2>
+                <img src="{% get_static_prefix %}images/bsp_types/{{ bsp.type }}-md.png" style="height: 30px;">&nbsp;
+                {{ bsp.name }}
+                <small style="color: #bbb;font-size: 13px;">({{ bsp.type|title }})</small>
+            </h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">Home</a>
+                </li>
+                <li>
+                    <a href="{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/bsps">Business or Service Point</a>
+                </li>
+                <li class="active">
+                    {{ bsp.name }}
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="wrapper_admin_content" ng-controller="MainCtrl" ng-cloak>
+        <table class="table_tab_admin">
+            <tr>
+                <td class="admin_tabs" valign="top">
+                    <div class="list-group list_group_tabs" >
+                        <a ui-sref="dashboard" class="list-group-item" ng-class="{'active': $state.current.name=='dashboard'}">
+                            <i class="fa fa-dashboard list_md_icon"></i> Dashboard
+                        </a>
+                        <a ui-sref="edit" class="list-group-item" ng-class="{'active': $state.current.name=='edit'}">
+                            <i class="fa fa-pencil list_md_icon"></i> Edit Details
+                        </a>
+                    </div>
+                </td>
+                <td class="admin_content" valign="top">
+                    <!-- Partial view div -->
+                    <div ui-view></div>
+                    <!-- Partial view div -->
+                </td>
+            </tr>
+        </table>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% get_static_prefix %}ui/js/ui-router/angular-ui-router.min.js"></script>
+    <script src="{% get_static_prefix %}lib/select2/js/select2.min.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/checklist-model.js"></script>
+    <script src="https://maps.google.com/maps/api/js?libraries=placeses,visualization,drawing,geometry,places"></script>
+    <script src="{% get_static_prefix %}lib/maps/ng-map/ng-map.min.js"></script>
+
+    <script src="{% get_static_prefix %}ui/js/plugins/ui-select/select.min.js"></script>
+
+{#    <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/i18n/grid.locale-en.js"></script>#}
+{#    <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/jquery.jqGrid.min.js"></script>#}
+{#    <script src="{% get_static_prefix %}lib/angular/angular-jqgrid/angular-jqgrid.js"></script>#}
+
+
+    <script src="{% get_static_prefix %}apps/geography/geography.js"></script>
+{#    <script src="{% get_static_prefix %}apps/market/bsp.js"></script>#}
+
+    <script>
+        'use strict';
+
+        var APP = angular.module('{{ app_name }}',[
+            'feedvay.uiapp',
+            'feedvay.common',
+            'feedvay.watchdog',
+            'feedvay.geography',
+
+            'ngCookies',
+            'ngMessages',
+            'ui.bootstrap',
+            'ui.router',                    // Routing
+            'oc.lazyLoad',                  // ocLazyLoad
+            'angular-ladda',
+            'checklist-model',
+            'ui.select',
+            'ngSanitize',
+            'ngMap'
+        ])
+        .config(function($interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+
+            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+
+            // ----- Routing -----
+            $urlRouterProvider.otherwise("/dashboard");   // Default state to load
+
+            $ocLazyLoadProvider.config({
+                // Set to true if you want to see what and when is dynamically loaded
+                debug: false
+            });
+
+            $stateProvider
+                .state('dashboard', {
+                    url: "/dashboard",
+                    templateUrl: "tmpl_dashboard",
+                    data: { pageTitle: 'Dashboard - {{ bsp.name }} | {{ request.curr_org.name }}' },
+                    controller: DashboardCtrl,
+                })
+                .state('edit', {
+                    url: "/edit",
+                    templateUrl: "tmpl_edit_details",
+                    data: { pageTitle: 'Edit - {{ bsp.name }} | {{ request.curr_org.name }}' },
+                    controller: EditDetailsCtrl,
+                });
+
+            // ----- /Routing -----
+        })
+        .run(function($rootScope, $http, $cookies, $state) {
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+            $http.defaults.xsrfCookieName = 'csrftoken';
+            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+{#            $rootScope.ST_AJAX = ST_AJAX;#}
+
+            // ----- Routing -----
+            $rootScope.$state = $state;
+
+            $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
+                event.preventDefault();
+                //console.log(error);
+
+                if(error.status == -1){
+                    $.growl.error({
+                        title: '<i class="fa fa-signal"></i> Network error!',
+                        message: "Please check your internet connection."
+                    });
+                }else{
+                    $.growl.error({
+                        title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                        message: "Something went wrong. Our engineers will be informed."
+                    });
+                }
+
+            });
+            // ----- /Routing -----
+
+        });
+
+
+        APP.controller('MainCtrl', function($scope){
+
+        });
+
+        // ========== State Controllers ==========
+
+        // --- DashboardCtrl ---
+        function DashboardCtrl($scope){
+
+        }
+        // --- /DashboardCtrl ---
+
+        // --- Edit Details ---
+        function EditDetailsCtrl($scope, $http, $window, ServiceGeoLocation){
+
+            $scope.$on('templateError', function(e, data) {
+                $scope.templateError = true;
+{#                $scope.templateErrorUrl = data.url;#}
+            });
+
+            // Variables
+            $scope.summernote_config = {
+                height: 150,
+                toolbar: [
+                    ['headline', ['style']],
+                    ['style', ['bold', 'italic', 'underline']],
+                    ['textsize', ['fontsize']],
+                    ['fontclr', ['color']],
+                    ['alignment', ['ul', 'ol', 'paragraph', 'lineheight']],
+                    ['height', ['height']],
+                    ['insert', ['link']],
+                    ['help', ['help']]
+                ]
+            };
+
+            $scope.list_bsp_type = [
+                {% for t in BspTypes.choices %}
+                    {"id":"{{ t.0 }}", "name": "{{ t.1 }}"}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ];
+
+            $scope.list_brands = [
+                {% for b in list_brands %}
+                    {"id": {{ b.id }}, "name": "{{ b.name }}"}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ];
+
+            $scope.contact_types = [
+                {% for ct in ContactEmbDoc.CH_TYPE %}
+                    {"id":"{{ ct.0 }}", "name": "{{ ct.1 }}"}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ];
+
+            $scope.ORG_UID = '{{ request.curr_org.org_uid }}';
+
+            $scope.data = {{ bsp.to_js_json|jsonify:False|safe }};
+
+            // --- Utils function ---
+            $scope.remove_contact = function(idx){
+                $scope.data.contacts.splice(idx, 1);
+            };
+
+            $scope.add_contact = function(){
+                $scope.data.contacts.push({"tel_code":"+91"});
+            };
+
+            // Geolocation
+            $scope.searchRes_geolocation = [];
+            $scope.search_geolocation = function ($select) {
+                if($select.search.length>=3) {
+                    return ServiceGeoLocation.search_geolocation($select.search, 'locality').then(
+                        function (response) {
+                            $scope.searchRes_geolocation = response.objects;
+                        }
+                    );
+                }
+            };
+
+            $scope.clear_address = function(){
+                delete $scope.data.address;
+            };
+
+            $scope.onclick_map = function(event){
+                var coord = event.latLng;
+                $scope.data.address.coordinates = [coord.lng(), coord.lat()];
+            };
+            $scope.ondragged_curr_location = function(){
+                var coord = this.getPosition();
+                $scope.data.address.coordinates = [coord.lng(), coord.lat()];
+            };
+            // --- /Utils function ---
+
+            $scope.flags = {
+                status: null,
+                error_msg: null,
+                errors: null
+            };
+            $scope.submit_bsp = function(form_obj) {
+                if (form_obj.$invalid) {
+                    return false;
+                }
+
+                // Prepare data
+                var bsp_data = angular.copy($scope.data);
+                if(bsp_data['address'] && bsp_data['address']['geolocation']){
+                    var split_addr = bsp_data['address']['geolocation']['full_address'].split(", ");
+
+                    bsp_data['address']['location_code'] = bsp_data['address']['geolocation']['code'];
+                    bsp_data['address']['locality'] = split_addr[0];
+                    bsp_data['address']['city'] = split_addr[1];
+                    bsp_data['address']['state'] = split_addr[2];
+                    bsp_data['address']['country'] = split_addr[3];
+                    bsp_data['address']['pincode'] = bsp_data['address']['geolocation']['pincode'];
+
+                    delete bsp_data['address']['geolocation'];
+                }
+
+                var data = {
+                    "data": angular.toJson( bsp_data ), //JSON.stringify($scope.data),
+                    "c": "{{ request.curr_org.org_uid }}"
+                };
+
+                $scope.flags.status = ST_AJAX.LOADING;
+                $scope.flags.error_msg = null;
+                $scope.flags.errors = null;
+
+                $http.post(
+                    "{% url 'console_market_bsp_edit_save' bsp.id %}",
+                    $.param(data)
+                )
+                .success(function (response, status, headers, config) {
+                    if(response.status=='success'){
+{#                        $window.location.href = '{% url 'console_market_bsp_manage' bsp.pk %}?c={{ request.curr_org.org_uid }}#/edit';#}
+                        $window.location.reload();
+                    }else{
+                        $scope.flags.status = ST_AJAX.ERROR;
+                        $scope.flags.error_msg = response.message;
+                        if(response.status == 'failed'){
+                            $scope.flags.errors = response.errors;
+                        }
+                    }
+                })
+                .error(function (response, status, headers, config) {
+                    if(status != -1){
+                        $scope.flags.status = ST_AJAX.ERROR;
+                        $scope.flags.error_msg = "Something went wrong. Our engineers will be informed.";
+                    }else{
+                        $scope.flags.status = null;
+                        $.growl.error({
+                            title: '<i class="fa fa-signal"></i> Network error!',
+                            message: "Please check your internet connection."
+                        });
+                    }
+                });
+
+
+            };
+
+        }
+        // --- /Edit Details ---
+    </script>
+{% endblock %}

@@ -906,7 +906,7 @@ class BusinessServicePoint(Document):
 
     # --- /Feedback form methods ---
 
-    def to_js_json(self, include_list_attr=False):
+    def to_js_json(self, include_list_attr=False, include_feedback=False):
         """
         Method to convert model object to javascript JSON in equivalent python dict.
 
@@ -919,6 +919,9 @@ class BusinessServicePoint(Document):
 
         if not include_list_attr:
             del data['list_attributes']
+        if not include_feedback:
+            if data.has_key('feedback_form'):
+                del data['feedback_form']
 
         # Convert python types to js equivalent
         for key, val in data.iteritems():

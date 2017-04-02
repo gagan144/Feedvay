@@ -415,7 +415,7 @@
                         for(var i=0;i<records.length;i++){
                             var row = records[i];
 
-                            records[i]['name_html'] = '<a target="_blank" href="' + '{% url 'console_market_bsp_edit' 'BSP_ID' %}?c={{ request.curr_org.org_uid }}'.replace('BSP_ID', row['id']) + '">' + row['name'] + '</a>';
+                            records[i]['name_html'] = '<a target="_blank" href="' + '{% url 'console_market_bsp_manage' 'BSP_ID' %}?c={{ request.curr_org.org_uid }}'.replace('BSP_ID', row['id']) + '">' + row['name'] + '</a>';
 
                             var brand = response.meta.brands[row['brand_id']];
                             if(brand){
@@ -649,7 +649,7 @@
                         for(var i=0;i<records.length;i++){
                             var row = records[i];
 
-                            records[i]['name_html'] = '<a target="_blank" href="' + '{% url 'console_market_bsp_edit' 'BSP_ID' %}?c={{ request.curr_org.org_uid }}'.replace('BSP_ID', row['id']) + '">' + row['name'] + '</a>';
+                            records[i]['name_html'] = '<a target="_blank" href="' + '{% url 'console_market_bsp_manage' 'BSP_ID' %}?c={{ request.curr_org.org_uid }}'.replace('BSP_ID', row['id']) + '">' + row['name'] + '</a>';
 
                             var brand = response.meta.brands[row['brand_id']];
                             if(brand){

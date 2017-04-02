@@ -171,7 +171,7 @@ class BusinessServicePointForm(object):
     **Authors**: Gagandeep Singh
     """
 
-    exclude = ['id', 'organization_id', 'list_attributes', 'created_by', 'created_on', 'modified_on']
+    exclude = ['id', 'organization_id', 'list_attributes', 'feedback_form', 'created_by', 'created_on', 'modified_on']
 
     def __init__(self, data, files=None, instance=None):
         self.data = data

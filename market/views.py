@@ -510,16 +510,13 @@ def console_bsp_create(request, org):
 
 
 @registered_user_only
-@organization_console(['market.businessservicepoint.change_businessservicepoint', 'market.businessservicepoint.view_businessservicepoint'])
-def console_bsp_edit(request, org, bsp_id):
+@organization_console('market.businessservicepoint')
+def console_bsp_manage(request, org, bsp_id):
     """
-    Django view to edit organization's BSP.
-
-    **Type**: GET
+    View to manage Business or Service Point.
 
     **Authors**: Gagandeep Singh
     """
-
     try:
         filters = copy.deepcopy(request.permissions['market.businessservicepoint']['data_access'])
         filters['organization_id'] = org.id
@@ -546,7 +543,47 @@ def console_bsp_edit(request, org, bsp_id):
         'ContactEmbDoc': ContactEmbDoc
     }
 
-    return render(request, 'market/console/bsp_edit.html', data)
+    return render(request, 'market/console/bsp_manage.html', data)
+
+
+# @registered_user_only
+# @organization_console(['market.businessservicepoint.change_businessservicepoint', 'market.businessservicepoint.view_businessservicepoint'])
+# def console_bsp_edit(request, org, bsp_id):
+#     """
+#     Django view to edit organization's BSP.
+#
+#     **Type**: GET
+#
+#     **Authors**: Gagandeep Singh
+#     """
+#
+#     try:
+#         filters = copy.deepcopy(request.permissions['market.businessservicepoint']['data_access'])
+#         filters['organization_id'] = org.id
+#         filters['pk'] = bsp_id
+#
+#         bsp = BusinessServicePoint.objects.get(**filters)
+#     except (TypeError, DoesNotExist_mongo):
+#         # TypeError: If filters is None
+#         return HttpResponseForbidden("You do not have permissions to access this page.")
+#
+#     if bsp.brand_id:
+#         list_brands = Brand.objects.filter(organization_id=org.id).filter(Q(active=True) | Q(id=int(bsp.brand_id)))
+#     else:
+#         list_brands = Brand.objects.filter(organization_id=org.id, active=True)
+#
+#     data = {
+#         'app_name': 'app_bsp_edit',
+#
+#         'bsp': bsp,
+#         'list_brands': list_brands,
+#
+#         'BusinessServicePoint': BusinessServicePoint,
+#         'BspTypes': BspTypes,
+#         'ContactEmbDoc': ContactEmbDoc
+#     }
+#
+#     return render(request, 'market/console/bsp_edit.html', data)
 
 
 @registered_user_only

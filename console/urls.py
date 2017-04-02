@@ -78,7 +78,8 @@ url_bsp = [
 
     url(r'^new/$', views_market.console_bsp_new, name='console_market_bsp_new'),
     url(r'^create/$', views_market.console_bsp_create, name='console_market_bsp_create'),
-    url(r'^edit/(?P<bsp_id>.*)/$', views_market.console_bsp_edit, name='console_market_bsp_edit'),
+    url(r'^manage/(?P<bsp_id>.*)/$', views_market.console_bsp_manage, name='console_market_bsp_manage'),
+    # url(r'^edit/(?P<bsp_id>.*)/$', views_market.console_bsp_edit, name='console_market_bsp_edit'),
     url(r'^edit-save/(?P<bsp_id>.*)/$', views_market.console_bsp_edit_save, name='console_market_bsp_edit_save'),
 
     # Partials

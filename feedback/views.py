@@ -331,7 +331,7 @@ def console_bsp_feedback_associate_bsp(request, org, form_id):
         list_bsps = BusinessServicePoint.objects.filter(**filters_bsp)
         count = 0
         for bsp in list_bsps:
-            bsp.associate_feedback_form(bsp_fdbk_form, None, request.user)
+            bsp.associate_feedback_form(bsp_fdbk_form, request.user)
             count += 1
 
         return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok', count=count).gen_http_response()
@@ -427,11 +427,26 @@ def console_bsp_feedback_associate_form(request, org, bsp_id):
         try:
             data = json.loads(request.POST['data'])
 
-            form = BspFeedbackForm.objects.get(id=data['form_id'])
+            form_id = data.get('form_id', None)
+            if form_id:
+                form = BspFeedbackForm.objects.get(id=int(data['form_id']))
+            else:
+                form = None
+
             ai_directives_json = data.get('ai_directives', {})
             ai_directives = AiTextDirectives(ai_directives_json)
 
-            bsp.associate_feedback_form(form, ai_directives, request.user)
+            if form:
+                if bsp.feedback_form:
+                    if form.id != bsp.feedback_form.form_id:
+                        bsp.associate_feedback_form(form, request.user)
+                else:
+                    bsp.associate_feedback_form(form, request.user)
+
+                bsp.update_feedback_comment_ai_directive(ai_directives)
+            else:
+                bsp.deassociate_feedback_form(confirm=True)
+                bsp.update_feedback_comment_ai_directive(ai_directives)
 
             return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Ok').gen_http_response()
 

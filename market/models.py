@@ -710,6 +710,21 @@ class BusinessServicePoint(Document):
         def __unicode__(self):
             return "{}".format(self.form_id)
 
+        def is_comment_ai_enabled(self):
+            """
+            Method to check if AI is enabled on comments or not.
+
+            :return: True if any algorithm is in use else False
+
+            **Authors**: Gagandeep Singh
+            """
+            is_enabled = False
+            for key, val in self.ai_comment_directives.iteritems():
+                if val == True:
+                    is_enabled = True
+                    break
+            return is_enabled
+
     # --- Enums ---
     ST_OPN_OPEN = 'open'
     ST_OPN_COMING_SOON = 'coming_soon'
@@ -851,12 +866,11 @@ class BusinessServicePoint(Document):
         return "{}".format(self.name)
 
     # --- Feedback form methods ---
-    def associate_feedback_form(self, form, ai_directives, user):
+    def associate_feedback_form(self, form, user):
         """
         Method to associate BspFeedbackForm to this BSP.
 
         :param form: Instance of :class:`feedback.models.BspFeedbackForm` that is to be attached.
-        :param ai_directives: Instance of :class:`form_builder.fields.AiTextDirectives` for comments. If 'None' settings are not changed.
         :param user: Instance of :class:`django.contrib.auth.models.User` who attached this form.
 
         **Authors**: Gagandeep Singh
@@ -872,9 +886,6 @@ class BusinessServicePoint(Document):
 
         embd_feedback_form.form_id = form.id
         embd_feedback_form.associated_by_id = user.id
-        if ai_directives is not None:
-            embd_feedback_form.ai_comment_directives = ai_directives.to_json()
-
         embd_feedback_form.dated = now
         embd_feedback_form.change_history.append(
             BusinessServicePoint.FeedbackFormEmbd.ChangeHistory(
@@ -908,6 +919,17 @@ class BusinessServicePoint(Document):
             return True
 
         return False
+
+    def update_feedback_comment_ai_directive(self, ai_directives):
+        """
+        Method to update feedback AI directives for comments.
+
+        :param ai_directives: Instance of :class:`form_builder.fields.AiTextDirectives` for comments.
+
+        **Authors**: Gagandeep Singh
+        """
+        self.feedback_form.ai_comment_directives = ai_directives.to_json()
+        self.save()
 
     # --- /Feedback form methods ---
 

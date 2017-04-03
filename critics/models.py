@@ -156,7 +156,7 @@ class Rating(Document):
         return User.objects.get(id=self.user_id)
 
     def __unicode__(self):
-        return "{}-{} {}".format(self.content_type, self.object_id, self.user_id)
+        return "{}-{} by {}".format(self.content_type, self.object_id, self.user_id)
 
     meta = {
         'indexes':[
@@ -209,7 +209,6 @@ class Rating(Document):
                 for row in result_aggr:
                     avg_rating = row["avg_rating"]
                     break
-                print avg_rating
 
                 entity_model._get_collection().find_one_and_update(
                     filter = {'_id': ObjectId(document.object_id)},
@@ -290,7 +289,7 @@ class Comment(Document):
         return User.objects.get(id=self.user_id)
 
     def __unicode__(self):
-        return "{}-{} {}".format(self.content_type, self.object_id, self.user_id)
+        return "{}-{} by {}".format(self.content_type, self.object_id, self.user_id)
 
     meta = {
         'indexes':[

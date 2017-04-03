@@ -42,7 +42,7 @@ def save_bsp_feedback_response(response_json):
         # Begin processing
 
         # (a) Extract Rating and Review from ``response_json.answers`` and delete them
-        rating = int(response_json['answers']['rating'])
+        rating_val = int(response_json['answers']['rating'])
         del response_json['answers']['rating']
 
         review = response_json['answers'].get('review', None)
@@ -50,25 +50,40 @@ def save_bsp_feedback_response(response_json):
             del response_json['answers']['review']
 
         # (b) Save Rating
-        Rating.objects.create(
+        rating = Rating.objects.create(
             content_type = Entities.BSP,
             object_id   = str(bsp.pk),
-            rating      = rating,
+            rating      = rating_val,
             user_id     = user.id,
             dated       =  response_date
         )
 
         # (c) Save comment/review
         if review not in [None, '']:
-            Comment.objects.create(
+            # Check AI
+            ai_pending = bsp.feedback_form.is_comment_ai_enabled()
+            if ai_pending:
+                ai = {}
+                for algo_key, enabled in bsp.feedback_form.ai_comment_directives.iteritems():
+                    if enabled:
+                        ai[algo_key] = {
+                            "pending": True
+                        }
+            else:
+                ai_pending = None
+                ai = None
+
+            comment = Comment.objects.create(
                 content_type = Entities.BSP,
                 object_id   = str(bsp.pk),
                 text        = review,
-                # ai_pending  = # TODO: Check if AI is to be applied?
-                # ai          = {}
+                ai_pending  = ai_pending,
+                ai          = ai,
                 user_id     = user.id,
                 dated       = response_date
             )
+        else:
+            comment = None
 
         # (d) Create BSP Feedback Response
         bsp_response = BspFeedbackResponse.objects.create(
@@ -101,7 +116,10 @@ def save_bsp_feedback_response(response_json):
                                    instructions_read = response_json['flags']['instructions_read'],
                                    suspect = response_json['flags']['suspect'],
                                    suspect_reasons = response_json['flags']['suspect_reasons']
-                              )
+                              ),
+
+            rating_id       = str(rating.pk),
+            comment_id      = str(comment.pk) if comment else None
         )
 
         # Processing completed! Return now

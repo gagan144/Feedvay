@@ -133,7 +133,6 @@
                         </a>
                     </div>
                     <div class="panel-body">
-                        {$ data $}
                         <form name="form_change_questnr" class="form-horizontal" novalidate>
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Questionnaire:</label>
@@ -239,6 +238,9 @@
 
                                     <button ladda="flags.status==ST_AJAX.LOADING" class="btn btn-primary ladda-button" type="button" ng-disabled="form_change_questnr.$invalid || templateError" ng-click="submit_change_questnr(form_change_questnr);" data-style="zoom-in">
                                         Save changes
+                                    </button>
+                                    <button class="btn btn-link" ng-click="select_questionnaire=false">
+                                        Cancel
                                     </button>
                                 </div>
                             </div>

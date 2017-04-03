@@ -14,3 +14,4 @@ Contents
        models
        api
        views
+       operations

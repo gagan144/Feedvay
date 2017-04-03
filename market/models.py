@@ -719,10 +719,11 @@ class BusinessServicePoint(Document):
             **Authors**: Gagandeep Singh
             """
             is_enabled = False
-            for key, val in self.ai_comment_directives.iteritems():
-                if val == True:
-                    is_enabled = True
-                    break
+            if self.ai_comment_directives:
+                for key, val in self.ai_comment_directives.iteritems():
+                    if val == True:
+                        is_enabled = True
+                        break
             return is_enabled
 
     # --- Enums ---

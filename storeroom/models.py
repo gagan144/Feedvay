@@ -111,6 +111,11 @@ class ResponseQueue(Document):
     are queued in this collection immediately without any pre-processing. These are then later picked-up by a
     process that processes them and migrate into corresponding models as per the ``context``.
 
+    **State chart diagram for organization status**:
+
+        .. image:: ../../_static/storeroom/response_queue_statechart.jpg
+
+
     **Points**:
 
         - ``status`` state chart is custom implemented similar to 'django-fsm'. However, this is not

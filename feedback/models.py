@@ -16,6 +16,7 @@ from django.contrib.auth.models import User
 
 from clients.models import Organization
 from form_builder.models import Form, BaseResponse
+from critics.models import Rating, Comment
 
 
 # ========== BSP Feedback ==========
@@ -93,9 +94,17 @@ class BspFeedbackResponse(BaseResponse):
     """
     Model to store BSP feedback response. It inherits all properties of :class:`form_builder.models.BaseResponse`.
 
+    **Flow for BSP Feedback Response save**:
+
+        .. image:: ../../_static/feedback/bsp_response_save_flow.jpg
+
+
     **Authors**: Gagandeep Singh
     """
     bsp_id      = StringField(required=True, help_text='BSP ID for which feedback was made.')
+
+    rating_id   = StringField(required=True, help_text='Instance ID of :class:`critics.models.Rating`')
+    comment_id  = StringField(help_text='(Optional) Instance ID of :class:`critics.models.Comment`.')
 
     meta = {
         'indexes':[
@@ -106,5 +115,13 @@ class BspFeedbackResponse(BaseResponse):
     @property
     def form(self):
         return BspFeedbackForm.objects.get(id=self.form_id)
+
+    @property
+    def rating(self):
+        return Rating.objects.with_id(self.rating_id)
+
+    @property
+    def comment(self):
+        return Comment.objects.with_id(self.comment_id)
 
 # ========== /BSP Feedback ==========

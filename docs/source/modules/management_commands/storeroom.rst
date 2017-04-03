@@ -12,3 +12,8 @@ Process BSP
 Process GeoLocation
 -------------------
 .. autoclass:: storeroom.management.commands.storeroom_process_geolocations.Command
+
+
+Process Responses in Queue
+--------------------------
+.. autoclass:: storeroom.management.commands.storeroom_process_responses.Command

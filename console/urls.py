@@ -90,6 +90,7 @@ url_bsp = [
 ]
 
 api_bsp_feedback_forms = api_feedback.BspFeedbackFormsAPI()
+api_bsp_feedback_responses = api_feedback.BspFeedbackResponsesAPI()
 url_feedback = [
     url(r'^bsp-feedback/$', views_feedback.console_bsp_feedback_panel, name='console_feedback_bsp_panel'),
     url(r'^bsp-feedback/new/$', views_feedback.console_bsp_feedback_new, name='console_feedback_bsp_new'),
@@ -100,8 +101,10 @@ url_feedback = [
     url(r'^bsp-feedback/associate-bsp/(?P<form_id>[0-9]+)/$', views_feedback.console_bsp_feedback_associate_bsp, name='console_feedback_bsp_associate_bsp'),
     url(r'^bsp-feedback/deassociate-bsp/(?P<form_id>[0-9]+)/$', views_feedback.console_bsp_feedback_deassociate_bsp, name='console_feedback_bsp_deassociate_bsp'),
     url(r'^bsp-feedback/associate-form/(?P<bsp_id>.*)/$', views_feedback.console_bsp_feedback_associate_form, name='console_feedback_bsp_associate_form'),
+
     # Api
     url(r'^api/', include(api_bsp_feedback_forms.urls)),
+    url(r'^api/', include(api_bsp_feedback_responses.urls)),
 ]
 
 api_survey_responses = api_surveys.SurveyResponsesAPI()

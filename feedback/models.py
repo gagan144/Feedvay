@@ -15,6 +15,7 @@ from mongoengine.fields import *
 from django.contrib.auth.models import User
 
 from clients.models import Organization
+from market.models import BusinessServicePoint
 from form_builder.models import Form, BaseResponse
 from critics.models import Rating, Comment
 
@@ -111,6 +112,10 @@ class BspFeedbackResponse(BaseResponse):
             'bsp_id',
         ]
     }
+
+    @property
+    def bsp(self):
+        return BusinessServicePoint.objects.get(pk=self.bsp_id)
 
     @property
     def form(self):

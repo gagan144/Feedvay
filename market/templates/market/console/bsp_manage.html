@@ -15,6 +15,12 @@
 
     <link rel="stylesheet" href="{% get_static_prefix %}ui/css/plugins/ui-select/select.min.css">
 
+    <style>
+        .list_group_subitem{
+            padding-left: 30px;
+        }
+    </style>
+
     <!-- ========== Templates ========== -->
     <!-- Dashboard -->
     <script type="text/ng-template" id="tmpl_dashboard">
@@ -64,16 +70,29 @@
                     </div>
                 </div>
 
-                <hr class="hr-line-dashed"/>
-                <div>
-                    <p ng-if="flags.status==ST_AJAX.ERROR" class="text-danger">
-                        <i class="fa fa-exclamation-triangle"></i> {$ flags.error_msg $}
-                    </p>
 
-                    <button ladda="flags.status==ST_AJAX.LOADING" class="btn btn-primary ladda-button" type="button" ng-disabled="form_create_edit_bsp.$invalid || templateError" ng-click="submit_bsp(form_create_edit_bsp);" data-style="zoom-in">
-                        Save
-                    </button>
-                </div>
+                <hr class="hr-line-dashed"/>
+                {% if request.permissions|has_permission:"market.businessservicepoint.change_businessservicepoint" %}
+                    <div>
+                        <p ng-if="flags.status==ST_AJAX.ERROR" class="text-danger">
+                            <i class="fa fa-exclamation-triangle"></i> {$ flags.error_msg $}
+                        </p>
+
+                        <button ladda="flags.status==ST_AJAX.LOADING" class="btn btn-primary ladda-button" type="button" ng-disabled="form_create_edit_bsp.$invalid || templateError" ng-click="submit_bsp(form_create_edit_bsp);" data-style="zoom-in">
+                            Save
+                        </button>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <h3 style="margin-top: 0px;">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            Cannot edit!
+                        </h3>
+                        <div>
+                            You do not have permissions to change details for this Business or Service Point.
+                        </div>
+                    </div>
+                {% endif %}
 
             </form>
 
@@ -112,13 +131,15 @@
                                 </div>
                                 {% endif %}
 
-                                <div class="hr-line-dashed hr_line_dashed_m10"></div>
-                                <div style="font-size: 12px !important;margin-top: 10px;">
-                                    <button ng-show="!select_questionnaire" class="btn btn-primary btn-xs" ng-click="select_questionnaire=true;">
-                                        <i class="fa fa-pencil"></i>&nbsp;
-                                        Change settings
-                                    </button>
-                                </div>
+                                {% if request.permissions|has_permission:"market.businessservicepoint.change_businessservicepoint" %}
+                                    <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                                    <div style="font-size: 12px !important;margin-top: 10px;">
+                                        <button ng-show="!select_questionnaire" class="btn btn-primary btn-xs" ng-click="select_questionnaire=true;">
+                                            <i class="fa fa-pencil"></i>&nbsp;
+                                            Change settings
+                                        </button>
+                                    </div>
+                                {% endif %}
                             </td>
                         </tr>
                     </tbody>
@@ -327,6 +348,16 @@
                         </a>
                         <a ui-sref="feedback_questionnaire" class="list-group-item" ng-class="{'active': $state.current.name=='feedback_questionnaire'}">
                             <i class="ion-clipboard list_md_icon"></i> Feedback Questionnaire
+                        </a>
+
+                        <div class="list-group-item">
+                            <i class="ion-chatbubbles list_md_icon"></i> Feedback
+                        </div>
+                        <a ui-sref="feedback_rating_comment" class="list-group-item list_group_subitem" ng-class="{'active': $state.current.name=='feedback_rating_comment'}">
+                            <i class="fa fa-star list_md_icon"></i> Rating & Comments
+                        </a>
+                        <a ui-sref="feedback_response" class="list-group-item list_group_subitem" ng-class="{'active': $state.current.name=='feedback_response'}">
+                            <i class="fa fa-commenting list_md_icon"></i> Responses
                         </a>
                     </div>
                 </td>

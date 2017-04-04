@@ -66,11 +66,21 @@
     margin-right: 2px;
 }
 
+/* ----- Grid ----- */
 .grid_btn{
     margin: 0px !important;
     padding: 2px 6px !important;
     font-size: 9px !important;
 }
+
+.meta_icons{
+    cursor: pointer;
+}
+
+.meta_icons_disabled{
+    color: #e2e2e2;
+}
+/* ----- /Grid ----- */
 
 .ibox_bordered{
     border: solid 1px #e7eaec;
@@ -419,6 +429,10 @@ td.admin_content{
    border-top: 8px solid transparent;
    border-right: 12px solid #fcfcfc; /*#f3f3f4;*/
    border-bottom: 8px solid transparent;
+}
+
+.list_group_subitem{
+    padding-left: 30px;
 }
 /* ----- /Admin Content with left tabs ----- */
 

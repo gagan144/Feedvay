@@ -135,7 +135,7 @@ class BspFeedbackResponsesAPI(resources.MongoEngineResource):
 
         object_list_filtered = self._meta.queryset.filter(**applicable_filters)
 
-        return object_list_filtered.order_by('-created_on').only(*(self.Meta.fields+('bsp_id', 'form_id', 'user', 'location', 'rating_id', 'comment_id')))
+        return object_list_filtered.order_by('-response_date').only(*(self.Meta.fields+('bsp_id', 'form_id', 'user', 'location', 'rating_id', 'comment_id')))
 
     def dehydrate(self, bundle):
         bsp_id = bundle.obj.bsp_id
@@ -159,7 +159,7 @@ class BspFeedbackResponsesAPI(resources.MongoEngineResource):
         }
 
         bundle.data["user"] = bundle.obj.user.to_mongo()
-        bundle.data["location"] = bundle.obj.location.to_mongo() if bundle.obj.location else None
+        bundle.data["location"] = bundle.obj.location.to_mongo() if bundle.obj.location else {}
 
         flags = bundle.obj.flags.to_mongo()
         suspect_reasons = []

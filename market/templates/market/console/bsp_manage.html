@@ -317,6 +317,68 @@
     </script>
     <!-- /Feedback Questionnaire -->
 
+    <!-- Rating & Reviews -->
+    <script type="text/ng-template" id="tmpl_feedback_rating_reviews">
+        <div>
+            <h2 style="margin-top: 0px;">
+                <i class="fa fa-star"></i>&nbsp;
+                Rating & Reviews
+            </h2>
+            <hr style="margin-top: 15px;"/>
+
+            <!-- Filters -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-filter"></i> Filters
+                </div>
+                <div class="panel-body">
+                    <form name="form_filters" role="form" class="form-horizontal" novalidate>
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <div style="margin-bottom: 6px;">
+                                    <span style="font-weight: 700;">Date range:</span>
+                                </div>
+                                <input date-range-picker name="response_date"
+                                       class="form-control input-sm date-picker fake_readonly" type="text"
+                                       ng-model="filters.response_date"
+                                       options="{separator: '  to  ', format: 'DD-MMM-YYYY'}"
+                                       placeholder="Select a date range to filter responses"
+                                       readonly
+                                       required
+                                />
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                        <div>
+                            <button type="button" class="btn btn-primary btn-sm ladda-button" ng-click="view_rating_review(form_filters)" ladda="ui_flags.loading" data-style="zoom-in" ng-disabled="form_filters.$invalid">
+                                <i class="fa fa-search"></i>&nbsp;&nbsp;View
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+            <!-- /Filters -->
+
+            <div ng-show="ui_flags.loaded">
+                <!-- Response grid -->
+                <ng-jqgrid
+                        config="grid_rating_reviews.config"
+                        modeldata="list_rating_reviews"
+                        gridid="{$ grid_rating_reviews.gridid $}"
+                        pagerid="{$ grid_rating_reviews.pagerid $}"
+                        api="grid_rating_reviews.gridapi"
+                        filtertoolbar="{stringResult: true, searchOnEnter: false, defaultSearch: 'cn'}"
+                ></ng-jqgrid>
+                <!-- /Response grid -->
+            </div>
+
+        </div>
+    </script>
+    <!-- /Rating & Reviews -->
+
+
     <!-- Feedback Responses -->
     <script type="text/ng-template" id="tmpl_feedback_responses">
         <div>
@@ -492,8 +554,8 @@
                         <div class="list-group-item">
                             <i class="ion-chatbubbles list_md_icon"></i> Feedback
                         </div>
-                        <a ui-sref="feedback_rating_comment" class="list-group-item list_group_subitem" ng-class="{'active': $state.current.name=='feedback_rating_comment'}">
-                            <i class="fa fa-star list_md_icon"></i> Rating & Comments
+                        <a ui-sref="feedback_rating_reviews" class="list-group-item list_group_subitem" ng-class="{'active': $state.current.name=='feedback_rating_reviews'}">
+                            <i class="fa fa-star list_md_icon"></i> Rating & Reviews
                         </a>
                         <a ui-sref="feedback_responses" class="list-group-item list_group_subitem" ng-class="{'active': $state.current.name=='feedback_responses'}">
                             <i class="fa fa-commenting list_md_icon"></i> Responses
@@ -589,6 +651,12 @@
                     templateUrl: "tmpl_feedback_questionnaire",
                     data: { pageTitle: 'Feedback Questionnaire - {{ bsp.name }} | {{ request.curr_org.name }}' },
                     controller: FeedbackQuestionnaireCtrl,
+                })
+                .state('feedback_rating_reviews', {
+                    url: "/feedback_rating_reviews",
+                    templateUrl: "tmpl_feedback_rating_reviews",
+                    data: { pageTitle: 'Rating & Reviews - {{ bsp.name }} | {{ request.curr_org.name }}' },
+                    controller: RatingReviewsCtrl,
                 })
                 .state('feedback_responses', {
                     url: "/feedback_responses",
@@ -861,6 +929,144 @@
             }
         }
         // --- /FeedbackQuestionnaireCtrl ---
+
+        // --- Rating & Reviews ---
+        function RatingReviewsCtrl($scope, ServiceBspFeedback){
+            // filters
+            $scope.filters = {
+                "response_date":{
+                    "startDate": moment().add(-1, 'months'),
+                    "endDate": moment()
+                }
+            };
+
+            // UI
+            $scope.ui_flags = {
+                loading: false,
+                loaded: false
+            };
+
+            // Jqgrid
+            $scope.grid_rating_reviews = {
+                gridid: "grid_rating_reviews",
+                pagerid: "grid_rating_reviews_pager",
+                config: {
+                    datatype: "local",
+                    colNames: [
+                        'Dated',
+                        'Respondent',
+                        'Rating',
+                        'Comment',
+                        'Sentiment'
+                    ],
+                    colModel: [
+                        { name: 'dated', index: 'dated', width: 60,
+                            sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-dTH:i:s', newformat: 'd-M-Y h:i A' },
+                            searchoptions: {
+                                attr:{ placeholder: 'Select date', readonly:'readonly'},
+                                dataInit: function (elem) {
+                                    $(elem).datepicker({
+                                        format: 'yyyy-mm-dd',
+                                        keyboardNavigation: false,
+                                        autoclose: true,
+                                        todayHighlight: true,
+                                    }).on('changeDate', function(e) {
+                                        $('#grid_rating_reviews')[0].triggerToolbar();
+                                    });
+                                }
+                            }
+                        },
+                        { name: 'respondent', index: 'respondent', width: 100 },
+                        { name: 'rating', index: 'rating', width: 40, sorttype:'int', align:"center",
+                            stype: 'select', searchoptions:{ sopt:['eq'], value: ":All;1:1;2:2;3:3;4:4;5:5", clearSearch: false}
+                        },
+                        { name: 'comment.text', index: 'comment.text', width: 200 },
+                        { name: 'comment.ai.text_sentiment.result.sentiment', index: 'comment.ai.text_sentiment.result.sentiment', width: 60, align:"center",
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;positive:Positive;neutral:Neutral;negative:Negative", clearSearch: false}
+                        },
+                    ],
+                    viewrecords: true,
+                    sortname: 'dated',
+                    sortorder: "desc",
+                    rowNum: 50,
+                    rowList: [10, 50, 100, 100000],
+                    autowidth : true,
+                    height: '300px',
+                    shrinkToFit: true,
+                    hidegrid: false,
+                    ignoreCase:true,
+                },
+                filtertoolbar: {
+                    stringResult: true, searchOnEnter: false, defaultSearch: 'cn',
+                },
+                gridapi: {}
+            };
+
+            $scope.list_rating_reviews = [];
+            $scope.view_rating_review = function(form_obj){
+                if(form_obj.$invalid){
+                    return;
+                }
+
+                var filters = angular.copy($scope.filters);
+                filters['bsp_id'] = '{{ bsp.pk }}';
+
+                // Correct filters
+                filters['start_date'] =  filters['response_date']['startDate'].format('YYYY-MM-DD');
+                filters['end_date'] =  filters['response_date']['endDate'].format('YYYY-MM-DD');
+                delete filters['response_date'];
+
+                // --- Get data & display ---
+                $scope.ui_flags.loading = true;
+
+                ServiceBspFeedback.get_rating_reviews('{{ request.curr_org.org_uid }}', filters).then(
+                    function (response_data) {
+                        $scope.ui_flags.loading = false;
+                        $scope.ui_flags.loaded = true;
+
+                        var records = response_data.objects;
+
+                        // --- Process data ---
+                        for(var i=0;i<records.length;i++){
+                            var row = records[i];
+
+                            records[i]['respondent'] = row['user']['full_name'] + ' (' + row['user']['username'] + ')';
+                        }
+                        // --- /Process data ---
+
+                        $scope.list_rating_reviews = records;
+
+                        $scope.grid_rating_reviews.gridapi.clear();
+                        $scope.grid_rating_reviews.gridapi.insert(records);
+
+                        $("#grid_response").jqGrid('setCaption',
+                            $("#jqtmpl_grip_response_caption").tmpl({
+                                "length": records.length,
+                                "filtered": false
+                            }).html()
+                        );
+                    },
+                    function(response){
+                        $scope.ui_flags.loading = false;
+
+                        if(response.status != -1){
+                            $.growl.error({
+                                title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                message: "Something went wrong. Our engineers will be informed."
+                            });
+                        }else{
+                            $.growl.error({
+                                title: '<i class="fa fa-signal"></i> Network error!',
+                                message: "Please check your internet connection."
+                            });
+                        }
+
+                    }
+                );
+            };
+
+        }
+        // --- Rating & Reviews ---
 
         // --- FeedbackResponsesCtrl ---
         function FeedbackResponsesCtrl($scope, ServiceBspFeedback){

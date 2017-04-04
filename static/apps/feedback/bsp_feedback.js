@@ -29,5 +29,18 @@ angular.module('feedvay.feedback.bsp', [] )
         });
     };
 
+    this.get_rating_reviews = function(org_uid, params){
+        if(!params){
+            params = {};
+        }
+        params['c'] = org_uid;
+
+        return $http.get('/console/feedback/api/bsp_rating_review/?format=json', {
+            params: params
+        }).then(function (response) {
+            return response.data;
+        });
+    }
+
 });
 // ---------- /Services ----------

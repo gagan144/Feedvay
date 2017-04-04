@@ -2,15 +2,18 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from django.shortcuts import render
-from django.http import HttpResponseForbidden, HttpResponse
+from django.http import HttpResponseForbidden, HttpResponse, JsonResponse
 from django.http.response import Http404
 from django.conf import settings
 import json
 import copy
 from django.views.decorators.csrf import csrf_exempt
-from mongoengine.queryset.visitor import Q
+from datetime import timedelta
 
+from mongoengine.queryset.visitor import Q
 from mongoengine.queryset import DoesNotExist as DoesNotExist_mongo
+
+from django.contrib.auth.models import User
 
 from accounts.decorators import registered_user_only, organization_console
 from languages.models import Language
@@ -23,6 +26,7 @@ from feedback.fixed_questions import *
 from market.models import BusinessServicePoint, BspTypes, Brand
 from accounts.models import RegisteredUser
 from storeroom.models import ResponseQueue
+from critics.models import Rating
 from utilities.api_utils import ApiResponse
 
 #TODO: Mobile/Web access checks
@@ -498,7 +502,122 @@ def console_bsp_feedback_view_response(request, org):
     except (DoesNotExist_mongo, KeyError):
         raise Http404("Invalid link or missing parameters.")
 
+
 # --- /BSP Feedback ---
 # ==================== /Console ====================
 
+
+# ----- Custom API -----
+@registered_user_only
+@organization_console('market.businessservicepoint')
+def api_bsp_rating_review(request, org):
+    """
+    Custom API resource to get ratings & reviews on BSPs of an organization.
+
+    **Filters**:
+
+        - ``start_date`` & ``end_date``: (Mandatory) Date range
+        - ``bsp_id``: (Optional) BSP instance id for which rating & comments must be filtered
+
+    **Authors**: Gagandeep Singh
+    """
+
+    # --- Get filters ---
+    filters = {
+        "content_type": "bsp",
+	    "organization_id": org.id,
+    }
+
+    # Date range
+    start_date = datetime.strptime(request.GET['start_date'], '%Y-%m-%d')
+    end_date = datetime.strptime(request.GET['end_date'], '%Y-%m-%d') + timedelta(days=1)
+    filters['dated'] = {
+        "$gte": start_date,
+        "$lte": end_date
+    }
+
+    # BSP
+    bsp_id = request.GET.get('bsp_id', None)
+    if bsp_id:
+        filters['object_id'] = bsp_id
+    # --- /Get filters ---
+
+    # Execute query
+    result_aggr = Rating._get_collection().aggregate([
+        {
+            "$match": filters
+        },
+        {
+            "$lookup": {
+                "from" : "comment",
+                "localField" : "batch_id",
+                "foreignField" : "batch_id",
+                "as" : "comment"
+            }
+        },
+        {
+            "$unwind": {
+                "path": "$comment",
+                "preserveNullAndEmptyArrays": True
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "bsp_id": "$object_id",
+                "rating": 1,
+                "user_id": 1,
+                "dated": 1,
+                # "comment._id": "$comment._id",
+                "comment.text": "$comment.text",
+                "comment.total_likes": "$comment.total_likes",
+                "comment.ai.text_sentiment.result": "$comment.ai.text_sentiment.result",
+            }
+        }
+
+    ])
+
+    cache_users = {}
+    cache_bsp = {}
+
+    data = []
+    total_count = 0
+    for row in result_aggr:
+        # Resolve BSP
+        bsp_id = row['bsp_id']
+        bsp = cache_bsp.get(bsp_id, None)
+        if bsp is None:
+            bsp = BusinessServicePoint.objects.with_id(bsp_id)
+            cache_bsp[bsp_id] = bsp
+        row['bsp'] = {
+            "id": bsp_id,
+            "name": bsp.name
+        }
+        del row['bsp_id']
+
+        # Resolve User
+        user_id = row['user_id']
+        user = cache_users.get(user_id, None)
+        if user is None:
+            user = User.objects.get(id=user_id)
+            cache_users[user_id] = user
+        row['user'] = {
+            "id": user_id,
+            "full_name": "{} {}".format(user.first_name, user.last_name),
+            "username": user.username
+        }
+        del row['user_id']
+
+        data.append(row)
+        total_count += 1
+
+
+    return JsonResponse({
+        "meta":{
+            "total_count": total_count
+        },
+        "objects": data
+    })
+
+# ----- /Custom API -----
 

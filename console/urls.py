@@ -104,6 +104,9 @@ url_feedback = [
 
     url(r'^bsp-feedback/response/$', views_feedback.console_bsp_feedback_view_response, name='console_feedback_bsp_response'),
 
+    # Custom API
+    url(r'^api/bsp_rating_review/$', views_feedback.api_bsp_rating_review),
+
     # Api
     url(r'^api/', include(api_bsp_feedback_forms.urls)),
     url(r'^api/', include(api_bsp_feedback_responses.urls)),

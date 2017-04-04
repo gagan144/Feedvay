@@ -559,9 +559,17 @@ class BusinessServicePoint(Document):
         - If ``active`` is false, BSP is as good as deleted. This will not show up anywhere other than owners account.
           A BSP can be reverted back to active by setting this as true.
 
-    ..warning::
+    .. warning::
         If you want to add any new field to this table, do not forget to make entry in ``HELP_TEXT`` for
         non confidential fields.
+
+
+    **Migration of BSPs to other organization**:
+
+        Migration of BSPs to other organization is not straight forward. Although, only
+        ``organization_id`` has to be changed, this must also be changed in following models:
+        :class:`critics.models.Rating`, :class:`critics.models.Comment`. The migration process is yet to be defined.
+
 
     **Authors**: Gagandeep Singh
     """

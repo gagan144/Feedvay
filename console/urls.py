@@ -102,6 +102,8 @@ url_feedback = [
     url(r'^bsp-feedback/deassociate-bsp/(?P<form_id>[0-9]+)/$', views_feedback.console_bsp_feedback_deassociate_bsp, name='console_feedback_bsp_deassociate_bsp'),
     url(r'^bsp-feedback/associate-form/(?P<bsp_id>.*)/$', views_feedback.console_bsp_feedback_associate_form, name='console_feedback_bsp_associate_form'),
 
+    url(r'^bsp-feedback/response/$', views_feedback.console_bsp_feedback_view_response, name='console_feedback_bsp_response'),
+
     # Api
     url(r'^api/', include(api_bsp_feedback_forms.urls)),
     url(r'^api/', include(api_bsp_feedback_responses.urls)),

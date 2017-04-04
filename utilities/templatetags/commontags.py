@@ -105,3 +105,14 @@ def has_permission(perm_json, perm_key):
     **Authors**: Gagandeep Singh
     """
     return lookup_permission(perm_json, perm_key)
+
+@register.filter
+def range_loop(max_val, step=1):
+    """
+    Method to return integer loop range from 1 to given max value.
+
+    :param max_val: Range max value (including)
+    :param step: (Default: 1) Steps for looping
+    :return: range(1, max_value+step, step)
+    """
+    return range(1, max_val+step, step)

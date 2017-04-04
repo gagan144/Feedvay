@@ -887,6 +887,142 @@ class BaseResponse(Document):
         return success
 
 
+    def get_answer_sheet_data(self):
+        """
+        Method to create answer sheet for this response for display. The order of the question is
+        as per the order in the questionnaire.
+
+        :return: JSON Answer sheet.
+
+
+        **Answer sheet JSON format**:
+
+        .. code-block:: json
+
+            {
+                "answers":[
+                    {
+                        "question_text": "<question text>",
+                        "answer": "<answer value>",
+                        "other_answer":{
+                            "question_text": "<question text>",
+                            "answer": "<answer value>",
+                        },
+                        "ai": {
+                        }
+                    },
+
+                ],
+                "obsolete_answers": [
+                    {
+                        "question_text": "<question text>",
+                        "answer": "<answer value>",
+                        "other_answer":{
+                            "question_text": "<question text>",
+                            "answer": "<answer value>",
+                        },
+                        "ai": {
+                        }
+                    },
+
+                ],
+                "constants": [
+                    {
+                        "question_text": "<question text>",
+                        "answer": "<answer value>",
+                    },
+
+                ],
+                "calculated_fields":[
+                    {
+                        "question_text": "<question text>",
+                        "answer": "<answer value>",
+                    },
+
+                ]
+            }
+
+
+        **Authors**: Gagandeep Singh
+        """
+        answer_sheet = {
+            "answers":[],
+            "obsolete_answers": [],
+            "constants": [],
+            "calculated_fields":[]
+        }
+
+        form = self.form
+        lookup_translation = form.get_translation_lookup()
+        lookup_answers = self.get_answers_lookup() # Detailed answer data
+
+        response_ans_done = []
+
+        # Set answers that are currently in the questionnaire
+        for node in iterate_form_fields(form.schema_obj):
+            data = {
+                "question_text": lookup_translation[node.text_translation_id].sentence,
+                "answer": self.answers.get(node.label, None)
+            }
+            other_answer = self.answers_other.get(node.label)
+            if other_answer:
+                data['other_answer'] = {
+                    "question_text": node.other_question, #lookup_translation[node.text_translation_id].sentence,
+                    "answer": other_answer
+                }
+            # AI
+            ans = lookup_answers.get(node.label, None)  # None because, schema might contain new question that was not earlier present
+            if ans and ans.ai:
+                data["ai"] = ans.ai
+
+            answer_sheet["answers"].append(data)
+            response_ans_done.append(node.label)
+
+        # Set answers that have been removed
+        for label in self.answers.iteritems():
+            if label not in response_ans_done:
+                try:
+                    node = form.get_formquestions(only_current=False).filter(label=label)[0]
+
+                    data = {
+                        "question_text": Translation.objects.get(pk=node.text_translation_id).sentence,
+                        "answer": self.answers.get(node.label, None)
+                    }
+                    other_answer = self.answers_other.get(node.label)
+                    if other_answer:
+                        data['other_answer'] = {
+                            "question_text": "Response for other option:",
+                            "answer": other_answer
+                        }
+                    # AI
+                    ans = lookup_answers.get(node.label, None)  # None because, schema might contain new question that was not earlier present
+                    if ans and ans.ai:
+                        data["ai"] = ans.ai
+
+                    answer_sheet["obsolete_answers"].append(data)
+                except IndexError:
+                    pass
+
+        # Set Constants
+        for const in form.constants_obj:
+            data = {
+                "question_text": lookup_translation[const.text_translation_id].sentence,
+                "answer": self.calculated_fields.get(const.label, None)
+            }
+            answer_sheet["constants"].append(data)
+
+        # Set calculated fields
+        for calcFld in form.calculated_fields_obj:
+            data = {
+                "question_text": lookup_translation[calcFld.text_translation_id].sentence,
+                "answer": self.calculated_fields.get(calcFld.label, None)
+            }
+            answer_sheet["calculated_fields"].append(data)
+
+
+        return answer_sheet
+
+
     def save(self, *args, **kwargs):
         """
         Save method for a response.

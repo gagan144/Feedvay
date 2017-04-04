@@ -3,10 +3,12 @@
 # permission of Gagandeep Singh.
 from django.shortcuts import render
 from django.http import HttpResponseForbidden, HttpResponse
+from django.http.response import Http404
 from django.conf import settings
 import json
 import copy
 from django.views.decorators.csrf import csrf_exempt
+from mongoengine.queryset.visitor import Q
 
 from mongoengine.queryset import DoesNotExist as DoesNotExist_mongo
 
@@ -16,7 +18,7 @@ from form_builder.models import ThemeSkin
 from form_builder.utils import GeoLocation
 from form_builder import operations as ops
 from form_builder.fields import AiTextDirectives
-from feedback.models import BspFeedbackForm
+from feedback.models import BspFeedbackForm, BspFeedbackResponse
 from feedback.fixed_questions import *
 from market.models import BusinessServicePoint, BspTypes, Brand
 from accounts.models import RegisteredUser
@@ -458,6 +460,43 @@ def console_bsp_feedback_associate_form(request, org, bsp_id):
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
+
+
+@registered_user_only
+@organization_console('market.businessservicepoint')
+def console_bsp_feedback_view_response(request, org):
+    """
+    View to display BSP feedback response.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+
+    try:
+        # Get response
+        id = request.GET['id']
+        response = BspFeedbackResponse.objects.get(pk=id)
+
+        # Determine if BSP in response exists as per user filter
+        filters_bsp = copy.deepcopy(request.permissions['market.businessservicepoint']['data_access'])
+        if not BusinessServicePoint.objects.filter(Q(**filters_bsp) & Q(pk=response.bsp_id)).count():
+            # BSP was not present; Forbidden
+            return HttpResponseForbidden("You do not have access over this page.")
+
+
+        # All ok; render response
+        answer_sheet = response.get_answer_sheet_data()
+        data = {
+            "response": response,
+            "bsp": response.bsp,
+            "answer_sheet": answer_sheet,
+            "app_name": "app_bsp_feedback_response"
+        }
+        return render(request, 'feedback/console/bsp_feedback_response.html', data)
+
+    except (DoesNotExist_mongo, KeyError):
+        raise Http404("Invalid link or missing parameters.")
 
 # --- /BSP Feedback ---
 # ==================== /Console ====================

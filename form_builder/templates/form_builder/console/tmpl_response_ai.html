@@ -1,0 +1,422 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% load commontags %}
+<style>
+    .algo_div{
+        margin-bottom: 20px;
+    }
+    .div_result{
+        margin-left: 10px;
+    }
+</style>
+<div class="row">
+    {% if ai.text_sentiment %}
+        {% with ai_text_sentiment=ai.text_sentiment %}
+            <!-- Sentiment Analysis -->
+            <div class="col-md-6 algo_div">
+                <h4 style="margin-top: 0px;">Sentiment Analysis</h4>
+                <hr class="hr_m10 hr_dark"/>
+
+                {% if ai_text_sentiment.pending %}
+                    <div class="text-muted" style="padding-left: 15px; font-style: italic;">
+                        <i class="fa fa-history"></i>&nbsp;
+                        Pending...
+                    </div>
+                {% else %}
+                    {% with result=ai_text_sentiment.result %}
+                    <div class="div_result">
+                        {% if result.sentiment == 'positive' %}
+                            <h2 class="text-success" style="margin-top: 0px;">
+                                <i class="fa fa-thumbs-o-up"></i> Positive
+                            </h2>
+                        {% elif result.sentiment == 'neutral' %}
+                            <h2 class="text-muted" style="margin-top: 0px;">
+                                <i class="fa fa-leaf"></i> Neutral
+                            </h2>
+                        {% elif result.sentiment == 'negative' %}
+                            <h2 class="text-danger" style="margin-top: 0px;">
+                                <i class="fa fa-thumbs-o-down"></i> Negative
+                            </h2>
+                        {% endif %}
+                        <div style="margin-top: 20px;">
+                            <span class="semi_bold" tooltip-placement="bottom" uib-tooltip="Likelyhood of the sentiment, 0 being negative and 1 being positive.">
+                                Score:
+                            </span>
+                            <div style="margin: 5px 0px 0px 10px;">
+                                <table style="width: 100%;font-size: smaller;">
+                                    <tr>
+                                        <td align="left">0-Negative</td>
+                                        <td align="center">Neutral</td>
+                                        <td align="right">1-Postive</td>
+                                    </tr>
+                                </table>
+                                <div class="progress progress-mini">
+                                    <div style="width: {{ result.score|multiply:100|floatformat:0 }}%;" class="progress-bar"></div>
+                                </div>
+                                <div style="margin-top: 5px;">
+                                    {{ result.score }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endwith %}
+                {% endif %}
+            </div>
+            <!-- Sentiment Analysis -->
+        {% endwith %}
+    {% endif %}
+
+    {% if ai.text_emotion %}
+        {% with ai_text_emotion=ai.text_emotion %}
+            <!-- Emotion Analysis -->
+            <div class="col-md-6 algo_div">
+                <h4 style="margin-top: 0px;">Emotion Analysis</h4>
+                <hr class="hr_m10 hr_dark"/>
+
+                {% if ai_text_emotion.pending %}
+                    <div class="text-muted" style="padding-left: 15px; font-style: italic;">
+                        <i class="fa fa-history"></i>&nbsp;
+                        Pending...
+                    </div>
+                {% else %}
+                    {% with result=ai_text_emotion.result %}
+                    <div class="div_result">
+                        <table style="margin-bottom: 0px;" class="table table-condensed table-nobordered">
+                            {% for key, prob in result.iteritems %}
+                                {% with prob_per=prob|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold" style="width: 70px;">{{ key|title }}</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                            {% endfor %}
+                        </table>
+                    </div>
+                    {% endwith %}
+                {% endif %}
+            </div>
+            <!-- Emotion Analysis -->
+        {% endwith %}
+    {% endif %}
+
+    {% if ai.text_personality %}
+        {% with ai_text_personality=ai.text_personality %}
+            <!-- Personality Analysis -->
+            <div class="col-md-6 algo_div">
+                <h4 style="margin-top: 0px;">Personality Analysis</h4>
+                <hr class="hr_m10 hr_dark"/>
+
+                {% if ai_text_personality.pending %}
+                    <div class="text-muted" style="padding-left: 15px; font-style: italic;">
+                        <i class="fa fa-history"></i>&nbsp;
+                        Pending...
+                    </div>
+                {% else %}
+                    {% with result=ai_text_personality.result %}
+                    <div class="div_result">
+                        <table style="margin-bottom: 0px;" class="table table-condensed table-nobordered">
+                            {% for key, prob in result.iteritems %}
+                                {% with prob_per=prob|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold" style="width: 70px;">{{ key|title }}</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                            {% endfor %}
+                        </table>
+                    </div>
+                    {% endwith %}
+                {% endif %}
+            </div>
+            <!-- Personality Analysis -->
+        {% endwith %}
+    {% endif %}
+</div>
+
+{% if ai.text_personas %}
+    {% with ai_text_personas=ai.text_personas %}
+        <!-- Persona Analysis -->
+        <style>
+            .trait_group{
+                font-size: 15px;
+                margin-bottom: 2px;
+            }
+
+            .tbl_traits{
+                margin-left: 10px;
+            }
+
+            .personas_trait{
+                width: 100px;
+            }
+
+
+        </style>
+        <div class="">
+            <h4 style="margin-top: 0px;">Persona Analysis</h4>
+            <hr class="hr_m10 hr_dark"/>
+
+            {% if ai_text_personas.pending %}
+                <div class="text-muted" style="padding-left: 15px; font-style: italic;">
+                    <i class="fa fa-history"></i>&nbsp;
+                    Pending...
+                </div>
+            {% else %}
+                <div class="div_result">
+                {% with result=ai_text_personas.result %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="trait_group">Analysts</div>
+                            <table style="margin-bottom: 0px;" class="tbl_traits table table-condensed table-nobordered">
+                                {% with prob_per=result.architect|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold personas_trait">Architect</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                                {% with prob_per=result.logician|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold personas_trait">Logician</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                                {% with prob_per=result.commander|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold personas_trait">Commander</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                                {% with prob_per=result.debater|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold personas_trait">Debater</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                            </table>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="trait_group">Diplomats</div>
+                            <table style="margin-bottom: 0px;" class="tbl_traits table table-condensed table-nobordered">
+                                {% with prob_per=result.advocate|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold personas_trait">Advocate</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                                {% with prob_per=result.mediator|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold personas_trait">Mediator</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                                {% with prob_per=result.protagonist|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold personas_trait">Protagonist</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                                {% with prob_per=result.campaigner|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold personas_trait">Campaigner</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 10px;">
+                        <div class="col-md-6">
+                            <div class="trait_group">Sentinels</div>
+                            <table style="margin-bottom: 0px;" class="tbl_traits table table-condensed table-nobordered">
+                                {% with prob_per=result.logistician|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold personas_trait">Logistician</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                                {% with prob_per=result.defender|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold personas_trait">Defender</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                                {% with prob_per=result.executive|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold personas_trait">Executive</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                                {% with prob_per=result.consul|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold personas_trait">Consul</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                            </table>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="trait_group">Explorers</div>
+                            <table style="margin-bottom: 0px;" class="tbl_traits table table-condensed table-nobordered">
+                                {% with prob_per=result.virtuoso|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold personas_trait">Virtuoso</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                                {% with prob_per=result.adventurer|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold personas_trait">Adventurer</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                                {% with prob_per=result.entrepreneur|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold personas_trait">Entrepreneur</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                                {% with prob_per=result.entertainer|multiply:100|floatformat:2 %}
+                                    <tr>
+                                        <td class="semi_bold personas_trait">Entertainer</td>
+                                        <td style="padding-top: 6px;">
+                                            <div class="progress progress-mini">
+                                                <div style="width: {{ prob_per }}%;" class="progress-bar"></div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 60px;font-size: smaller;" align="right">
+                                            {{ prob_per }} %
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                            </table>
+                        </div>
+                    </div>
+                {% endwith %}
+                </div>
+            {% endif %}
+        </div>
+        <!-- Persona Analysis -->
+    {% endwith %}
+{% endif %}

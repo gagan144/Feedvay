@@ -19,12 +19,14 @@
 
 - Market
     - BSP
-        - Comment AI Apply in BSP
         - Purpose of visit -------- ???
 
 - Survey
     - Create: survey title already existing - autocomplete type options
     - API - Access authentication
+    - Response view correction
+      - answer include template
+      - survey_response_ai
 
 - Data privacy conventions (public, encypted, client shared etc)
 

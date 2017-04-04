@@ -1,0 +1,578 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+{% extends 'console/base.html' %}
+{% load static commontags humanize %}
+
+{% block head %}
+    <!-- Favicon -->
+    <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
+
+    <title>Feedback - {{ bsp.name }} | {{ request.curr_org.name }}</title>
+
+    <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <style>
+        .panel_heading_white{
+            background-color: #ffffff !important;
+        }
+
+        .td_legend{
+            font-weight: 600;
+            width: 70px;
+        }
+
+        .question{
+            font-weight: 600;
+        }
+
+        .answer{
+            padding-left: 20px;
+        }
+
+        .other_question{
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .btn_close{
+            font-size: 16px;
+            line-height: inherit !important;
+            float: inherit !important;
+        }
+    </style>
+{% endblock %}
+
+{% block page_header %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-xs-12">
+            <h2>
+                {{ bsp.name }}
+            </h2>
+{#            <ol class="breadcrumb">#}
+{#                <li>#}
+{#                    <a href="{% url 'console_home' %}">Home</a>#}
+{#                </li>#}
+{#                <li>#}
+{#                    <a href="{% url 'console_market_bsp_panel' %}?c={{ request.curr_org.org_uid }}#/bsps">Business or Service Point</a>#}
+{#                </li>#}
+{#                <li class="active">#}
+{#                    {{ bsp.name }}#}
+{#                </li>#}
+{#            </ol>#}
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="wrapper wrapper-content" style="padding-top: 20px;" ng-controller="MainCtrl">
+        <div class="container">
+            {% if response.flags.suspect %}
+                <div class="alert alert-danger">
+                    <table style="width: 100%">
+                        <tr>
+                            <td valign="top" style="width: 60px;">
+                                <i class="fa fa-question-circle" style="font-size: 50px;"></i>
+                            </td>
+                            <td valign="top">
+                                <h3 style="margin-top: 0px;">
+                                    Response Suspicious!
+                                </h3>
+                                <div>
+                                    This response has been identified as suspicious due to following reasons:
+                                    <ul style="margin-top: 5px">
+                                        {% for rsn in response.flags.suspect_reasons %}
+                                            <li id="suspicion_{{ rsn.id }}">
+                                                {{ rsn.text }}
+                                                {% if rsn.type == 'user_defined' %}
+                                                    <small style="margin-left: 15px;font-style:italic;">- {{ rsn.user_id|get_user_readable:"full_name" }}</small>
+                                                    <button class="close btn_close" type="button" ng-click="remove_suspicion('{{ rsn.id }}');">×</button>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            {% endif %}
+
+            <div class="row">
+                <!-- Info Cards -->
+                <div class="col-sm-3">
+                    <!-- Respondent -->
+                    {% with user=response.respondent %}
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading panel_heading_white ">
+                            <i class="fa fa-user"></i>&nbsp;&nbsp;Respondent
+                        </div>
+                        <div class="panel-body">
+                            <h3 style="margin-top: 0px;">
+                                {{ user.first_name }} {{ user.last_name }}
+                            </h3>
+                            <p style="line-height: 1.6;padding-left: 10px;margin-bottom: 0px;">
+                                <i class="fa fa-phone list_md_icon"></i> {{ user.username }}
+                                {% if user.email %}
+                                    <br/><i class="fa fa-envelope list_md_icon"></i> {{ user.email }}
+                                {% endif %}
+                            </p>
+
+                        </div>
+                    </div>
+                    {% endwith %}
+                    <!-- /Respondent -->
+
+                    <!-- MetaData -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading panel_heading_white ">
+                            <i class="fa fa-tags"></i>&nbsp;&nbsp;Metadata
+                        </div>
+                        <div class="panel-body" style="line-height: 1.6">
+                            <div>
+                                <i class="fa fa-play list_md_icon"></i>
+                                <span class="semi_bold">Started at:</span> {{ response.start_time|date:"h:i A" }}
+                            </div>
+                            <div>
+                                <i class="fa fa-stop list_md_icon"></i>
+                                <span class="semi_bold">Finished at:</span> {{ response.end_time|date:"h:i A" }}
+                            </div>
+                            <div>
+                                <i class="fa fa-clock-o list_md_icon"></i>
+                                <span class="semi_bold">Duration:</span> {{ response.get_duration_time }}
+                            </div>
+
+                            {% with flags=response.flags %}
+                                {% if flags.description_read %}
+                                    <div>
+                                        <i class="fa fa-eye list_md_icon"></i>
+                                        Description read
+                                    </div>
+                                {% endif %}
+                                {% if flags.instructions_read %}
+                                    <div>
+                                        <i class="fa fa-book list_md_icon"></i>
+                                        Instructions read
+                                    </div>
+                                {% endif %}
+                                {% if flags.has_ai %}
+                                    <div>
+                                        <i class="fa fa-android list_md_icon"></i>
+                                        AI
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                    <!-- /MetaData -->
+
+                    {% if response.location.coordinates %}
+                    <!-- Location -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading panel_heading_white ">
+                            <i class="fa fa-map-marker"></i>&nbsp;&nbsp;Location
+                        </div>
+                        <div class="panel-body" style="padding: 0px !important;">
+                            <section>
+                                <div ui-map="MAP_RESPONSE" ui-options="mapOptions" class="google-map" style="height: 250px;" ></div>
+                            </section>
+                        </div>
+                        <div class="panel-footer white-bg">
+                            <label class="semi_bold">
+                                <i class="fa fa-rss list_md_icon"></i>Source:
+                            </label>
+                            {{ response.location.provider|title }}
+
+                            <br/>
+                            <label class="semi_bold">
+                                <i class="fa fa-crosshairs list_md_icon"></i>Accuracy:
+                            </label>
+                            {{ response.location.accuracy }} m
+                        </div>
+                    </div>
+                    <!-- /Location -->
+                    {% endif %}
+
+                    <!-- Endpoint -->
+                    {% with endpoint=response.end_point_info %}
+                        <div class="panel panel-default">
+                            <div class="panel-heading panel_heading_white ">
+                                <i class="fa fa-rss"></i>&nbsp;&nbsp;Source device
+                            </div>
+                            <div class="panel-body" style="max-height: 300px; overflow-y: auto">
+                                {% if endpoint.type == 'web_client' %}
+                                    <div>
+                                        <i class="fa fa-globe list_md_icon"></i>
+                                        Web browser
+                                    </div>
+                                {% else %}
+
+                                {% endif %}
+
+                                {% if endpoint.type != 'web_client' %}
+                                    <table class="table table-hover table-sm" style="max-height: 300px;font-size: 11px;margin: 10px 0px 0px 0px;">
+                                        <tbody>
+                                            <tr>
+                                                <td class="td_legend" valign="top">
+                                                    <span tooltip-placement="bottom" uib-tooltip="Unique device ID">
+                                                        Device ID:
+                                                    </span>
+                                                </td>
+                                                <td valign="top">
+                                                    {{ endpoint.uuid|default_if_none:"-" }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="td_legend" valign="top">
+                                                    <span tooltip-placement="bottom" uib-tooltip="Device platform/operating system">
+                                                        Platform:
+                                                    </span>
+                                                </td>
+                                                <td valign="top">
+                                                    {% if endpoint.platform|lower == 'android' %}
+                                                        <i class="fa fa-android"></i> Android
+                                                    {% elif endpoint.platform|lower == 'ios' %}
+                                                        <i class="fa fa-apple"></i> iOS
+                                                    {% elif endpoint.platform|lower == 'windows' %}
+                                                        <i class="fa fa-windows"></i> Windows
+                                                    {% else %}
+                                                        {{ endpoint.platform|default_if_none:"-" }}
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="td_legend" valign="top">
+                                                    <span tooltip-placement="bottom" uib-tooltip="OS version running in the device">
+                                                        OS version:
+                                                    </span>
+                                                </td>
+                                                <td valign="top">
+                                                    {{ endpoint.os_version|default_if_none:"-" }}
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td class="td_legend" valign="top">
+                                                    <span tooltip-placement="bottom" uib-tooltip="The consumer-visible brand of the device">
+                                                        Brand:
+                                                    </span>
+                                                </td>
+                                                <td valign="top">
+                                                    {{ endpoint.brand|default_if_none:"-" }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="td_legend" valign="top">
+                                                    <span tooltip-placement="bottom" uib-tooltip="Name of the device.">
+                                                        Model:
+                                                    </span>
+                                                </td>
+                                                <td valign="top">
+                                                    {{ endpoint.model|default_if_none:"-" }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="td_legend" valign="top">
+                                                    <span tooltip-placement="bottom" uib-tooltip="The manufacturer of the device">
+                                                        Manufacturer:
+                                                    </span>
+                                                </td>
+                                                <td valign="top">
+                                                    {{ endpoint.manufacturer|default_if_none:"-" }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="td_legend" valign="top">
+                                                    <span tooltip-placement="bottom" uib-tooltip="International Mobile Equipment Identity number of the device">
+                                                        IMEI:
+                                                    </span>
+                                                </td>
+                                                <td valign="top">
+                                                    {{ endpoint.imei|default_if_none:"-" }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="td_legend" valign="top">
+                                                    <span tooltip-placement="bottom" uib-tooltip="International Mobile Subscriber Identity of the SIM used in the device">
+                                                        IMSI:
+                                                    </span>
+                                                </td>
+                                                <td valign="top">
+                                                    {{ endpoint.imsi|default_if_none:"-" }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="td_legend" valign="top">
+                                                    <span tooltip-placement="bottom" uib-tooltip="Name of the network service provider">
+                                                        Service provider:
+                                                    </span>
+                                                </td>
+                                                <td valign="top">
+                                                    {{ endpoint.service_provider|default_if_none:"-" }}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endwith %}
+                    <!-- /Endpoint -->
+                </div>
+                <!-- /Info Cards -->
+
+                <!-- Answer sheet -->
+                <div class="col-sm-9">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h2 style="margin-top: 0px;">
+                                <i class="fa fa-commenting"></i>&nbsp;
+                                Feedback
+
+                                <span class="pull-right">
+                                    {{ response.response_date|date:"d-M-Y" }}
+                                </span>
+                            </h2>
+                            <hr style="margin-top: 15px;" />
+
+                            {% include 'form_builder/console/tmpl_response_answers.html' with response_data=answer_sheet %}
+
+                            <div class="hr-line-dashed"></div>
+                            <div>
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <h3 style="margin-top: 0px;">Rating</h3>
+                                        <div style="font-size: 30px;" class="text-warning">
+                                            {% for i in response.rating.rating|range_loop %}
+                                                <i class="fa fa-star"></i>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {% with comment=response.comment %}
+                                    {% if comment %}
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <i class="fa fa-comment-o"></i>&nbsp;&nbsp;Review
+                                            </div>
+                                            <div class="panel-body">
+                                                <blockquote style="font-size: 13px;">
+                                                    <p>{{ comment.text|safe }}</p>
+                                                </blockquote>
+
+                                                {% if comment.ai %}
+                                                    {% include 'form_builder/console/tmpl_response_ai.html' with ai=comment.ai %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="well">
+                                            No review written by the customer.
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+
+{#                            <!-- Actions -->#}
+{#                            <div >#}
+{#                                <hr/>#}
+{#                                <button class="btn btn-danger" type="button" ng-click="add_suspicion()">#}
+{#                                    <i class="fa fa-question"></i>&nbsp;#}
+{#                                    Mark suspicious#}
+{#                                </button>#}
+{#                            </div>#}
+{#                            <!-- /Actions -->#}
+
+                        </div>
+                    </div>
+                </div>
+                <!-- /Answer sheet -->
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}lib/maps/markerwithlabel_1_1_10.js"></script>
+
+    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/uievents/event.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/uimaps/ui-map.js"></script>
+
+
+    <script>
+        'use strict';
+
+        var APP = angular.module('{{ app_name }}', [
+            'feedvay.uiapp',
+            'feedvay.common',
+            'feedvay.watchdog',
+
+            'ngCookies',
+            'ngMessages',
+            'ngSanitize',
+            'ui.bootstrap',
+            'angular-ladda',
+            'oitozero.ngSweetAlert',
+            'ui.event',
+            'ui.map'
+        ])
+        .config(function ($interpolateProvider, $httpProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+
+            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+        })
+        .run(function ($rootScope, $http, $cookies) {
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+            $http.defaults.xsrfCookieName = 'csrftoken';
+            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+        });
+
+        APP.controller('MainCtrl', function ($scope, $window, SweetAlert) {
+{#            // Suspicion#}
+{#            $scope.add_suspicion = function(){#}
+{#                SweetAlert.swal({#}
+{#                    title: "Mark suspicious!",#}
+{#                    text: "Please enter reason for marking this response as suspicious",#}
+{#                    type: 'input',#}
+{#                    inputPlaceholder: "Write reason",#}
+{#                    confirmButtonColor: "#DD6B55",#}
+{#                    showCancelButton: true,#}
+{#                    confirmButtonText: "Ok, mark!",#}
+{#                    cancelButtonText: "No, cancel!",#}
+{#                    closeOnConfirm: false,#}
+{#                    closeOnCancel: true,#}
+{#                    allowEscapeKey: true#}
+{#                },#}
+{#                function (inputValue) {#}
+{#                    if (inputValue === false) return false;#}
+{#                    if (inputValue === "") {#}
+{#                        swal.showInputError("You need to write something!");#}
+{#                        return false#}
+{#                    }#}
+{##}
+{#                    ServiceSurveyResponses.response_suspicion_add('{{ survey.survey_uid }}', '{{ response.response_uid }}', inputValue).then(#}
+{#                        function(response_data){#}
+{#                            if(response_data.status=='success') {#}
+{#                                SweetAlert.swal("Success!", "This response has been marke suspicious.", "success");#}
+{#                                $window.location.reload();#}
+{#                            }else{#}
+{#                                $.growl.error({#}
+{#                                    title: '<i class="fa fa-exclamation-triangle"></i> Denied!',#}
+{#                                    message: 'Enable to mark suspicious.'#}
+{#                                });#}
+{#                            }#}
+{#                        },#}
+{#                        function(response_data){#}
+{#                            if (response_data.status != -1) {#}
+{#                                $.growl.error({#}
+{#                                    title: '<i class="fa fa-exclamation-triangle"></i> Error!',#}
+{#                                    message: 'Something went wrong. Our engineers will be informed.'#}
+{#                                });#}
+{#                            } else {#}
+{#                                $.growl.error({#}
+{#                                    title: '<i class="fa fa-signal"></i> Network error!',#}
+{#                                    message: "Please check your internet connection."#}
+{#                                });#}
+{#                            }#}
+{#                        }#}
+{#                    )#}
+{#                });#}
+{#            };#}
+{##}
+{#            $scope.remove_suspicion = function(reason_id){#}
+{#                SweetAlert.swal({#}
+{#                    title: "Are you sure?",#}
+{#                    text: "Do you want to remove this suspicion?",#}
+{#                    type: 'warning',#}
+{#                    confirmButtonColor: "#DD6B55",#}
+{#                    showCancelButton: true,#}
+{#                    confirmButtonText: "Yes, remove!",#}
+{#                    cancelButtonText: "No, cancel!",#}
+{#                    closeOnConfirm: false,#}
+{#                    closeOnCancel: true,#}
+{#                    allowEscapeKey: true#}
+{#                },#}
+{#                function (isConfirm) {#}
+{#                    if (isConfirm) {#}
+{#                        ServiceSurveyResponses.response_suspicion_remove('{{ survey.survey_uid }}', '{{ response.response_uid }}', reason_id).then(#}
+{#                            function(response_data){#}
+{#                                if(response_data.status=='success') {#}
+{#                                    swal.close();#}
+{#                                    $("#suspicion_" + reason_id).remove();#}
+{#                                }else{#}
+{#                                    $.growl.error({#}
+{#                                        title: '<i class="fa fa-exclamation-triangle"></i> Denied!',#}
+{#                                        message: 'Enable to remove suspicion.'#}
+{#                                    });#}
+{#                                }#}
+{#                            },#}
+{#                            function(response_data){#}
+{#                                if (response_data.status != -1) {#}
+{#                                    $.growl.error({#}
+{#                                        title: '<i class="fa fa-exclamation-triangle"></i> Error!',#}
+{#                                        message: 'Something went wrong. Our engineers will be informed.'#}
+{#                                    });#}
+{#                                } else {#}
+{#                                    $.growl.error({#}
+{#                                        title: '<i class="fa fa-signal"></i> Network error!',#}
+{#                                        message: "Please check your internet connection."#}
+{#                                    });#}
+{#                                }#}
+{#                            }#}
+{#                        )#}
+{#                    }#}
+{#                });#}
+{#            };#}
+
+            {% if response.location.coordinates %}
+                // --- Map ---
+                {% with location=response.location %}
+                    var point = new google.maps.LatLng({{ location.coordinates.1 }}, {{ location.coordinates.0 }});
+                    $scope.mapOptions = {
+                        zoom: 12,
+                        center: point,
+                        mapTypeId: google.maps.MapTypeId.ROADMAP,
+                        zoomControl:true,
+                        scaleControl:true,
+                        overviewMapControl:true,
+                        rotateControl:true,
+                        streetViewControl:false,
+                    };
+
+                    $scope.$watch('MAP_RESPONSE', function(map) {
+                        if (map) {
+                            var marker = new google.maps.Marker({
+                                position: point,
+{#                                icon: "{% get_static_prefix %}images/markers/marker_response.png",#}
+                                map: $scope.MAP_RESPONSE
+                            });
+
+                            //draw circle
+                            var marker_circle = new google.maps.Circle({
+                                strokeColor: '#000000',
+                                strokeOpacity: 0.8,
+                                strokeWeight: 2,
+                                fillColor: '#000000',
+                                fillOpacity: 0.10,
+                                map: map,
+                                radius: {{ location.accuracy }}
+                            });
+                            marker_circle.bindTo('center', marker, 'position');
+                        }
+                    });
+
+                {% endwith %}
+                // --- /Map ---
+            {% endif %}
+        });
+    </script>
+{% endblock %}

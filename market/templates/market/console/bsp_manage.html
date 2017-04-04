@@ -1030,7 +1030,7 @@
                                     + (flags['has_ai']?ENUM_META_ICO["has_ai"]["ok"]:ENUM_META_ICO["has_ai"]["none"]);
                             records[i]["meta_icons"] = meta_icons;
 
-                            records[i]['actions'] = '<a href="/console/surveys/{{ survey.survey_uid }}/response/'+row['response_uid']+'/" class="btn btn-primary btn-xs btn-outline grid_btn" target="_blank">View</a>';
+                            records[i]['actions'] = '<a href="{% url 'console_feedback_bsp_response' %}?c={{ request.curr_org.org_uid }}&id='+row['id']+'" class="btn btn-primary btn-xs btn-outline grid_btn" target="_blank">View</a>';
                         }
 
                         // --- /Process data ---

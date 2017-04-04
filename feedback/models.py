@@ -127,6 +127,6 @@ class BspFeedbackResponse(BaseResponse):
 
     @property
     def comment(self):
-        return Comment.objects.with_id(self.comment_id)
+        return Comment.objects.with_id(self.comment_id) if self.comment_id else None
 
 # ========== /BSP Feedback ==========

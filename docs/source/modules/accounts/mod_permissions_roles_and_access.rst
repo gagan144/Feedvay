@@ -33,6 +33,20 @@ For permission JOSN structure and methods to obtain permissions, kindly refer :c
     - :py:func:`accounts.models.RegisteredUser.delete_permission_cache`
 
 
+Some Anomalies
+--------------
+
+There are few areas that might not follow above described conventions. These anomalies are:
+
+    - **BSP Feedback Form Association**: Although BSPFeedbackForm has its own permissions, but association of them with the BSP is
+      determined as per access over :class:`market.models.BusinessServicePoint`.
+    - **BSP Feedback Responses/Rating/Comments**: These are as per access over :class:`market.models.BusinessServicePoint`. That is, it user has access
+      over the BSP, he can view responses/rating/comments on them. However, ability to reply on comments are determined from its permissions.
+    - **Data access for BSP**: Currently data access for :class:`market.models.BusinessServicePoint` is determined from
+      filters specified in :class:`accounts.models.UserDataAccess`. However, this will be changed and will be
+      determined from organization hierarchy. The flow is design is yet to be planed.
+
+
 Django views decorator
 ----------------------
 

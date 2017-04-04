@@ -1,0 +1,100 @@
+{% load commontags %}
+<!-- Answers -->
+<div>
+    {% for ques in response_data.answers %}
+        <div class="form-group">
+            <label class="question">Q. {{ ques.question_text }}</label>
+            <div class="answer">
+                {% if ques.answer|get_python_type:"name" == 'BaseList' %}
+                    <ul>
+                        {% for a in ques.answer %}
+                            <li>{{ a }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    {{ ques.answer|default_if_none:"-" }}
+                {% endif %}
+            </div>
+
+            {% if ques.other_answer %}
+                <div class="other_question">
+                    <label class="question">{{ ques.other_answer.question_text }}</label>
+                    <div class="answer">{{ ques.other_answer.answer|default_if_none:"-" }}</div>
+                </div>
+            {% endif %}
+
+            {% if ques.ai %}
+                <div class="panel panel-warning" style="margin: 15px 0px 10px 20px;">
+                    <div class="panel-body">
+                        {% include 'form_builder/console/tmpl_response_ai.html' with ai=ques.ai %}
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+        {% if not forloop.last %}
+            <div class="hr-line-dashed hr_line_dashed_m10"></div>
+        {% endif %}
+    {% endfor %}
+</div>
+<!-- /Answers -->
+
+{% if response_data.obsolete_answers|length %}
+    <!-- Obsolete Answers -->
+    <div class="gray-bg" style="padding: 10px;margin-top: 30px;">
+        <div style="font-style: italic; font-weight: 600;margin-bottom: 10px;">
+            Since your questionnaire was changed, this response contains answers to some
+            questions that have been removed:
+        </div>
+
+        {% for ques in response_data.obsolete_answers %}
+            <div class="form-group">
+                <label class="question">{{ ques.question_text }}</label>
+                <div class="answer">
+                    {% if ques.answer|get_python_type:"name" == 'BaseList' %}
+                        <ul>
+                            {% for a in ques.answer %}
+                                <li>{{ a }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        {{ ques.answer|default_if_none:"-" }}
+                    {% endif %}
+                </div>
+
+                {% if ques.other_answer %}
+                    <div class="other_question">
+                        <label class="question">{{ ques.other_answer.question_text }}</label>
+                        <div class="answer">{{ ques.other_answer.answer|default_if_none:"-" }}</div>
+                    </div>
+                {% endif %}
+            </div>
+            {% if not forloop.last %}
+                <div class="hr-line-dashed hr_line_dashed_m10"></div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <!-- /Obsolete Answers -->
+{% endif %}
+
+
+{% if response_data.calculated_fields|length %}
+    <!-- CalculatedFields -->
+    <div class="panel panel-default" style="margin-top: 30px;">
+        <div class="panel-heading">
+            <i class="fa fa-calculator"></i>&nbsp;&nbsp;Calculated fields
+        </div>
+        <div class="panel-body">
+            {% for ques in response_data.calculated_fields %}
+                <div class="form-group">
+                    <label class="question">{{ ques.question_text }}</label>
+                    <div class="answer">{{ ques.answer|default_if_none:"-" }}</div>
+                </div>
+                {% if not forloop.last %}
+                    <div class="hr-line-dashed hr_line_dashed_m10"></div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    <!-- /CalculatedFields -->
+{% endif %}

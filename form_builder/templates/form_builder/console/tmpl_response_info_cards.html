@@ -1,0 +1,220 @@
+{# Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved #}
+{# Content in this document can not be copied and/or distributed without the express #}
+{# permission of Gagandeep Singh. #}
+<!-- Respondent -->
+{% with user=response.respondent %}
+<div class="panel panel-default">
+    <div class="panel-heading panel_heading_white ">
+        <i class="fa fa-user"></i>&nbsp;&nbsp;Respondent
+    </div>
+    <div class="panel-body">
+        <h3 style="margin-top: 0px;">
+            {{ user.first_name }} {{ user.last_name }}
+        </h3>
+        <p style="line-height: 1.6;padding-left: 10px;margin-bottom: 0px;">
+            <i class="fa fa-phone list_md_icon"></i> {{ user.username }}
+            {% if user.email %}
+                <br/><i class="fa fa-envelope list_md_icon"></i> {{ user.email }}
+            {% endif %}
+        </p>
+
+    </div>
+</div>
+{% endwith %}
+<!-- /Respondent -->
+
+<!-- MetaData -->
+<div class="panel panel-default">
+    <div class="panel-heading panel_heading_white ">
+        <i class="fa fa-tags"></i>&nbsp;&nbsp;Metadata
+    </div>
+    <div class="panel-body" style="line-height: 1.6">
+        <div>
+            <i class="fa fa-play list_md_icon"></i>
+            <span class="semi_bold">Started at:</span> {{ response.start_time|date:"h:i A" }}
+        </div>
+        <div>
+            <i class="fa fa-stop list_md_icon"></i>
+            <span class="semi_bold">Finished at:</span> {{ response.end_time|date:"h:i A" }}
+        </div>
+        <div>
+            <i class="fa fa-clock-o list_md_icon"></i>
+            <span class="semi_bold">Duration:</span> {{ response.get_duration_time }}
+        </div>
+
+        {% with flags=response.flags %}
+            {% if flags.description_read %}
+                <div>
+                    <i class="fa fa-eye list_md_icon"></i>
+                    Description read
+                </div>
+            {% endif %}
+            {% if flags.instructions_read %}
+                <div>
+                    <i class="fa fa-book list_md_icon"></i>
+                    Instructions read
+                </div>
+            {% endif %}
+            {% if flags.has_ai %}
+                <div>
+                    <i class="fa fa-android list_md_icon"></i>
+                    AI
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>
+<!-- /MetaData -->
+
+{% if response.location.coordinates %}
+<!-- Location -->
+<div class="panel panel-default">
+    <div class="panel-heading panel_heading_white ">
+        <i class="fa fa-map-marker"></i>&nbsp;&nbsp;Location
+    </div>
+    <div class="panel-body" style="padding: 0px !important;">
+        <section>
+            <div ui-map="MAP_RESPONSE" ui-options="mapOptions" class="google-map" style="height: 250px;" ></div>
+        </section>
+    </div>
+    <div class="panel-footer white-bg">
+        <label class="semi_bold">
+            <i class="fa fa-rss list_md_icon"></i>Source:
+        </label>
+        {{ response.location.provider|title }}
+
+        <br/>
+        <label class="semi_bold">
+            <i class="fa fa-crosshairs list_md_icon"></i>Accuracy:
+        </label>
+        {{ response.location.accuracy }} m
+    </div>
+</div>
+<!-- /Location -->
+{% endif %}
+
+<!-- Endpoint -->
+{% with endpoint=response.end_point_info %}
+    <div class="panel panel-default">
+        <div class="panel-heading panel_heading_white ">
+            <i class="fa fa-rss"></i>&nbsp;&nbsp;Source device
+        </div>
+        <div class="panel-body" style="max-height: 300px; overflow-y: auto">
+            {% if endpoint.type == 'web_client' %}
+                <div>
+                    <i class="fa fa-globe list_md_icon"></i>
+                    Web browser
+                </div>
+            {% else %}
+
+            {% endif %}
+
+            {% if endpoint.type != 'web_client' %}
+                <table class="table table-hover table-sm" style="max-height: 300px;font-size: 11px;margin: 10px 0px 0px 0px;">
+                    <tbody>
+                        <tr>
+                            <td class="td_legend" valign="top">
+                                <span tooltip-placement="bottom" uib-tooltip="Unique device ID">
+                                    Device ID:
+                                </span>
+                            </td>
+                            <td valign="top">
+                                {{ endpoint.uuid|default_if_none:"-" }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td_legend" valign="top">
+                                <span tooltip-placement="bottom" uib-tooltip="Device platform/operating system">
+                                    Platform:
+                                </span>
+                            </td>
+                            <td valign="top">
+                                {% if endpoint.platform|lower == 'android' %}
+                                    <i class="fa fa-android"></i> Android
+                                {% elif endpoint.platform|lower == 'ios' %}
+                                    <i class="fa fa-apple"></i> iOS
+                                {% elif endpoint.platform|lower == 'windows' %}
+                                    <i class="fa fa-windows"></i> Windows
+                                {% else %}
+                                    {{ endpoint.platform|default_if_none:"-" }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td_legend" valign="top">
+                                <span tooltip-placement="bottom" uib-tooltip="OS version running in the device">
+                                    OS version:
+                                </span>
+                            </td>
+                            <td valign="top">
+                                {{ endpoint.os_version|default_if_none:"-" }}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="td_legend" valign="top">
+                                <span tooltip-placement="bottom" uib-tooltip="The consumer-visible brand of the device">
+                                    Brand:
+                                </span>
+                            </td>
+                            <td valign="top">
+                                {{ endpoint.brand|default_if_none:"-" }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td_legend" valign="top">
+                                <span tooltip-placement="bottom" uib-tooltip="Name of the device.">
+                                    Model:
+                                </span>
+                            </td>
+                            <td valign="top">
+                                {{ endpoint.model|default_if_none:"-" }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td_legend" valign="top">
+                                <span tooltip-placement="bottom" uib-tooltip="The manufacturer of the device">
+                                    Manufacturer:
+                                </span>
+                            </td>
+                            <td valign="top">
+                                {{ endpoint.manufacturer|default_if_none:"-" }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td_legend" valign="top">
+                                <span tooltip-placement="bottom" uib-tooltip="International Mobile Equipment Identity number of the device">
+                                    IMEI:
+                                </span>
+                            </td>
+                            <td valign="top">
+                                {{ endpoint.imei|default_if_none:"-" }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td_legend" valign="top">
+                                <span tooltip-placement="bottom" uib-tooltip="International Mobile Subscriber Identity of the SIM used in the device">
+                                    IMSI:
+                                </span>
+                            </td>
+                            <td valign="top">
+                                {{ endpoint.imsi|default_if_none:"-" }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td_legend" valign="top">
+                                <span tooltip-placement="bottom" uib-tooltip="Name of the network service provider">
+                                    Service provider:
+                                </span>
+                            </td>
+                            <td valign="top">
+                                {{ endpoint.service_provider|default_if_none:"-" }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
+{% endwith %}
+<!-- /Endpoint -->

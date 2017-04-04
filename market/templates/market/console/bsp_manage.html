@@ -894,7 +894,7 @@
                     colModel: [
                         { name: 'row_id', index: 'row_id', width: 50, search:false },
                         { name: 'response_uid', index: 'response_uid', width: 40, key:true, hidden:true },
-                        { name: 'response_date', index: 'response_date', width: 150,
+                        { name: 'response_date', index: 'response_date', width: 120,
                             sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-dTH:i:s', newformat: 'd-M-Y h:i A' },
 {#                            searchoptions:{attr:{placeholder:'yyyy-mm-dd'}},#}
                             searchoptions: {
@@ -913,7 +913,7 @@
                                 }
                             }
                         },
-                        { name: 'respondent', index: 'respondent', width: 250 },
+                        { name: 'respondent', index: 'respondent', width: 200 },
                         { name: 'form.title', index: 'form.title', width: 150,
                             stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for f in list_feedback_forms %}{{ f.title }}:{{ f.title }}{% if not forloop.last %};{% endif %}{% endfor %}", clearSearch: false}
 
@@ -922,11 +922,11 @@
                             stype: 'select', searchoptions:{ sopt:['eq'], value: ":All;1:1;2:2;3:3;4:4;5:5", clearSearch: false}
                         },
                         { name: 'comment', index: 'comment', width: 180 },
-                        { name: 'suspect_html', index: 'flags.suspect', width: 90, align:"center",
+                        { name: 'suspect_html', index: 'flags.suspect', width: 80, align:"center",
                             stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;true:Yes;false:No", clearSearch: false}
                         },
                         { name: 'meta_icons', index: 'meta_icons', width: 120, search:false, sortable:false },
-                        { name: 'actions', index: 'actions', width: 50, search:false, sortable:false },
+                        { name: 'actions', index: 'actions', width: 60, search:false, sortable:false },
 
                     ],
                     viewrecords: true,

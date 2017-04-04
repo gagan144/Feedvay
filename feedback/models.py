@@ -11,6 +11,7 @@ from django.db.models.signals import post_save
 
 from mongoengine.document import *
 from mongoengine.fields import *
+from mongoengine.queryset import DoesNotExist as DoesNotExist_mongo
 
 from django.contrib.auth.models import User
 
@@ -102,14 +103,16 @@ class BspFeedbackResponse(BaseResponse):
 
     **Authors**: Gagandeep Singh
     """
+    organization_id = IntField(help_text="InstanceID of the organization.")
     bsp_id      = StringField(required=True, help_text='BSP ID for which feedback was made.')
 
-    rating_id   = StringField(required=True, help_text='Instance ID of :class:`critics.models.Rating`')
-    comment_id  = StringField(help_text='(Optional) Instance ID of :class:`critics.models.Comment`.')
+    batch_id    = StringField(sparse=True, unique=True, help_text="BatchID to glue all other related entities. For example a batchId may glue feedback response, comment, rating together since they were answer together. ")
 
     meta = {
         'indexes':[
+            { 'fields':['organization_id'], 'cls':False, 'sparse': True},
             'bsp_id',
+            { 'fields':['batch_id'], 'cls':False, 'sparse': True, 'unique': True },
         ]
     }
 
@@ -123,10 +126,13 @@ class BspFeedbackResponse(BaseResponse):
 
     @property
     def rating(self):
-        return Rating.objects.with_id(self.rating_id)
+        return Rating.objects.get(batch_id=self.batch_id)
 
     @property
     def comment(self):
-        return Comment.objects.with_id(self.comment_id) if self.comment_id else None
+        try:
+            return Comment.objects.get(batch_id=self.batch_id)
+        except DoesNotExist_mongo:
+            return None
 
 # ========== /BSP Feedback ==========

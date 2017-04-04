@@ -96,10 +96,13 @@ class BspFeedbackResponsesAPI(resources.MongoEngineResource):
 
     def apply_filters(self, request, applicable_filters):
         # object_list_filtered = self._meta.queryset.filter(**applicable_filters)
+        org = request.curr_org
 
         # Caches
         request.cache_forms = {}
         request.cache_bsps = {}
+
+        applicable_filters['organization_id'] = org.id
 
         # --- Check BSP access ---
         # (a) Get all Bsp Ids
@@ -135,7 +138,7 @@ class BspFeedbackResponsesAPI(resources.MongoEngineResource):
 
         object_list_filtered = self._meta.queryset.filter(**applicable_filters)
 
-        return object_list_filtered.order_by('-response_date').only(*(self.Meta.fields+('bsp_id', 'form_id', 'user', 'location', 'rating_id', 'comment_id')))
+        return object_list_filtered.order_by('-response_date').only(*(self.Meta.fields+('bsp_id', 'form_id', 'user', 'location', 'batch_id')))
 
     def dehydrate(self, bundle):
         bsp_id = bundle.obj.bsp_id
@@ -169,6 +172,7 @@ class BspFeedbackResponsesAPI(resources.MongoEngineResource):
         bundle.data["flags"] = flags
 
         bundle.data['rating'] = bundle.obj.rating.rating
-        bundle.data['comment'] = bundle.obj.comment.text if bundle.obj.comment_id else None
+        comment = bundle.obj.comment
+        bundle.data['comment'] = bundle.obj.comment.text if comment else None
 
         return bundle

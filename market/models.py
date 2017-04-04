@@ -790,7 +790,7 @@ class BusinessServicePoint(Document):
     website     = URLField(help_text='Website url if any.')
 
     # Stats
-    avg_rating  = FloatField(default=0, confidential=True, help_text="Average rating.")
+    avg_rating  = DecimalField(default=0, precision=1, confidential=True, help_text="Average rating.")
     total_views = IntField(default=0, confidential=True, help_text="Total views for this bsp.")
 
     # Misc

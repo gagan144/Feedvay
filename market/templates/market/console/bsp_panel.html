@@ -536,7 +536,7 @@
                         { name: 'brand_html', index: 'brand_id', width: 30,
                             stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for b in list_brands %}{{ b.id }}:{{ b.name }}{% if not forloop.last %};{% endif %}{% endfor %}" }
                         },
-                        { name: 'avg_rating', index: 'avg_rating', width: 20 },
+                        { name: 'avg_rating', index: 'avg_rating', width: 20, sorttype:'float' },
                         { name: 'open_status', index: 'open_status', width: 25,
                             stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for s in BusinessServicePoint.CH_OPEN_STATUS %}{{ s.0 }}:{{ s.1 }}{% if not forloop.last %};{% endif %}{% endfor %}" }
                         },

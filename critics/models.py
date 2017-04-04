@@ -143,10 +143,13 @@ class Rating(Document):
     )
 
     # --- Fields ---
+    organization_id = IntField(help_text="InstanceID of the organization.")
     content_type = StringField(required=True, choices=CH_CONTENT_TYPE, help_text='Content/Entity on which rating is made.')
     object_id   = StringField(required=True, help_text='Instance ID of the entity which is rated.')
 
     rating      = IntField(choices=CH_RATING, help_text='Rating on the scale of 1-5.')
+
+    batch_id    = StringField(sparse=True, unique=True, help_text="BatchID to glue all other related entities. For example a batchId may glue feedback response, comment, rating together since they were answer together. ")
 
     user_id     = IntField(required=True, help_text='Instance ID of User who rated the entity.')
     dated       = DateTimeField(required=True, help_text='Date on which this review was made.')
@@ -160,7 +163,9 @@ class Rating(Document):
 
     meta = {
         'indexes':[
+            { 'fields':['organization_id'], 'cls':False, 'sparse': True },
             ['content_type', 'object_id'],
+            { 'fields':['batch_id'], 'cls':False, 'sparse': True, 'unique': True },
             'user_id',
             '-dated'
         ]
@@ -269,6 +274,7 @@ class Comment(Document):
     )
 
     # --- Fields ---
+    organization_id = IntField(help_text="InstanceID of the organization.")
     content_type = StringField(required=True, choices=CH_CONTENT_TYPE, help_text='Content/Entity on which review is made.')
     object_id   = StringField(required=True, help_text='Instance ID of the entity which is reviewd.')
 
@@ -277,6 +283,8 @@ class Comment(Document):
 
     ai_pending  = BooleanField(help_text='It true, it means ai has to be applied on comment text.')
     ai          = DictField(default=None, required=False, help_text='AI instructions and results.')
+
+    batch_id    = StringField(sparse=True, unique=True, help_text="BatchID to glue all other related entities. For example a batchId may glue feedback response, comment, rating together since they were answer together. ")
 
     user_id     = IntField(required=True, help_text='Instance ID of User who rated the entity.')
 
@@ -293,8 +301,10 @@ class Comment(Document):
 
     meta = {
         'indexes':[
+            { 'fields':['organization_id'], 'cls':False, 'sparse': True },
             ['content_type', 'object_id'],
             { 'fields':['ai_pending'], 'cls':False, 'sparse': True },
+            { 'fields':['batch_id'], 'cls':False, 'sparse': True, 'unique': True },
             'user_id',
             'hidden',
             '-dated'

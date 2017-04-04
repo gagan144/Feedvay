@@ -2,6 +2,7 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from django.utils import timezone
+import uuid
 
 from django.contrib.auth.models import User
 
@@ -40,6 +41,7 @@ def save_bsp_feedback_response(response_json):
     response_date = timezone.datetime.strptime(response_json['response_date'],"%Y-%m-%dT%H:%M:%S")
     if not BspFeedbackResponse.objects.filter(response_uid=response_uid).count():
         # Begin processing
+        batch_id = str(uuid.uuid4()).replace('-', '')   # ID to glue all entities
 
         # (a) Extract Rating and Review from ``response_json.answers`` and delete them
         rating_val = int(response_json['answers']['rating'])
@@ -51,9 +53,11 @@ def save_bsp_feedback_response(response_json):
 
         # (b) Save Rating
         rating = Rating.objects.create(
+            organization_id = bsp.organization_id,
             content_type = Entities.BSP,
             object_id   = str(bsp.pk),
             rating      = rating_val,
+            batch_id    = batch_id,
             user_id     = user.id,
             dated       =  response_date
         )
@@ -74,11 +78,13 @@ def save_bsp_feedback_response(response_json):
                 ai = None
 
             comment = Comment.objects.create(
+                organization_id = bsp.organization_id,
                 content_type = Entities.BSP,
                 object_id   = str(bsp.pk),
                 text        = review,
                 ai_pending  = ai_pending,
                 ai          = ai,
+                batch_id    = batch_id,
                 user_id     = user.id,
                 dated       = response_date
             )
@@ -87,6 +93,7 @@ def save_bsp_feedback_response(response_json):
 
         # (d) Create BSP Feedback Response
         bsp_response = BspFeedbackResponse.objects.create(
+            organization_id = bsp.organization_id,
             bsp_id          = str(bsp.pk),
             form_id         = str(form.id),
             form_version    = form_version,
@@ -118,8 +125,7 @@ def save_bsp_feedback_response(response_json):
                                    suspect_reasons = response_json['flags']['suspect_reasons']
                               ),
 
-            rating_id       = str(rating.pk),
-            comment_id      = str(comment.pk) if comment else None
+            batch_id        = batch_id
         )
 
         # Processing completed! Return now

@@ -3,7 +3,7 @@
 # permission of Gagandeep Singh.
 from django.shortcuts import render
 from django.http.response import Http404
-from django.http import HttpResponseForbidden, HttpResponse
+from django.http import HttpResponseForbidden, HttpResponse, JsonResponse
 from django.utils.datastructures import MultiValueDictKeyError
 from openpyxl import Workbook
 from django.db import transaction
@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from mongoengine.queryset import DoesNotExist as DoesNotExist_mongo
 import copy
 import json
+import re
 
 from accounts.decorators import registered_user_only, organization_console
 from market.models import Brand
@@ -661,5 +662,69 @@ def partial_bsp_type_attributes(request, bsp_type):
 
 # --- /BusinessServicePoint ---
 
-
 # ==================== /Console ====================
+
+
+# ----- Custom API -----
+@registered_user_only
+@organization_console()
+def api_search_org_bsp(request, org):
+    """
+    Custom API to search for organization BSP given query text. Query text must
+    atleast 3 characters long.
+
+    **Type**: GET
+
+    **Filters**:
+
+        - ``c``: (Mandatory) Organization UID
+        - ``q``: Query text to be matched against name. Minimum of 3 characters
+        - ``type``: (Optional) Type of BSP
+
+    **Limit**: Maximum 10
+
+    **Authors**: Gagandeep Singh
+    """
+
+    filters = {
+        "organization_id": org.id
+    }
+
+    try:
+        q = request.GET['q']
+        if len(q) < 3:
+            return ApiResponse(status=ApiResponse.ST_BAD_REQUEST, message="Query text 'q' must be 3 characters long.").gen_http_response()
+        filters['name'] = re.compile(q, re.IGNORECASE)
+
+        type_bsp = request.GET.get('type', None)
+        if type_bsp:
+            filters['type'] = type_bsp
+    except KeyError:
+        return ApiResponse(status=ApiResponse.ST_BAD_REQUEST, message="Missing parameters.").gen_http_response()
+
+
+    result_aggr = BusinessServicePoint._get_collection().aggregate([
+        {
+            "$match": filters
+        },
+        {
+            "$project":{
+                "_id": 0,
+                "id": "$_id",
+                "name": 1
+            }
+        },
+        {
+            "$limit": 10
+        }
+    ])
+
+    data = []
+    for row in result_aggr:
+        print row
+        row['id'] = str(row['id'])
+        data.append(row)
+
+    return ApiResponse(status=ApiResponse.ST_SUCCESS, message="ok", objects=data).gen_http_response()
+
+

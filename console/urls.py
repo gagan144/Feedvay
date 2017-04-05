@@ -85,6 +85,9 @@ url_bsp = [
     # Partials
     url(r'^partials/bsp-type-attr/(?P<bsp_type>.*)/$', views_market.partial_bsp_type_attributes, name='console_market_bsp_type_attr'),
 
+    # Custom API
+    url(r'^api/search-bsp/$', views_market.api_search_org_bsp),
+
     # Api
     url(r'^api/', include(api_org_bsp.urls)),
 ]

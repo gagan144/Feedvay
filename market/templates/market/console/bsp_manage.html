@@ -337,6 +337,12 @@
                             <div class="col-xs-5">
                                 <div style="margin-bottom: 6px;">
                                     <span style="font-weight: 700;">Date range:</span>
+
+                                    <div class="btn-group btn-group-xs pull-right">
+                                        <button class="btn btn-default" type="button" ng-click="set_filter_daterange('today')">Today</button>
+                                        <button class="btn btn-default" type="button" ng-click="set_filter_daterange('last7days')">Last 7 days</button>
+                                        <button class="btn btn-default" type="button" ng-click="set_filter_daterange('last30days')">Last 30 days</button>
+                                    </div>
                                 </div>
                                 <input date-range-picker name="response_date"
                                        class="form-control input-sm date-picker fake_readonly" type="text"
@@ -399,6 +405,12 @@
                             <div class="col-xs-5">
                                 <div style="margin-bottom: 6px;">
                                     <span style="font-weight: 700;">Date range:</span>
+
+                                    <div class="btn-group btn-group-xs pull-right">
+                                        <button class="btn btn-default" type="button" ng-click="set_filter_daterange('today')">Today</button>
+                                        <button class="btn btn-default" type="button" ng-click="set_filter_daterange('last7days')">Last 7 days</button>
+                                        <button class="btn btn-default" type="button" ng-click="set_filter_daterange('last30days')">Last 30 days</button>
+                                    </div>
                                 </div>
                                 <input date-range-picker name="response_date"
                                        class="form-control input-sm date-picker fake_readonly" type="text"
@@ -939,6 +951,30 @@
                     "endDate": moment()
                 }
             };
+            $scope.set_filter_daterange = function(key){
+                switch (key){
+                    case 'today': {
+                            $scope.filters["response_date"] = {
+                                "startDate": moment(),
+                                "endDate": moment()
+                            };
+                        }break;
+                    case 'last7days': {
+                            $scope.filters["response_date"] = {
+                                "startDate": moment().add(-7, 'days'),
+                                "endDate": moment()
+                            };
+                        }break;
+                    case 'last30days': {
+                            $scope.filters["response_date"] = {
+                                "startDate": moment().add(-30, 'days'),
+                                "endDate": moment()
+                            };
+                        }break;
+                    default: { alert("Invalid date range option!"); }
+
+                }
+            };
 
             // UI
             $scope.ui_flags = {
@@ -1071,7 +1107,36 @@
         // --- FeedbackResponsesCtrl ---
         function FeedbackResponsesCtrl($scope, ServiceBspFeedback){
             // filters
-            $scope.filters_response = {};
+            $scope.filters_response = {
+                "response_date":{
+                    "startDate": moment().add(-1, 'months'),
+                    "endDate": moment()
+                }
+            };
+            $scope.set_filter_daterange = function(key){
+                switch (key){
+                    case 'today': {
+                            $scope.filters_response["response_date"] = {
+                                "startDate": moment(),
+                                "endDate": moment()
+                            };
+                        }break;
+                    case 'last7days': {
+                            $scope.filters_response["response_date"] = {
+                                "startDate": moment().add(-7, 'days'),
+                                "endDate": moment()
+                            };
+                        }break;
+                    case 'last30days': {
+                            $scope.filters_response["response_date"] = {
+                                "startDate": moment().add(-30, 'days'),
+                                "endDate": moment()
+                            };
+                        }break;
+                    default: { alert("Invalid date range option!"); }
+
+                }
+            };
 
             // UI
             $scope.ui_flags = {

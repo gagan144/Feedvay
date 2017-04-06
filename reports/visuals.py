@@ -1,16 +1,19 @@
 # Copyright (C) 2017 Feedvay (Gagandeep Singh: singh.gagan144@gmail.com) - All Rights Reserved
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
+from jsonobject import *
 
-class VisualReports:
+class GraphCharts:
     """
-    Enum class to define various visual graphs & charts reports.
+    Enum class to define various graphs & charts.
 
     **Guidelines to add new visual**:
 
-        - Determine dimension (1D, 2D, 3D, nD) and create ENUM accordingly with the prefix
-        - Add to ``choices_all`
-        - Add to ``formfield_choice_mapping`` accordingly
+        - Determine dimension (1D, 2D, 3D, nD) and create ENUM accordingly with the prefix.
+        - Add to ``choices_all`.
+        - Add to ``formfield_choice_mapping`` accordingly.
+        - Add graph configuration schema class by extending ``BaseGraphSchema`` class.
+        - Add newly create schema class to ``GRAPH_SCHEMA_MAPPING``.
 
     **Authors**: Gagandeep Singh
     """
@@ -115,4 +118,51 @@ class VisualReports:
         (DN_RADAR_CHART, 'Radar Chart'),
     )
 
+# ----- Graph Configuration Schema -----
+class BaseGraphSchema(JsonObject):
+    """
+    Base schema class for defining a graph diagram configuration schema.
+    Always extend this class while defining a schema.
+
+    **Authors**: Gagandeep Singh
+    """
+    question_id = IntegerProperty(required=True)    # Instance ID of :class:`form_builder.models.FormQuestion`
+
+
+class StatsNumericGraphSchema(BaseGraphSchema):
+    """
+    Schema for configuration of numeric field statistics. The diagram shows
+    basic aggregates such as Count, Max, Min, Avg, Sum across all
+    values of a numeric/decimal field.
+
+    **Authors**: Gagandeep Singh
+    """
+    pass
+
+
+class HistogramGraphSchema(BaseGraphSchema):
+    """
+    Schema to configure histogram on a numeric/decimal field.
+
+    **Authors**: Gagandeep Singh
+    """
+    bin_size    = IntegerProperty(required=True)    # Binning size of the histogram
+
+
+class StatsDatetimeGraphSchema(BaseGraphSchema):
+    """
+    Schema to configure statistics for date/time/datetime fields. The diagram shows
+    basic aggregates such as Count, Max, Min, across all values of a the field.
+
+    **Authors**: Gagandeep Singh
+    """
+    pass
+
+
+GRAPH_SCHEMA_MAPPING = {
+    GraphCharts.D1_STATS_NUM: StatsNumericGraphSchema,
+    GraphCharts.D1_HISTOGRAM: HistogramGraphSchema,
+    GraphCharts.D1_STATS_DT: StatsDatetimeGraphSchema
+}
+# ----- /Graph Configuration Schema -----
 

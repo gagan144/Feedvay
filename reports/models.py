@@ -5,17 +5,18 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django_mysql import models as models57
+import tinymce.models as tinymce_models
 from django.utils import timezone
 
 from django.contrib.auth.models import User
 
 from clients.models import Organization
-from reports.visuals import VisualReports
+from reports.visuals import GraphCharts
 
 
-class VisualDiagram(models57.Model):
+class GraphDiagram(models57.Model):
     """
-    Model to define a visual diagram.
+    Model to define a chart/graph diagram.
 
     **Authors**: Gagandeep Singh
     """
@@ -27,7 +28,10 @@ class VisualDiagram(models57.Model):
 
     organization = models.ForeignKey(Organization, db_index=True, help_text='Organization to which this visual belongs.')
     context     = models.CharField(max_length=32, choices=CH_CONTEXT, help_text='Context for which this visual is defined')
-    type        = models.CharField(max_length=32, choices=VisualReports.choices_all, help_text='Type of visual')
+    type        = models.CharField(max_length=32, choices=GraphCharts.choices_all, help_text='Type of visual')
+
+    title       = models.CharField(max_length=1024, help_text='Title of the diagram')
+    description = tinymce_models.HTMLField(null=True, blank=True, help_text='Description about the diagram.')
 
     config      = models57.JSONField(help_text='Configuration for the visual diagram.')
     pin_to_dashboard = models.BooleanField(default=False, help_text='If True, this will be display on corresponding context dashboard.')

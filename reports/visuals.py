@@ -12,7 +12,7 @@ class GraphCharts:
         - Determine dimension (1D, 2D, 3D, nD) and create ENUM accordingly with the prefix.
         - Add to ``choices_all`.
         - Add to ``formfield_choice_mapping`` accordingly.
-        - Add graph configuration schema class by extending ``BaseGraphSchema`` class.
+        - Add graph configuration schema class.
         - Add newly create schema class to ``GRAPH_SCHEMA_MAPPING``.
 
     **Authors**: Gagandeep Singh
@@ -118,18 +118,35 @@ class GraphCharts:
         (DN_RADAR_CHART, 'Radar Chart'),
     )
 
+
+class GraphAggregations:
+    COUNT = 'count'
+    SUM = 'sum'
+    MIN = 'min'
+    MAX = 'max'
+    AVG = 'avg'
+    MOV_AVG = 'moving_avg'
+
+    choices_basic = (
+        (COUNT, 'Count'),
+        (SUM, 'Sum'),
+        (MIN, 'Minimum'),
+        (MAX, 'Maximum'),
+        (AVG, 'Average')
+    )
+
+    choices_all = (
+        (COUNT, 'Count'),
+        (SUM, 'Sum'),
+        (MIN, 'Minimum'),
+        (MAX, 'Maximum'),
+        (AVG, 'Average'),
+        (MOV_AVG, 'Moving Average')
+    )
+
 # ----- Graph Configuration Schema -----
-class BaseGraphSchema(JsonObject):
-    """
-    Base schema class for defining a graph diagram configuration schema.
-    Always extend this class while defining a schema.
 
-    **Authors**: Gagandeep Singh
-    """
-    question_id = IntegerProperty(required=True)    # Instance ID of :class:`form_builder.models.FormQuestion`
-
-
-class StatsNumericGraphSchema(BaseGraphSchema):
+class StatsNumericGraphSchema(JsonObject):
     """
     Schema for configuration of numeric field statistics. The diagram shows
     basic aggregates such as Count, Max, Min, Avg, Sum across all
@@ -137,32 +154,132 @@ class StatsNumericGraphSchema(BaseGraphSchema):
 
     **Authors**: Gagandeep Singh
     """
-    pass
+    question_id = IntegerProperty(required=True)    # Instance ID of :class:`form_builder.models.FormQuestion`
 
 
-class HistogramGraphSchema(BaseGraphSchema):
+class HistogramGraphSchema(JsonObject):
     """
     Schema to configure histogram on a numeric/decimal field.
 
     **Authors**: Gagandeep Singh
     """
+    question_id = IntegerProperty(required=True)    # Instance ID of :class:`form_builder.models.FormQuestion`
     bin_size    = IntegerProperty(required=True)    # Binning size of the histogram
 
 
-class StatsDatetimeGraphSchema(BaseGraphSchema):
+class StatsDatetimeGraphSchema(JsonObject):
     """
     Schema to configure statistics for date/time/datetime fields. The diagram shows
     basic aggregates such as Count, Max, Min, across all values of a the field.
 
     **Authors**: Gagandeep Singh
     """
-    pass
+    question_id = IntegerProperty(required=True)    # Instance ID of :class:`form_builder.models.FormQuestion`
+
+
+class PieGraphSchema(JsonObject):
+    """
+    Schema to configure pie chart on binary/multiple choice field.
+
+    **Authors**: Gagandeep Singh
+    """
+    question_id = IntegerProperty(required=True)    # Instance ID of :class:`form_builder.models.FormQuestion`
+    aggregation = StringProperty(required=True, choices=GraphAggregations.choices_basic, default=GraphAggregations.COUNT)   # Data aggregation
+
+
+class DonutGraphSchema(JsonObject):
+    """
+    Schema to configure donut chart on binary/multiple choice field.
+
+    **Authors**: Gagandeep Singh
+    """
+    question_id = IntegerProperty(required=True)    # Instance ID of :class:`form_builder.models.FormQuestion`
+    aggregation = StringProperty(required=True, choices=GraphAggregations.choices_basic, default=GraphAggregations.COUNT)   # Data aggregation
+
+
+class GaugeGraphSchema(JsonObject):
+    """
+    Schema to configure gauge chart on binary/multiple choice field.
+
+    **Authors**: Gagandeep Singh
+    """
+    question_id = IntegerProperty(required=True)    # Instance ID of :class:`form_builder.models.FormQuestion`
+    aggregation = StringProperty(required=True, choices=GraphAggregations.choices_basic, default=GraphAggregations.COUNT)   # Data aggregation
+
+
+class BarGraphSchema(JsonObject):
+    """
+    Schema to configure bar graph on binary/multiple choice field.
+
+    **Authors**: Gagandeep Singh
+    """
+    question_id = IntegerProperty(required=True)    # Instance ID of :class:`form_builder.models.FormQuestion`
+    aggregation = StringProperty(required=True, choices=GraphAggregations.choices_basic, default=GraphAggregations.COUNT)   # Data aggregation
+
+
+class RatingGraphScema(JsonObject):
+    """
+    Schema to configure rating metric on rating field.
+
+    **Authors**: Gagandeep Singh
+    """
+    question_id = IntegerProperty(required=True)    # Instance ID of :class:`form_builder.models.FormQuestion`
+
+
+class LineAreaGraphSchema(JsonObject):
+    """
+    Schema to configure line/area graph between two fields.
+
+        - **On X-Axis**: Date/Time/Datetime/Response date
+        - **On Y-Axis**: Number/Decimal/Rating/Binary/MultipleChoice field
+        - **Aggregation**: Count/Sum/Max/Min/Moving Average
+        - **Type**: Line / Area / Bar (Side-by-Side/Stacked)
+        - **Multiple Series** allowed.
+
+    **Authors**: Gagandeep Singh
+    """
+
+    class Enums:
+        RESPONSE_DATE = 'response_date'
+
+        TYPE_LINE = 'line'
+        TYPE_AREA = 'area'
+        TYPE_BAR = 'bar'
+        CH_TYPE = (
+            (TYPE_LINE, 'Line Chart'),
+            (TYPE_AREA, 'Area Chart'),
+            (TYPE_BAR, 'Bar Graph')
+        )
+
+        BAR_SIDE_BY_SIDE = 'side_by_side'
+        BAR_STACKED = 'stacked'
+        CH_BAR_KIND = (
+            (BAR_SIDE_BY_SIDE, 'Side-by-Side'),
+            (BAR_STACKED, 'Stacked')
+        )
+
+    x_axis  = StringProperty(required=True)  # X-Axis Dimension field. This can be response_date as well. Use ``Enums.RESPONSE_DATE``.
+    y_axis  = ListProperty(required=True)    # Y-Axis Dimension field(s). This can be multiple. For single, use list with one element only.
+    aggregation = StringProperty(required=True, choices=GraphAggregations.choices_all, default=GraphAggregations.COUNT)   # Data aggregation
+    type    = StringProperty(required=True, choices=Enums.CH_TYPE, default=Enums.TYPE_LINE) # Type of graph
+    bar_kind = StringProperty(required=True, choices=Enums.CH_BAR_KIND, default=Enums.BAR_SIDE_BY_SIDE) # Only in case of type `bar`
+
 
 
 GRAPH_SCHEMA_MAPPING = {
     GraphCharts.D1_STATS_NUM: StatsNumericGraphSchema,
     GraphCharts.D1_HISTOGRAM: HistogramGraphSchema,
-    GraphCharts.D1_STATS_DT: StatsDatetimeGraphSchema
+    GraphCharts.D1_STATS_DT: StatsDatetimeGraphSchema,
+
+    GraphCharts.D1_PIE: PieGraphSchema,
+    GraphCharts.D1_DONUT: DonutGraphSchema,
+    GraphCharts.D1_GAUGE: GaugeGraphSchema,
+
+    GraphCharts.D1_BAR_GRAPH: BarGraphSchema,
+
+    GraphCharts.D1_RATING: RatingGraphScema,
+
+
 }
 # ----- /Graph Configuration Schema -----
 

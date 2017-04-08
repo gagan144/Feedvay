@@ -2,6 +2,9 @@
 # Content in this document can not be copied and/or distributed without the express
 # permission of Gagandeep Singh.
 from jsonobject import *
+from reports.exceptions import InvalidGraphDefinition
+
+from form_builder.models import FormQuestion
 
 class GraphCharts:
     """
@@ -12,8 +15,8 @@ class GraphCharts:
         - Determine dimension (1D, 2D, 3D, nD) and create ENUM accordingly with the prefix.
         - Add to ``choices_all`.
         - Add to ``formfield_choice_mapping`` accordingly.
-        - Add graph configuration schema class.
-        - Add newly create schema class to ``GRAPH_SCHEMA_MAPPING``.
+        - Add graph definition class by inheriting BaseGraphChart.
+        - Add newly created class to ``GRAPH_CLASS_MAPPING``.
 
     **Authors**: Gagandeep Singh
     """
@@ -56,7 +59,7 @@ class GraphCharts:
         (D2_LINE_AREA_GRAPH, D2_LINE_AREA_GRAPH),
         (D2_SCATTER, D2_SCATTER),
         (D3_DOT_CLOUD, D3_DOT_CLOUD),
-        (D3_WIREFRAME_SURFACE, D3_WIREFRAME_SURFACE),
+        # (D3_WIREFRAME_SURFACE, D3_WIREFRAME_SURFACE),
         (DN_POLAR_AREA, DN_POLAR_AREA),
         (DN_RADAR_CHART, DN_RADAR_CHART)
     )
@@ -110,7 +113,7 @@ class GraphCharts:
 
     choices_3d = (
         (D3_DOT_CLOUD, 'Dot Cloud Diagram'),
-        (D3_WIREFRAME_SURFACE, 'Wireframe Surface Diagram')
+        # (D3_WIREFRAME_SURFACE, 'Wireframe Surface Diagram')
     )
 
     choices_nd = (
@@ -144,22 +147,132 @@ class GraphAggregations:
         (MOV_AVG, 'Moving Average')
     )
 
-# ----- Graph Configuration Schema -----
-
-class StatsNumericGraphSchema(JsonObject):
+# ----- Graph Definition classes -----
+class BaseGraphChart(JsonObject):
     """
-    Schema for configuration of numeric field statistics. The diagram shows
+    Base graph class. Inherit this class to define new graph definition.
+
+    **Authors**: Gagandeep Singh
+    """
+    _allow_dynamic_properties = False
+
+    _cls_base = StringProperty(default='BaseGraphChart', required=True)
+    _cls = StringProperty(name='_cls', required=True)   # Name of this class
+
+    def __init__(self, _obj=None, **kwargs):
+        # (1) Check '_cls' in _obj or kwargs
+        this_class = self.__class__.__name__
+        obj_cls = None
+        if _obj is not None:
+            obj_cls = _obj.get('_cls',None)
+        else:
+            obj_cls = kwargs.get('_cls',None)
+
+        if obj_cls:
+            if obj_cls != this_class:
+                raise InvalidGraphDefinition("Graph definition class mismatch. Using class '{}'".format(obj_cls))
+        else:
+            obj_cls = this_class
+
+        # (2) Update Kwargs
+        kwargs.update({
+            "_cls": obj_cls
+        })
+        super(BaseGraphChart, self).__init__(_obj=_obj, **kwargs)
+
+    def get_data(self, entityModel, match_filters, **kwargs):
+        """
+        Method to get data for the graph as per the configuration. This is an abstract method and every
+        class inheriting this must override it.
+
+        :param entityModel: Class of the  actual model from which data has to be extracted.
+        :param match_filters: JSON dict for match filter
+        :return: JSON data
+        """
+        raise NotImplementedError("'get_data()' is not implement for this inherited graph class.")
+
+
+# --- 1D Graph Definitions ---
+class StatsNumberGraph(BaseGraphChart):
+    """
+    Class for define numeric field statistics. The diagram shows
     basic aggregates such as Count, Max, Min, Avg, Sum across all
     values of a numeric/decimal field.
 
     **Authors**: Gagandeep Singh
     """
+    _allow_dynamic_properties = False
+
     question_id = IntegerProperty(required=True)    # Instance ID of :class:`form_builder.models.FormQuestion`
 
+    def get_data(self, entityModel, match_filters, **kwargs):
+        """
+        Method to get data for this graph on provided ``entityModel``.
+        :param entityModel: Class of actual model from which data has to be extracted.
+        :param match_filters: JSON dict for match filter
+        :return: JSON data:
 
-class HistogramGraphSchema(JsonObject):
+        **Format**:
+
+            .. code-block:: json
+
+                {
+                    "count": 42369,
+                    "min": 103,
+                    "max": 1698,
+                    "sum": 369756,
+                    "avg": 561,
+                }
+
+        **Authors**: Gagandeep Singh
+        """
+        if not isinstance(match_filters, dict):
+            raise ValueError("'match_filters' must be a dictionary.")
+
+        question  = FormQuestion.objects.get(id=self.question_id)
+        ques_label = question.label
+
+        final_filters = {
+            "list_answers.question_label": ques_label,
+            "list_answers.answer": { "$type": "number" }
+        }
+        final_filters.update(match_filters)
+
+        result_aggr = entityModel._get_collection().aggregate([
+            {
+                "$unwind":{
+                    "path" : "$list_answers",
+                    "preserveNullAndEmptyArrays" : False
+                }
+            },
+            {
+                "$match": final_filters
+            },
+            {
+                "$group": {
+                    "_id": None,
+                    "count": { "$sum": 1},
+                    "min": { "$min": "$list_answers.answer"},
+                    "max": { "$max": "$list_answers.answer"},
+                    "sum": { "$sum": "$list_answers.answer"},
+                    "avg": { "$avg": "$list_answers.answer"},
+                }
+            }
+        ])
+
+        try:
+            data = list(result_aggr)[0]
+            del data["_id"]
+
+            return data
+        except IndexError:
+            # No data
+            return {}
+
+
+class HistogramGraph(BaseGraphChart):
     """
-    Schema to configure histogram on a numeric/decimal field.
+    Class to define histogram on a numeric/decimal field.
 
     **Authors**: Gagandeep Singh
     """
@@ -167,19 +280,90 @@ class HistogramGraphSchema(JsonObject):
     bin_size    = IntegerProperty(required=True)    # Binning size of the histogram
 
 
-class StatsDatetimeGraphSchema(JsonObject):
+class StatsDatetimeGraph(BaseGraphChart):
     """
-    Schema to configure statistics for date/time/datetime fields. The diagram shows
+    Class to define statistics for date/time/datetime fields. The diagram shows
     basic aggregates such as Count, Max, Min, across all values of a the field.
 
     **Authors**: Gagandeep Singh
     """
     question_id = IntegerProperty(required=True)    # Instance ID of :class:`form_builder.models.FormQuestion`
 
+    def get_data(self, entityModel, match_filters, **kwargs):
+        """
+        Method to get data for this graph on provided ``entityModel``.
+        :param entityModel: Class of actual model from which data has to be extracted.
+        :param match_filters: JSON dict for match filter
+        :param use_string: (Optional) If True, fetches dates as string also.
+        :return: JSON data:
 
-class PieGraphSchema(JsonObject):
+        **Format**:
+
+            .. code-block:: json
+
+                {
+                    "count": 42369,
+                    "min": 103,
+                    "max": 1698,
+                }
+
+        **Authors**: Gagandeep Singh
+        """
+        if not isinstance(match_filters, dict):
+            raise ValueError("'match_filters' must be a dictionary.")
+
+        question  = FormQuestion.objects.get(id=self.question_id)
+        ques_label = question.label
+
+        final_filters = {
+            "list_answers.question_label": ques_label,
+        }
+
+        use_string = kwargs.get('use_string', None)
+        if use_string:
+            final_filters["$or"] = [
+                { "list_answers.answer": { "$type": "date" } },
+                { "list_answers.answer": { "$type": "string" } },
+            ]
+        else:
+            final_filters["list_answers.answer"] = { "$type": "date" }
+
+
+        final_filters.update(match_filters)
+
+        result_aggr = entityModel._get_collection().aggregate([
+            {
+                "$unwind":{
+                    "path" : "$list_answers",
+                    "preserveNullAndEmptyArrays" : False
+                }
+            },
+            {
+                "$match": final_filters
+            },
+            {
+                "$group": {
+                    "_id": None,
+                    "count": { "$sum": 1},
+                    "min": { "$min": "$list_answers.answer"},
+                    "max": { "$max": "$list_answers.answer"},
+                }
+            }
+        ])
+
+        try:
+            data = list(result_aggr)[0]
+            del data["_id"]
+
+            return data
+        except IndexError:
+            # No data
+            return {}
+
+
+class PieGraph(BaseGraphChart):
     """
-    Schema to configure pie chart on binary/multiple choice field.
+    Class to define pie chart on binary/multiple choice field.
 
     **Authors**: Gagandeep Singh
     """
@@ -187,9 +371,9 @@ class PieGraphSchema(JsonObject):
     aggregation = StringProperty(required=True, choices=GraphAggregations.choices_basic, default=GraphAggregations.COUNT)   # Data aggregation
 
 
-class DonutGraphSchema(JsonObject):
+class DonutGraph(BaseGraphChart):
     """
-    Schema to configure donut chart on binary/multiple choice field.
+    Class to define donut chart on binary/multiple choice field.
 
     **Authors**: Gagandeep Singh
     """
@@ -197,9 +381,9 @@ class DonutGraphSchema(JsonObject):
     aggregation = StringProperty(required=True, choices=GraphAggregations.choices_basic, default=GraphAggregations.COUNT)   # Data aggregation
 
 
-class GaugeGraphSchema(JsonObject):
+class GaugeGraph(BaseGraphChart):
     """
-    Schema to configure gauge chart on binary/multiple choice field.
+    Class to define gauge chart on binary/multiple choice field.
 
     **Authors**: Gagandeep Singh
     """
@@ -207,9 +391,9 @@ class GaugeGraphSchema(JsonObject):
     aggregation = StringProperty(required=True, choices=GraphAggregations.choices_basic, default=GraphAggregations.COUNT)   # Data aggregation
 
 
-class BarGraphSchema(JsonObject):
+class BarGraph(BaseGraphChart):
     """
-    Schema to configure bar graph on binary/multiple choice field.
+    Class to define bar graph on binary/multiple choice field.
 
     **Authors**: Gagandeep Singh
     """
@@ -217,18 +401,18 @@ class BarGraphSchema(JsonObject):
     aggregation = StringProperty(required=True, choices=GraphAggregations.choices_basic, default=GraphAggregations.COUNT)   # Data aggregation
 
 
-class RatingGraphScema(JsonObject):
+class RatingGraph(BaseGraphChart):
     """
-    Schema to configure rating metric on rating field.
+    Class to define rating metric on rating field.
 
     **Authors**: Gagandeep Singh
     """
     question_id = IntegerProperty(required=True)    # Instance ID of :class:`form_builder.models.FormQuestion`
 
-
-class LineAreaGraphSchema(JsonObject):
+# --- 2D Graph Definitions ---
+class LineAreaGraph(BaseGraphChart):
     """
-    Schema to configure line/area graph between two fields.
+    Class to define line/area graph between two fields.
 
         - **On X-Axis**: Date/Time/Datetime/Response date
         - **On Y-Axis**: Number/Decimal/Rating/Binary/MultipleChoice field
@@ -238,7 +422,6 @@ class LineAreaGraphSchema(JsonObject):
 
     **Authors**: Gagandeep Singh
     """
-
     class Enums:
         RESPONSE_DATE = 'response_date'
 
@@ -265,21 +448,81 @@ class LineAreaGraphSchema(JsonObject):
     bar_kind = StringProperty(required=True, choices=Enums.CH_BAR_KIND, default=Enums.BAR_SIDE_BY_SIDE) # Only in case of type `bar`
 
 
+class ScatterGraph(BaseGraphChart):
+    """
+    Class to define scatter chart between to fields.
 
-GRAPH_SCHEMA_MAPPING = {
-    GraphCharts.D1_STATS_NUM: StatsNumericGraphSchema,
-    GraphCharts.D1_HISTOGRAM: HistogramGraphSchema,
-    GraphCharts.D1_STATS_DT: StatsDatetimeGraphSchema,
+    **Authors**: Gagandeep Singh
+    """
+    x_axis  = StringProperty(required=True) # X-Axis Dimension field
+    y_axis  = StringProperty(required=True) # Y-Axis Dimension field
 
-    GraphCharts.D1_PIE: PieGraphSchema,
-    GraphCharts.D1_DONUT: DonutGraphSchema,
-    GraphCharts.D1_GAUGE: GaugeGraphSchema,
 
-    GraphCharts.D1_BAR_GRAPH: BarGraphSchema,
+class DotCloudGraph(BaseGraphChart):
+    """
+    Class to define Dot Cloud graph between 3 fields. All dimensions
+    must be number or decimal.
 
-    GraphCharts.D1_RATING: RatingGraphScema,
+    **Authors**: Gagandeep Singh
+    """
+    class Enums:
+        TYPE_DOT_COLOR = 'dot_color'
+        TYPE_DOT_SIZE = 'dot_size'
+        CH_TYPE = (
+            (TYPE_DOT_COLOR, 'Dot Color'),
+            (TYPE_DOT_SIZE, 'Dot Size')
+        )
 
+    type    = StringProperty(required=True, choices=Enums.CH_TYPE)  # Type of dot clud graph
+    x_axis  = StringProperty(required=True) # X-Axis Dimension field
+    y_axis  = StringProperty(required=True) # Y-Axis Dimension field
+    z_axis  = StringProperty(required=True) # Z-Axis Dimension field
+
+
+class PolarAreaGraph(BaseGraphChart):
+    """
+    Class to define Polar Area graph between multiple fields. This graph
+    is applicable on only one response and not between responses.
+
+    **Authors**: Gagandeep Singh
+    """
+    axis    = ListProperty(required=True)     # List of field dimensions
+
+
+class RadarGraph(BaseGraphChart):
+    """
+    Class to define Radar Chart between multiple fields for a single response.
+
+    **Authors**: Gagandeep Singh
+    """
+    pass
+
+
+GRAPH_CLASS_MAPPING = {
+    # --- 1D Graphs ---
+    GraphCharts.D1_STATS_NUM: StatsNumberGraph,
+    GraphCharts.D1_HISTOGRAM: HistogramGraph,
+    GraphCharts.D1_STATS_DT: StatsDatetimeGraph,
+
+    GraphCharts.D1_PIE: PieGraph,
+    GraphCharts.D1_DONUT: DonutGraph,
+    GraphCharts.D1_GAUGE: GaugeGraph,
+
+    GraphCharts.D1_BAR_GRAPH: BarGraph,
+
+    GraphCharts.D1_RATING: RatingGraph,
+
+    # --- 2D  ---
+    GraphCharts.D2_LINE_AREA_GRAPH: LineAreaGraph,
+    GraphCharts.D2_SCATTER: ScatterGraph,
+
+    # --- 3D  ---
+    GraphCharts.D3_DOT_CLOUD: DotCloudGraph,
+
+    # --- nD  ---
+    GraphCharts.DN_POLAR_AREA: PolarAreaGraph,
+    GraphCharts.DN_RADAR_CHART: RadarGraph,
 
 }
-# ----- /Graph Configuration Schema -----
+# ----- /Graph Definition classes -----
 

@@ -14,8 +14,8 @@ class GraphDiagramAdmin(admin.ModelAdmin):
     **Authors**: Gagandeep Singh
     """
 
-    list_display = ('title', 'graph_type', 'organization', 'context', 'form_id', 'created_by', 'created_on')
-    search_fields = ('title', )
+    list_display = ('title', 'graph_type', 'organization', 'context', 'form', 'created_by', 'created_on')
+    search_fields = ('title', 'graph_uid')
     list_filter = ('context', 'graph_type', 'created_on')
     raw_id_fields = ('created_by', )
     list_per_page = 20

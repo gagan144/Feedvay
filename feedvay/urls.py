@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^surveys/', include('surveys.urls')),
     url(r'^geography/', include('geography.urls')),
     url(r'^feedback/', include('feedback.urls')),
+    url(r'^reports/', include('reports.urls')),
 
     # Admin and staff
     url(r'^admin/', admin.site.urls),

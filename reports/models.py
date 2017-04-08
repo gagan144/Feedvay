@@ -9,10 +9,12 @@ import tinymce.models as tinymce_models
 from django.utils import timezone
 from jsonobject.exceptions import *
 from django.core.exceptions import ValidationError
+import uuid
 
 from django.contrib.auth.models import User
 
 from clients.models import Organization
+from feedback.models import BspFeedbackResponse
 from reports.visuals import GraphCharts, GRAPH_CLASS_MAPPING
 
 class GraphDiagram(models57.Model):
@@ -21,6 +23,7 @@ class GraphDiagram(models57.Model):
 
     **Points**:
 
+        - Always use ``graph_uid`` for referencing.
         - ``form_id``: Is optional for feedback since feedback can have multiple forms. However, this is mandatory
           for other cases.
 
@@ -32,9 +35,10 @@ class GraphDiagram(models57.Model):
         (CT_BSP_FEEDBACK, 'BSP Feedback'),
     )
 
+    graph_uid   = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True, editable=False, help_text='Unique ID for this graph diagram.')
     organization = models.ForeignKey(Organization, db_index=True, help_text='Organization to which this graph belongs.')
     context     = models.CharField(max_length=32, choices=CH_CONTEXT, db_index=True, help_text='Context for which this graph is defined.')
-    form_id     = models.ForeignKey('form_builder.Form', null=True, blank=True, db_index=True, help_text='Form for which this graph is defined. Optional in case of feedback.')
+    form        = models.ForeignKey('form_builder.Form', null=True, blank=True, db_index=True, help_text='Form for which this graph is defined. Optional in case of feedback.')
     graph_type  = models.CharField(max_length=32, choices=GraphCharts.choices_all, help_text='Type of graph.')
 
     title       = models.CharField(max_length=1024, help_text='User defined title of the graph.')
@@ -54,6 +58,40 @@ class GraphDiagram(models57.Model):
 
     def __unicode__(self):
         return "{} - {}".format(self.context, self.graph_type)
+
+    def get_entity_model(self):
+        """
+        Method to return model class as per ``context`` field.
+
+        :return: Model class
+
+        **Authors**: Gagandeep Singh
+        """
+        if self.context == GraphDiagram.CT_BSP_FEEDBACK:
+            return BspFeedbackResponse
+        else:
+            raise NotImplementedError("'get_entity_model()' not implemented for '{}'.".format(self.context))
+
+    def get_data(self, data_filters={}, **kwargs):
+        """
+        Method to get data for this graph.
+
+        :return: JSON data
+
+        **Authors**: Gagandeep Singh
+        """
+        graph = self.graph
+        entityModel = self.get_entity_model()
+
+        final_filters = {}
+        if self.organization_id:
+            final_filters['organization_id'] = self.organization_id
+        if self.form_id:
+            final_filters["form_id"] = str(self.form_id)
+
+        final_filters.update(data_filters)
+
+        return graph.get_data(entityModel, final_filters, **kwargs)
 
     def clean(self):
         """

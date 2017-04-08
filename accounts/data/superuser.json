@@ -26,5 +26,9 @@
   "feedback.bspfeedbackform":{
     "permissions": ["add_bspfeedbackform", "view_bspfeedbackform", "change_bspfeedbackform", "delete_bspfeedbackform"],
     "data_access": {}
+  },
+  "reports.graphdiagram":{
+    "permissions": ["add_graphdiagram", "change_graphdiagram", "delete_graphdiagram"],
+    "data_access": {}
   }
 }

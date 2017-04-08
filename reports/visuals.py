@@ -205,6 +205,9 @@ class StatsNumberGraph(BaseGraphChart):
 
     question_id = IntegerProperty(required=True)    # Instance ID of :class:`form_builder.models.FormQuestion`
 
+    def __init__(self, _obj=None, **kwargs):
+        super(StatsNumberGraph, self).__init__(_obj=_obj, **kwargs)
+
     def get_data(self, entityModel, match_filters, **kwargs):
         """
         Method to get data for this graph on provided ``entityModel``.

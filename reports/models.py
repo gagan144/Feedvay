@@ -33,27 +33,27 @@ class GraphDiagram(models57.Model):
     )
 
     organization = models.ForeignKey(Organization, db_index=True, help_text='Organization to which this graph belongs.')
-    context     = models.CharField(max_length=32, choices=CH_CONTEXT, help_text='Context for which this graph is defined.')
-    form_id     = models.ForeignKey('form_builder.Form', null=True, blank=True, help_text='Form for which this graph is defined. Optional in case of feedback.')
+    context     = models.CharField(max_length=32, choices=CH_CONTEXT, db_index=True, help_text='Context for which this graph is defined.')
+    form_id     = models.ForeignKey('form_builder.Form', null=True, blank=True, db_index=True, help_text='Form for which this graph is defined. Optional in case of feedback.')
     graph_type  = models.CharField(max_length=32, choices=GraphCharts.choices_all, help_text='Type of graph.')
 
     title       = models.CharField(max_length=1024, help_text='User defined title of the graph.')
     description = tinymce_models.HTMLField(null=True, blank=True, help_text='Description about the graph.')
 
-    config_json = models57.JSONField(help_text='Configuration for the visual diagram.')
-    pin_to_dashboard = models.BooleanField(default=False, help_text='If True, this will be display on corresponding context dashboard.')
+    graph_definition = models57.JSONField(help_text='Graph definition JSON as per graph definition classes.')
+    pin_to_dashboard = models.BooleanField(default=False, db_index=True, help_text='If True, this will be display on corresponding context dashboard.')
 
     # Misc
-    created_by  = models.ForeignKey(User, editable=False, related_name='created_by', help_text='User that created this brand. This can be a staff or registered user.')
+    created_by  = models.ForeignKey(User, editable=False, help_text='User that created this brand. This can be a staff or registered user.')
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
 
     @property
-    def config(self):
-        return GRAPH_CLASS_MAPPING[self.graph_type](self.config_json)
+    def graph(self):
+        return GRAPH_CLASS_MAPPING[self.graph_type](self.graph_definition)
 
     def __unicode__(self):
-        return "{} - {}".format(self.context, self.type)
+        return "{} - {}".format(self.context, self.graph_type)
 
     def clean(self):
         """
@@ -72,7 +72,7 @@ class GraphDiagram(models57.Model):
 
         # Check configuration as per type
         try:
-            config_obj = self.config
+            graph_definition = self.graph
         except (BadValueError, WrappingAttributeError) as ex:
             raise ValidationError(ex.message)
 

@@ -22,7 +22,7 @@ from market.models import *
 from market.importers import dump_bsp_bulk_upload
 from storeroom.models import ImportRecord
 from feedback.models import BspFeedbackForm
-
+from reports.models import GraphDiagram
 from utilities.api_utils import ApiResponse
 
 # ==================== Console ====================
@@ -540,6 +540,7 @@ def console_bsp_manage(request, org, bsp_id):
         'bsp': bsp,
         'list_brands': list_brands,
         'list_feedback_forms': BspFeedbackForm.objects.filter(organization_id=org.id).order_by('title').only('id', 'title'),
+        'list_graphs_dashboard': GraphDiagram.objects.filter(organization_id=org.id, context=GraphDiagram.CT_BSP_FEEDBACK),
 
         'BusinessServicePoint': BusinessServicePoint,
         'BspTypes': BspTypes,

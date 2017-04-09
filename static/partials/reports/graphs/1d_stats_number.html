@@ -1,0 +1,12 @@
+<div class="panel panel-default">
+    <div class="panel-body">
+        <h3 style="margin-top: 0px;">
+            {$ config.title $}
+        </h3>
+        <hr style="margin: 10px 0px;"/>
+        <p ng-if="config.description!=null && config.description!=''" class="text-muted">{$ config.description $}</p>
+
+        {$ data $}
+        <button ng-click="set()">Set Name</button>
+    </div>
+</div>

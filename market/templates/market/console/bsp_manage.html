@@ -39,6 +39,21 @@
                 Dashboard
             </h2>
             <hr style="margin-top: 15px;"/>
+
+            {% if list_graphs_dashboard|length %}
+                <div class="row">
+                    {% for graph in list_graphs_dashboard %}
+                        <div class="col-md-6">
+                            <graph-diagram type="{{ graph.graph_type }}" config="{ 'c':'{{ request.curr_org.org_uid }}', 'graph_uid':{{ graph.id }}, 'title':'{{ graph.title }}', 'description':'{{ graph.description }}' }"></graph-diagram>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+{#            <graph-diagram graphuid="graph_uid"></graph-diagram>#}
+{##}
+{#            <button ng-click="set()">Update</button>#}
+{#            {$ graph_uid $}#}
         </div>
     </script>
     <!-- /Dashboard -->
@@ -606,6 +621,7 @@
 
     <script src="{% get_static_prefix %}apps/geography/geography.js"></script>
     <script src="{% get_static_prefix %}apps/feedback/bsp_feedback.js"></script>
+    <script src="{% get_static_prefix %}apps/reports/graph.js"></script>
 
     <script>
         'use strict';
@@ -616,6 +632,7 @@
             'feedvay.watchdog',
             'feedvay.geography',
             'feedvay.feedback.bsp',
+            'feedvay.reports.graphs',
 
             'ngCookies',
             'ngMessages',
@@ -736,7 +753,11 @@
 
         // --- DashboardCtrl ---
         function DashboardCtrl($scope){
+            $scope.graph_uid = 5;
 
+            $scope.set = function(){
+                $scope.graph_uid = 6;
+            }
         }
         // --- /DashboardCtrl ---
 

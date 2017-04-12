@@ -1,0 +1,19 @@
+<div ng-show="flags.status==ST_AJAX.LOADING" align="center" style="padding: 20px 20px 0px 20px;">
+    <img src="/static/images/loading/spinner_1.gif" style="height: 35px">
+    <h3 style="margin-top: 10px;font-weight: normal;">Loading ...</h3>
+</div>
+<div ng-show="flags.status==ST_AJAX.ERROR" class="alert alert-danger">
+    <table style="width: 100%">
+        <tr>
+            <td valign="top" style="width: 75px;">
+                <i class="fa fa-exclamation-triangle" style="font-size: 55px;"></i>
+            </td>
+            <td valign="top">
+                <h2 style="margin-top: 0px;">Error!</h2>
+                <div>
+                    Something went wrong. Our engineers will be informed.
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>

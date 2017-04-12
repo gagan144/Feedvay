@@ -1,12 +1,46 @@
 <div class="panel panel-default">
-    <div class="panel-body">
+    <div class="panel-body" style="min-height: 160px;">
         <h3 style="margin-top: 0px;">
             {$ config.title $}
+
+            <button class="btn btn-default btn-xs pull-right" ng-click="get_data()">
+                <i class="fa fa-refresh"></i>
+            </button>
         </h3>
         <hr style="margin: 10px 0px;"/>
         <p ng-if="config.description!=null && config.description!=''" class="text-muted">{$ config.description $}</p>
 
-        {$ data $}
-        <button ng-click="set()">Set Name</button>
+        <div ng-include="'/static/partials/reports/graphs/tmpl_graph_status.html'"></div>
+        <div ng-show="flags.status==ST_AJAX.COMPLETED">
+            <div class="row">
+                <div class="col-xs-4">
+                    <h5 class="text-primary"><i class="fa fa-asterisk"></i> Count</h5>
+                    <h1 class="no-margins">{$ data.count | number $}</h1>
+                    <small>Count of records analysed</small>
+                </div>
+                <div class="col-xs-4">
+                    <h5 class="text-primary"><i class="fa fa-arrow-down"></i> Minimum</h5>
+                    <h1 class="no-margins">{$ data.min | number $}</h1>
+                    <small>Minimum value observed</small>
+                </div>
+                <div class="col-xs-4">
+                    <h5 class="text-primary"><i class="fa fa-arrow-up"></i> Maximum</h5>
+                    <h1 class="no-margins">{$ data.max | number $}</h1>
+                    <small>Maximum value observed</small>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 15px;">
+                <div class="col-xs-4">
+                    <h5 class="text-primary"><i class="fa fa-minus"></i> Average</h5>
+                    <h1 class="no-margins">{$ data.avg | number: 2 $}</h1>
+                    <small>Average of all values</small>
+                </div>
+                <div class="col-xs-4">
+                    <h5 class="text-primary"><i class="fa fa-plus"></i> Sum</h5>
+                    <h1 class="no-margins">{$ data.sum | number: 2 $}</h1>
+                    <small>Sum of all values</small>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

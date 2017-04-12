@@ -60,7 +60,7 @@ def api_graph_data(request, org, graph_uid):
 
         graph_diag = GraphDiagram.objects.get(**filters)
 
-        data = graph_diag.get_data(data_filters=data_filters)
+        data = graph_diag.get_data(data_filters=data_filters, use_string='true')
 
         return ApiResponse(status=ApiResponse.ST_SUCCESS, message='ok', data=data).gen_http_response()
     except GraphDiagram.DoesNotExist:

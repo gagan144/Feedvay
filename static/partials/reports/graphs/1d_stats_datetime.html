@@ -1,0 +1,36 @@
+<div class="panel panel-default">
+    <div class="panel-body" style="min-height: 160px;">
+        <h3 style="margin-top: 0px;">
+            {$ config.title $}
+
+            <button class="btn btn-default btn-xs pull-right" ng-click="get_data()" tooltip-placement="bottom" uib-tooltip="Refresh">
+                <i class="fa fa-refresh"></i>
+            </button>
+        </h3>
+        <hr style="margin: 10px 0px;"/>
+        <p ng-if="config.description!=null && config.description!=''" class="text-muted" ng-bind-html="config.description"></p>
+
+        <div ng-include="'/static/partials/reports/graphs/tmpl_graph_status.html'"></div>
+        <div ng-show="flags.status==ST_AJAX.COMPLETED">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h5 class="text-primary"><i class="fa fa-asterisk"></i> Count</h5>
+                    <h2 class="no-margins">{$ data.count | number $}</h2>
+                    <small>Count of records analysed</small>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 15px;">
+                <div class="col-xs-6">
+                    <h5 class="text-primary"><i class="fa fa-arrow-down"></i> Minimum</h5>
+                    <h2 class="no-margins" style="font-size: 21px;">{$ data.min | date:"d-MMM-yyyy h:mm a" $}</h2>
+                    <small>Minimum date-time observed</small>
+                </div>
+                <div class="col-xs-6">
+                    <h5 class="text-primary"><i class="fa fa-arrow-up"></i> Maximum</h5>
+                    <h2 class="no-margins" style="font-size: 21px;">{$ data.max | date:"d-MMM-yyyy h:mm a" $}</h2>
+                    <small>Maximum date-time observed</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

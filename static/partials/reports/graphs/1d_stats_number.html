@@ -3,41 +3,41 @@
         <h3 style="margin-top: 0px;">
             {$ config.title $}
 
-            <button class="btn btn-default btn-xs pull-right" ng-click="get_data()">
+            <button class="btn btn-default btn-xs pull-right" ng-click="get_data()" tooltip-placement="bottom" uib-tooltip="Refresh">
                 <i class="fa fa-refresh"></i>
             </button>
         </h3>
         <hr style="margin: 10px 0px;"/>
-        <p ng-if="config.description!=null && config.description!=''" class="text-muted">{$ config.description $}</p>
+        <p ng-if="config.description!=null && config.description!=''" class="text-muted" ng-bind-html="config.description"></p>
 
         <div ng-include="'/static/partials/reports/graphs/tmpl_graph_status.html'"></div>
         <div ng-show="flags.status==ST_AJAX.COMPLETED">
             <div class="row">
                 <div class="col-xs-4">
                     <h5 class="text-primary"><i class="fa fa-asterisk"></i> Count</h5>
-                    <h1 class="no-margins">{$ data.count | number $}</h1>
+                    <h2 class="no-margins">{$ data.count | number $}</h2>
                     <small>Count of records analysed</small>
                 </div>
                 <div class="col-xs-4">
                     <h5 class="text-primary"><i class="fa fa-arrow-down"></i> Minimum</h5>
-                    <h1 class="no-margins">{$ data.min | number $}</h1>
+                    <h2 class="no-margins">{$ data.min | number $}</h2>
                     <small>Minimum value observed</small>
                 </div>
                 <div class="col-xs-4">
                     <h5 class="text-primary"><i class="fa fa-arrow-up"></i> Maximum</h5>
-                    <h1 class="no-margins">{$ data.max | number $}</h1>
+                    <h2 class="no-margins">{$ data.max | number $}</h2>
                     <small>Maximum value observed</small>
                 </div>
             </div>
             <div class="row" style="margin-top: 15px;">
                 <div class="col-xs-4">
-                    <h5 class="text-primary"><i class="fa fa-minus"></i> Average</h5>
-                    <h1 class="no-margins">{$ data.avg | number: 2 $}</h1>
+                    <h5 class="text-primary"><i class="fa fa-arrows-h"></i> Average</h5>
+                    <h2 class="no-margins">{$ data.avg | number: 2 $}</h2>
                     <small>Average of all values</small>
                 </div>
                 <div class="col-xs-4">
                     <h5 class="text-primary"><i class="fa fa-plus"></i> Sum</h5>
-                    <h1 class="no-margins">{$ data.sum | number: 2 $}</h1>
+                    <h2 class="no-margins">{$ data.sum | number: 2 $}</h2>
                     <small>Sum of all values</small>
                 </div>
             </div>

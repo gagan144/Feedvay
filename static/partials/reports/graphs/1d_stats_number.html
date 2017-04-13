@@ -1,17 +1,13 @@
 <div class="panel panel-default">
-    <div class="panel-body" style="min-height: 160px;">
-        <h3 style="margin-top: 0px;">
-            {$ config.title $}
-
-            <button class="btn btn-default btn-xs pull-right" ng-click="get_data()" tooltip-placement="bottom" uib-tooltip="Refresh">
-                <i class="fa fa-refresh"></i>
-            </button>
-        </h3>
+    <div class="panel-body widget_body">
+        <h3 style="margin-top: 0px;">{$ config.title $}</h3>
         <hr style="margin: 10px 0px;"/>
         <p ng-if="config.description!=null && config.description!=''" class="text-muted" ng-bind-html="config.description"></p>
 
         <div ng-include="'/static/partials/reports/graphs/tmpl_graph_status.html'"></div>
         <div ng-show="flags.status==ST_AJAX.COMPLETED">
+            <div class="widget_daterange" ng-include="'/static/partials/reports/tmpl_date_range.html'" align="center"></div>
+
             <div class="row">
                 <div class="col-xs-4">
                     <h5 class="text-primary"><i class="fa fa-asterisk"></i> Count</h5>
@@ -31,14 +27,19 @@
             </div>
             <div class="row" style="margin-top: 15px;">
                 <div class="col-xs-4">
+                    <h5 class="text-primary"><i class="fa fa-plus"></i> Sum</h5>
+                    <h2 class="no-margins">{$ data.sum | number: 2 $}</h2>
+                    <small>Sum of all values</small>
+                </div>
+                <div class="col-xs-4">
                     <h5 class="text-primary"><i class="fa fa-arrows-h"></i> Average</h5>
                     <h2 class="no-margins">{$ data.avg | number: 2 $}</h2>
                     <small>Average of all values</small>
                 </div>
                 <div class="col-xs-4">
-                    <h5 class="text-primary"><i class="fa fa-plus"></i> Sum</h5>
-                    <h2 class="no-margins">{$ data.sum | number: 2 $}</h2>
-                    <small>Sum of all values</small>
+                    <h5 class="text-primary"><i class="fa fa-exchange"></i> Standard deviation</h5>
+                    <h2 class="no-margins">{$ data.std | number: 2 $}</h2>
+                    <small>Std. dev. across all values</small>
                 </div>
             </div>
         </div>

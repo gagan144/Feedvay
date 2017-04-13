@@ -1,0 +1,8 @@
+<div class="btn-group btn-group-xs">
+    <button class="btn btn-default" ng-class="{'active': filters.daterange==ENUMS.DATE_RANGE.ALL}" type="button" ng-click="set_filter_daterange(ENUMS.DATE_RANGE.ALL)">All</button>
+    <button class="btn btn-default" ng-class="{'active': filters.daterange==ENUMS.DATE_RANGE.TODAY}" type="button" ng-click="set_filter_daterange(ENUMS.DATE_RANGE.TODAY)">Today</button>
+    <button class="btn btn-default" ng-class="{'active': filters.daterange==ENUMS.DATE_RANGE.SINCE_7_DAYS}" type="button" ng-click="set_filter_daterange(ENUMS.DATE_RANGE.SINCE_7_DAYS)">Since 7 days</button>
+    <button class="btn btn-default" ng-class="{'active': filters.daterange==ENUMS.DATE_RANGE.SINCE_30_DAYS}" type="button" ng-click="set_filter_daterange(ENUMS.DATE_RANGE.SINCE_30_DAYS)">Since 30 days</button>
+    <button class="btn btn-default" ng-class="{'active': filters.daterange==ENUMS.DATE_RANGE.SINCE_6_MNTHS}" type="button" ng-click="set_filter_daterange(ENUMS.DATE_RANGE.SINCE_6_MNTHS)">Since 6 months</button>
+    <button class="btn btn-default" ng-class="{'active': filters.daterange==ENUMS.DATE_RANGE.SINCE_YEAR}" type="button" ng-click="set_filter_daterange(ENUMS.DATE_RANGE.SINCE_YEAR)">Since year</button>
+</div>

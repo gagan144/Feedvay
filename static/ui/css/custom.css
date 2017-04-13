@@ -472,6 +472,15 @@ td.admin_content{
     align-content: center;
 }
 
+/* ----- Widgets ----- */
+.widget_body{
+    min-height: 320px;
+}
+.widget_daterange{
+    margin-bottom: 10px;
+}
+/* ----- /Widgets ----- */
+
 /* =============== Desktop =============== */
 @media (min-width: 767px) {
     .mobile_show{

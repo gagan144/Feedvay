@@ -225,6 +225,7 @@ class StatsNumberGraph(BaseGraphChart):
                     "max": 1698,
                     "sum": 369756,
                     "avg": 561,
+                    "std": 126
                 }
 
         **Authors**: Gagandeep Singh
@@ -259,6 +260,7 @@ class StatsNumberGraph(BaseGraphChart):
                     "max": { "$max": "$list_answers.answer"},
                     "sum": { "$sum": "$list_answers.answer"},
                     "avg": { "$avg": "$list_answers.answer"},
+                    "std": { "$stdDevSamp": "$list_answers.answer" }
                 }
             }
         ])

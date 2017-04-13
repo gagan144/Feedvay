@@ -1,6 +1,8 @@
 'use strict';
 
-angular.module('feedvay.reports.graphs', [])
+angular.module('feedvay.reports.graphs', [
+    'angular-flot'
+])
 
 // ---------- Services ----------
 .service('ServiceGraph', function($http){
@@ -34,9 +36,10 @@ angular.module('feedvay.reports.graphs', [])
             return '/static/partials/reports/graphs/' + attrs.type + '.html'
         },
         scope: {
-            config: "=config"
+            config: "=config",
+            type: "@"
         },
-        controller: function ($scope, $rootScope, ServiceGraph) {
+        controller: function ($scope, $rootScope, $element, ServiceGraph) {
             $scope.ST_AJAX = ST_AJAX;
             var ENUMS = {
                 DATE_RANGE: {
@@ -71,7 +74,80 @@ angular.module('feedvay.reports.graphs', [])
             };
             $scope.flags.status = ST_AJAX.LOADING;
 
+            // --- Graph config & data ---
             $scope.data = null;
+
+            switch($scope.type){
+                case '1d_pie': {
+                    $scope.configOptions = {
+                        series: {
+                            pie: {
+                                show: true,
+                                radius: 1,
+                                label: {
+                                    show: true,
+                                    radius: 2 / 3,
+                                    threshold: 0.1,
+                                    formatter: function (label, series) {
+                                        return '<div style="font-size:11px;text-align:center;color:white;">' + Math.round(series.percent) + '%<br/>(' + series.data[0][1] + ')</div>';
+                                    }
+                                },
+                            }
+                        },
+                        grid: {
+                            hoverable: true
+                        },
+                        tooltip: true,
+                        tooltipOpts: {
+                            content: "%s", // show percentages, rounding to 2 decimal places
+                            shifts: {
+                                x: 20,
+                                y: 0
+                            },
+                            defaultTheme: false
+                        }
+                    };
+                }break;
+                case '1d_donut': {
+                    $scope.configOptions = {
+                        series: {
+                            shadowSize: 0,
+                            pie: {
+                                show: true,
+                                radius: 1,
+                                innerRadius: 0.5,
+
+                                label: {
+                                    show: true,
+                                    radius: 3 / 4,
+                                    background: {opacity: 0},
+
+                                    formatter: function (label, series) {
+                                        return '<div style="font-size:11px;text-align:center;color:white;">' + Math.round(series.percent) + '%<br/>(' + series.data[0][1] + ')</div>';
+                                    },
+                                },
+
+                            }
+                        },
+                        grid: {
+                            hoverable: true
+                        },
+                        tooltip: true,
+                        tooltipOpts: {
+                            content: "%s", // show percentages, rounding to 2 decimal places
+                            shifts: {
+                                x: 20,
+                                y: 0
+                            },
+                            defaultTheme: false
+                        }
+                    };
+                }break;
+            }
+
+            // --- Graph config & data ---
+
+
             $scope.get_data = function(){
                 $scope.flags.status = ST_AJAX.LOADING;
 
@@ -108,7 +184,25 @@ angular.module('feedvay.reports.graphs', [])
                 ServiceGraph.get_data(org_uid, graph_uid, final_filters).then(
                     function(response_data){
                         $scope.flags.status = ST_AJAX.COMPLETED;
-                        $scope.data = response_data.data;
+
+                        var final_data = null;
+                        switch($scope.type){
+                            case '1d_pie':{
+                                final_data = [];
+                                angular.forEach(response_data.data, function(row, key){
+                                    final_data.push({
+                                        "label": row["_id"]["answer"],
+                                        "data": row["count"]
+                                    })
+                                });
+
+                            }break;
+                            default: {
+                                final_data = response_data.data;
+                            }
+                        }
+
+                        $scope.data = final_data;
                     },
                     function(response_data){
 
@@ -118,28 +212,6 @@ angular.module('feedvay.reports.graphs', [])
             };
             $scope.get_data();
 
-
-
-
-
-
-            //console.info("enter directive controller");
-            //console.log($scope.config);
-            //
-            //$scope.set = function(){
-            //    $scope.data.name = 'deep';
-            //};
-            //
-            //$scope.data = {
-            //    "name": "gagan",
-            //    "config": $scope.config
-            //};
-
-            //$http({method: 'GET', url: $scope.src}).then(function (result) {
-            //    console.log(result);
-            //}, function (result) {
-            //    alert("Error: No data returned");
-            //});
         }
     }
 

@@ -1,0 +1,15 @@
+<div class="panel panel-default">
+    <div class="panel-body widget_body">
+        <h3 style="margin-top: 0px;">{$ config.title $}</h3>
+        <hr style="margin: 10px 0px;"/>
+        <p ng-if="config.description!=null && config.description!=''" class="text-muted" ng-bind-html="config.description"></p>
+
+        <div ng-include="'/static/partials/reports/graphs/tmpl_graph_status.html'"></div>
+        <div ng-show="flags.status==ST_AJAX.COMPLETED">
+            <div class="widget_daterange" ng-include="'/static/partials/reports/tmpl_date_range.html'" align="center"></div>
+            <div class="flot-chart">
+                <div flot class="flot-chart-content" dataset="data" options="configOptions"></div>
+            </div>
+        </div>
+    </div>
+</div>

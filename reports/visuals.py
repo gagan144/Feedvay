@@ -375,6 +375,72 @@ class PieGraph(BaseGraphChart):
     question_id = IntegerProperty(required=True)    # Instance ID of :class:`form_builder.models.FormQuestion`
     aggregation = StringProperty(required=True, choices=GraphAggregations.choices_basic, default=GraphAggregations.COUNT)   # Data aggregation
 
+    def get_data(self, entityModel, match_filters, **kwargs):
+        """
+        Method to get data for this graph on provided ``entityModel``.
+        :param entityModel: Class of actual model from which data has to be extracted.
+        :param match_filters: JSON dict for match filter
+        :return: JSON data:
+
+        **Format**:
+
+            .. code-block:: json
+
+                [
+                    {
+
+                    },
+                ]
+
+        **Authors**: Gagandeep Singh
+        """
+        if not isinstance(match_filters, dict):
+            raise ValueError("'match_filters' must be a dictionary.")
+
+        question  = FormQuestion.objects.get(id=self.question_id)
+        ques_label = question.label
+        print ques_label
+
+        final_filters = {
+            "list_answers.question_label": ques_label,
+            "list_answers.answer": { "$type": "string" },
+            "list_answers.is_other": False
+        }
+        final_filters.update(match_filters)
+
+        result_aggr = entityModel._get_collection().aggregate([
+            {
+                "$unwind":{
+                    "path" : "$list_answers",
+                    "preserveNullAndEmptyArrays" : False
+                }
+            },
+            {
+                "$match": final_filters
+            },
+            {
+                "$group": {
+                    "_id": {
+                        "answer": "$list_answers.answer"
+                    },
+                    "count": { "$sum": 1},
+                    # "min": { "$min": "$list_answers.answer"},
+                    # "max": { "$max": "$list_answers.answer"},
+                    # "sum": { "$sum": "$list_answers.answer"},
+                    # "avg": { "$avg": "$list_answers.answer"},
+                    # "std": { "$stdDevSamp": "$list_answers.answer" }
+                }
+            }
+        ])
+
+        try:
+            data = list(result_aggr)
+
+            return data
+        except IndexError:
+            # No data
+            return []
+
 
 class DonutGraph(BaseGraphChart):
     """

@@ -183,11 +183,10 @@ angular.module('feedvay.reports.graphs', [
 
                 ServiceGraph.get_data(org_uid, graph_uid, final_filters).then(
                     function(response_data){
-                        $scope.flags.status = ST_AJAX.COMPLETED;
-
                         var final_data = null;
                         switch($scope.type){
-                            case '1d_pie':{
+                            case '1d_pie':
+                            case '1d_donut':{
                                 final_data = [];
                                 angular.forEach(response_data.data, function(row, key){
                                     final_data.push({
@@ -203,6 +202,8 @@ angular.module('feedvay.reports.graphs', [
                         }
 
                         $scope.data = final_data;
+
+                        $scope.flags.status = ST_AJAX.COMPLETED;
                     },
                     function(response_data){
 

@@ -17,17 +17,19 @@ class GraphCharts:
         - Add to ``formfield_choice_mapping`` accordingly.
         - Add graph definition class by inheriting BaseGraphChart.
         - Add newly created class to ``GRAPH_CLASS_MAPPING``.
+        - UI:
+            - Add switch case in '/static/apps/reports/graphs.js'.
+            - Add partial in '/static/partials/reports/' directory.
 
     **Authors**: Gagandeep Singh
     """
     # --- 1-D Graphs ---
     D1_STATS_NUM = '1d_stats_number'
-    D1_HISTOGRAM = '1d_histogram'
+    # D1_HISTOGRAM = '1d_histogram'
     D1_STATS_DT = '1d_stats_datetime'
 
     D1_PIE = '1d_pie'
     D1_DONUT = '1d_donut'
-    D1_GAUGE = '1d_gauge'
 
     D1_BAR_GRAPH = '1d_bar_graph'
 
@@ -49,11 +51,10 @@ class GraphCharts:
     # ----- Choices -----
     choices_all = (
         (D1_STATS_NUM, D1_STATS_NUM),
-        (D1_HISTOGRAM, D1_HISTOGRAM),
+        # (D1_HISTOGRAM, D1_HISTOGRAM),
         (D1_STATS_DT, D1_STATS_DT),
         (D1_PIE, D1_PIE),
         (D1_DONUT, D1_DONUT),
-        (D1_GAUGE, D1_GAUGE),
         (D1_BAR_GRAPH, D1_BAR_GRAPH),
         (D1_RATING, D1_RATING),
         (D2_LINE_AREA_GRAPH, D2_LINE_AREA_GRAPH),
@@ -67,11 +68,11 @@ class GraphCharts:
     formfield_choice_mapping = {
         "NumberFormField":[
             { "id": D1_STATS_NUM, "title": "Statistics" },
-            { "id": D1_HISTOGRAM, "title": "Histogram" }
+            # { "id": D1_HISTOGRAM, "title": "Histogram" }
         ],
         "DecimalFormField" :[
             { "id": D1_STATS_NUM, "title": "Statistics" },
-            { "id": D1_HISTOGRAM, "title": "Histogram" }
+            # { "id": D1_HISTOGRAM, "title": "Histogram" }
         ],
         "DateFormField": [
             { "id": D1_STATS_DT, "title": "Statistics" },
@@ -85,20 +86,17 @@ class GraphCharts:
         "BinaryFormField": [
             { "id": D1_PIE, "title": "Pie Chart" },
             { "id": D1_DONUT, "title": "Donut Chart" },
-            { "id": D1_GAUGE, "title": "Gauge Chart" },
         ],
         "MCSSFormField":[
             { "id": D1_STATS_NUM, "title": "Statistics" },
             { "id": D1_PIE, "title": "Pie Chart" },
             { "id": D1_DONUT, "title": "Donut Chart" },
-            { "id": D1_GAUGE, "title": "Gauge Chart" },
             { "id": D1_BAR_GRAPH, "title": "Bar Graph" },
         ],
         "MCMSFormField":[
             { "id": D1_STATS_NUM, "title": "Statistics" },
             { "id": D1_PIE, "title": "Pie Chart" },
             { "id": D1_DONUT, "title": "Donut Chart" },
-            { "id": D1_GAUGE, "title": "Gauge Chart" },
             { "id": D1_BAR_GRAPH, "title": "Bar Graph" },
         ],
         "RatingFormField":[
@@ -368,7 +366,7 @@ class StatsDatetimeGraph(BaseGraphChart):
 
 class PieGraph(BaseGraphChart):
     """
-    Class to define pie chart on binary/multiple choice field.
+    Class to define pie chart on binary/multiple choice field (string/int).
 
     **Authors**: Gagandeep Singh
     """
@@ -399,14 +397,27 @@ class PieGraph(BaseGraphChart):
 
         question  = FormQuestion.objects.get(id=self.question_id)
         ques_label = question.label
-        print ques_label
 
         final_filters = {
             "list_answers.question_label": ques_label,
-            "list_answers.answer": { "$type": "string" },
+            # "list_answers.answer": { "$type": "string" },
             "list_answers.is_other": False
         }
         final_filters.update(match_filters)
+
+        if self.aggregation == GraphAggregations.COUNT:
+            exp_aggr = { "$sum": 1}
+        elif self.aggregation == GraphAggregations.MIN:
+            exp_aggr = { "$min": "$list_answers.answer"}
+        elif self.aggregation == GraphAggregations.MAX:
+            exp_aggr = { "$max": "$list_answers.answer"}
+        elif self.aggregation == GraphAggregations.SUM:
+            exp_aggr = { "$sum": "$list_answers.answer"}
+        elif self.aggregation == GraphAggregations.AVG:
+            exp_aggr = { "$avg": "$list_answers.answer"}
+        else:
+            raise InvalidGraphDefinition("Invalid aggregation '{}'.".format(self.aggregation))
+
 
         result_aggr = entityModel._get_collection().aggregate([
             {
@@ -423,12 +434,7 @@ class PieGraph(BaseGraphChart):
                     "_id": {
                         "answer": "$list_answers.answer"
                     },
-                    "count": { "$sum": 1},
-                    # "min": { "$min": "$list_answers.answer"},
-                    # "max": { "$max": "$list_answers.answer"},
-                    # "sum": { "$sum": "$list_answers.answer"},
-                    # "avg": { "$avg": "$list_answers.answer"},
-                    # "std": { "$stdDevSamp": "$list_answers.answer" }
+                    "count": exp_aggr,
                 }
             }
         ])
@@ -442,14 +448,15 @@ class PieGraph(BaseGraphChart):
             return []
 
 
-class DonutGraph(BaseGraphChart):
+class DonutGraph(PieGraph):
     """
-    Class to define donut chart on binary/multiple choice field.
+    Class to define donut chart on binary/multiple choice field (string/int).
 
     **Authors**: Gagandeep Singh
     """
     question_id = IntegerProperty(required=True)    # Instance ID of :class:`form_builder.models.FormQuestion`
     aggregation = StringProperty(required=True, choices=GraphAggregations.choices_basic, default=GraphAggregations.COUNT)   # Data aggregation
+
 
 
 class GaugeGraph(BaseGraphChart):
@@ -572,12 +579,11 @@ class RadarGraph(BaseGraphChart):
 GRAPH_CLASS_MAPPING = {
     # --- 1D Graphs ---
     GraphCharts.D1_STATS_NUM: StatsNumberGraph,
-    GraphCharts.D1_HISTOGRAM: HistogramGraph,
+    # GraphCharts.D1_HISTOGRAM: HistogramGraph,
     GraphCharts.D1_STATS_DT: StatsDatetimeGraph,
 
     GraphCharts.D1_PIE: PieGraph,
     GraphCharts.D1_DONUT: DonutGraph,
-    GraphCharts.D1_GAUGE: GaugeGraph,
 
     GraphCharts.D1_BAR_GRAPH: BarGraph,
 

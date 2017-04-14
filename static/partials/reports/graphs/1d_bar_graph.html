@@ -1,0 +1,24 @@
+<div class="panel panel-default">
+    <div class="panel-body widget_body">
+        <h3 style="margin-top: 0px;">
+            {$ config.title $}
+            <span class="label label-default pull-right">{$ config.definition.aggregation|titleCase $}</span>
+        </h3>
+        <hr style="margin: 10px 0px;"/>
+        <p ng-if="config.description!=null && config.description!=''" class="text-muted" ng-bind-html="config.description"></p>
+
+        <div ng-include="'/static/partials/reports/graphs/tmpl_graph_status.html'"></div>
+        {$ data $}
+        <div ng-if="flags.status==ST_AJAX.COMPLETED">
+            <div class="widget_daterange" ng-include="'/static/partials/reports/tmpl_date_range.html'" align="center"></div>
+
+            <div ng-if="data[0].data.length" class="flot-chart">
+                <div flot class="flot-chart-content" dataset="data" options="configOptions"></div>
+            </div>
+            <div ng-if="!data[0].data.length" class="text-warning" align="center" style="padding-top: 50px;">
+                <i class="fa fa-info-circle" style="font-size: 50px;"></i>
+                <h3>No records for selected filter!</h3>
+            </div>
+        </div>
+    </div>
+</div>

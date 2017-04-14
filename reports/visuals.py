@@ -458,18 +458,7 @@ class DonutGraph(PieGraph):
     aggregation = StringProperty(required=True, choices=GraphAggregations.choices_basic, default=GraphAggregations.COUNT)   # Data aggregation
 
 
-
-class GaugeGraph(BaseGraphChart):
-    """
-    Class to define gauge chart on binary/multiple choice field.
-
-    **Authors**: Gagandeep Singh
-    """
-    question_id = IntegerProperty(required=True)    # Instance ID of :class:`form_builder.models.FormQuestion`
-    aggregation = StringProperty(required=True, choices=GraphAggregations.choices_basic, default=GraphAggregations.COUNT)   # Data aggregation
-
-
-class BarGraph(BaseGraphChart):
+class BarGraph(PieGraph):
     """
     Class to define bar graph on binary/multiple choice field.
 

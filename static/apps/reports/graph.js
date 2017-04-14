@@ -143,6 +143,48 @@ angular.module('feedvay.reports.graphs', [
                         }
                     };
                 }break;
+                case '1d_bar_graph':{
+                    $scope.configOptions = {
+                        series: {
+                            bars: {
+                                show: true,
+                                barWidth: 0.6,
+                                align: "center",
+                                fill: true,
+                                fillColor: {
+                                    colors: [
+                                        {
+                                            opacity: 0.8
+                                        },
+                                        {
+                                            opacity: 0.8
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        xaxis: {
+                            //tickDecimals: 0,
+                            mode: "categories",
+				            tickLength: 0
+                        },
+                        //colors: ["#1ab394"],
+                        grid: {
+                            color: "#999999",
+                            hoverable: true,
+                            clickable: true,
+                            tickColor: "#D4D4D4",
+                            borderWidth: 0
+                        },
+                        legend: {
+                            show: false
+                        },
+                        tooltip: true,
+                        tooltipOpts: {
+                            content: "%y"
+                        }
+                    };
+                }break;
             }
 
             // --- Graph config & data ---
@@ -195,6 +237,28 @@ angular.module('feedvay.reports.graphs', [
                                     })
                                 });
 
+                            }break;
+                            case '1d_bar_graph':{
+                                var xaxis = {
+                                    mode: null,
+                                    ticks: []
+                                };
+                                final_data = {
+                                    label: "bar",
+                                    data: []
+                                };
+                                angular.forEach(response_data.data, function(row, key){
+                                    final_data["data"].push(
+                                        [ row["_id"]["answer"], row["count"] ]
+                                        //[ key, row["count"] ]
+                                    );
+
+                                    xaxis.ticks.push(
+                                        [ key, row["_id"]["answer"] ]
+                                    );
+                                });
+                                final_data = [final_data];
+                                //$scope.configOptions.series.xaxis = xaxis;
                             }break;
                             default: {
                                 final_data = response_data.data;

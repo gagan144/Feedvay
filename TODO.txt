@@ -21,6 +21,9 @@
     - BSP
         - Purpose of visit -------- ???
 
+- BSP Feedback
+    - Few Visuals implementation pending
+
 - Survey
     - Create: survey title already existing - autocomplete type options
     - API - Access authentication

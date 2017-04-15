@@ -515,7 +515,7 @@
                                 </div>
                             {% templatetag openvariable %}/if{% templatetag closevariable %}
 
-                            <a href="/console/surveys/{{ survey.survey_uid }}/response/${response_uid}/" target="_blank" class="btn btn-primary btn-xs">View</a>
+                            <a href="{% url 'console_feedback_bsp_response' %}?c={{ request.curr_org.org_uid }}&id=${id}" target="_blank" class="btn btn-primary btn-xs">View</a>
                         </div>
 
                     </td>
@@ -1100,7 +1100,7 @@
                         $scope.grid_rating_reviews.gridapi.clear();
                         $scope.grid_rating_reviews.gridapi.insert(records);
 
-                        $("#grid_response").jqGrid('setCaption',
+                        $("#grid_rating_reviews").jqGrid('setCaption',
                             $("#jqtmpl_grip_response_caption").tmpl({
                                 "length": records.length,
                                 "filtered": false

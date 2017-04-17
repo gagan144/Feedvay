@@ -37,6 +37,7 @@ angular.module('feedvay.reports.graphs', [
         },
         scope: {
             config: "=config",
+            more_filters: "=filters",
             type: "@"
         },
         controller: function ($scope, $rootScope, $element, ServiceGraph) {
@@ -61,6 +62,10 @@ angular.module('feedvay.reports.graphs', [
             $scope.filters = {
                 daterange: ENUMS.DATE_RANGE.ALL
             };
+            if($scope.more_filters){
+                angular.extend($scope.filters, $scope.more_filters);
+            }
+
             $scope.set_filter_daterange = function(key){
                 $scope.filters.daterange = key;
 

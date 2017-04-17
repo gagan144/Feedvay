@@ -17,6 +17,7 @@ def parse_graph_filters(get_params):
     """
     Method to parse filters for graph data from request.
 
+    :param get_params: GET params as per from request.
     :return: JSON dict
 
     **Authors**: Gagandeep Singh
@@ -29,6 +30,8 @@ def parse_graph_filters(get_params):
             "$gte": timezone.datetime.strptime(start_date, "%Y-%m-%d"),
             "$lte": timezone.datetime.strptime(get_params['end_date'], "%Y-%m-%d") + timedelta(days=1)
         }
+    if get_params.get('bsp_id', None):
+        filters['bsp_id'] = get_params['bsp_id']
 
     return filters
 

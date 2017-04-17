@@ -44,7 +44,7 @@
                 <div class="row">
                     {% for graph in list_graphs_dashboard %}
                         <div class="col-md-6">
-                            <graph-diagram type="{{ graph.graph_type }}" config="{ 'c':'{{ request.curr_org.org_uid }}', 'graph_uid':'{{ graph.graph_uid }}', 'title':'{{ graph.title|escapejs }}', 'description':'{{ graph.description|escapejs }}', 'definition':{{ graph.graph_definition|jsonify }} }"></graph-diagram>
+                            <graph-diagram type="{{ graph.graph_type }}" config="{ 'c':'{{ request.curr_org.org_uid }}', 'graph_uid':'{{ graph.graph_uid }}', 'title':'{{ graph.title|escapejs }}', 'description':'{{ graph.description|escapejs }}', 'definition':{{ graph.graph_definition|jsonify }} }" filters="{'bsp_id': '{{ bsp.id }}'}"></graph-diagram>
                         </div>
                     {% endfor %}
                 </div>

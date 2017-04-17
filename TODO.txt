@@ -23,6 +23,7 @@
 
 - BSP Feedback
     - Few Visuals implementation pending
+    - Screen to create/update graph config
 
 - Survey
     - Create: survey title already existing - autocomplete type options

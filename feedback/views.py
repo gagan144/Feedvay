@@ -23,6 +23,7 @@ from form_builder import operations as ops
 from form_builder.fields import AiTextDirectives
 from feedback.models import BspFeedbackForm, BspFeedbackResponse
 from feedback.fixed_questions import *
+from reports.models import GraphDiagram
 from market.models import BusinessServicePoint, BspTypes, Brand
 from accounts.models import RegisteredUser
 from storeroom.models import ResponseQueue
@@ -131,6 +132,7 @@ def console_bsp_feedback_panel(request, org):
 
     data = {
         'app_name': 'app_bspfeedback_panel',
+        'list_graphs_dashboard': GraphDiagram.objects.filter(organization_id=org.id, context=GraphDiagram.CT_BSP_FEEDBACK),
     }
 
     return render(request, 'feedback/console/bsp_feedback_panel.html', data)

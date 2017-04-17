@@ -34,6 +34,16 @@
             </h2>
             <hr style="margin-top: 15px;"/>
 
+            {% if list_graphs_dashboard|length %}
+                <div class="row">
+                    {% for graph in list_graphs_dashboard %}
+                        <div class="col-md-6">
+                            <graph-diagram type="{{ graph.graph_type }}" config="{ 'c':'{{ request.curr_org.org_uid }}', 'graph_uid':'{{ graph.graph_uid }}', 'title':'{{ graph.title|escapejs }}', 'description':'{{ graph.description|escapejs }}', 'definition':{{ graph.graph_definition|jsonify }} }"></graph-diagram>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
         </div>
     </script>
     <!-- /Dashboard -->
@@ -388,7 +398,20 @@
     <script src="{% get_static_prefix %}lib/maps/ng-map/ng-map.min.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}lib/maps/markerwithlabel_1_1_10.js"></script>
 
+    <!-- Graphs -->
+    <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.time.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.tooltip.min.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.spline.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.resize.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.pie.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/flot/curvedLines.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/flot/jquery.flot.categories.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/flot/angular-flot.js"></script>
+    <!-- /Graphs -->
+
     <script src="{% get_static_prefix %}apps/feedback/bsp_feedback.js"></script>
+    <script src="{% get_static_prefix %}apps/reports/graph.js"></script>
     <script>
         'use strict';
 
@@ -397,6 +420,7 @@
             'feedvay.common',
             'feedvay.watchdog',
             'feedvay.feedback.bsp',
+            'feedvay.reports.graphs',
 
             'ngCookies',
             'ngMessages',
@@ -407,6 +431,7 @@
             'angular-jqgrid',
             'daterangepicker',
             'ngMap',
+            'ngSanitize',
         ])
         .config(function($interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             $interpolateProvider.startSymbol('{$');

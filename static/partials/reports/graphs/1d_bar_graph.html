@@ -8,7 +8,6 @@
         <p ng-if="config.description!=null && config.description!=''" class="text-muted" ng-bind-html="config.description"></p>
 
         <div ng-include="'/static/partials/reports/graphs/tmpl_graph_status.html'"></div>
-        {$ data $}
         <div ng-if="flags.status==ST_AJAX.COMPLETED">
             <div class="widget_daterange" ng-include="'/static/partials/reports/tmpl_date_range.html'" align="center"></div>
 

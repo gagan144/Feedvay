@@ -200,7 +200,7 @@ class Survey(models.Model):
     end_date    = models.DateField(help_text='End date of this survey (Included).')
 
     # Ownership
-    ownership   = models.CharField(max_length=16, default=None, choices=CH_OWNER, help_text='Who is conducting this survey? Organization/Individual?')
+    ownership   = models.CharField(max_length=16, choices=CH_OWNER, db_index=True, help_text='Who is conducting this survey? Organization/Individual?')
     organization  = models.ForeignKey(Organization, null=True, blank=True, db_index=True, editable=False, help_text='Organization to which this survey belongs to if owner is an organization.')
     brand       = models.ForeignKey(Brand, null=True, blank=True, help_text='(Optional) Tag a brand to this survey (only if owner is an organzation).')
 

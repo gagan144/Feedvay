@@ -27,7 +27,7 @@ class SurveyEditForm(forms.ModelForm):
         if instance.pk is None:
             raise ValidationError("You cannot create a new instance while editing a survey.")
 
-        if instance.surveyor_type == Survey.SURVYR_INDIVIDUAL and self.changed_data.__contains__('type'):
+        if instance.ownership == Survey.OWNER_INDIVIDUAL and self.changed_data.__contains__('type'):
             self._errors["type"] = ["You cannot change survey type since it belongs to an individual."]
 
         return form_data
@@ -40,13 +40,13 @@ class SurveyCreateForm(forms.ModelForm):
     """
     class Meta:
         model = Survey
-        fields = ['type', 'category', 'title', 'description', 'start_date', 'end_date', 'surveyor_type', 'audience_type']
+        fields = ['type', 'category', 'title', 'description', 'start_date', 'end_date', 'ownership', 'audience_type']
 
     def clean(self):
         form_data = self.cleaned_data
 
         instance = self.instance
-        if instance.surveyor_type == Survey.SURVYR_INDIVIDUAL and instance.type != Survey.TYPE_SIMPLE:
+        if instance.ownership == Survey.OWNER_INDIVIDUAL and instance.type != Survey.TYPE_SIMPLE:
             self._errors["type"] = ["You cannot create complex survey."]
 
         return form_data

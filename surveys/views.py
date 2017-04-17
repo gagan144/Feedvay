@@ -178,7 +178,7 @@ def console_surveys(request):
 
     reg_user = request.user.registereduser
     data ={
-        'list_surveys': Survey.objects.filter(created_by_id=reg_user.id).only('id', 'category', 'survey_uid', 'title', 'description', 'start_date', 'end_date', 'surveyor_type', 'audience_type', 'status')
+        'list_surveys': Survey.objects.filter(created_by_id=reg_user.id).only('id', 'category', 'survey_uid', 'title', 'description', 'start_date', 'end_date', 'ownership', 'audience_type', 'status')
     }
 
     return render(request, 'surveys/console/surveys.html', data)
@@ -218,7 +218,7 @@ def console_survey_create(request):
             from surveys.forms import SurveyCreateForm
             post_data = request.POST.copy()
             post_data['type'] = Survey.TYPE_SIMPLE
-            post_data['surveyor_type'] = Survey.SURVYR_INDIVIDUAL
+            post_data['ownership'] = Survey.OWNER_INDIVIDUAL
 
             form_survey = SurveyCreateForm(post_data)
 

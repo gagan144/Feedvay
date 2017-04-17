@@ -21,6 +21,7 @@ import StringIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from accounts.models import RegisteredUser
+from clients.models import Organization
 from market.models import Brand
 from form_builder.models import Form, BaseResponse
 
@@ -156,13 +157,11 @@ class Survey(models.Model):
         (TYPE_COMPLEX, 'Complex')
     )
 
-    SURVYR_ORGANIZATION = 'organization'
-    SURVYR_BRAND = 'brand'
-    SURVYR_INDIVIDUAL = 'individual'
-    CH_SURVEYOR = (
-        (SURVYR_ORGANIZATION, 'Organization'),
-        (SURVYR_BRAND, 'Brand'),
-        (SURVYR_INDIVIDUAL, 'Individual')
+    OWNER_ORGANIZATION = 'organization'
+    OWNER_INDIVIDUAL = 'individual'
+    CH_OWNER = (
+        (OWNER_ORGANIZATION, 'Organization'),
+        (OWNER_INDIVIDUAL, 'Individual')
     )
 
     AUD_PUBLIC = 'public'
@@ -198,10 +197,10 @@ class Survey(models.Model):
     start_date  = models.DateField(help_text='Start date of this survey (Included).')
     end_date    = models.DateField(help_text='End date of this survey (Included).')
 
-    # Surveyor
-    surveyor_type = models.CharField(max_length=16, default=None, choices=CH_SURVEYOR, help_text='Who is conducting this survey?')
-    # organization  = models.ForeignKey(Organization, null=True, blank=True, help_text='Organization reference if the surveyor is an organization.')
-    brand       = models.ForeignKey(Brand, null=True, blank=True, help_text='Brand reference if the surveyor is a brand.')
+    # Ownership
+    ownership   = models.CharField(max_length=16, default=None, choices=CH_OWNER, editable=False, help_text='Who is conducting this survey? Organization/Individual?')
+    organization  = models.ForeignKey(Organization, null=True, blank=True, db_index=True, editable=False, help_text='Organization to which this survey belongs to if owner is an organization.')
+    brand       = models.ForeignKey(Brand, null=True, blank=True, help_text='(Optional) Tag a brand to this survey (only if owner is an organzation).')
 
     # Audience
     audience_type    = models.CharField(max_length=16, default=None, choices=CH_AUDIENCE, help_text='Type of the target audience.')
@@ -350,16 +349,14 @@ class Survey(models.Model):
             self.update_qrcode(auto_save=False)
 
         # Check surveyor type
-        if self.surveyor_type == Survey.SURVYR_ORGANIZATION:
-            raise NotImplementedError("Surveyor as company is not implemented yet.")
-        elif self.surveyor_type == Survey.SURVYR_BRAND:
-            if self.brand is None:
-                raise ValidationError("Please select brand surveyor.")
-        elif self.surveyor_type == Survey.SURVYR_INDIVIDUAL:
+        if self.ownership == Survey.OWNER_ORGANIZATION:
+            if self.organization is None:
+                raise ValidationError("Organization required since survey owner is an organization.")
+        elif self.ownership == Survey.OWNER_INDIVIDUAL:
             if self.type != Survey.TYPE_SIMPLE:
                 raise ValidationError("Only simple surveys are allowed for individuals.")
         else:
-            ValidationError("Invalid surveyor type '{}'.".format(self.surveyor_types))
+            ValidationError("Invalid surveyor type '{}'.".format(self.ownership))
 
         # Check & correct audience type
         if self.audience_type == Survey.AUD_SELF:

@@ -59,7 +59,7 @@ class SurveyAdmin(admin.ModelAdmin):
     """
 
     list_display = ('survey_uid', 'title', 'type', 'start_date', 'end_date', 'status', 'created_on')
-    list_filter = ('type', 'category', 'surveyor_type', 'audience_type', 'status', 'created_on')
+    list_filter = ('type', 'category', 'ownership', 'audience_type', 'status', 'created_on')
     raw_id_fields = ('category', 'brand', 'tags', 'created_by')
     search_fields = ('survey_uid', 'title')
     list_per_page = 20
@@ -75,8 +75,8 @@ class SurveyAdmin(admin.ModelAdmin):
         ('Customizations', {
             'fields': ('tags', 'start_date', 'end_date')
         }),
-        ('Surveyor', {
-            'fields': ('surveyor_type', 'brand')
+        ('Ownership', {
+            'fields': ('ownership', 'organization', 'brand')
         }),
         ('Audience', {
             'fields': ('audience_type', 'audience_filters')
@@ -92,6 +92,11 @@ class SurveyAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = [field.name for field in self.model._meta.fields if not field.editable]
         readonly_fields.append('status')
+
+        if obj is not None:
+            if obj.ownership == Survey.OWNER_INDIVIDUAL:
+                readonly_fields.append('brand')
+
         return readonly_fields
 
     def has_add_permission(self, request):

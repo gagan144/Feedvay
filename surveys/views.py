@@ -178,7 +178,7 @@ def console_surveys(request):
 
     reg_user = request.user.registereduser
     data ={
-        'list_surveys': Survey.objects.filter(created_by_id=reg_user.id).only('id', 'category', 'survey_uid', 'title', 'description', 'start_date', 'end_date', 'ownership', 'audience_type', 'status')
+        'list_surveys': Survey.objects.filter(created_by_id=reg_user.user_id).only('id', 'category', 'survey_uid', 'title', 'description', 'start_date', 'end_date', 'ownership', 'audience_type', 'status')
     }
 
     return render(request, 'surveys/console/surveys.html', data)
@@ -223,7 +223,7 @@ def console_survey_create(request):
             form_survey = SurveyCreateForm(post_data)
 
             if form_survey.is_valid():
-                new_survey = form_survey.save(created_by=reg_user)
+                new_survey = form_survey.save(created_by=reg_user.user)
                 return ApiResponse(
                     status=ApiResponse.ST_SUCCESS,
                     message='Ok',
@@ -254,7 +254,7 @@ def console_survey_panel(request, survey):
     reg_user = request.user.registereduser
 
     try:
-        #survey = Survey.objects.get(survey_uid=survey_uid, created_by_id=reg_user.id)
+        #survey = Survey.objects.get(survey_uid=survey_uid, created_by_id=reg_user.user_id)
 
         data ={
             'SURVEY': Survey,
@@ -360,11 +360,11 @@ def console_survey_phase_form_editor(request, survey, phase_id=None):
     try:
         if phase_id is None:
             # Simple survey
-            # survey = Survey.objects.get(type=Survey.TYPE_SIMPLE, survey_uid=survey_uid, created_by_id=reg_user.id)
+            # survey = Survey.objects.get(type=Survey.TYPE_SIMPLE, survey_uid=survey_uid, created_by_id=reg_user.user_id)
             phase = survey.surveyphase_set.all()[0]
         else:
             # Complex survey
-            # survey = Survey.objects.get(survey_uid=survey_uid, created_by_id=reg_user.id)
+            # survey = Survey.objects.get(survey_uid=survey_uid, created_by_id=reg_user.user_id)
             phase = survey.surveyphase_set.get(id=int(phase_id))
 
         data ={

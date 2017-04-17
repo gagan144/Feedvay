@@ -43,7 +43,7 @@ def survey_access_firewall(function):
         # Now check survey access permission
         try:
             # TODO: Currently only checking for individual
-            survey = Survey.objects.get(survey_uid=survey_uid, created_by_id=reg_user.id)
+            survey = Survey.objects.get(survey_uid=survey_uid, created_by_id=reg_user.user_id)
 
             return function(request, survey, *args, **kwargs)
         except Survey.DoesNotExist:

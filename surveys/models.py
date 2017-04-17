@@ -20,7 +20,9 @@ import qrcode
 import StringIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
-from accounts.models import RegisteredUser
+from django.contrib.auth.models import User
+
+# from accounts.models import RegisteredUser
 from clients.models import Organization
 from market.models import Brand
 from form_builder.models import Form, BaseResponse
@@ -198,7 +200,7 @@ class Survey(models.Model):
     end_date    = models.DateField(help_text='End date of this survey (Included).')
 
     # Ownership
-    ownership   = models.CharField(max_length=16, default=None, choices=CH_OWNER, editable=False, help_text='Who is conducting this survey? Organization/Individual?')
+    ownership   = models.CharField(max_length=16, default=None, choices=CH_OWNER, help_text='Who is conducting this survey? Organization/Individual?')
     organization  = models.ForeignKey(Organization, null=True, blank=True, db_index=True, editable=False, help_text='Organization to which this survey belongs to if owner is an organization.')
     brand       = models.ForeignKey(Brand, null=True, blank=True, help_text='(Optional) Tag a brand to this survey (only if owner is an organzation).')
 
@@ -211,7 +213,7 @@ class Survey(models.Model):
 
     # Misc
     qrcode      = models.ImageField(upload_to=upload_survey_qrcode_to, blank=True, editable=False, help_text='Qrcode image file for this survey.')
-    created_by  = models.ForeignKey(RegisteredUser, editable=False, help_text='User that created this survey.')
+    created_by  = models.ForeignKey(User, editable=False, db_index=True, help_text=':class:`django.contrib.auth.models.User` that created this survey.')
     created_on  = models.DateTimeField(auto_now_add=True, editable=False, db_index=True, help_text='Date on which this record was created.')
     modified_on = models.DateTimeField(null=True, blank=True, editable=False, help_text='Date on which this record was modified.')
 

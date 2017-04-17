@@ -13,7 +13,7 @@ class GraphCharts:
     **Guidelines to add new visual**:
 
         - Determine dimension (1D, 2D, 3D, nD) and create ENUM accordingly with the prefix.
-        - Add to ``choices_all`.
+        - Add to ``choices_all``.
         - Add to ``formfield_choice_mapping`` accordingly.
         - Add graph definition class by inheriting BaseGraphChart.
         - Add newly created class to ``GRAPH_CLASS_MAPPING``.
@@ -376,6 +376,7 @@ class PieGraph(BaseGraphChart):
     def get_data(self, entityModel, match_filters, **kwargs):
         """
         Method to get data for this graph on provided ``entityModel``.
+
         :param entityModel: Class of actual model from which data has to be extracted.
         :param match_filters: JSON dict for match filter
         :return: JSON data:
@@ -386,8 +387,10 @@ class PieGraph(BaseGraphChart):
 
                 [
                     {
-
+                        "_id": {"answer": "<key>"},
+                        "count": 46
                     },
+
                 ]
 
         **Authors**: Gagandeep Singh

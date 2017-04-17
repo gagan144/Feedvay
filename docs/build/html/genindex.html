@@ -96,6 +96,7 @@
 <li class="toctree-l1"><a class="reference internal" href="modules/languages/index.html">Languages</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/market/index.html">Market</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/owlery/index.html">Owlery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/reports/index.html">Reports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/storeroom/index.html">Store Room</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/surveys/index.html">Survey</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/utilities/index.html">Utilities</a></li>
@@ -249,11 +250,19 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
+  <dt><a href="modules/reports/visuals.html#reports.visuals.BarGraph">BarGraph (class in reports.visuals)</a>
+  </dt>
+
+      
   <dt><a href="modules/market/bsp_types.html#market.bsp_types.BaseBspType">BaseBspType (class in market.bsp_types)</a>
   </dt>
 
       
   <dt><a href="modules/form_builder/conditions.html#form_builder.conditions.BaseCondition">BaseCondition (class in form_builder.conditions)</a>
+  </dt>
+
+      
+  <dt><a href="modules/reports/visuals.html#reports.visuals.BaseGraphChart">BaseGraphChart (class in reports.visuals)</a>
   </dt>
 
       
@@ -312,12 +321,12 @@
   <dt><a href="modules/market/models.html#market.models.Brand">Brand (class in market.models)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/market/forms.html#market.forms.BrandCreateForm">BrandCreateForm (class in market.forms)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/market/forms.html#market.forms.BrandEditForm">BrandEditForm (class in market.forms)</a>
   </dt>
@@ -490,6 +499,10 @@
   </dt>
 
         
+  <dt><a href="modules/reports/models.html#reports.models.GraphDiagram.clean">(reports.models.GraphDiagram method)</a>
+  </dt>
+
+        
   <dt><a href="modules/surveys/models.html#surveys.models.Survey.clean">(surveys.models.Survey method)</a>
   </dt>
 
@@ -518,12 +531,12 @@
   </dt>
 
       </dl></dd>
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/clients/api.html#module-clients.api">clients.api (module)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/clients/models.html#module-clients.models">clients.models (module)</a>
   </dt>
@@ -762,6 +775,14 @@
   </dt>
 
       </dl></dd>
+      
+  <dt><a href="modules/reports/visuals.html#reports.visuals.DonutGraph">DonutGraph (class in reports.visuals)</a>
+  </dt>
+
+      
+  <dt><a href="modules/reports/visuals.html#reports.visuals.DotCloudGraph">DotCloudGraph (class in reports.visuals)</a>
+  </dt>
+
       
   <dt><a href="modules/market/importers.html#market.importers.dump_bsp_bulk_upload">dump_bsp_bulk_upload() (in module market.importers)</a>
   </dt>
@@ -1030,8 +1051,6 @@
   <dt><a href="modules/form_builder/models.html#form_builder.models.BaseResponse.get_answers_lookup">get_answers_lookup() (form_builder.models.BaseResponse method)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/feedback/models.html#feedback.models.BspFeedbackForm.get_attached_bsps">get_attached_bsps() (feedback.models.BspFeedbackForm method)</a>
   </dt>
@@ -1048,6 +1067,30 @@
   <dt><a href="modules/market/models.html#market.models.get_bsp_labels">get_bsp_labels() (in module market.models)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="modules/reports/models.html#reports.models.GraphDiagram.get_data">get_data() (reports.models.GraphDiagram method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="modules/reports/visuals.html#reports.visuals.BaseGraphChart.get_data">(reports.visuals.BaseGraphChart method)</a>
+  </dt>
+
+        
+  <dt><a href="modules/reports/visuals.html#reports.visuals.PieGraph.get_data">(reports.visuals.PieGraph method)</a>
+  </dt>
+
+        
+  <dt><a href="modules/reports/visuals.html#reports.visuals.StatsDatetimeGraph.get_data">(reports.visuals.StatsDatetimeGraph method)</a>
+  </dt>
+
+        
+  <dt><a href="modules/reports/visuals.html#reports.visuals.StatsNumberGraph.get_data">(reports.visuals.StatsNumberGraph method)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="modules/accounts/models.html#accounts.models.RegisteredUser.get_data_access">get_data_access() (accounts.models.RegisteredUser method)</a>
   </dt>
@@ -1058,6 +1101,10 @@
 
       
   <dt><a href="modules/form_builder/models.html#form_builder.models.BaseResponse.get_duration_time">get_duration_time() (form_builder.models.BaseResponse method)</a>
+  </dt>
+
+      
+  <dt><a href="modules/reports/models.html#reports.models.GraphDiagram.get_entity_model">get_entity_model() (reports.models.GraphDiagram method)</a>
   </dt>
 
       
@@ -1122,6 +1169,14 @@
   <dt><a href="modules/utilities/templatetags.html#utilities.templatetags.commontags.get_user_readable">get_user_readable() (in module utilities.templatetags.commontags)</a>
   </dt>
 
+      
+  <dt><a href="modules/reports/visuals.html#reports.visuals.GraphCharts">GraphCharts (class in reports.visuals)</a>
+  </dt>
+
+      
+  <dt><a href="modules/reports/models.html#reports.models.GraphDiagram">GraphDiagram (class in reports.models)</a>
+  </dt>
+
   </dl></td>
 </tr></table>
 
@@ -1132,14 +1187,18 @@
   <dt><a href="modules/surveys/models.html#surveys.models.Survey.has_gps_enabled">has_gps_enabled() (surveys.models.Survey method)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/accounts/utils.html#accounts.utils.has_necessary_permissions">has_necessary_permissions() (in module accounts.utils)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="modules/utilities/templatetags.html#utilities.templatetags.commontags.has_permission">has_permission() (in module utilities.templatetags.commontags)</a>
+  </dt>
+
+      
+  <dt><a href="modules/reports/visuals.html#reports.visuals.HistogramGraph">HistogramGraph (class in reports.visuals)</a>
   </dt>
 
   </dl></td>
@@ -1280,6 +1339,10 @@
 
       
   <dt><a href="modules/critics/models.html#critics.models.Like">Like (class in critics.models)</a>
+  </dt>
+
+      
+  <dt><a href="modules/reports/visuals.html#reports.visuals.LineAreaGraph">LineAreaGraph (class in reports.visuals)</a>
   </dt>
 
   </dl></td>
@@ -1501,6 +1564,10 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
+  <dt><a href="modules/reports/views.html#reports.views.parse_graph_filters">parse_graph_filters() (in module reports.views)</a>
+  </dt>
+
+      
   <dt><a href="modules/market/views.html#market.views.partial_bsp_type_attributes">partial_bsp_type_attributes() (in module market.views)</a>
   </dt>
 
@@ -1518,6 +1585,14 @@
 
       
   <dt><a href="modules/market/bsp_types.html#market.bsp_types.PaymentMethods">PaymentMethods (class in market.bsp_types)</a>
+  </dt>
+
+      
+  <dt><a href="modules/reports/visuals.html#reports.visuals.PieGraph">PieGraph (class in reports.visuals)</a>
+  </dt>
+
+      
+  <dt><a href="modules/reports/visuals.html#reports.visuals.PolarAreaGraph">PolarAreaGraph (class in reports.visuals)</a>
   </dt>
 
       
@@ -1579,6 +1654,10 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
+  <dt><a href="modules/reports/visuals.html#reports.visuals.RadarGraph">RadarGraph (class in reports.visuals)</a>
+  </dt>
+
+      
   <dt><a href="modules/utilities/templatetags.html#utilities.templatetags.commontags.range_loop">range_loop() (in module utilities.templatetags.commontags)</a>
   </dt>
 
@@ -1588,6 +1667,10 @@
 
       
   <dt><a href="modules/form_builder/fields.html#form_builder.fields.RatingFormField">RatingFormField (class in form_builder.fields)</a>
+  </dt>
+
+      
+  <dt><a href="modules/reports/visuals.html#reports.visuals.RatingGraph">RatingGraph (class in reports.visuals)</a>
   </dt>
 
       
@@ -1630,6 +1713,18 @@
 
       
   <dt><a href="modules/watchdog/models.html#watchdog.models.ReportedProblem">ReportedProblem (class in watchdog.models)</a>
+  </dt>
+
+      
+  <dt><a href="modules/reports/models.html#module-reports.models">reports.models (module)</a>
+  </dt>
+
+      
+  <dt><a href="modules/reports/views.html#module-reports.views">reports.views (module)</a>
+  </dt>
+
+      
+  <dt><a href="modules/reports/visuals.html#module-reports.visuals">reports.visuals (module)</a>
   </dt>
 
       
@@ -1772,6 +1867,10 @@
   </dt>
 
         
+  <dt><a href="modules/reports/models.html#reports.models.GraphDiagram.save">(reports.models.GraphDiagram method)</a>
+  </dt>
+
+        
   <dt><a href="modules/storeroom/models.html#storeroom.models.ImportRecord.save">(storeroom.models.ImportRecord method)</a>
   </dt>
 
@@ -1818,6 +1917,10 @@
 
       
   <dt><a href="modules/utilities/theme.html#utilities.theme.ColorUtils.scale_rgb_color">scale_rgb_color() (utilities.theme.ColorUtils static method)</a>
+  </dt>
+
+      
+  <dt><a href="modules/reports/visuals.html#reports.visuals.ScatterGraph">ScatterGraph (class in reports.visuals)</a>
   </dt>
 
       
@@ -1898,6 +2001,14 @@
 
       
   <dt><a href="modules/utilities/tastypi_utils.html#utilities.tastypie_utils.StaffSessionAuthentication">StaffSessionAuthentication (class in utilities.tastypie_utils)</a>
+  </dt>
+
+      
+  <dt><a href="modules/reports/visuals.html#reports.visuals.StatsDatetimeGraph">StatsDatetimeGraph (class in reports.visuals)</a>
+  </dt>
+
+      
+  <dt><a href="modules/reports/visuals.html#reports.visuals.StatsNumberGraph">StatsNumberGraph (class in reports.visuals)</a>
   </dt>
 
       

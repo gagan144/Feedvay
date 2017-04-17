@@ -134,14 +134,23 @@
                                     </ul>
                                 </li>
 
-                            {% endif %}
+                                <li class="dropdown">
+                                    <a aria-expanded="false" role="button" href="javascript: void(0);" class="dropdown-toggle" data-toggle="dropdown"> Surveys <span class="caret"></span></a>
+                                    <ul role="menu" class="dropdown-menu">
+                                        <li><a href="{% url 'console_surveys' %}?c={{ request.curr_org.org_uid }}">Dashboard</a></li>
+                                    </ul>
+                                </li>
 
-                            <li class="dropdown">
-                                <a aria-expanded="false" role="button" href="javascript: void(0);" class="dropdown-toggle" data-toggle="dropdown"> Surveys <span class="caret"></span></a>
-                                <ul role="menu" class="dropdown-menu">
-                                    <li><a href="{% url 'console_surveys' %}">My surveys</a></li>
-                                </ul>
-                            </li>
+                            {% else %}
+
+                                <li class="dropdown">
+                                    <a aria-expanded="false" role="button" href="javascript: void(0);" class="dropdown-toggle" data-toggle="dropdown"> Surveys <span class="caret"></span></a>
+                                    <ul role="menu" class="dropdown-menu">
+                                        <li><a href="{% url 'console_surveys' %}">My surveys</a></li>
+                                    </ul>
+                                </li>
+
+                            {% endif %}
 
                         </ul>
 

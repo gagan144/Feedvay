@@ -221,6 +221,11 @@ class Survey(models.Model):
     def phases(self):
         return self.surveyphase_set.all().order_by('order')
 
+    class Meta:
+        permissions = (
+            ("view_survey", "Can view surveys"),
+        )
+
     def __unicode__(self):
         return self.title
 

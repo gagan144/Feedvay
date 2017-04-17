@@ -30,5 +30,9 @@
   "reports.graphdiagram":{
     "permissions": ["add_graphdiagram", "change_graphdiagram", "delete_graphdiagram"],
     "data_access": {}
+  },
+  "surveys.survey":{
+    "permissions": ["add_survey", "view_survey", "change_survey", "delete_survey"],
+    "data_access": {}
   }
 }

@@ -7,9 +7,72 @@ from tastypie import fields
 from tastypie_mongoengine import resources
 # from tastypie_mongoengine import fields
 from datetime import datetime
+import copy
 
+from clients.models import Organization
 from surveys.models import Survey, SurveyResponse
-from utilities.tastypie_utils import GenericTastypieObject, SurveySessionAuthentication
+from utilities.tastypie_utils import GenericTastypieObject, SurveySessionAuthentication, OrgConsoleSessionAuthentication
+
+class SurveysAPI(ModelResource):
+    """
+    Tastypie resource to get all list of surveys for an organization or the logged-in user.
+
+    **Type**: GET
+
+    **Authors**: Gagandeep Singh
+    """
+    class Meta:
+        queryset = Survey.objects.all()
+        resource_name = 'surveys'
+        limit = 0
+        max_limit = None
+        list_allowed_methods = ['get']
+        fields = ('id', 'category', 'survey_uid', 'type', 'title', 'description', 'start_date', 'end_date', 'ownership', 'brand', 'status', 'created_by')
+        authentication = OrgConsoleSessionAuthentication(['surveys.survey'], allow_bypass=True)
+
+    def apply_filters(self, request, applicable_filters):
+        base_object_list = super(self.__class__, self).apply_filters(request, applicable_filters)
+
+        org_uid = request.GET.get('c', None)
+        if org_uid:
+            # Context: Organization
+            org = Organization.objects.get(org_uid=org_uid)
+
+            filters = copy.deepcopy(request.permissions['surveys.survey']['data_access'])
+            if filters is None:
+                return []
+            else:
+                filters['ownership'] = Survey.OWNER_ORGANIZATION
+                filters['organization_id'] = org.id
+        else:
+            # Context: Logged-in user
+            filters = {}
+            filters['created_by_id'] = request.user.id
+
+        base_object_list = base_object_list.filter(**filters)
+        return base_object_list.select_related('brand', 'created_by').only(*self.Meta.fields)
+
+    def dehydrate(self, bundle):
+        obj = bundle.obj
+
+        if obj.brand:
+            bundle.data['brand'] = {
+                "id": obj.brand.id,
+                "name": obj.brand.name,
+                "icon_url": obj.brand.icon.url,
+            }
+        else:
+            bundle.data['brand'] = None
+
+        bundle.data['created_by'] = {
+            'id': obj.created_by.id,
+            'username': obj.created_by.username,
+            'first_name': obj.created_by.first_name,
+            'last_name': obj.created_by.last_name,
+        }
+
+        return bundle
+
 
 class SurveyResponsesAPI(resources.MongoEngineResource):
     """

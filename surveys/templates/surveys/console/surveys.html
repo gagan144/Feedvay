@@ -4,6 +4,17 @@
 {% extends 'console/base.html' %}
 {% load static commontags %}
 
+{% block head %}
+    {% if request.curr_org %}
+        <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
+        <title>Surveys | {{ request.curr_org.name }} </title>
+    {% else %}
+        <link rel="shortcut icon" href="{% get_static_prefix %}images/favicon.png"/>
+        <title>Surveys | Feedvay Management Console</title>
+    {% endif %}
+
+{% endblock %}
+
 {% block page_header %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-xs-8">

@@ -6,6 +6,7 @@ from tastypie.authorization import Authorization
 from tastypie.paginator import Paginator
 from tastypie.exceptions import Unauthorized
 
+from accounts.models import RegisteredUser
 from accounts.utils import has_necessary_permissions
 
 class GenericTastypieObject(object):
@@ -64,12 +65,13 @@ class OrgConsoleSessionAuthentication(SessionAuthentication):
 
     **Authors**: Gagandeep Singh
     """
-    def __init__(self, required_permissions, all_required=True):
+    def __init__(self, required_permissions, all_required=True, allow_bypass=False):
         if not isinstance(required_permissions, list):
             raise Exception("required_permissions must be a list.")
 
         self.required_permissions = required_permissions
         self.all_required = all_required
+        self.allow_bypass = allow_bypass
 
     def is_authenticated(self, request, **kwargs):
         """
@@ -79,7 +81,7 @@ class OrgConsoleSessionAuthentication(SessionAuthentication):
         session_ok = super(OrgConsoleSessionAuthentication, self).is_authenticated(request, **kwargs)
         if session_ok:
             try:
-                reg_user = request.user.registereduser      # Already taken care by the middleware
+                reg_user = request.user.registereduser      # Already taken care by the middleware only if ``c`` param is present
                 org = request.curr_org
 
                 perm_json = reg_user.get_all_permissions(org)
@@ -98,8 +100,17 @@ class OrgConsoleSessionAuthentication(SessionAuthentication):
 
                 return True
 
-            except AttributeError:
+            except RegisteredUser.DoesNotExist:
+                # This happens when accessed without context of org and user is not RegisterUser.
                 return False
+            except AttributeError:
+                # AttributeError: 'curr_org' was not in request
+                if self.allow_bypass:
+                    # Context: Logged-in user
+                    return True
+                else:
+                    # Context: Organization
+                    return False
         else:
             return False
 

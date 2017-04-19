@@ -9,6 +9,7 @@ from django_fsm import TransitionNotAllowed
 from django.db import transaction
 
 import json
+import copy
 from django.views.decorators.csrf import csrf_exempt
 from mongoengine.errors import DoesNotExist as DoesNotExist_mongo
 
@@ -19,7 +20,7 @@ from form_builder.models import Form, iterate_form_fields
 from form_builder.utils import GeoLocation
 from form_builder import operations as ops
 from accounts.models import RegisteredUser
-from accounts.decorators import registered_user_only
+from accounts.decorators import registered_user_only, organization_console
 from utilities.api_utils import ApiResponse
 
 # TODO: Mobile/Source validation firewall
@@ -167,7 +168,8 @@ def submit_survey_response(request):
 
 # ==================== Console ====================
 @registered_user_only
-def console_surveys(request):
+@organization_console('surveys.survey', allow_bypass=True)
+def console_surveys(request, org):
     """
     View to list all surveys for a registered user.
 
@@ -175,10 +177,27 @@ def console_surveys(request):
 
     **Authors**: Gagandeep Singh
     """
-
     reg_user = request.user.registereduser
+
+    # Check access context
+    if org is not None:
+        # Context: Organization
+        try:
+            filters = copy.deepcopy(request.permissions['surveys.survey']['data_access'])
+            filters['ownership'] = Survey.OWNER_ORGANIZATION
+            filters['organization_id'] = org.id
+
+            list_surveys = Survey.objects.filter(**filters)
+        except TypeError:
+            # TypeError: If filters is None
+            return HttpResponseForbidden("You do not have permissions to access this page.")
+
+    else:
+        # Context: Logged-in user
+        list_surveys = Survey.objects.filter(created_by_id=reg_user.user_id)
+
     data ={
-        'list_surveys': Survey.objects.filter(created_by_id=reg_user.user_id).only('id', 'category', 'survey_uid', 'title', 'description', 'start_date', 'end_date', 'ownership', 'audience_type', 'status')
+        'list_surveys': list_surveys.only('id', 'category', 'survey_uid', 'type', 'title', 'description', 'start_date', 'end_date', 'ownership', 'brand', 'status').select_related('brand')
     }
 
     return render(request, 'surveys/console/surveys.html', data)

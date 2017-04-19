@@ -115,6 +115,7 @@ url_feedback = [
     url(r'^api/', include(api_bsp_feedback_responses.urls)),
 ]
 
+api_surveys_list = api_surveys.SurveysAPI()
 api_survey_responses = api_surveys.SurveyResponsesAPI()
 api_survey_response_trend = api_surveys.SurveyResponseTrendAPI()
 url_surveys = [
@@ -135,6 +136,7 @@ url_surveys = [
     url(r'^response/suspicion/add/$', views_surveys.console_add_response_suspicion, name='console_survey_add_response_suspicion'),
 
     # Api
+    url(r'^api/', include(api_surveys_list.urls)),
     url(r'^api/', include(api_survey_responses.urls)),
     url(r'^api/', include(api_survey_response_trend.urls)),
 ]

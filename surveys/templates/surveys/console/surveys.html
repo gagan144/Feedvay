@@ -13,6 +13,8 @@
         <title>Surveys | Feedvay Management Console</title>
     {% endif %}
 
+    <link href="{% get_static_prefix %}ui/css/plugins/datapicker/datepicker3.css" rel="stylesheet">
+
 {% endblock %}
 
 {% block page_header %}
@@ -35,87 +37,265 @@
 {% endblock %}
 
 {% block content %}
-    <div class="wrapper wrapper-content">
+    <div class="wrapper wrapper-content" ng-controller="MainCtrl">
 
-        <style>
-            .project-title p{
-                margin: 0px !important;
-            }
-
-            .project-status{
-                width: 80px;
-            }
-
-            .project-title{
-                min-width: 250px;
-            }
-        </style>
-        <div class="ibox">
-            <div class="ibox-content">
-                <div class="row m-b-sm m-t-sm">
-                    <div class="col-md-12">
-                        <div class="input-group">
-                            <input type="text" placeholder="Search" class="input-sm form-control">
-                            <span class="input-group-btn">
-                                <button type="button" class="btn btn-sm btn-primary"> Go!</button>
-                            </span>
+        <!-- Grid -->
+        <div ng-if="ui_flags.state==ST_AJAX.LOADING" class="loading_big" align="center" valign="middle">
+            <img src="{% get_static_prefix %}images/loading/spinner_1.gif" style="height: 40px">
+            <h3 style="margin-top: 20px;font-weight: normal;">Loading surveys...</h3>
+        </div>
+        <div ng-if="ui_flags.state==ST_AJAX.ERROR" class="alert alert-danger">
+            <table style="width: 100%">
+                <tr>
+                    <td valign="top" style="width: 90px;">
+                        <i class="fa fa-exclamation-triangle" style="font-size: 60px;"></i>
+                    </td>
+                    <td valign="top">
+                        <h2 style="margin-top: 0px;">Error!</h2>
+                        <div>
+                            {$ ui_flags.error_msg $}
                         </div>
-                    </div>
-                </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
 
-                <div class="project-list">
-                    <table class="table table-hover" style="margin-bottom: 0px;">
-                        <thead>
-                            <tr>
-                                <th>Status</th>
-                                <th>Name</th>
-                                <th>Category</th>
-                                <th>Duration</th>
-                                <th>Completion</th>
-                                <th>&nbsp;</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for s in list_surveys %}
-                                <tr>
-                                    <td class="project-status">
-                                        <span class="label label-primary">{{ s.status|title }}</span>
-                                    </td>
-                                    <td class="project-title">
-                                        <a href="{% url 'console_survey_panel' s.survey_uid %}">{{ s.title }}</a>
-                                        <br/>
-                                        <small>{{ s.description|truncatechars:150|safe }}</small>
-                                    </td>
-                                    <td style="width: 100px;">
-                                        {{ s.category.name }}
-                                    </td>
-                                    <td style="width: 220px;">
-                                        {{ s.start_date|date:"d-M-Y" }}
-                                        <span style="margin: 0px 5px;">to</span>
-                                        {{ s.end_date|date:"d-M-Y" }}
-                                    </td>
-                                    <td class="project-completion">
-                                        <small>Completion with: 48%</small>
-                                        <div class="progress progress-mini">
-                                            <div style="width: 48%;" class="progress-bar"></div>
-                                        </div>
-                                    </td>
-{#                                    <td class="project-people">#}
-{#                                        <a href=""><img alt="image" class="img-circle" src="img/a3.jpg"></a>#}
-{#                                        <a href=""><img alt="image" class="img-circle" src="img/a1.jpg"></a>#}
-{#                                        <a href=""><img alt="image" class="img-circle" src="img/a2.jpg"></a>#}
-{#                                        <a href=""><img alt="image" class="img-circle" src="img/a4.jpg"></a>#}
-{#                                        <a href=""><img alt="image" class="img-circle" src="img/a5.jpg"></a>#}
-{#                                    </td>#}
-                                    <td class="project-actions">
-                                        <a href="{% url 'console_survey_panel' s.survey_uid %}#/edit" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Edit </a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+        <div ng-show="ui_flags.state==ST_AJAX.COMPLETED">
+            <div ng-if="list_surveys.length==0" class="alert alert-info">
+                <table style="width: 100%">
+                    <tr>
+                        <td valign="top" style="width: 90px;">
+                            <i class="fa fa-info-circle" style="font-size: 80px;"></i>
+                        </td>
+                        <td valign="top">
+                            <h2 style="margin-top: 0px;">No Surveys have been created yet!</h2>
+                            <div>
+                                No surveys have been created yet.
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div ng-show="list_surveys.length">
+                <ng-jqgrid
+                        config="grid_surveys.config"
+                        modeldata="list_surveys"
+                        gridid="{$ grid_surveys.gridid $}"
+                        pagerid="{$ grid_surveys.pagerid $}"
+                        api="grid_surveys.gridapi"
+                        filtertoolbar="{stringResult: true, searchOnEnter: false, defaultSearch: 'cn'}"
+                ></ng-jqgrid>
             </div>
         </div>
+        <!-- /Grid -->
+
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% get_static_prefix %}ui/js/plugins/datapicker/bootstrap-datepicker.js"></script>
+
+    <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/i18n/grid.locale-en.js"></script>
+    <script src="{% get_static_prefix %}ui/js/plugins/jqGrid/jquery.jqGrid.min.js"></script>
+    <script src="{% get_static_prefix %}lib/angular/angular-jqgrid/angular-jqgrid.js"></script>
+
+    <script src="{% get_static_prefix %}apps/surveys/surveys.js"></script>
+    <script>
+        'use strict';
+
+        var APP = angular.module('{{ app_name }}',[
+            'feedvay.uiapp',
+            'feedvay.common',
+            'feedvay.watchdog',
+            'feedvay.surveys',
+
+            'ngCookies',
+            'ngMessages',
+            'datePicker',
+            'angular-jqgrid',
+        ])
+        .config(function($interpolateProvider, $httpProvider) {
+            $interpolateProvider.startSymbol('{$');
+            $interpolateProvider.endSymbol('$}');
+
+            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+            $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+        })
+        .run(function($rootScope, $http, $cookies) {
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+
+            $http.defaults.xsrfCookieName = 'csrftoken';
+            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+            $rootScope.ST_AJAX = ST_AJAX;
+
+        });
+
+
+        APP.controller('MainCtrl', function($scope, ServiceSurvey){
+            $scope.ui_flags = {
+                state: null,
+                error_msg: null
+            };
+
+            // Jqgrid
+            $scope.list_surveys = [];
+            $scope.grid_surveys = {
+                gridid: "grid_surveys",
+                pagerid: "grid_surveys_pager",
+                config: {
+                    datatype: "local",
+                    colNames: [
+                        '',
+                        'Title',
+                        'Status',
+                        'Category',
+                        'Completion',
+                        'Start Date',
+                        'End Date',
+                        'Created on',
+                        {% if request.curr_org %}
+                            'Created by'
+                        {% endif %}
+                    ],
+                    colModel: [
+                        { name: 'id', index: 'id', width: 20, hidden:true, search:false },
+                        { name: 'title_html', index: 'title', width: 60, valign:"top" },
+                        { name: 'status', index: 'status', width: 30,
+                            stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for st in Survey.CH_STATUS %}{{ st.0 }}:{{ st.1 }}{% if not forloop.last %};{% endif %}{% endfor %}" }
+                        },
+                        { name: 'category', index: 'category', width: 40 },
+                        { name: 'completion_html', index: 'completion_html', width: 35, search:false },
+                        { name: 'start_date', index: 'start_date', width: 35,
+                            sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-d', newformat: 'd-M-Y' },
+                            searchoptions: {
+                                attr:{ placeholder: 'Select date', readonly:'readonly'},
+                                dataInit: function (elem) {
+                                    $(elem).datepicker({
+                                        format: 'yyyy-mm-dd',
+                                        keyboardNavigation: false,
+                                        autoclose: true,
+                                        todayHighlight: true,
+                                    }).on('changeDate', function(e) {
+                                        $('#grid_surveys')[0].triggerToolbar();
+                                    });
+                                }
+                            }
+                        },
+                        { name: 'end_date', index: 'end_date', width: 35,
+                            sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-d', newformat: 'd-M-Y' },
+                            searchoptions: {
+                                attr:{ placeholder: 'Select date', readonly:'readonly'},
+                                dataInit: function (elem) {
+                                    $(elem).datepicker({
+                                        format: 'yyyy-mm-dd',
+                                        keyboardNavigation: false,
+                                        autoclose: true,
+                                        todayHighlight: true,
+                                    }).on('changeDate', function(e) {
+                                        $('#grid_surveys')[0].triggerToolbar();
+                                    });
+                                }
+                            }
+                        },
+                        { name: 'created_on', index: 'created_on', width: 35,
+                            sorttype:'date', formatter: "date", formatoptions: { srcformat: 'Y-m-dTH:i:s', newformat: 'd-M-Y' },
+                            searchoptions: {
+                                attr:{ placeholder: 'Select date', readonly:'readonly'},
+                                dataInit: function (elem) {
+                                    $(elem).datepicker({
+                                        format: 'yyyy-mm-dd',
+                                        keyboardNavigation: false,
+                                        autoclose: true,
+                                        todayHighlight: true,
+                                    }).on('changeDate', function(e) {
+                                        $('#grid_surveys')[0].triggerToolbar();
+                                    });
+                                }
+                            }
+                        },
+                        {% if request.curr_org %}
+                            { name: 'created_by.display_name', index: 'created_by.display_name', width: 30 },
+                        {% endif %}
+                    ],
+                    viewrecords: true,
+                    sortname: 'end_date',
+                    sortorder: "desc",
+                    rowNum: 50,
+                    rowList: [10, 50, 100, 100000],
+                    autowidth : true,
+                    height: '250px',
+                    shrinkToFit: true,
+                    hidegrid: false,
+                    ignoreCase:true,
+                    gridComplete: function() { $("td[role='gridcell']").attr('valign', 'top'); }
+                },
+                filtertoolbar: {
+                    stringResult: true, searchOnEnter: false, defaultSearch: 'cn',
+                },
+                gridapi: {}
+            };
+
+            // --- Methods ---
+            $scope.get_surveys = function(){
+                $scope.ui_flags.state = ST_AJAX.LOADING;
+
+
+                ServiceSurvey.get({% if request.curr_org %}'{{ request.curr_org.org_uid }}'{% else %}null{% endif %}).then(
+                    function(response){
+                        var records = response.objects;
+                        $scope.ui_flags.state = ST_AJAX.COMPLETED;
+
+                        // Preprocess
+                        for(var i=0;i<records.length;i++){
+                            var row = records[i];
+
+                            records[i]['title_html'] = '<a href="{% url 'console_survey_panel' 'SURVEY_UID' %}">'.replace('SURVEY_UID', row['survey_uid']) + row['title'] + ' </a>';
+                            records[i]['created_by']['display_name'] = row['created_by']['first_name'] + " " +row['created_by']['last_name'];
+
+                            var now = moment();
+                            var start_date = moment(row['start_date'], 'YYYY-MM-DD');
+                            var end_date = moment(row['end_date'], 'YYYY-MM-DD');
+
+                            var complete_per = 0;
+                            if(now > end_date){
+                                complete_per = 100
+                            }else{
+                                complete_per = moment.duration(now.diff(start_date))/moment.duration(end_date.diff(start_date))*100;
+                                complete_per = Math.round(complete_per);
+                            }
+
+                            records[i]['completion_html'] = '<small>'+complete_per+'% Completed</small><div class="progress progress-mini"><div style="width: '+complete_per+'%;" class="progress-bar"></div></div>';
+{#                            {% if request.permissions|has_permission:"feedback.bspfeedbackform.change_bspfeedbackform" %}#}
+{#                            records[i]['actions_html'] = '<a href="' + '{% url 'console_feedback_bsp_manage' 999999 %}?c={{ request.curr_org.org_uid }}'.replace('999999', row['id']) + '" class="btn btn-primary btn-xs btn-outline grid_btn">Manage</a>' +#}
+{#                                '&nbsp;<a href="' + '{% url 'console_feedback_bsp_edit' 999999 %}?c={{ request.curr_org.org_uid }}'.replace('999999', row['id']) + '" class="btn btn-primary btn-xs btn-outline grid_btn">Edit</a>';#}
+{#                            {% endif %}#}
+                        }
+
+                        // Update grid
+                        $scope.list_surveys = records;
+                        $scope.grid_surveys.gridapi.clear();
+                        $scope.grid_surveys.gridapi.insert(records);
+
+                    },
+                    function(response){
+                        $scope.ui_flags.state = ST_AJAX.ERROR;
+
+                        if(response.status != -1){
+                            $scope.ui_flags.error_msg = "Something went wrong. Our engineers will be informed.";
+                        }else{
+                            $scope.ui_flags.error_msg = "Please check your internet connection.";
+                        }
+
+                    }
+                );
+            };
+            // --- /Methods ---
+
+            $scope.get_surveys();
+
+        });
+
+    </script>
 {% endblock %}

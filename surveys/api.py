@@ -27,7 +27,7 @@ class SurveysAPI(ModelResource):
         limit = 0
         max_limit = None
         list_allowed_methods = ['get']
-        fields = ('id', 'category', 'survey_uid', 'type', 'title', 'description', 'start_date', 'end_date', 'ownership', 'brand', 'status', 'created_by')
+        fields = ('id', 'category', 'survey_uid', 'type', 'title', 'start_date', 'end_date', 'ownership', 'brand', 'status', 'created_by', 'created_on')
         authentication = OrgConsoleSessionAuthentication(['surveys.survey'], allow_bypass=True)
 
     def apply_filters(self, request, applicable_filters):
@@ -50,7 +50,7 @@ class SurveysAPI(ModelResource):
             filters['created_by_id'] = request.user.id
 
         base_object_list = base_object_list.filter(**filters)
-        return base_object_list.select_related('brand', 'created_by').only(*self.Meta.fields)
+        return base_object_list.select_related('brand', 'category', 'created_by').only(*self.Meta.fields)
 
     def dehydrate(self, bundle):
         obj = bundle.obj
@@ -63,6 +63,8 @@ class SurveysAPI(ModelResource):
             }
         else:
             bundle.data['brand'] = None
+
+        bundle.data['category'] = obj.category.name
 
         bundle.data['created_by'] = {
             'id': obj.created_by.id,

@@ -3,6 +3,22 @@
 angular.module('feedvay.surveys', [])
 
 // ---------- Services ----------
+.service('ServiceSurvey', function($http) {
+
+    this.get = function (org_uid) {
+        var params = {};
+        if(org_uid){
+            params['c'] = org_uid;
+        }
+
+        return $http.get('/console/surveys/api/surveys/?format=json', {
+            params: params
+        }).then(function (response) {
+            return response.data;
+        });
+    };
+})
+
 .service('ServiceSurveyResponses', function($http){
     this.get = function(survey_uid, params){
         if(!params){

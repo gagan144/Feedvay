@@ -197,7 +197,9 @@ def console_surveys(request, org):
         list_surveys = Survey.objects.filter(created_by_id=reg_user.user_id)
 
     data ={
-        'list_surveys': list_surveys.only('id', 'category', 'survey_uid', 'type', 'title', 'description', 'start_date', 'end_date', 'ownership', 'brand', 'status').select_related('brand')
+        # 'list_surveys': list_surveys.only('id', 'category', 'survey_uid', 'type', 'title', 'description', 'start_date', 'end_date', 'ownership', 'brand', 'status').select_related('brand')
+        'app_name': 'app_surveys',
+        'Survey': Survey
     }
 
     return render(request, 'surveys/console/surveys.html', data)

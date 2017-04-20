@@ -162,7 +162,7 @@
                     colModel: [
                         { name: 'id', index: 'id', width: 20, hidden:true, search:false },
                         { name: 'title_html', index: 'title', width: 60, valign:"top" },
-                        { name: 'status', index: 'status', width: 30,
+                        { name: 'status_html', index: 'status', width: 30,
                             stype: 'select', searchoptions:{ sopt:['cn'], value: ":All;{% for st in Survey.CH_STATUS %}{{ st.0 }}:{{ st.1 }}{% if not forloop.last %};{% endif %}{% endfor %}" }
                         },
                         { name: 'category', index: 'category', width: 40 },
@@ -260,6 +260,24 @@
                             {% else %}
                                 records[i]['title_html'] = '<a href="{% url 'console_survey_panel' 'SURVEY_UID' %}">'.replace('SURVEY_UID', row['survey_uid']) + row['title'] + ' </a>';
                             {% endif %}
+
+                            var status_html = null;
+                            switch(row['status']){
+                                case '{{ Survey.ST_DRAFT }}': {
+                                    status_html = '<span class="text-muted"><i class="fa fa-edit"></i> Draft</span>';
+                                }break;
+                                case '{{ Survey.ST_READY }}': {
+                                    status_html = '<span class="text-success"><i class="fa fa-check-circle"></i> Ready</span>';
+                                }break;
+                                case '{{ Survey.ST_PAUSED }}': {
+                                    status_html = '<span class="text-warning"><i class="fa fa-pause"></i> Paused</span>';
+                                }break;
+                                case '{{ Survey.ST_STOPPED }}': {
+                                    status_html = '<span class="text-danger"><i class="fa fa-stop"></i> Stopped</span>';
+                                }break;
+                            }
+                            records[i]['status_html'] = status_html;
+
 
                             records[i]['created_by']['display_name'] = row['created_by']['first_name'] + " " +row['created_by']['last_name'];
 

@@ -46,8 +46,10 @@ class SurveysAPI(ModelResource):
                 filters['organization_id'] = org.id
         else:
             # Context: Logged-in user
-            filters = {}
-            filters['created_by_id'] = request.user.id
+            filters = {
+                'ownership': Survey.OWNER_INDIVIDUAL,
+                'created_by_id': request.user.id
+            }
 
         base_object_list = base_object_list.filter(**filters)
         return base_object_list.select_related('brand', 'category', 'created_by').only(*self.Meta.fields)

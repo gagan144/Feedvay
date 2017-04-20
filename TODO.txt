@@ -26,7 +26,6 @@
     - Screen to create/update graph config
 
 - Survey
-    - Dashboard: Grid 'status' html
     - Panel:
         - Prevent 'Go live' when in questionnaire not ready
         - Responses: Allow responses with no lat long

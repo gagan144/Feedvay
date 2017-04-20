@@ -5,8 +5,11 @@
 {% load static commontags %}
 
 {% block head %}
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="{% if request.curr_brand %}{{ request.curr_brand.icon.url }}{% else %}{% get_static_prefix %}images/favicon.png{% endif %}"/>
+    {% if request.curr_org %}
+        <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
+    {% else %}
+        <link rel="shortcut icon" href="{% get_static_prefix %}images/favicon.png"/>
+    {% endif %}
 
     <title page-title></title>
 
@@ -423,7 +426,7 @@
 
                                         <p>
                                             <a class="btn btn-primary"
-                                               href="{% url 'console_survey_simple_form_editor' survey.survey_uid %}"
+                                               href="{% url 'console_survey_simple_form_editor' survey.survey_uid %}{% if request.curr_org %}?c={{ request.curr_org.org_uid }}{% endif %}"
                                                onclick="return confirm('Are you sure you want to leave this page?');">
                                                 Edit questionnaire
                                             </a>
@@ -439,7 +442,7 @@
 
                                         <p>
                                             {% for ph in survey.surveyphase_set.all %}
-                                                <a href="{% url 'console_survey_phase_form_editor' survey.survey_uid ph.id %}">Edit
+                                                <a href="{% url 'console_survey_phase_form_editor' survey.survey_uid ph.id %}{% if request.curr_org %}?c={{ request.curr_org.org_uid }}{% endif %}">Edit
                                                     Phase-{{ forloop.counter }}</a><br/>
                                             {% endfor %}
                                         </p>
@@ -518,15 +521,31 @@
                 {{ survey.title }}
                 <small style="font-size: 12px;margin-left: 10px;">({{ survey.start_date|date:"d-M-Y" }} to {{ survey.end_date|date:"d-M-Y" }})</small>
             </h2>
-            <ol class="breadcrumb">
-                <li>
-                    <a href="{% url 'console_home' %}">Home</a>
-                </li>
-                <li>
-                    <a href="{% url 'console_surveys' %}">Surveys</a>:
-                    &nbsp;<span class="text-primary">{{ survey.title }}</span>
-                </li>
-            </ol>
+            {% if request.curr_org %}
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">Home</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'console_surveys' %}?c={{ request.curr_org.org_uid }}">Surveys</a>
+                    </li>
+                    <li class="active">
+                        {{ survey.title }}
+                    </li>
+                </ol>
+            {% else %}
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="{% url 'console_home' %}">Home</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'console_surveys' %}">Surveys</a>
+                    </li>
+                    <li class="active">
+                        {{ survey.title }}
+                    </li>
+                </ol>
+            {% endif %}
         </div>
         <div class="col-xs-1" align="center">
             <!-- Status -->
@@ -847,7 +866,7 @@
                             if (isConfirm) {
 
                                 $http.post(
-                                        "/console/surveys/{{ survey.survey_uid }}/transit/",
+                                        "/console/surveys/{{ survey.survey_uid }}/transit/{% if request.curr_org %}?c={{ request.curr_org.org_uid }}{% endif %}",
                                         $.param({
                                             "action": action
                                         })
@@ -915,7 +934,7 @@
                 $scope.ui_flags.error = false;
                 $scope.ui_flags.error_msg = null;
 
-                ServiceSurveyAPI.get_response_trend('{{ survey.survey_uid }}', null).then(
+                ServiceSurveyAPI.get_response_trend({% if request.curr_org %}"{{ request.curr_org.org_uid }}"{% else %}null{% endif %}, '{{ survey.survey_uid }}', null).then(
                     function (response_data) {
                         $scope.ui_flags.loading = false;
 
@@ -1137,7 +1156,7 @@
                 // --- Get data & display ---
                 $scope.ui_flags.loading = true;
 
-                ServiceSurveyResponses.get('{{ survey.survey_uid }}', filters).then(
+                ServiceSurveyResponses.get({% if request.curr_org %}"{{ request.curr_org.org_uid }}"{% else %}null{% endif %}, '{{ survey.survey_uid }}', filters).then(
                     function (response_data) {
                         $scope.ui_flags.loading = false;
                         $scope.ui_flags.loaded = true;
@@ -1323,7 +1342,7 @@
                 delete data['duration'];
 
                 $http.post(
-                        "/console/surveys/{{ survey.survey_uid }}/save/",
+                        "/console/surveys/{{ survey.survey_uid }}/save/{% if request.curr_org %}?c={{ request.curr_org.org_uid }}{% endif %}",
                         $.param(data)
                         )
                         .success(function (response, status, headers, config) {

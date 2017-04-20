@@ -94,6 +94,8 @@ class SurveyAdmin(admin.ModelAdmin):
         readonly_fields.append('status')
 
         if obj is not None:
+            readonly_fields.append('ownership')
+            readonly_fields.append('organization')
             if obj.ownership == Survey.OWNER_INDIVIDUAL:
                 readonly_fields.append('brand')
 

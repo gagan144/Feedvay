@@ -27,7 +27,7 @@
         </div>
         <div class="col-xs-4">
             <div class="title-action" style="padding-top: 20px !important;">
-                <a href="{% url 'console_survey_new' %}" class="btn btn-primary">
+                <a href="{% url 'console_survey_new' %}{% if request.curr_org %}?c={{ request.curr_org.org_uid }}{% endif %}" class="btn btn-primary">
                     <i class="fa fa-plus"></i>
                     <span class="mobile_hide">&nbsp;Create new survey</span>
                 </a>
@@ -37,7 +37,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="wrapper wrapper-content" ng-controller="MainCtrl">
+    <div class="wrapper wrapper-content" ng-controller="MainCtrl" ng-cloak>
 
         <!-- Grid -->
         <div ng-if="ui_flags.state==ST_AJAX.LOADING" class="loading_big" align="center" valign="middle">
@@ -251,7 +251,16 @@
                         for(var i=0;i<records.length;i++){
                             var row = records[i];
 
-                            records[i]['title_html'] = '<a href="{% url 'console_survey_panel' 'SURVEY_UID' %}">'.replace('SURVEY_UID', row['survey_uid']) + row['title'] + ' </a>';
+                            {% if request.curr_org %}
+                                {% if request.permissions|has_permission:"feedback.bspfeedbackform.change_bspfeedbackform" %}
+                                    records[i]['title_html'] = '<a href="{% url 'console_survey_panel' 'SURVEY_UID' %}?c={{ request.curr_org.org_uid }}">'.replace('SURVEY_UID', row['survey_uid']) + row['title'] + ' </a>';
+                                {% else %}
+                                    records[i]['title_html'] = row['title'];
+                                {% endif %}
+                            {% else %}
+                                records[i]['title_html'] = '<a href="{% url 'console_survey_panel' 'SURVEY_UID' %}">'.replace('SURVEY_UID', row['survey_uid']) + row['title'] + ' </a>';
+                            {% endif %}
+
                             records[i]['created_by']['display_name'] = row['created_by']['first_name'] + " " +row['created_by']['last_name'];
 
                             var now = moment();
@@ -267,10 +276,6 @@
                             }
 
                             records[i]['completion_html'] = '<small>'+complete_per+'% Completed</small><div class="progress progress-mini"><div style="width: '+complete_per+'%;" class="progress-bar"></div></div>';
-{#                            {% if request.permissions|has_permission:"feedback.bspfeedbackform.change_bspfeedbackform" %}#}
-{#                            records[i]['actions_html'] = '<a href="' + '{% url 'console_feedback_bsp_manage' 999999 %}?c={{ request.curr_org.org_uid }}'.replace('999999', row['id']) + '" class="btn btn-primary btn-xs btn-outline grid_btn">Manage</a>' +#}
-{#                                '&nbsp;<a href="' + '{% url 'console_feedback_bsp_edit' 999999 %}?c={{ request.curr_org.org_uid }}'.replace('999999', row['id']) + '" class="btn btn-primary btn-xs btn-outline grid_btn">Edit</a>';#}
-{#                            {% endif %}#}
                         }
 
                         // Update grid

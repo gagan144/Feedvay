@@ -177,27 +177,8 @@ def console_surveys(request, org):
 
     **Authors**: Gagandeep Singh
     """
-    reg_user = request.user.registereduser
 
-    # Check access context
-    if org is not None:
-        # Context: Organization
-        try:
-            filters = copy.deepcopy(request.permissions['surveys.survey']['data_access'])
-            filters['ownership'] = Survey.OWNER_ORGANIZATION
-            filters['organization_id'] = org.id
-
-            list_surveys = Survey.objects.filter(**filters)
-        except TypeError:
-            # TypeError: If filters is None
-            return HttpResponseForbidden("You do not have permissions to access this page.")
-
-    else:
-        # Context: Logged-in user
-        list_surveys = Survey.objects.filter(created_by_id=reg_user.user_id)
-
-    data ={
-        # 'list_surveys': list_surveys.only('id', 'category', 'survey_uid', 'type', 'title', 'description', 'start_date', 'end_date', 'ownership', 'brand', 'status').select_related('brand')
+    data = {
         'app_name': 'app_surveys',
         'Survey': Survey
     }
@@ -205,7 +186,8 @@ def console_surveys(request, org):
     return render(request, 'surveys/console/surveys.html', data)
 
 @registered_user_only
-def console_survey_new(request):
+@organization_console('surveys.survey.add_survey', allow_bypass=True)
+def console_survey_new(request, org):
     """
     View to open form to create a survey.
 
@@ -214,7 +196,6 @@ def console_survey_new(request):
     **Authors**: Gagandeep Singh
     """
 
-    reg_user = request.user.registereduser
     data ={
         'list_categories': SurveyCategory.objects.filter(active=True),
         'app_name': 'app_survey_create'
@@ -223,7 +204,8 @@ def console_survey_new(request):
     return render(request, 'surveys/console/create_survey.html', data)
 
 @registered_user_only
-def console_survey_create(request):
+@organization_console('surveys.survey.add_survey', allow_bypass=True)
+def console_survey_create(request, org):
     """
     API view to create new survey.
 
@@ -231,15 +213,22 @@ def console_survey_create(request):
 
     **Authors**: Gagandeep Singh
     """
-    # Current only for individual
     reg_user = request.user.registereduser
 
     if request.method.lower() == 'post':
         try:
             from surveys.forms import SurveyCreateForm
             post_data = request.POST.copy()
-            post_data['type'] = Survey.TYPE_SIMPLE
-            post_data['ownership'] = Survey.OWNER_INDIVIDUAL
+
+            if org:
+                # Context: Organization
+                post_data['type'] = Survey.TYPE_SIMPLE      # TODO: Allow complex
+                post_data['ownership'] = Survey.OWNER_ORGANIZATION
+                post_data['organization'] = org.id
+            else:
+                # Context: Individual
+                post_data['type'] = Survey.TYPE_SIMPLE
+                post_data['ownership'] = Survey.OWNER_INDIVIDUAL
 
             form_survey = SurveyCreateForm(post_data)
 
@@ -261,8 +250,8 @@ def console_survey_create(request):
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
 @registered_user_only
-@survey_access_firewall
-def console_survey_panel(request, survey):
+@organization_console('surveys.survey', allow_bypass=True)
+def console_survey_panel(request, org, survey_uid):
     """
     View to open control panel for a survey.
 
@@ -271,23 +260,41 @@ def console_survey_panel(request, survey):
     **Authors**: Gagandeep Singh
     """
 
-    # Currently for individual only.
-    reg_user = request.user.registereduser
-
+    # Check access context
     try:
-        #survey = Survey.objects.get(survey_uid=survey_uid, created_by_id=reg_user.user_id)
+        if org is not None:
+            # Context: Organization
+            try:
+                filters = copy.deepcopy(request.permissions['surveys.survey']['data_access'])
+                filters['ownership'] = Survey.OWNER_ORGANIZATION
+                filters['organization_id'] = org.id
+                filters['survey_uid'] = survey_uid
 
-        data ={
-            'SURVEY': Survey,
-            'survey': survey,
-            'has_gps_enabled': survey.has_gps_enabled(),
-            'now': timezone.now(),
-            'app_name': 'app_survey_panel',
-            'list_categories': SurveyCategory.objects.filter(Q(active=True)|Q(id=survey.category_id)).only('id', 'name')
-        }
-        return render(request, 'surveys/console/survey_panel.html', data)
+                survey = Survey.objects.get(**filters)
+            except TypeError:
+                # TypeError: If filters is None
+                return HttpResponseForbidden("You do not have permissions to access this page.")
+        else:
+            # Context: Individual
+            filters = {
+                'ownership': Survey.OWNER_INDIVIDUAL,
+                'survey_uid': survey_uid,
+                'created_by_id': request.user.id
+            }
+            survey = Survey.objects.get(**filters)
+
     except Survey.DoesNotExist:
-        raise Http404("Invalid link.")
+        return HttpResponseForbidden("Invalid link or you do not have permissions to access this page.")
+
+    data ={
+        'SURVEY': Survey,
+        'survey': survey,
+        'has_gps_enabled': survey.has_gps_enabled(),
+        'now': timezone.now(),
+        'app_name': 'app_survey_panel',
+        'list_categories': SurveyCategory.objects.filter(Q(active=True)|Q(id=survey.category_id)).only('id', 'name')
+    }
+    return render(request, 'surveys/console/survey_panel.html', data)
 
 @registered_user_only
 @survey_access_firewall

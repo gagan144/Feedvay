@@ -40,7 +40,7 @@ class SurveyCreateForm(forms.ModelForm):
     """
     class Meta:
         model = Survey
-        fields = ['type', 'category', 'title', 'description', 'start_date', 'end_date', 'ownership', 'audience_type']
+        fields = ['type', 'category', 'title', 'description', 'start_date', 'end_date', 'ownership', 'organization', 'audience_type']
 
     def clean(self):
         form_data = self.cleaned_data
@@ -54,6 +54,9 @@ class SurveyCreateForm(forms.ModelForm):
     def save(self, created_by, *args, **kwargs):
         with transaction.atomic():
             self.instance.created_by = created_by
+            # if self.instance.ownership == Survey.OWNER_ORGANIZATION:
+            #     self.instance.organization_id = organization.id
+
             new_survey = super(SurveyCreateForm, self).save(*args, **kwargs)
 
             if kwargs.get('commit', True):
@@ -62,6 +65,8 @@ class SurveyCreateForm(forms.ModelForm):
                     form_title = new_survey.title
                 elif new_survey.type == Survey.TYPE_COMPLEX:
                     form_title = "{} - Phase 1".format(new_survey.title)
+                else:
+                    raise ValidationError("Invalid survey type '{}'.".format(new_survey.type))
 
                 # Create description translation
                 # Since it is mongo, it is not rolled back on failure

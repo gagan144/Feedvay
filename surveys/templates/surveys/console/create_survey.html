@@ -5,10 +5,13 @@
 {% load static commontags %}
 
 {% block head %}
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="{% if request.curr_brand %}{{ request.curr_brand.icon.url }}{% else %}{% get_static_prefix %}images/favicon.png{% endif %}"/>
-
-    <title>New survey - Feedvay</title>
+    {% if request.curr_org %}
+        <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
+        <title>New Survey | {{ request.curr_org.name }} </title>
+    {% else %}
+        <link rel="shortcut icon" href="{% get_static_prefix %}images/favicon.png"/>
+        <title>New Survey | Feedvay Management Console</title>
+    {% endif %}
 
     <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
     <link href="{% get_static_prefix %}ui/css/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet">
@@ -23,17 +26,31 @@
                 <i class="fa fa-plus"></i>
                 Create new survey
             </h2>
-            <ol class="breadcrumb">
-                <li>
-                    <a href="{% url 'console_home' %}">Home</a>
-                </li>
-                <li>
-                    <a href="{% url 'console_surveys' %}">Surveys</a>
-                </li>
-                <li class="active">
-                    Create
-                </li>
-            </ol>
+            {% if request.curr_org %}
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">Home</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'console_surveys' %}?c={{ request.curr_org.org_uid }}">Surveys</a>
+                    </li>
+                    <li class="active">
+                        New Survey
+                    </li>
+                </ol>
+            {% else %}
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="{% url 'console_home' %}">Home</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'console_surveys' %}">Surveys</a>
+                    </li>
+                    <li class="active">
+                        New Survey
+                    </li>
+                </ol>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
@@ -89,7 +106,7 @@
             $http.defaults.xsrfHeaderName = 'X-CSRFToken';
         });
 
-        APP.controller('CreateSurveyCtrl', function ($scope, $window, $http, ServiceSurveyResponses) {
+        APP.controller('CreateSurveyCtrl', function ($scope, $window, $http) {
             $scope.summernote_config = SUMMERNOTE_CONFIG;
             $scope.list_categories = [
                 {% for c in list_categories %}
@@ -124,7 +141,7 @@
                 delete data['duration'];
 
                 $http.post(
-                    "/console/surveys/create/",
+                    "/console/surveys/create/{% if request.curr_org %}?c={{ request.curr_org.org_uid }}{% endif %}",
                     $.param(data)
                 )
                 .success(function (response, status, headers, config) {
@@ -133,10 +150,10 @@
                         var type = response.survey_type;
 
                         if(type=='simple'){
-                            url = "{% url 'console_survey_simple_form_editor' 'SURVEY_UID' %}".replace('SURVEY_UID', response.survey_uid);
+                            url = "{% url 'console_survey_simple_form_editor' 'SURVEY_UID' %}{% if request.curr_org %}?c={{ request.curr_org.org_uid }}{% endif %}".replace('SURVEY_UID', response.survey_uid);
                         }
                         else if(type=='complex'){
-                            url='{% url 'console_survey_panel' 'SURVEY_UID' %}#/edit'.replace('SURVEY_UID', response.survey_uid);
+                            url='{% url 'console_survey_panel' 'SURVEY_UID' %}{% if request.curr_org %}?c={{ request.curr_org.org_uid }}{% endif %}#/edit'.replace('SURVEY_UID', response.survey_uid);
                         }
 
                         $window.location.href = url;

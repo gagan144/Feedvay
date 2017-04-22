@@ -1,14 +1,67 @@
-{% extends 'base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Feedvay</title>
 
-{% block content %}
-    <div class="wrapper wrapper-content">
-        <div class="container">
-            <h1>Home Page</h1>
-            <hr/>
-            User: {{ user.username }}
-            <hr/>
+    <style>
+        html {
+            background: url({% get_static_prefix %}images/home_demo_bg.jpg) no-repeat center center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
 
-            {% if welcome %}<h1>WELCOME!</h1>{% endif %}
+
+        div.frameT {
+            width: 100%;
+            padding: 0;
+            display: table;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+        }
+
+        div.frameTC {
+            padding: 0;
+            vertical-align: middle;
+            display: table-cell;
+            margin: 0;
+        }
+
+        div.content {
+            width: 40%;
+{#            background-color: #fff;#}
+            background-color: rgba(255, 255, 255, 0.85);
+            margin: 0 auto;
+            text-align: left;
+            padding: 25px;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 767px) {
+            div.content {
+                width: 75%;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="frameT">
+        <div class="frameTC">
+            <div class="content" align="center">
+                <a href="{% url 'accounts_login' %}">
+                    <img src="{% get_static_prefix %}images/feedvay_logo_lg.png" style="width: 100%;">
+                </a>
+            </div>
         </div>
     </div>
-{% endblock %}
+
+</body>
+</html>

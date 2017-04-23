@@ -255,6 +255,24 @@ class Organization(models57.Model):
         else:
             return False
 
+    def get_edit_json(self):
+        """
+        Method to return json for edit form.
+
+        :return: JSON
+
+        **Authors**: Gagandeep Singh
+        """
+        return {
+            "id": self.id,
+            "name": self.name,
+            "acronym": self.acronym if self.acronym else None,
+            "description": self.description,
+            "type": self.type,
+
+            "ui_theme__primary": self.ui_theme.get('primary') if self.ui_theme else None
+        }
+
     def clean(self):
         """
         Method to clean & validate data fields.

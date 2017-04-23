@@ -11,9 +11,6 @@
 - RegisteredUser
     - Info correction when user is created by invitation
 
-- Organization
-    Settings: Description multiline correction
-
 - Permissions & roles
     - Add missing data access on role change
 

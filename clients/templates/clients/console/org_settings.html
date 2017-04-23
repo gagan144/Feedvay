@@ -2,7 +2,7 @@
 {# Content in this document can not be copied and/or distributed without the express #}
 {# permission of Gagandeep Singh. #}
 {% extends 'console/base.html' %}
-{% load static %}
+{% load static commontags %}
 
 {% block head %}
     <!-- Favicon -->
@@ -127,15 +127,7 @@
             {% with org=request.curr_org %}
                 $scope.logo_url = "{{ org.logo.url }}";
                 $scope.icon_url = "{{ org.icon.url }}";
-                var master_data = {
-                    id: {{ org.id }},
-                    name: "{{ org.name }}",
-                    acronym: {% if org.acronym %}"{{ org.acronym }}"{% else %}null{% endif %},
-                    description: "{{ org.description }}",
-                    type: "{{ org.type }}",
-
-                    ui_theme__primary: {% if org.ui_theme %}"{{ org.ui_theme.primary }}"{% else %}null{% endif %},
-                };
+                var master_data = {{ org.get_edit_json|jsonify:False|safe }};
                 $scope.data = angular.copy(master_data);
             {% endwith %}
 

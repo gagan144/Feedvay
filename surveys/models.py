@@ -167,11 +167,11 @@ class Survey(models.Model):
     )
 
     AUD_PUBLIC = 'public'
-    AUD_INVITED = 'invited'
+    AUD_UNLISTED = 'unlisted'
     AUD_SELF = 'self'
     CH_AUDIENCE = (
         (AUD_PUBLIC, 'Public'),
-        (AUD_INVITED, 'Invited'),
+        (AUD_UNLISTED, 'Unlisted'),
         (AUD_SELF, 'Self')
     )
 

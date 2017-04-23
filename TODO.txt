@@ -26,17 +26,11 @@
     - Screen to create/update graph config
 
 - Survey
-    - Panel:
-        - Responses: Allow responses with no lat long
-    - Audience options
-
     - Create:
         - survey title already existing - autocomplete type options
         - Org case: survey type & brand select
 
-    - API - Access authentication
-    - Response view correction
-      - survey_response_ai
+- Remove curr_brand from base
 
 - Data privacy conventions (public, encypted, client shared etc)
 

@@ -5,9 +5,11 @@
 {% load static commontags humanize %}
 
 {% block head %}
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="
-            {% if request.curr_brand %}{{ request.curr_brand.icon.url }}{% else %}{% get_static_prefix %}images/favicon.png{% endif %}"/>
+    {% if request.curr_org %}
+        <link rel="shortcut icon"  href="{{ request.curr_org.icon.url }}" />
+    {% else %}
+        <link rel="shortcut icon" href="{% get_static_prefix %}images/favicon.png"/>
+    {% endif %}
 
     <title>Response - {{ survey.title }}</title>
 

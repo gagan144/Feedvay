@@ -11,7 +11,7 @@
 
     <title>Response - {{ survey.title }}</title>
 
-    <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}lib/sweetalert/sweetalert.css" rel="stylesheet">
     <style>
         .panel_heading_white{
             background-color: #ffffff !important;
@@ -88,7 +88,9 @@
                                                 {{ rsn.text }}
                                                 {% if rsn.type == 'user_defined' %}
                                                     <small style="margin-left: 15px;font-style:italic;">- {{ rsn.user_id|get_user_readable:"full_name" }}</small>
-                                                    <button class="close btn_close" type="button" ng-click="remove_suspicion('{{ rsn.id }}');">×</button>
+                                                    {% if survey_permissions.allow_audit %}
+                                                        <button class="close btn_close" type="button" ng-click="remove_suspicion('{{ rsn.id }}');">×</button>
+                                                    {% endif %}
                                                 {% endif %}
                                             </li>
                                         {% endfor %}
@@ -441,6 +443,8 @@
                                 {% endif %}
                             {% endwith %}
 
+
+                            {% if survey_permissions.allow_audit %}
                             <!-- Actions -->
                             <div >
                                 <hr/>
@@ -450,6 +454,7 @@
                                 </button>
                             </div>
                             <!-- /Actions -->
+                            {% endif %}
 
                         </div>
                     </div>
@@ -465,7 +470,7 @@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}lib/maps/markerwithlabel_1_1_10.js"></script>
 
-    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="{% get_static_prefix %}lib/sweetalert/sweetalert.min.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/uievents/event.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}ui/js/plugins/uimaps/ui-map.js"></script>
@@ -518,7 +523,8 @@
                     cancelButtonText: "No, cancel!",
                     closeOnConfirm: false,
                     closeOnCancel: true,
-                    allowEscapeKey: true
+                    allowEscapeKey: true,
+                    showLoaderOnConfirm: true
                 },
                 function (inputValue) {
                     if (inputValue === false) return false;
@@ -527,7 +533,7 @@
                         return false
                     }
 
-                    ServiceSurveyResponses.response_suspicion_add('{{ survey.survey_uid }}', '{{ response.response_uid }}', inputValue).then(
+                    ServiceSurveyResponses.response_suspicion_add({% if request.curr_org.org_uid %}"{{ request.curr_org.org_uid }}"{% else %}null{% endif %}, '{{ survey.survey_uid }}', '{{ response.response_uid }}', inputValue).then(
                         function(response_data){
                             if(response_data.status=='success') {
                                 SweetAlert.swal("Success!", "This response has been marke suspicious.", "success");
@@ -567,11 +573,12 @@
                     cancelButtonText: "No, cancel!",
                     closeOnConfirm: false,
                     closeOnCancel: true,
-                    allowEscapeKey: true
+                    allowEscapeKey: true,
+                    showLoaderOnConfirm: true
                 },
                 function (isConfirm) {
                     if (isConfirm) {
-                        ServiceSurveyResponses.response_suspicion_remove('{{ survey.survey_uid }}', '{{ response.response_uid }}', reason_id).then(
+                        ServiceSurveyResponses.response_suspicion_remove({% if request.curr_org.org_uid %}"{{ request.curr_org.org_uid }}"{% else %}null{% endif %}, '{{ survey.survey_uid }}', '{{ response.response_uid }}', reason_id).then(
                             function(response_data){
                                 if(response_data.status=='success') {
                                     swal.close();

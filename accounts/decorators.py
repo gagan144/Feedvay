@@ -126,11 +126,10 @@ def organization_console(required_perms=None, all_required=True, exception_type=
                     is_permitted = has_necessary_permissions(perm_json, required_perms, all_required)
 
                     if not is_permitted:
-                        msg = "You do not have permissions to access this page."
                         if exception_type == 'api':
-                            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message=msg).gen_http_response()
+                            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="You do not have permissions to access this page or perform action.").gen_http_response()
                         else:
-                            return HttpResponseForbidden(msg)
+                            return HttpResponseForbidden("You do not have permissions to access this page.")
 
                 # (c) Set permissions in request
                 request.permissions = perm_json

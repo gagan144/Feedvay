@@ -224,6 +224,7 @@ class Survey(models.Model):
     class Meta:
         permissions = (
             ("view_survey", "Can view surveys"),
+            ("can_audit_response", "Can audit response")
         )
 
     def __unicode__(self):

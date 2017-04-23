@@ -21,6 +21,7 @@ from form_builder.utils import GeoLocation
 from form_builder import operations as ops
 from accounts.models import RegisteredUser
 from accounts.decorators import registered_user_only, organization_console
+from accounts.utils import lookup_permission
 from utilities.api_utils import ApiResponse
 
 # TODO: Mobile/Source validation firewall
@@ -272,7 +273,7 @@ def console_survey_panel(request, org, survey):
     return render(request, 'surveys/console/survey_panel.html', data)
 
 @registered_user_only
-@organization_console('surveys.survey', allow_bypass=True, exception_type='api')
+@organization_console('surveys.survey.change_survey', allow_bypass=True, exception_type='api')
 @survey_access_check(exception_type='api')
 def console_survey_transit(request, org, survey):
     """
@@ -311,7 +312,7 @@ def console_survey_transit(request, org, survey):
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
 @registered_user_only
-@organization_console('surveys.survey', allow_bypass=True, exception_type='api')
+@organization_console('surveys.survey.change_survey', allow_bypass=True, exception_type='api')
 @survey_access_check(exception_type='api')
 def console_survey_save(request, org, survey):
     """
@@ -345,7 +346,7 @@ def console_survey_save(request, org, survey):
 
 
 @registered_user_only
-@organization_console('surveys.survey', allow_bypass=True)
+@organization_console('surveys.survey.change_survey', allow_bypass=True)
 @survey_access_check()
 def console_survey_phase_form_editor(request, org, survey, phase_id=None):
     """
@@ -353,7 +354,7 @@ def console_survey_phase_form_editor(request, org, survey, phase_id=None):
 
     **Points**:
 
-        - This view caters bothe simple & complex surveys.
+        - This view caters both simple & complex surveys.
         - If ``phase_id`` is not provided, it means survey must be ``simple`` and first phase is automatically picked.
         - If ``phase_id`` is provides, irrespective of the type, it opens editor for that phase.
 
@@ -387,7 +388,7 @@ def console_survey_phase_form_editor(request, org, survey, phase_id=None):
         raise Http404("Invalid survey phase.")
 
 @registered_user_only
-@organization_console('surveys.survey', allow_bypass=True, exception_type='api')
+@organization_console('surveys.survey.change_survey', allow_bypass=True, exception_type='api')
 @survey_access_check(exception_type='api')
 def console_survey_phase_form_save(request, org, survey, phase_id):
     """
@@ -514,7 +515,10 @@ def console_survey_response(request, org, survey, response_uid):
             "survey": survey,
             "response": response,
             "answer_sheet": answer_sheet,
-            "app_name": "app_survey_response"
+            "app_name": "app_survey_response",
+            "survey_permissions":{
+                "allow_audit": lookup_permission(request.permissions, 'surveys.survey.can_audit_response') if org else True
+            }
         }
         return render(request, 'surveys/console/survey_response.html', data)
     except DoesNotExist_mongo:
@@ -522,8 +526,9 @@ def console_survey_response(request, org, survey, response_uid):
 
 
 @registered_user_only
-@survey_access_firewall
-def console_remove_response_suspicion(request, survey):
+@organization_console('surveys.survey.can_audit_response', allow_bypass=True, exception_type='api')
+@survey_access_check(exception_type='api')
+def console_remove_response_suspicion(request, org, survey):
     """
     API view to remove suspicion reason from a response.
 
@@ -552,8 +557,9 @@ def console_remove_response_suspicion(request, survey):
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
 @registered_user_only
-@survey_access_firewall
-def console_add_response_suspicion(request, survey):
+@organization_console('surveys.survey.can_audit_response', allow_bypass=True, exception_type='api')
+@survey_access_check(exception_type='api')
+def console_add_response_suspicion(request, org, survey):
     """
     API view to add suspicion reason from a response.
 

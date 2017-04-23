@@ -32,7 +32,7 @@
     "data_access": {}
   },
   "surveys.survey":{
-    "permissions": ["add_survey", "view_survey", "change_survey", "delete_survey"],
+    "permissions": ["add_survey", "view_survey", "change_survey", "delete_survey", "can_audit_response"],
     "data_access": {}
   }
 }

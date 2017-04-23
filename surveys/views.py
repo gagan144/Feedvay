@@ -427,89 +427,14 @@ def console_survey_response(request, org, survey, response_uid):
     **Authors**: Gagandeep Singh
     """
     try:
-        response = SurveyResponse.objects.get(survey_uid=survey.survey_uid, response_uid=response_uid)
-        lookup_answers = response.get_answers_lookup() # Detailed answer data
-
-        # --- Create answer sheet JSON ---
+        # Structure: { "<phase_id>": { "answers": [], "obsolete_answers":[], ...}, ... }
         answer_sheet = {}
 
-        # For every phase response
-        form = response.phase.form
-
-        lookup_translation = form.get_translation_lookup()
-        response_ans_done = []
-        answer_sheet[response.phase_id] = {
-            "answers":[],
-            "obsolete_answers": [],
-            "constants": [],
-            "calculated_fields":[]
-        }
-
-
-        # Set answers that are currently in the questionnaire
-        for node in iterate_form_fields(form.schema_obj):
-            data = {
-                "question_text": lookup_translation[node.text_translation_id].sentence,
-                "answer": response.answers.get(node.label, None)
-            }
-            other_answer = response.answers_other.get(node.label)
-            if other_answer:
-                data['other_answer'] = {
-                    "question_text": node.other_question, #lookup_translation[node.text_translation_id].sentence,
-                    "answer": other_answer
-                }
-            # AI
-            ans = lookup_answers.get(node.label, None)  # None because, schema might contain new question that was not earlier present
-            if ans and ans.ai:
-                data["ai"] = ans.ai
-
-            answer_sheet[response.phase_id]["answers"].append(data)
-            response_ans_done.append(node.label)
-
-        # Set answers that have been removed
-        for label in response.answers.iteritems():
-            if label not in response_ans_done:
-                try:
-                    node = form.get_formquestions(only_current=False).filter(label=label)[0]
-
-                    data = {
-                        "question_text": Translation.objects.get(pk=node.text_translation_id).sentence,
-                        "answer": response.answers.get(node.label, None)
-                    }
-                    other_answer = response.answers_other.get(node.label)
-                    if other_answer:
-                        data['other_answer'] = {
-                            "question_text": "Response for other option:",
-                            "answer": other_answer
-                        }
-                    # AI
-                    ans = lookup_answers.get(node.label, None)  # None because, schema might contain new question that was not earlier present
-                    if ans and ans.ai:
-                        data["ai"] = ans.ai
-
-                    answer_sheet[response.phase_id]["obsolete_answers"].append(data)
-                except IndexError:
-                    pass
-
-        # Set Constants
-        for const in form.constants_obj:
-            data = {
-                "question_text": lookup_translation[const.text_translation_id].sentence,
-                "answer": response.calculated_fields.get(const.label, None)
-            }
-            answer_sheet[response.phase_id]["constants"].append(data)
-
-        # Set calculated fields
-        for calcFld in form.calculated_fields_obj:
-            data = {
-                "question_text": lookup_translation[calcFld.text_translation_id].sentence,
-                "answer": response.calculated_fields.get(calcFld.label, None)
-            }
-            answer_sheet[response.phase_id]["calculated_fields"].append(data)
-
-
-        # --- /Create answer sheet JSON ---
-
+        # Currently only for simple survey where there is one response against response_uid.
+        # Ideally response list must be fetched with response_uid=response_uid and template must iterate over
+        # each response and display them.
+        response = SurveyResponse.objects.get(survey_uid=survey.survey_uid, response_uid=response_uid)
+        answer_sheet[response.phase_id] = response.get_answer_sheet_data()
 
         data = {
             "survey": survey,

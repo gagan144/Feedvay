@@ -251,7 +251,8 @@ def console_survey_create(request, org):
 
 @registered_user_only
 @organization_console('surveys.survey', allow_bypass=True)
-def console_survey_panel(request, org, survey_uid):
+@survey_access_check()
+def console_survey_panel(request, org, survey):
     """
     View to open control panel for a survey.
 
@@ -259,32 +260,6 @@ def console_survey_panel(request, org, survey_uid):
 
     **Authors**: Gagandeep Singh
     """
-
-    # Check access context
-    try:
-        if org is not None:
-            # Context: Organization
-            try:
-                filters = copy.deepcopy(request.permissions['surveys.survey']['data_access'])
-                filters['ownership'] = Survey.OWNER_ORGANIZATION
-                filters['organization_id'] = org.id
-                filters['survey_uid'] = survey_uid
-
-                survey = Survey.objects.get(**filters)
-            except TypeError:
-                # TypeError: If filters is None
-                return HttpResponseForbidden("You do not have permissions to access this page.")
-        else:
-            # Context: Individual
-            filters = {
-                'ownership': Survey.OWNER_INDIVIDUAL,
-                'survey_uid': survey_uid,
-                'created_by_id': request.user.id
-            }
-            survey = Survey.objects.get(**filters)
-
-    except Survey.DoesNotExist:
-        return HttpResponseForbidden("Invalid link or you do not have permissions to access this page.")
 
     data ={
         'SURVEY': Survey,
@@ -297,8 +272,9 @@ def console_survey_panel(request, org, survey_uid):
     return render(request, 'surveys/console/survey_panel.html', data)
 
 @registered_user_only
-@survey_access_firewall
-def console_survey_transit(request, survey):
+@organization_console('surveys.survey', allow_bypass=True, exception_type='api')
+@survey_access_check(exception_type='api')
+def console_survey_transit(request, org, survey):
     """
     API view to transit survey status.
 
@@ -306,11 +282,10 @@ def console_survey_transit(request, survey):
 
     **Authors**: Gagandeep Singh
     """
-
     if request.method.lower() == 'post':
+
         action = request.POST['action']
         try:
-
             # Check & make transition.
             if action == 'ready':
                 survey.trans_ready()
@@ -329,13 +304,16 @@ def console_survey_transit(request, survey):
 
         except TransitionNotAllowed:
             return ApiResponse(status=ApiResponse.ST_NOT_ALLOWED, message='You cannot perform this action.').gen_http_response()
+        except Exception as ex:
+            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message=ex.message).gen_http_response()
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
 @registered_user_only
-@survey_access_firewall
-def console_survey_save(request, survey):
+@organization_console('surveys.survey', allow_bypass=True, exception_type='api')
+@survey_access_check(exception_type='api')
+def console_survey_save(request, org, survey):
     """
     API view to save survey information.
 
@@ -346,10 +324,8 @@ def console_survey_save(request, survey):
 
     **Authors**: Gagandeep Singh
     """
-    # Current only for individual
-    reg_user = request.user.registereduser
-
     if request.method.lower() == 'post':
+
         try:
             from surveys.forms import SurveyEditForm
             form_survey = SurveyEditForm(request.POST, instance=survey)
@@ -369,8 +345,9 @@ def console_survey_save(request, survey):
 
 
 @registered_user_only
-@survey_access_firewall
-def console_survey_phase_form_editor(request, survey, phase_id=None):
+@organization_console('surveys.survey', allow_bypass=True)
+@survey_access_check()
+def console_survey_phase_form_editor(request, org, survey, phase_id=None):
     """
     View to open form editor for a survey phase.
 
@@ -384,15 +361,12 @@ def console_survey_phase_form_editor(request, survey, phase_id=None):
 
     **Authors**: Gagandeep Singh
     """
-    reg_user = request.user.registereduser
     try:
         if phase_id is None:
             # Simple survey
-            # survey = Survey.objects.get(type=Survey.TYPE_SIMPLE, survey_uid=survey_uid, created_by_id=reg_user.user_id)
             phase = survey.surveyphase_set.all()[0]
         else:
             # Complex survey
-            # survey = Survey.objects.get(survey_uid=survey_uid, created_by_id=reg_user.user_id)
             phase = survey.surveyphase_set.get(id=int(phase_id))
 
         data ={
@@ -413,8 +387,9 @@ def console_survey_phase_form_editor(request, survey, phase_id=None):
         raise Http404("Invalid survey phase.")
 
 @registered_user_only
-@survey_access_firewall
-def console_survey_phase_form_save(request, survey, phase_id):
+@organization_console('surveys.survey', allow_bypass=True, exception_type='api')
+@survey_access_check(exception_type='api')
+def console_survey_phase_form_save(request, org, survey, phase_id):
     """
     API view to save survey form.
 
@@ -440,8 +415,9 @@ def console_survey_phase_form_save(request, survey, phase_id):
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()
 
 @registered_user_only
-@survey_access_firewall
-def console_survey_response(request, survey, response_uid):
+@organization_console('surveys.survey', allow_bypass=True)
+@survey_access_check()
+def console_survey_response(request, org, survey, response_uid):
     """
     Django view to view a response of the survey.
 

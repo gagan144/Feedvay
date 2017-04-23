@@ -30,7 +30,7 @@
 {#    <link rel="stylesheet" href="{% get_static_prefix %}lib/summernote/summernote.css">#}
     <link rel="stylesheet" href="{% get_static_prefix %}ui/css/plugins/touchspin/jquery.bootstrap-touchspin.min.css">
     <link rel="stylesheet" href="{% get_static_prefix %}ui/css/plugins/uiTree/angular-ui-tree.min.css">
-    <link rel="stylesheet" href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}lib/sweetalert/sweetalert.css">
     <link rel="stylesheet" href="{% get_static_prefix %}lib/select2/css/select2-bootstrap.css">
     <link rel="stylesheet" href="{% get_static_prefix %}lib/highlightjs/default.min.css">
     <link rel="stylesheet" href="{% get_static_prefix %}lib/highlightjs/themes/github-gist.css">
@@ -224,13 +224,17 @@
 
                 <ol class="breadcrumb">
                     <li>
-                        <a href="{% url 'console_home' %}">Home</a>
+                        {% if request.curr_org %}
+                            <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">Home</a>
+                        {% else %}
+                            <a href="{% url 'console_home' %}">Home</a>
+                        {% endif %}
                     </li>
                     <li>
-                        <a href="{% url 'console_surveys' %}">Surveys</a>
+                        <a href="{% url 'console_surveys' %}{% if request.curr_org %}?c={{ request.curr_org.org_uid }}{% endif %}">Surveys</a>
                     </li>
                     <li>
-                        <a href="{% url 'console_survey_panel' survey.survey_uid %}">{{ survey.title }}</a>
+                        <a href="{% url 'console_survey_panel' survey.survey_uid %}{% if request.curr_org %}?c={{ request.curr_org.org_uid }}{% endif %}">{{ survey.title }}</a>
                     </li>
                     <li class="active">
                         Questionnaire
@@ -241,7 +245,8 @@
 
                 <ol class="breadcrumb">
                     <li>
-                        <a href="{% url 'console_home' %}">Home</a>
+                        <a href="{% url 'console_org_home' %}?c={{ request.curr_org.org_uid }}">Home</a>
+
                     </li>
                     <li>Feedback</li>
                     <li>
@@ -596,14 +601,14 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="hr-line-dashed"></div>
 
-                                    <div align="right">
-                                        <button type="button" class="btn btn-primary" ng-disabled="form_general.$invalid">
-                                            Next&nbsp;
-                                            <i class="fa fa-angle-right"></i>
-                                        </button>
-                                    </div>
+{#                                    <div class="hr-line-dashed"></div>#}
+{#                                    <div align="right">#}
+{#                                        <button type="button" class="btn btn-primary" ng-disabled="form_general.$invalid">#}
+{#                                            Next&nbsp;#}
+{#                                            <i class="fa fa-angle-right"></i>#}
+{#                                        </button>#}
+{#                                    </div>#}
                                 </form>
                             </div>
                         </div>
@@ -1173,23 +1178,24 @@
 
                 </div>
 
-                <!-- delete -->
-                <div class="well">
-                    <p>
-                        <label>FormData:</label><br>
-                        {$ FormData $}
-                    </p>
-                    <p>
-                        <label>Translations:</label><br>
-                        {$ Translations $}
-                    </p>
+{#                <!-- delete -->#}
+{#                <div class="well">#}
+{#                    <p>#}
+{#                        <label>FormData:</label><br>#}
+{#                        {$ FormData $}#}
+{#                    </p>#}
+{#                    <p>#}
+{#                        <label>Translations:</label><br>#}
+{#                        {$ Translations $}#}
+{#                    </p>#}
+{##}
+{#                    <p>#}
+{#                        <label>META_QUESTIONS:</label><br/>#}
+{#                        {$ META_QUESTIONS $}#}
+{#                    </p>#}
+{#                </div>#}
+{#                <!-- delete -->#}
 
-                    <p>
-                        <label>META_QUESTIONS:</label><br/>
-                        {$ META_QUESTIONS $}
-                    </p>
-                </div>
-                <!-- delete -->
             </div>
         </div>
     </div>
@@ -1219,7 +1225,7 @@
     <script src="{% get_static_prefix %}ui/js/plugins/ui-sortable/sortable.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/uiTree/angular-ui-tree.min.js"></script>
-    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="{% get_static_prefix %}lib/sweetalert/sweetalert.min.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
 
     <script src="{% get_static_prefix %}apps/app_common.js"></script>
@@ -1644,7 +1650,7 @@
                 var data_translation = angular.copy($rootScope.Translations);
 
                 {% if TYPE == 'SURVEY' %}
-                    var URL = '{% url 'console_survey_phase_form_save' survey.survey_uid phase.id %}';
+                    var URL = '{% url 'console_survey_phase_form_save' survey.survey_uid phase.id %}{% if request.curr_org %}?c={{ request.curr_org.org_uid }}{% endif %}';
                 {% elif TYPE == 'BSP_FEEDBACK' %}
                     {% if form %}
                         var URL = '{% url 'console_feedback_bsp_edit_save' form.id %}?c={{ request.curr_org.org_uid }}';
@@ -1678,7 +1684,13 @@
 
                             if(response.data.form_id){
                                 // New form was created; Redirect to edit page
-                                $window.location.href = '{% url 'console_feedback_bsp_edit' 999999 %}?c={{ request.curr_org.org_uid }}'.replace('999999', response.data.form_id);
+                                {% if TYPE == 'SURVEY' %}
+                                    $window.location.href = '{% url 'console_survey_panel' 'SURVEY_UID' %}{% if request.curr_org %}?c={{ request.curr_org.org_uid }}{% endif %}'.replace('SURVEY_UID', response.data.form_id);
+                                {% elif TYPE == 'BSP_FEEDBACK' %}
+                                    $window.location.href = '{% url 'console_feedback_bsp_edit' 999999 %}?c={{ request.curr_org.org_uid }}'.replace('999999', response.data.form_id);
+
+                                {% endif %}
+
                             }else{
                                 // Form was updated; Refresh page
                                 $window.location.reload();

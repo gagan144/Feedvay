@@ -13,7 +13,7 @@
 
     <title page-title></title>
 
-    <link href="{% get_static_prefix %}ui/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <link href="{% get_static_prefix %}lib/sweetalert/sweetalert.css" rel="stylesheet">
     <link href="{% get_static_prefix %}ui/css/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet">
     <link href="{% get_static_prefix %}ui/css/plugins/datapicker/datepicker3.css" rel="stylesheet">
 
@@ -640,7 +640,8 @@
 
 {% block scripts %}
     <script src="{% get_static_prefix %}ui/js/ui-router/angular-ui-router.min.js"></script>
-    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>
+{#    <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>#}
+    <script src="{% get_static_prefix %}lib/sweetalert/sweetalert.min.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/datapicker/bootstrap-datepicker.js"></script>
     {% if has_gps_enabled %}
@@ -860,7 +861,8 @@
                             cancelButtonText: "No, cancel!",
                             closeOnConfirm: false,
                             closeOnCancel: true,
-                            allowEscapeKey: false
+                            allowEscapeKey: false,
+                            showLoaderOnConfirm: true,
                         },
                         function (isConfirm) {
                             if (isConfirm) {
@@ -878,7 +880,7 @@
                                             } else {
                                                 swal.close();
                                                 $.growl.error({
-                                                    title: '<i class="fa fa-exclamation-triangle"></i> Error!',
+                                                    title: '<i class="fa fa-exclamation-triangle"></i> Denied!',
                                                     message: response.message
                                                 });
                                             }

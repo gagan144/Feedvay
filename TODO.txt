@@ -27,7 +27,6 @@
 
 - Survey
     - Panel:
-        - Prevent 'Go live' when in questionnaire not ready
         - Responses: Allow responses with no lat long
     - Audience options
 
@@ -37,6 +36,7 @@
 
     - API - Access authentication
     - Response view correction
+      - Map on top instead of side ways
       - answer include template
       - survey_response_ai
 

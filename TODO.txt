@@ -30,8 +30,6 @@
         - survey title already existing - autocomplete type options
         - Org case: survey type & brand select
 
-- Remove curr_brand from base
-
 - Data privacy conventions (public, encypted, client shared etc)
 
 - Crons

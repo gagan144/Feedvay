@@ -25,7 +25,7 @@ angular.module('feedvay.surveys', [])
 
         var params = {};
         if(org_uid){ params['c'] = org_uid; }
-        if(!extra_params){
+        if(extra_params){
             angular.extend(params, extra_params);
         }
 
@@ -78,7 +78,7 @@ angular.module('feedvay.surveys', [])
 
         var params = {};
         if(org_uid){ params['c'] = org_uid; }
-        if(!extra_params){
+        if(extra_params){
             angular.extend(params, extra_params);
         }
 

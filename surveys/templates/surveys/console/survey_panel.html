@@ -1018,7 +1018,7 @@
                                     data: series_suspects
                                 },
                             ]
-                        }
+                        };
                         // --- Chart data ---
                     },
                     function(response){
@@ -1238,6 +1238,7 @@
 
                             // Create map
                             var map_bounds = new google.maps.LatLngBounds();
+                            var count_points = 0;
                             for(var i=0;i<records.length;i++){
                                 var row = records[i];
 
@@ -1279,14 +1280,17 @@
                                     $scope.map_markers[row['response_uid']] = marker;
                                     map_bounds.extend(point);
 
+                                    count_points ++;
                                 }
                             }
 
-                            if(records.length>1) {
-                                $scope.MAP_RESPONSES.fitBounds(map_bounds);
-                            }else{
-                                $scope.MAP_RESPONSES.panTo(point);
-                                $scope.MAP_RESPONSES.setZoom(10);
+                            if(count_points) {
+                                if (count_points > 1) {
+                                    $scope.MAP_RESPONSES.fitBounds(map_bounds);
+                                } else {
+                                    $scope.MAP_RESPONSES.panTo(point);
+                                    $scope.MAP_RESPONSES.setZoom(10);
+                                }
                             }
                             // --- Map ---
                         {% endif %}

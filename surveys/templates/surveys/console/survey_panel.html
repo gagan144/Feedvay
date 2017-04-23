@@ -952,8 +952,9 @@
 
                             var response_date = row['response_date'];
 
-                            if(response_date == moment().format('YYYY-MM-DD')){
-                                count_today++;
+                            var today_str = moment().format('YYYY-MM-DD');
+                            if(response_date == today_str){
+                                count_today += row["count"];
                             }
 
                             if(row['suspect']){

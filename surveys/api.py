@@ -103,9 +103,9 @@ class SurveyResponsesAPI(resources.MongoEngineResource):
         # object_list_filtered = self._meta.queryset.filter(**applicable_filters)
 
         survey_uid = request.GET['survey_uid']
-        org_uid = request.GET.get('c', None)
 
         # Get survey
+        org_uid = request.GET.get('c', None)
         try:
             if org_uid is not None:
                 # Context: Organization
@@ -178,13 +178,40 @@ class SurveyResponseTrendAPI(Resource):
         allowed_methods = ('get',)
         limit=0
         max_limit=None
+        authentication = OrgConsoleSessionAuthentication(['surveys.survey'], allow_bypass=True)
 
     def obj_get_list(self, bundle, **kwargs):
         # --- Obtain params and validate ---
         survey_uid = bundle.request.GET['survey_uid']
         trend_type = bundle.request.GET.get('type', None)
 
-        survey = Survey.objects.get(survey_uid=survey_uid)   # Insures survey exists
+        # Get survey
+        org_uid = bundle.request.GET.get('c', None)
+        try:
+            if org_uid is not None:
+                # Context: Organization
+                org = Organization.objects.get(org_uid=org_uid)
+                try:
+                    filters = copy.deepcopy(bundle.request.permissions['surveys.survey']['data_access'])
+                    filters['ownership'] = Survey.OWNER_ORGANIZATION
+                    filters['organization_id'] = org.id
+                    filters['survey_uid'] = survey_uid
+
+                    survey = Survey.objects.get(**filters)
+                except TypeError:
+                    # TypeError: If filters is None
+                    return []
+
+            else:
+                # Context: Individual
+                filters = {
+                    'ownership': Survey.OWNER_INDIVIDUAL,
+                    'survey_uid': survey_uid,
+                    'created_by_id': bundle.request.user.id
+                }
+                survey = Survey.objects.get(**filters)
+        except Survey.DoesNotExist:
+            return []
 
         # --- Filters ---
         match = {

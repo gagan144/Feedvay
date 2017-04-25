@@ -23,6 +23,7 @@
     - Screen to create/update graph config
 
 - Survey
+    - Questionnaire Edit: Report problem; add app to angular
     - Create:
         - survey title already existing - autocomplete type options
         - Org case: survey type & brand select

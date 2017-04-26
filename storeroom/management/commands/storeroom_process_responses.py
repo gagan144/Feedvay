@@ -11,6 +11,7 @@ from mongoengine.queryset import DoesNotExist as DoesNotExist_mongo
 
 from storeroom.models import ResponseQueue
 from feedback import operations as ops_feedback
+from surveys import operations as ops_surveys
 
 class Command(BaseCommand):
     """
@@ -68,6 +69,9 @@ class Command(BaseCommand):
                     if resp_queue.context == ResponseQueue.CT_BSP_FEEDBACK:
                         # BSP Feedback Process
                         is_success = ops_feedback.save_bsp_feedback_response(data)
+                    elif resp_queue.context == ResponseQueue.CT_SURVEY_RESPONSE:
+                        # Survey response Process
+                        is_success = ops_surveys.save_survey_response(data)
                     else:
                         raise NotImplementedError("Operation for '{}' response not implemented".format(resp_queue.context))
 

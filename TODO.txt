@@ -19,6 +19,7 @@
         - Purpose of visit -------- ???
 
 - BSP Feedback
+    - Response submit view: Check for feedback form before dumping
     - Few Visuals implementation pending
     - Screen to create/update graph config
 

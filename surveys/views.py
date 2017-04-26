@@ -22,6 +22,7 @@ from form_builder import operations as ops
 from accounts.models import RegisteredUser
 from accounts.decorators import registered_user_only, organization_console
 from accounts.utils import lookup_permission
+from storeroom.models import ResponseQueue
 from utilities.api_utils import ApiResponse
 
 # TODO: Mobile/Source validation firewall
@@ -92,76 +93,39 @@ def open_survey_form(request, survey_uid, phase_id=None):
 @csrf_exempt
 def submit_survey_response(request):
     """
-    View to submit a response for survey phase.
-
-    **Points**:
-
-        - It does not block late submission.
-        - All responses are recorded irrespective of survey status.
+    View to submit a response for survey phase. This view receives response
+    submitted by the user and is queued for processing.
 
     **Type**: POST
 
     **Authors**: Gagandeep Singh
     """
+
     if request.method.lower() == 'post':
         token = request.POST['token']
 
-        response_json = json.loads(request.POST['response'])
-
-        response_uid = response_json['response_uid']
-        form_version = response_json['form_version']
+        response_data = request.POST['response']
 
         try:
+            response_json = json.loads(response_data)
+
+            # Get Survey
             survey = Survey.objects.get(survey_uid=response_json['survey_uid'])
             phase = survey.phases.get(id=response_json['phase_id'])
-            form = phase.form
 
-            version_obsolete = False if str(form.version) == form_version else True
+            resp_queue = ResponseQueue.objects.create(
+                context = ResponseQueue.CT_SURVEY_RESPONSE,
+                data    = response_data,
+            )
 
-            if not SurveyResponse.objects.filter(response_uid=response_uid).count():
-                survey_response = SurveyResponse.objects.create(
-                    survey_uid      = str(survey.survey_uid),
-                    phase_id        = str(phase.id),
-                    form_id         = str(form.id),
-                    form_version    = form_version,
-                    version_obsolete = version_obsolete,
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Response queued for processing.').gen_http_response()
 
-                    app_version     = response_json['app_version'],
-                    user            = SurveyResponse.UserInformation(**response_json['user']) if response_json['user'] else None,
-                    end_point_info  = SurveyResponse.EndPointInformation(**response_json['end_point_info']),
-                    language_code   = response_json["language_code"],
+        except ValueError:
+            # No JSON object could be decoded
+            return ApiResponse(status=ApiResponse.ST_BAD_REQUEST, message="Badly formed 'response' structure.").gen_http_response()
 
-                    response_uid    = response_uid,
-                    constants       = response_json.get('constants', None),
-                    answers         = response_json['answers'],
-                    answers_other   = response_json['answers_other'],
-                    calculated_fields = response_json['calculated_fields'],
-
-                    timezone_offset = response_json['timezone_offset'],
-                    response_date   = timezone.datetime.strptime(response_json['response_date'],"%Y-%m-%dT%H:%M:%S"), # parse(response_json['response_date']),
-                    start_time      = timezone.datetime.strptime(response_json['start_time'],"%Y-%m-%dT%H:%M:%S"), # parse(response_json['start_time']),
-                    end_time        = timezone.datetime.strptime(response_json['end_time'],"%Y-%m-%dT%H:%M:%S"), # parse(response_json['end_time']),
-                    duration        = response_json['duration'],
-
-                    location        = SurveyResponse.LocationInformation(**response_json['location']) if response_json['location'] else None,
-
-                    flags           = SurveyResponse.ResponseFlags(
-                                           description_read = response_json['flags']['description_read'],
-                                           instructions_read = response_json['flags']['instructions_read'],
-                                           suspect = response_json['flags']['suspect'],
-                                           suspect_reasons = response_json['flags']['suspect_reasons']
-                                      )
-                )
-
-                return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Survey response successfully submitted.').gen_http_response()
-
-            else:
-                return ApiResponse(status=ApiResponse.ST_IGNORED, message='Duplicate response received.').gen_http_response()
-
-        except Survey.DoesNotExist:
-            return ApiResponse(status=ApiResponse.ST_FAILED, message='Invalid survey.').gen_http_response()
-        except SurveyPhase.DoesNotExist:
-            return ApiResponse(status=ApiResponse.ST_FAILED, message='Invalid survey.').gen_http_response()
+        except (Survey.DoesNotExist, SurveyPhase.DoesNotExist) as ex:
+            return ApiResponse(status=ApiResponse.ST_FAILED, message='Invalid survey or survey phase.').gen_http_response()
 
     else:
         # GET Forbidden

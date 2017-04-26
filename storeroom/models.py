@@ -133,8 +133,10 @@ class ResponseQueue(Document):
     """
     # --- ENUMS ---
     CT_BSP_FEEDBACK = 'bsp_feedback'
+    CT_SURVEY_RESPONSE = 'survey_response'
     CH_CONTEXT = (
-        (CT_BSP_FEEDBACK, 'BSP Feedback')
+        (CT_BSP_FEEDBACK, 'BSP Feedback'),
+        (CT_SURVEY_RESPONSE, 'Survey Response '),
     )
 
     ST_NEW = 'new'

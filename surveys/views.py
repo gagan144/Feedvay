@@ -123,8 +123,11 @@ def submit_survey_response(request):
         except ValueError:
             # No JSON object could be decoded
             return ApiResponse(status=ApiResponse.ST_BAD_REQUEST, message="Badly formed 'response' structure.").gen_http_response()
-
+        except KeyError as ex:
+            # response_json does not contain some require data
+            return ApiResponse(status=ApiResponse.ST_BAD_REQUEST, message=ex.message).gen_http_response()
         except (Survey.DoesNotExist, SurveyPhase.DoesNotExist) as ex:
+            # Survey or Survey phase does not exists
             return ApiResponse(status=ApiResponse.ST_FAILED, message='Invalid survey or survey phase.').gen_http_response()
 
     else:

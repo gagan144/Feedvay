@@ -106,12 +106,35 @@ def submit_bsp_feedback_response(request):
 
         response_data = request.POST['response']
 
-        resp_queue = ResponseQueue.objects.create(
-            context = ResponseQueue.CT_BSP_FEEDBACK,
-            data    = response_data,
-        )
+        try:
+            response_json = json.loads(response_data)
 
-        return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Response queued for processing.').gen_http_response()
+            # Get concerned BSP
+            bsp_id = response_json['bsp_id']
+            bsp = BusinessServicePoint.objects.get(pk=bsp_id)
+
+            # Get BSP Feedback form
+            form_id = response_json['form_id']
+            form = BspFeedbackForm.objects.get(id=form_id)
+
+            # OK! Push to the queue
+            resp_queue = ResponseQueue.objects.create(
+                context = ResponseQueue.CT_BSP_FEEDBACK,
+                data    = response_data,
+            )
+
+            return ApiResponse(status=ApiResponse.ST_SUCCESS, message='Response queued for processing.').gen_http_response()
+        except ValueError:
+            # No JSON object could be decoded
+            return ApiResponse(status=ApiResponse.ST_BAD_REQUEST, message="Badly formed 'response' structure.").gen_http_response()
+        except KeyError as ex:
+            # response_json does not contain some require data
+            return ApiResponse(status=ApiResponse.ST_BAD_REQUEST, message=ex.message).gen_http_response()
+        except DoesNotExist_mongo:
+            # BusinessServicePoint not found
+            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="Invalid business or service point.").gen_http_response()
+        except BspFeedbackForm.DoesNotExist:
+            return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message="Feedback form with id '{}' does not exists.".format(form_id)).gen_http_response()
     else:
         # GET Forbidden
         return ApiResponse(status=ApiResponse.ST_FORBIDDEN, message='Use post.').gen_http_response()

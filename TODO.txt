@@ -19,12 +19,10 @@
         - Purpose of visit -------- ???
 
 - BSP Feedback
-    - Response submit view: Check for feedback form before dumping
     - Few Visuals implementation pending
     - Screen to create/update graph config
 
 - Survey
-    - Questionnaire Edit: Report problem; add app to angular
     - Create:
         - survey title already existing - autocomplete type options
         - Org case: survey type & brand select
@@ -51,6 +49,6 @@
 ------------- Infra ---------
 - Elasticsearch
 
----------- Note -----------
+---------- Notes -----------
 All models
     - If CharField/TextField 'default=None' as well

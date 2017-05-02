@@ -179,7 +179,8 @@
 {% endblock %}
 
 {% block scripts %}
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+{#    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>#}
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ API_GOOGLE_MAP }}"></script>
     <script type="text/javascript" src="{% get_static_prefix %}lib/maps/markerwithlabel_1_1_10.js"></script>
 
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/sweetalert.min.js"></script>

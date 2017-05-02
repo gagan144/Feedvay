@@ -645,8 +645,8 @@
     <script src="{% get_static_prefix %}ui/js/plugins/sweetalert/angular-sweetalert.min.js"></script>
     <script src="{% get_static_prefix %}ui/js/plugins/datapicker/bootstrap-datepicker.js"></script>
     {% if has_gps_enabled %}
-{#    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQTpXj82d8UpCi97wzo_nKXL7nYrd4G70"></script>#}
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ API_GOOGLE_MAP }}"></script>
+{#    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>#}
     <script type="text/javascript" src="{% get_static_prefix %}lib/maps/markerwithlabel_1_1_10.js"></script>
     {% endif %}
     <script type="text/javascript" src="{% get_static_prefix %}lib/jquery-tmpl/jquery.tmpl.min.js"></script>

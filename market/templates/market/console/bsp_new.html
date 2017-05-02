@@ -108,7 +108,8 @@
 {% block scripts %}
     <script src="{% get_static_prefix %}lib/select2/js/select2.min.js"></script>
     <script src="{% get_static_prefix %}lib/angular/checklist-model.js"></script>
-    <script src="https://maps.google.com/maps/api/js?libraries=placeses,visualization,drawing,geometry,places"></script>
+{#    <script src="https://maps.google.com/maps/api/js?libraries=placeses,visualization,drawing,geometry,places"></script>#}
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ API_GOOGLE_MAP }}&libraries=placeses,visualization,drawing,geometry,places"></script>
     <script src="{% get_static_prefix %}lib/maps/ng-map/ng-map.min.js"></script>
 
     <script src="{% get_static_prefix %}ui/js/plugins/ui-select/select.min.js"></script>

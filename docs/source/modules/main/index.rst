@@ -20,4 +20,5 @@ Contents
        :titlesonly:
 
        views
+       context_processors
 

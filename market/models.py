@@ -807,7 +807,7 @@ class BusinessServicePoint(Document):
     other_details = StringField(help_text='Any other details regarding this BSP.')
 
     # feedback_form_id = IntField(help_text="Feedback form attached to this BSP. Instance ID of :class:`feedback.models.BspFeedbackForm`.")
-    feedback_form = EmbeddedDocumentField(FeedbackFormEmbd, help_text="Fedeback form attached to it.")
+    feedback_form = EmbeddedDocumentField(FeedbackFormEmbd, avoid=True, help_text="Fedeback form attached to it.")
 
     # Statuses
     # verification_status = StringField(required=True, confidential=True, help_text='Verification status of the BSP.')

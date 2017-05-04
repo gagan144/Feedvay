@@ -61,12 +61,16 @@ def docs(request, filename=None):
     **Authors**: Gagandeep Singh
     """
 
-    abs_filename = get_absolute_filename(filename)
+    # abs_filename = get_absolute_filename(filename)
+
+    if filename == '' or filename is None:
+        filename = 'index.html'
+
     response = HttpResponse()
     # del response['content-type'] # We'll let the web server guess this.
     # response['X-Sendfile'] = abs_filename
-    print abs_filename
-    response['X-Accel-Redirect'] = abs_filename
+    # print abs_filename
+    response['X-Accel-Redirect'] = "/admin/doc/{}".format(filename)#abs_filename
 
     return response
 

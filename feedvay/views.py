@@ -61,11 +61,11 @@ def docs(request, filename=None):
     **Authors**: Gagandeep Singh
     """
 
-    abs_filename = get_absolute_filename(filename)
+    # abs_filename = get_absolute_filename(filename)
     response = HttpResponse()
     del response['content-type'] # We'll let the web server guess this.
     # response['X-Sendfile'] = abs_filename
-    response['X-Accel-Redirect'] = abs_filename
+    response['X-Accel-Redirect'] = filename #abs_filename
 
     return response
 

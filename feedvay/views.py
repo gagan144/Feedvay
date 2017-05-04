@@ -54,6 +54,7 @@ def docs(request, filename=None):
     that consumes CPU & memory and blocks web server threads.
 
     Reference: http://zacharyvoase.com/2009/09/08/sendfile/
+               https://www.nginx.com/resources/wiki/start/topics/examples/xsendfile/
 
     **Type**: GET
 
@@ -63,7 +64,9 @@ def docs(request, filename=None):
     abs_filename = get_absolute_filename(filename)
     response = HttpResponse()
     del response['content-type'] # We'll let the web server guess this.
-    response['X-Sendfile'] = abs_filename
+    # response['X-Sendfile'] = abs_filename
+    response['X-Accel-Redirect'] = abs_filename
+
     return response
 
 # ---------- /Project Documentation serve ----------

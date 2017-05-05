@@ -1,0 +1,544 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Form fields &mdash; feedvay 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Form builder" href="index.html"/>
+        <link rel="next" title="Form variables" href="form_variables.html"/>
+        <link rel="prev" title="Form builder" href="index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> feedvay
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../main/index.html">Main App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../management_commands/index.html">Management Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../accounts/index.html">Accounts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../clients/index.html">Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../console/index.html">Console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../critics/index.html">Critics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feedback/index.html">Feedback</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Form builder</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#components">Components</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Form fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="form_variables.html">Form variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="conditions.html">Conditions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="layouts.html">Form layouts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="widgets.html">Widgets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="form_schema.html">Form schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validators.html">Form validators</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#contents">Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../geography/index.html">Geography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../languages/index.html">Languages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../market/index.html">Market</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../owlery/index.html">Owlery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reports/index.html">Reports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../storeroom/index.html">Store Room</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../surveys/index.html">Survey</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities/index.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../watchdog/index.html">Watchdog</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">feedvay</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Form builder</a> &raquo;</li>
+      
+    <li>Form fields</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/modules/form_builder/fields.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="form-fields">
+<h1>Form fields<a class="headerlink" href="#form-fields" title="Permalink to this headline">¶</a></h1>
+<p>Various form fields in the form. This are essentially answer types.</p>
+<span class="target" id="module-form_builder.fields"></span><dl class="class">
+<dt id="form_builder.fields.AiImageDirectives">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">AiImageDirectives</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.AiImageDirectives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines AI(Image analysis) directives to applied on an photo answer.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Only applicable for answer types of type photo.</p>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.AiTextDirectives">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">AiTextDirectives</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.AiTextDirectives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines AI(text analysis) directives to applied on an answer.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Only applicable on answer type of type text.</p>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.BasicFormField">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">BasicFormField</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.BasicFormField" title="Permalink to this definition">¶</a></dt>
+<dd><p>An abstract field that defines basic definition of a field in a form. Inherit this class to create any field.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">All form fields inherit this fields that is, every form field is type of BasicFirmField.</p>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="form_builder.fields.BasicFormField.get_translation_ids">
+<code class="descname">get_translation_ids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.BasicFormField.get_translation_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all translations used in this field.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List&lt;<code class="xref py py-class docutils literal"><span class="pre">languages.model.Translation</span></code>&gt;</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="form_builder.fields.BasicFormField.to_json">
+<code class="descname">to_json</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.BasicFormField.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get json form for this field.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">JSON</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="form_builder.fields.BasicFormField.translation">
+<code class="descname">translation</code><a class="headerlink" href="#form_builder.fields.BasicFormField.translation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns translation for question text.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="../languages/models.html#languages.models.Translation" title="languages.models.Translation"><code class="xref py py-class docutils literal"><span class="pre">languages.models.Translation</span></code></a> instance.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="form_builder.fields.BasicFormField.validate_value">
+<code class="descname">validate_value</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.BasicFormField.validate_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate value as the answer for question of this form field.
+Throws <a class="reference internal" href="form_exceptions.html#form_builder.form_exceptions.FieldValueError" title="form_builder.form_exceptions.FieldValueError"><code class="xref py py-class docutils literal"><span class="pre">form_builder.form_exceptions.FieldValueError</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> &#8211; Value</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.BinaryFormField">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">BinaryFormField</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.BinaryFormField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a binary choice field with only 2 options, one for true and other for false.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.Choice">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">Choice</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.Choice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a simple choice (with value &amp; text) for a multiple choice field.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.ChoiceOrder">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">ChoiceOrder</code><a class="headerlink" href="#form_builder.fields.ChoiceOrder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enum class for types of ordering in choice fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.DataType">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">DataType</code><a class="headerlink" href="#form_builder.fields.DataType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enum class for data types used in the form.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Some of these static variables have been used in &#8216;MCQ_Types&#8217; which have been referenced using
+values instead of variable. Please be careful will making any amendments.</p>
+</div>
+<p><strong>usage</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>form_builder/templates/themes/&lt;theme_name&gt;/fields/choice_other.html</li>
+</ul>
+</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="staticmethod">
+<dt id="form_builder.fields.DataType.get_python_class">
+<em class="property">static </em><code class="descname">get_python_class</code><span class="sig-paren">(</span><em>type</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.DataType.get_python_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a python data type for a form data type.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>type</strong> &#8211; Form type as in <a class="reference internal" href="#form_builder.fields.DataType" title="form_builder.fields.DataType"><code class="xref py py-class docutils literal"><span class="pre">form_builder.fields.DataType</span></code></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Python type</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.DateFormField">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">DateFormField</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.DateFormField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a date field. Date is stored as YYYY-MM-DD.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.DateTimeFormField">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">DateTimeFormField</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.DateTimeFormField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a datetime form field that stores date as well as time together.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.DecimalFormField">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">DecimalFormField</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.DecimalFormField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a field for entering a decimal as well as integer values.
+All integer values will be converted to decimal.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="form_builder.fields.DecimalFormField.get_max_length">
+<code class="descname">get_max_length</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.DecimalFormField.get_max_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return maximum input length of this field, which is
+integer count + 1 + decimal count
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="form_builder.fields.DecimalFormField.get_min_value">
+<code class="descname">get_min_value</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.DecimalFormField.get_min_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns minimum possible value this field can have
+depending upon &#8216;allow_negative&#8217; &amp; &#8216;min_value&#8217;
+:return:</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.EmailFormField">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">EmailFormField</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.EmailFormField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines an email form field.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.MCMSFormField">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">MCMSFormField</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.MCMSFormField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a &#8216;Multiple Choice Multiple Select&#8217; field that will show multiple choices
+from which n-number of choices can be selected as answer.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.MCQ_Types">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">MCQ_Types</code><a class="headerlink" href="#form_builder.fields.MCQ_Types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enum class for data types allowed for MCQ questions. These are subset of <a class="reference internal" href="#form_builder.fields.DataType" title="form_builder.fields.DataType"><code class="xref py py-class docutils literal"><span class="pre">form_builder.fields.DataType</span></code></a>.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Please read <a class="reference internal" href="#form_builder.fields.DataType" title="form_builder.fields.DataType"><code class="xref py py-class docutils literal"><span class="pre">form_builder.fields.DataType</span></code></a> warning before making any changes.</p>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.MCSSFormField">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">MCSSFormField</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.MCSSFormField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a &#8216;Multiple Choice Single Select&#8217; field that will show multiple choices
+from which only one choice can be selected as answer.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.NumberFormField">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">NumberFormField</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.NumberFormField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a numeric field for entering a integer values only.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="form_builder.fields.NumberFormField.get_min_value">
+<code class="descname">get_min_value</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.NumberFormField.get_min_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns minimum possible value this field can have
+depending upon &#8216;allow_negative&#8217; &amp; &#8216;min_value&#8217;</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Minimuim value</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.OtherOptionType">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">OtherOptionType</code><a class="headerlink" href="#form_builder.fields.OtherOptionType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enum class for types of questions asked when other option is selected for a MCQ question.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.PasswordFormField">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">PasswordFormField</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.PasswordFormField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a password form field.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.RatingFormField">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">RatingFormField</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.RatingFormField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a rating field that allows user to rate on a scale of 1 to &#8216;max-score&#8217;.
+Rating is of type integer.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.TextAreaFormField">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">TextAreaFormField</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.TextAreaFormField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a multi-line text field that can hold a reasonable number of characters.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.TextFormField">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">TextFormField</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.TextFormField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a single-line text field.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.fields.TimeFormField">
+<em class="property">class </em><code class="descclassname">form_builder.fields.</code><code class="descname">TimeFormField</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.TimeFormField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a time field. Time is stored as HH:MM:SS.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="form_builder.fields.create_field_obj">
+<code class="descclassname">form_builder.fields.</code><code class="descname">create_field_obj</code><span class="sig-paren">(</span><em>field_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.fields.create_field_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a field dictionary into a corresponding field object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>condition_dict</strong> &#8211; dict</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Field Object</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="form_variables.html" class="btn btn-neutral float-right" title="Form variables" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Form builder" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Gagandeep Singh.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

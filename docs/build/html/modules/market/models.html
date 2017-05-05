@@ -1,0 +1,695 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Models &mdash; feedvay 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Market" href="index.html"/>
+        <link rel="next" title="Business or Service Point - Types" href="bsp_types.html"/>
+        <link rel="prev" title="Market" href="index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> feedvay
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../main/index.html">Main App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../management_commands/index.html">Management Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../accounts/index.html">Accounts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../clients/index.html">Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../console/index.html">Console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../critics/index.html">Critics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feedback/index.html">Feedback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../form_builder/index.html">Form builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geography/index.html">Geography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../languages/index.html">Languages</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Market</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bsp_types.html">Business or Service Point - Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="views.html">Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forms.html">Forms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="importers.html">Importers</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../owlery/index.html">Owlery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reports/index.html">Reports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../storeroom/index.html">Store Room</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../surveys/index.html">Survey</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities/index.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../watchdog/index.html">Watchdog</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">feedvay</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Market</a> &raquo;</li>
+      
+    <li>Models</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/modules/market/models.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="models">
+<h1>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h1>
+<p>List of database models (MySQL &amp; MongoDb) for market app.</p>
+<span class="target" id="module-market.models"></span><dl class="class">
+<dt id="market.models.Brand">
+<em class="property">class </em><code class="descclassname">market.models.</code><code class="descname">Brand</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.Brand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to store brand of an organization. A brand is any name, design, style, words or symbols used
+singularly or in combination that distinguish one product from another in the eyes of the customer.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="market.models.Brand.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#market.models.Brand.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="market.models.Brand.delete">
+<code class="descname">delete</code><span class="sig-paren">(</span><em>using=None</em>, <em>keep_parents=False</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.Brand.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-delete method. (Not allowed)</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="market.models.Brand.does_exists">
+<em class="property">static </em><code class="descname">does_exists</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.Brand.does_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to check if brand exists with given name or with slug of given name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> &#8211; Name of the brand</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(bool) True if brand exists else False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="market.models.Brand.generate_uitheme">
+<em class="property">static </em><code class="descname">generate_uitheme</code><span class="sig-paren">(</span><em>primary_color</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.Brand.generate_uitheme" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to generate ui theme json wrapper <a class="reference internal" href="../utilities/theme.html#utilities.theme.UiTheme" title="utilities.theme.UiTheme"><code class="xref py py-class docutils literal"><span class="pre">utilities.theme.UiTheme</span></code></a>.
+:param primary_color: Primary color in hex format
+:return: <a class="reference internal" href="../utilities/theme.html#utilities.theme.UiTheme" title="utilities.theme.UiTheme"><code class="xref py py-class docutils literal"><span class="pre">utilities.theme.UiTheme</span></code></a> instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="market.models.Brand.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>update_theme=False</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.Brand.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="market.models.Brand.update_theme_files">
+<code class="descname">update_theme_files</code><span class="sig-paren">(</span><em>auto_save=True</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.Brand.update_theme_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to update all theme files only if ui_theme is defined.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(bool) True if file was created and set to the field (irrespective of save), False if ui_theme was not set.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="market.models.Brand.validate_icon_image">
+<em class="property">static </em><code class="descname">validate_icon_image</code><span class="sig-paren">(</span><em>img_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.Brand.validate_icon_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to validate brand icon image.
+Handles both <code class="docutils literal"><span class="pre">InMemoryUploadedFile</span></code> and <code class="docutils literal"><span class="pre">ImageFieldFile</span></code> objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>img_obj</strong> &#8211; InMemory object of image</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if image is valid</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="market.models.Brand.validate_logo_image">
+<em class="property">static </em><code class="descname">validate_logo_image</code><span class="sig-paren">(</span><em>img_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.Brand.validate_logo_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to validate brand logo image.
+Handles both <code class="docutils literal"><span class="pre">InMemoryUploadedFile</span></code> and <code class="docutils literal"><span class="pre">ImageFieldFile</span></code> objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>img_obj</strong> &#8211; InMemory object of image</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if image is valid</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="market.models.BspTag">
+<em class="property">class </em><code class="descclassname">market.models.</code><code class="descname">BspTag</code><span class="sig-paren">(</span><em>*args</em>, <em>**values</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BspTag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mongodb collection to store various tag for all types of BSP.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="market.models.BspTag.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>update_attr=True</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BspTag.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save method for a response.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="market.models.BspTypeCustomization">
+<em class="property">class </em><code class="descclassname">market.models.</code><code class="descname">BspTypeCustomization</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BspTypeCustomization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to customize a BSP type in terms of attributes for an organization.
+All BSPs have certain common attributes as well as attributes related to their type.
+However, it is possible that organization might want certain more attributes other than
+provided ones for their own use.</p>
+<p>This model allows organizations to define attributes and their data type.</p>
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Only one customization can be defined for organization-BSP basis.</li>
+<li>Data types for attributes are limited.</li>
+</ul>
+</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="class">
+<dt id="market.models.BspTypeCustomization.Attribute">
+<em class="property">class </em><code class="descname">Attribute</code><span class="sig-paren">(</span><em>_obj=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BspTypeCustomization.Attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute schema to define a custom bsp attribute.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="market.models.BspTypeCustomization.clean">
+<code class="descclassname">BspTypeCustomization.</code><code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BspTypeCustomization.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="market.models.BspTypeCustomization.get_attribute_labels_list">
+<code class="descclassname">BspTypeCustomization.</code><code class="descname">get_attribute_labels_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BspTypeCustomization.get_attribute_labels_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to return all list of attribute labels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="market.models.BspTypeCustomization.get_attribute_schema">
+<code class="descclassname">BspTypeCustomization.</code><code class="descname">get_attribute_schema</code><span class="sig-paren">(</span><em>label</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BspTypeCustomization.get_attribute_schema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to get attribute schema <a class="reference internal" href="#market.models.BspTypeCustomization.Attribute" title="market.models.BspTypeCustomization.Attribute"><code class="xref py py-class docutils literal"><span class="pre">market.models.BspTypeCustomization.Attribute</span></code></a> given
+a label key.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>label</strong> &#8211; Label of the attribute to be searched</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#market.models.BspTypeCustomization.Attribute" title="market.models.BspTypeCustomization.Attribute"><code class="xref py py-class docutils literal"><span class="pre">market.models.BspTypeCustomization.Attribute</span></code></a> instance or None if not found</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="market.models.BspTypeCustomization.save">
+<code class="descclassname">BspTypeCustomization.</code><code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BspTypeCustomization.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="market.models.BspTypeCustomization.validate_data">
+<code class="descclassname">BspTypeCustomization.</code><code class="descname">validate_data</code><span class="sig-paren">(</span><em>data_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BspTypeCustomization.validate_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to validate data dict as per the schema.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_dict</strong> &#8211; Dict if key-value data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(is_valid, error_msg) True if valid else False with error message</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="market.models.BusinessServicePoint">
+<em class="property">class </em><code class="descclassname">market.models.</code><code class="descname">BusinessServicePoint</code><span class="sig-paren">(</span><em>*args</em>, <em>**values</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BusinessServicePoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Business or Service Point (BSP) is a generic term that refers to place/person/thing where consumer
+can consume a product or can be offered with a service. Such a place can be a business point
+where a person sells a product or conducts operations or runs his business. This can
+also be a place that offers any kind of service. Moreover, it can also be person such as a teacher.</p>
+<p>Examples:</p>
+<blockquote>
+<div>Local business shop such as restaurants, clothing, repair shop, grocery shop etc,
+Government office, post boxes, ATMs, Company office, pan wala shop, chemist, hospital,
+Tutor, Coaching center, mobile app/website lets say to order food or buy products and so on.</div></blockquote>
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">Each BSP has its unique id.</p>
+</li>
+<li><p class="first">Each BSP is associated with one type that defines its attributes.
+Type cannot be changed once selected.</p>
+</li>
+<li><p class="first">Field <code class="docutils literal"><span class="pre">list_attributes</span></code>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Contains list of all attributes from various fields in form of list of name-value dict.</li>
+<li>Useful for analytics and querying since it has indexes.</li>
+<li>This field must not be changed directly as it will be overridden during save.</li>
+<li>Fields that populate this field are: <code class="docutils literal"><span class="pre">attributes</span></code></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">The <code class="docutils literal"><span class="pre">address</span></code> field can be None in case of some BSP such as doctor who works at a clinic.</p>
+</li>
+<li><p class="first">If <code class="docutils literal"><span class="pre">active</span></code> is false, BSP is as good as deleted. This will not show up anywhere other than owners account.
+A BSP can be reverted back to active by setting this as true.</p>
+</li>
+</ul>
+</div></blockquote>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If you want to add any new field to this table, do not forget to make entry in <code class="docutils literal"><span class="pre">HELP_TEXT</span></code> for
+non confidential fields.</p>
+</div>
+<p><strong>Migration of BSPs to other organization</strong>:</p>
+<blockquote>
+<div>Migration of BSPs to other organization is not straight forward. Although, only
+<code class="docutils literal"><span class="pre">organization_id</span></code> has to be changed, this must also be changed in following models:
+<a class="reference internal" href="../critics/models.html#critics.models.Rating" title="critics.models.Rating"><code class="xref py py-class docutils literal"><span class="pre">critics.models.Rating</span></code></a>, <a class="reference internal" href="../critics/models.html#critics.models.Comment" title="critics.models.Comment"><code class="xref py py-class docutils literal"><span class="pre">critics.models.Comment</span></code></a>. The migration process is yet to be defined.</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="class">
+<dt id="market.models.BusinessServicePoint.Attribute">
+<em class="property">class </em><code class="descname">Attribute</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BusinessServicePoint.Attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mongodb embedded document to store BSP attribute.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="market.models.BusinessServicePoint.DayTiming">
+<em class="property">class </em><code class="descclassname">BusinessServicePoint.</code><code class="descname">DayTiming</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BusinessServicePoint.DayTiming" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mongodb embedded document to store a week day timings.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="market.models.BusinessServicePoint.FeedbackFormEmbd">
+<em class="property">class </em><code class="descclassname">BusinessServicePoint.</code><code class="descname">FeedbackFormEmbd</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BusinessServicePoint.FeedbackFormEmbd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mongodb embedded document to store attached BSP feedback form as well as its
+change history.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="class">
+<dt id="market.models.BusinessServicePoint.FeedbackFormEmbd.ChangeHistory">
+<em class="property">class </em><code class="descname">ChangeHistory</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BusinessServicePoint.FeedbackFormEmbd.ChangeHistory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mongodb embedded document to store BSP feedback form change history.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="market.models.BusinessServicePoint.FeedbackFormEmbd.is_comment_ai_enabled">
+<code class="descclassname">BusinessServicePoint.FeedbackFormEmbd.</code><code class="descname">is_comment_ai_enabled</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BusinessServicePoint.FeedbackFormEmbd.is_comment_ai_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to check if AI is enabled on comments or not.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if any algorithm is in use else False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="market.models.BusinessServicePoint.ImageDoc">
+<em class="property">class </em><code class="descclassname">BusinessServicePoint.</code><code class="descname">ImageDoc</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BusinessServicePoint.ImageDoc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mongodb embedded document to store photo urls for a BSP.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="market.models.BusinessServicePoint.SocialMedia">
+<em class="property">class </em><code class="descclassname">BusinessServicePoint.</code><code class="descname">SocialMedia</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BusinessServicePoint.SocialMedia" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mongodb embedded document to store link to social media pages of BSP.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="market.models.BusinessServicePoint.associate_feedback_form">
+<code class="descclassname">BusinessServicePoint.</code><code class="descname">associate_feedback_form</code><span class="sig-paren">(</span><em>form</em>, <em>user</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BusinessServicePoint.associate_feedback_form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to associate BspFeedbackForm to this BSP.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>form</strong> &#8211; Instance of <a class="reference internal" href="../feedback/models.html#feedback.models.BspFeedbackForm" title="feedback.models.BspFeedbackForm"><code class="xref py py-class docutils literal"><span class="pre">feedback.models.BspFeedbackForm</span></code></a> that is to be attached.</li>
+<li><strong>user</strong> &#8211; Instance of <code class="xref py py-class docutils literal"><span class="pre">django.contrib.auth.models.User</span></code> who attached this form.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="market.models.BusinessServicePoint.deassociate_feedback_form">
+<code class="descclassname">BusinessServicePoint.</code><code class="descname">deassociate_feedback_form</code><span class="sig-paren">(</span><em>confirm=False</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BusinessServicePoint.deassociate_feedback_form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to de-associate currently attached feedback form. This will
+ignore if frm is already detached.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if action was taken else False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="market.models.BusinessServicePoint.delete">
+<code class="descclassname">BusinessServicePoint.</code><code class="descname">delete</code><span class="sig-paren">(</span><em>**write_concern</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BusinessServicePoint.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-delete method. (Not allowed)</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="market.models.BusinessServicePoint.save">
+<code class="descclassname">BusinessServicePoint.</code><code class="descname">save</code><span class="sig-paren">(</span><em>update_attr=True</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BusinessServicePoint.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save method for a response.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="market.models.BusinessServicePoint.to_js_json">
+<code class="descclassname">BusinessServicePoint.</code><code class="descname">to_js_json</code><span class="sig-paren">(</span><em>include_list_attr=False</em>, <em>include_feedback=False</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BusinessServicePoint.to_js_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to convert model object to javascript JSON in equivalent python dict.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>include_list_attr</strong> &#8211; If True, <code class="docutils literal"><span class="pre">list_attributes</span></code> is included.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">JSON</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="market.models.BusinessServicePoint.update_feedback_comment_ai_directive">
+<code class="descclassname">BusinessServicePoint.</code><code class="descname">update_feedback_comment_ai_directive</code><span class="sig-paren">(</span><em>ai_directives</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.BusinessServicePoint.update_feedback_comment_ai_directive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to update feedback AI directives for comments.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ai_directives</strong> &#8211; Instance of <a class="reference internal" href="../form_builder/fields.html#form_builder.fields.AiTextDirectives" title="form_builder.fields.AiTextDirectives"><code class="xref py py-class docutils literal"><span class="pre">form_builder.fields.AiTextDirectives</span></code></a> for comments.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="market.models.RestaurantCuisine">
+<em class="property">class </em><code class="descclassname">market.models.</code><code class="descname">RestaurantCuisine</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.RestaurantCuisine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to store various types of restaurant cuisines.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="market.models.RestaurantCuisine.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#market.models.RestaurantCuisine.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="market.models.RestaurantCuisine.delete">
+<code class="descname">delete</code><span class="sig-paren">(</span><em>**write_concern</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.RestaurantCuisine.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-delete method. (Not allowed)</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="market.models.RestaurantCuisine.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>update_theme=False</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.RestaurantCuisine.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="market.models.get_bsp_labels">
+<code class="descclassname">market.models.</code><code class="descname">get_bsp_labels</code><span class="sig-paren">(</span><em>bsp_type_code</em>, <em>org=None</em><span class="sig-paren">)</span><a class="headerlink" href="#market.models.get_bsp_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to get all labels and its information for a bsp type.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>bsp_type_code</strong> &#8211; Codename of the BSP type.</li>
+<li><strong>org</strong> &#8211; (Optional) If provided, it also includes custom attributes created by an organization for that BSP.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">List of dict objects.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Return list structure</strong>:</p>
+<blockquote>
+<div><div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">[</span>
+    <span class="p">{</span>
+        <span class="nt">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;Field label&gt;&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;Description of the field&gt;&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;dtype&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;Data ype of the field&gt;&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;required&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;Dot separated path in the model&gt;&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;is_common&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;true/false: If true means this attribute is common across all BSP&gt;&quot;</span>
+    <span class="p">},</span>
+
+<span class="p">]</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="bsp_types.html" class="btn btn-neutral float-right" title="Business or Service Point - Types" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Market" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Gagandeep Singh.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

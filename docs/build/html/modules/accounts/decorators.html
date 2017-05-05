@@ -1,0 +1,317 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Decorators &mdash; feedvay 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Accounts" href="index.html"/>
+        <link rel="next" title="Views" href="views.html"/>
+        <link rel="prev" title="Forms" href="forms.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> feedvay
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../main/index.html">Main App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../management_commands/index.html">Management Commands</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Accounts</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#modules">Modules</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forms.html">Forms</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Decorators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="views.html">Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.html">Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html">Resource API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operations.html">Operations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../clients/index.html">Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../console/index.html">Console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../critics/index.html">Critics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feedback/index.html">Feedback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../form_builder/index.html">Form builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geography/index.html">Geography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../languages/index.html">Languages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../market/index.html">Market</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../owlery/index.html">Owlery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reports/index.html">Reports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../storeroom/index.html">Store Room</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../surveys/index.html">Survey</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities/index.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../watchdog/index.html">Watchdog</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">feedvay</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Accounts</a> &raquo;</li>
+      
+    <li>Decorators</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/modules/accounts/decorators.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="decorators">
+<h1>Decorators<a class="headerlink" href="#decorators" title="Permalink to this headline">¶</a></h1>
+<p>Decorators for account use.</p>
+<span class="target" id="module-accounts.decorators"></span><dl class="function">
+<dt id="accounts.decorators.organization_console">
+<code class="descclassname">accounts.decorators.</code><code class="descname">organization_console</code><span class="sig-paren">(</span><em>required_perms=None</em>, <em>all_required=True</em>, <em>exception_type='response'</em>, <em>allow_bypass=False</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.decorators.organization_console" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django view decorator to allow only organization related console page with required permissions.
+This decorator depends upon <a class="reference internal" href="../console/middleware.html#console.middleware.OrgConsoleMiddleware" title="console.middleware.OrgConsoleMiddleware"><code class="xref py py-class docutils literal"><span class="pre">console.middleware.OrgConsoleMiddleware</span></code></a> which is responsible
+authenticating user membership with the organization. After membership check, this decorator
+verifies that it registered user has required permissions or not.</p>
+<p>Also, the view on which this decorator is used must except an argument <code class="docutils literal"><span class="pre">org</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>required_perms</strong> &#8211; String or list of permission key of format <code class="docutils literal"><span class="pre">&lt;app-label&gt;.&lt;model-name&gt;.&lt;perm-codename&gt;</span></code>.</li>
+<li><strong>all_required</strong> &#8211; If True, all permissions are required else atleast one.</li>
+<li><strong>exception_type</strong> &#8211; Type of forbidden response - <code class="docutils literal"><span class="pre">response</span></code>: 403 page with message,
+<code class="docutils literal"><span class="pre">api</span></code>: Forbidden response as per <a class="reference internal" href="../utilities/api_utils.html#utilities.api_utils.ApiResponse" title="utilities.api_utils.ApiResponse"><code class="xref py py-class docutils literal"><span class="pre">utilities.api_utils.ApiResponse</span></code></a>.</li>
+<li><strong>allow_bypass</strong> &#8211; (Default False) If True, allows access to view even when it is accessed without
+context of an organization.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">This decorator must be user after <code class="docutils literal"><span class="pre">registered_user_only</span></code>. It expects registered user.</p>
+</li>
+<li><p class="first">Deleted organization and not included in the query.</p>
+</li>
+<li><p class="first">If everything is ok:</p>
+<blockquote>
+<div><ul class="simple">
+<li>It sets <code class="docutils literal"><span class="pre">curr_org</span></code> in <code class="docutils literal"><span class="pre">request</span></code>.</li>
+<li>It sets <code class="docutils literal"><span class="pre">permissions</span></code> in <code class="docutils literal"><span class="pre">request</span></code>.</li>
+<li>Passes the argument <code class="docutils literal"><span class="pre">org</span></code> to the view.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<p><strong>For views accessible in both with or without context of an organization</strong>:
+If the view allows access in both cases, with out without organization, set option <code class="docutils literal"><span class="pre">allow_bypass</span></code> as True. In
+such a case if request parameter contains <code class="docutils literal"><span class="pre">c</span></code> then organization access will be checked along with permissions.
+However, if <code class="docutils literal"><span class="pre">c</span></code> is not present, it simply bypasses the check allowing access to the view. Thus it is the
+responsibility of the view to handle both cases along with permissions needed. View parameter <code class="docutils literal"><span class="pre">org</span></code> will
+be <code class="docutils literal"><span class="pre">None</span></code> if not in context of organization.</p>
+<p><strong>Failure behavior:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li>If <code class="docutils literal"><span class="pre">request</span></code> does not have attribute <code class="docutils literal"><span class="pre">curr_org</span></code>: returns Http404</li>
+</ul>
+</div></blockquote>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If <code class="docutils literal"><span class="pre">allow_bypass</span></code> is set <code class="docutils literal"><span class="pre">True</span></code>, it the responsibility of the view to handle both cases.</p>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="accounts.decorators.registered_user_only">
+<code class="descclassname">accounts.decorators.</code><code class="descname">registered_user_only</code><span class="sig-paren">(</span><em>function</em>, <em>login_url=u'/accounts/login/'</em>, <em>redirect_field_name='next'</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.decorators.registered_user_only" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django view decorator to only allow logged in &#8216;verified&#8217; registered user only.
+In case of check failure, it redirects to login page, otherwise returns 404.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="accounts.decorators.staff_user_only">
+<code class="descclassname">accounts.decorators.</code><code class="descname">staff_user_only</code><span class="sig-paren">(</span><em>function</em>, <em>login_url='/admin/login/'</em>, <em>redirect_field_name='next'</em><span class="sig-paren">)</span><a class="headerlink" href="#accounts.decorators.staff_user_only" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django view decorator to only allow logged in &#8216;staff&#8217; or &#8216;superuser&#8217; users only.
+If user is not logged in, it redirects to login page, otherwise returns 404.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="views.html" class="btn btn-neutral float-right" title="Views" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="forms.html" class="btn btn-neutral" title="Forms" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Gagandeep Singh.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

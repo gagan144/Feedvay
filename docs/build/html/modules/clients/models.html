@@ -1,0 +1,579 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Models &mdash; feedvay 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Clients" href="index.html"/>
+        <link rel="next" title="Views" href="views.html"/>
+        <link rel="prev" title="Organization" href="organization.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> feedvay
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../main/index.html">Main App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../management_commands/index.html">Management Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../accounts/index.html">Accounts</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Clients</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#components">Components</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="views.html">Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html">Resource API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operations.html">Operations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../console/index.html">Console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../critics/index.html">Critics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feedback/index.html">Feedback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../form_builder/index.html">Form builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geography/index.html">Geography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../languages/index.html">Languages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../market/index.html">Market</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../owlery/index.html">Owlery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reports/index.html">Reports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../storeroom/index.html">Store Room</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../surveys/index.html">Survey</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities/index.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../watchdog/index.html">Watchdog</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">feedvay</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Clients</a> &raquo;</li>
+      
+    <li>Models</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/modules/clients/models.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="models">
+<h1>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h1>
+<p>List of database models (MySQL &amp; MongoDb) for client app.</p>
+<span class="target" id="module-clients.models"></span><dl class="class">
+<dt id="clients.models.OrgInvitation">
+<em class="property">class </em><code class="descclassname">clients.models.</code><code class="descname">OrgInvitation</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.OrgInvitation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to store all invitations made by the users of an organization to invite other users.
+An entry is made into this table before actually sending invitation message.</p>
+<p><strong>State chart diagram for organization status</strong>:</p>
+<blockquote>
+<div><img alt="../../_images/statechart_status_org_invitation.jpg" src="../../_images/statechart_status_org_invitation.jpg" />
+</div></blockquote>
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>A user can send invitation only in context of his organization. He cannot invite
+on behalf of the organization to which he does not belongs.</li>
+<li>Incase, invitee is not present in the system, it must be first created before creating
+invitation record.</li>
+<li><strong>Duplicity</strong>: An invitation is said to be duplicate if as similar invitation exists with
+same organization, invitee and status is not equal to <code class="docutils literal"><span class="pre">rejected</span></code> or <code class="docutils literal"><span class="pre">deleted</span></code>
+(i.e. <code class="docutils literal"><span class="pre">new</span></code>, <code class="docutils literal"><span class="pre">sent</span></code>, <code class="docutils literal"><span class="pre">accepted</span></code> invitations exists).</li>
+<li><strong>Delete/Cancel</strong>: To cancel an invitation, simply use <code class="docutils literal"><span class="pre">trans_delete</span></code> transition.</li>
+</ul>
+</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="clients.models.OrgInvitation.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.OrgInvitation.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.OrgInvitation.delete">
+<code class="descname">delete</code><span class="sig-paren">(</span><em>using=None</em>, <em>keep_parents=False</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.OrgInvitation.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-delete method. (Not allowed)</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.OrgInvitation.is_duplicate">
+<code class="descname">is_duplicate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.OrgInvitation.is_duplicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to check if similar invitation already exists or not.
+:return: True if exists else False.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.OrgInvitation.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.OrgInvitation.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.OrgInvitation.trans_accept">
+<code class="descname">trans_accept</code><span class="sig-paren">(</span><em>instance</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.OrgInvitation.trans_accept" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transition edge to accept an invitation.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.OrgInvitation.trans_delete">
+<code class="descname">trans_delete</code><span class="sig-paren">(</span><em>instance</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.OrgInvitation.trans_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transition edge to delete an invitation. Reason is required.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.OrgInvitation.trans_reject">
+<code class="descname">trans_reject</code><span class="sig-paren">(</span><em>instance</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.OrgInvitation.trans_reject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transition edge to reject an invitation.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.OrgInvitation.trans_send">
+<code class="descname">trans_send</code><span class="sig-paren">(</span><em>instance</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.OrgInvitation.trans_send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transition edge to send a new invitations.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="clients.models.Organization">
+<em class="property">class </em><code class="descclassname">clients.models.</code><code class="descname">Organization</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.Organization" title="Permalink to this definition">¶</a></dt>
+<dd><p>An organization is an legal registered entity such as Company, Firm, Agency, Government or non-government organization, NGO etc.</p>
+<p><strong>State chart diagram for organization status</strong>:</p>
+<blockquote>
+<div><img alt="../../_images/organization_status_statechart.jpg" src="../../_images/organization_status_statechart.jpg" />
+</div></blockquote>
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul>
+<li><dl class="first docutils">
+<dt><strong>Status</strong>:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">frozen</span></code>: Means all operations of this organization have been ceased. No one can add update or create
+anything. Only viewing is allowed. This can be unfreeze to <code class="docutils literal"><span class="pre">verified</span></code> state.</li>
+<li><code class="docutils literal"><span class="pre">deleted</span></code>: Means this organization has been permanently deleted from the system. It cannot be revived now.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first">Please call save after all transition method calls.</p>
+</li>
+<li><p class="first">If verification fails, it is mandatory to provide reason. This reason will be shown to the user.</p>
+</li>
+<li><p class="first"><strong>Claims</strong> on the organization can disabled if organization is known such as top organization or contracted clients. This can
+<strong>ONLY</strong> be done by staff user. Owner do not have rights to set this property.</p>
+</li>
+<li><dl class="first docutils">
+<dt>To make changes in fields take care the following:</dt>
+<dd><ul class="first last simple">
+<li>For Logo &amp; icon dimensions &amp; size constraints (must not change), make changes in
+LOGO_DIM, LOGO_MAX_SIZE etc in organization enums.</li>
+<li>Make changes in :class:<code class="docutils literal"><span class="pre">market.forms.OrganizationCreateEditForm</span></code>.</li>
+<li>Make changes for client side validations in &#8216;/static/partials/market/create_edit_organization.html&#8217;.</li>
+<li>Make changes in &#8216;market/templates/market/console/organization_settings.html&#8217;. Also in review modal.</li>
+<li>Make updates in &#8216;market.operations.*&#8217;.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="clients.models.Organization.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.Organization.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.Organization.delete">
+<code class="descname">delete</code><span class="sig-paren">(</span><em>using=None</em>, <em>keep_parents=False</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.Organization.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-delete method. (Not allowed)</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="clients.models.Organization.does_exists">
+<em class="property">static </em><code class="descname">does_exists</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.Organization.does_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to check if organization exists with given name or with slug of given name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> &#8211; Name of the organization</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(bool) True if organization exists else False</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="clients.models.Organization.generate_uitheme">
+<em class="property">static </em><code class="descname">generate_uitheme</code><span class="sig-paren">(</span><em>primary_color</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.Organization.generate_uitheme" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to generate ui theme json wrapper <a class="reference internal" href="../utilities/theme.html#utilities.theme.UiTheme" title="utilities.theme.UiTheme"><code class="xref py py-class docutils literal"><span class="pre">utilities.theme.UiTheme</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>primary_color</strong> &#8211; Primary color in hex format</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="../utilities/theme.html#utilities.theme.UiTheme" title="utilities.theme.UiTheme"><code class="xref py py-class docutils literal"><span class="pre">utilities.theme.UiTheme</span></code></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.Organization.get_edit_json">
+<code class="descname">get_edit_json</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.Organization.get_edit_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to return json for edit form.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">JSON</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.Organization.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>update_theme=False</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.Organization.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.Organization.trans_delete">
+<code class="descname">trans_delete</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.Organization.trans_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transition edge to mark this organization as deleted. Use this method with caution.
+Once marked, all operations on the organization are stopped and everything is freezed.
+You cannot edit this organization and its entities however, you can view them.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.Organization.trans_freeze">
+<code class="descname">trans_freeze</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.Organization.trans_freeze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transition edge to freeze organization. This is done to cease all organization&#8217;s operations.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.Organization.trans_revise_verification">
+<code class="descname">trans_revise_verification</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.Organization.trans_revise_verification" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transition edge to revise organization verification. This means organization has been edited and
+now again queued for verification.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.Organization.trans_unfreeze">
+<code class="descname">trans_unfreeze</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.Organization.trans_unfreeze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transition edge to unfreeze organization. This is done to restore all organization&#8217;s operations.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.Organization.trans_verification_failure">
+<code class="descname">trans_verification_failure</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.Organization.trans_verification_failure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transition edge for organization verification failed. A reason must be provided stating
+why verification was failed.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.Organization.trans_verification_success">
+<code class="descname">trans_verification_success</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.Organization.trans_verification_success" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transition edge to transit organization status to verified.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.Organization.update_theme_files">
+<code class="descname">update_theme_files</code><span class="sig-paren">(</span><em>auto_save=True</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.Organization.update_theme_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to update all theme files only if ui_theme is defined.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(bool) True if file was created and set to the field (irrespective of save), False if ui_theme was not set.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="clients.models.Organization.validate_icon_image">
+<em class="property">static </em><code class="descname">validate_icon_image</code><span class="sig-paren">(</span><em>img_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.Organization.validate_icon_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to validate organization icon image.
+Handles both <code class="docutils literal"><span class="pre">InMemoryUploadedFile</span></code> and <code class="docutils literal"><span class="pre">ImageFieldFile</span></code> objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>img_obj</strong> &#8211; InMemory object of image</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if image is valid</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="clients.models.Organization.validate_logo_image">
+<em class="property">static </em><code class="descname">validate_logo_image</code><span class="sig-paren">(</span><em>img_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.Organization.validate_logo_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to validate organization logo image.
+Handles both <code class="docutils literal"><span class="pre">InMemoryUploadedFile</span></code> and <code class="docutils literal"><span class="pre">ImageFieldFile</span></code> objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>img_obj</strong> &#8211; InMemory object of image</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if image is valid</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="clients.models.OrganizationMember">
+<em class="property">class </em><code class="descclassname">clients.models.</code><code class="descname">OrganizationMember</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.OrganizationMember" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to store members of an organization. This associates a user with his primary
+organization.</p>
+<p><strong>Uniqueness</strong>: <code class="docutils literal"><span class="pre">organization</span></code>, <code class="docutils literal"><span class="pre">registered_user</span></code></p>
+<p><strong>Delete/Remove membership</strong>: You cannot delete membership record however, you can mark it deleted. Please <strong>DO NOT</strong>
+set <code class="docutils literal"><span class="pre">deleted</span></code> as <code class="docutils literal"><span class="pre">True</span></code>. Always use method <code class="docutils literal"><span class="pre">mark_deleted()</span></code> which will remove all entities associations with the
+organization and set it deleted.</p>
+<p><strong>Revive membership</strong>: If membership was deleted and is now to be revived, simply set <code class="docutils literal"><span class="pre">deleted</span></code> as <code class="docutils literal"><span class="pre">False</span></code>.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="clients.models.OrganizationMember.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.OrganizationMember.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.OrganizationMember.delete">
+<code class="descname">delete</code><span class="sig-paren">(</span><em>using=None</em>, <em>keep_parents=False</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.OrganizationMember.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-delete method. (Not allowed)</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.OrganizationMember.mark_deleted">
+<code class="descname">mark_deleted</code><span class="sig-paren">(</span><em>confirm=False</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.OrganizationMember.mark_deleted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to deleted user membership from organization and remove various entities associations.</p>
+<p><strong>Exceptions</strong>: Throws exception is confirm is not True.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>confirm</strong> &#8211; (Required) Default is False to prevent accidents.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="clients.models.OrganizationMember.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#clients.models.OrganizationMember.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="views.html" class="btn btn-neutral float-right" title="Views" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="organization.html" class="btn btn-neutral" title="Organization" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Gagandeep Singh.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

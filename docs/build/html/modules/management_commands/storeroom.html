@@ -1,0 +1,298 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Storeroom Management Commands &mdash; feedvay 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Management Commands" href="index.html"/>
+        <link rel="next" title="Accounts" href="../accounts/index.html"/>
+        <link rel="prev" title="Algorithms" href="algorithms.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> feedvay
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../main/index.html">Main App</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Management Commands</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="feedvay.html">Main</a></li>
+<li class="toctree-l2"><a class="reference internal" href="accounts.html">Accounts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Store Room</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#process-bsp">Process BSP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#process-geolocation">Process GeoLocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#process-responses-in-queue">Process Responses in Queue</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../accounts/index.html">Accounts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../clients/index.html">Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../console/index.html">Console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../critics/index.html">Critics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feedback/index.html">Feedback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../form_builder/index.html">Form builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geography/index.html">Geography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../languages/index.html">Languages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../market/index.html">Market</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../owlery/index.html">Owlery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reports/index.html">Reports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../storeroom/index.html">Store Room</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../surveys/index.html">Survey</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities/index.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../watchdog/index.html">Watchdog</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">feedvay</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Management Commands</a> &raquo;</li>
+      
+    <li>Storeroom Management Commands</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/modules/management_commands/storeroom.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="storeroom-management-commands">
+<h1>Storeroom Management Commands<a class="headerlink" href="#storeroom-management-commands" title="Permalink to this headline">¶</a></h1>
+<p>List of all django management commands for &#8216;storeroom&#8217; app.</p>
+<div class="section" id="process-bsp">
+<h2>Process BSP<a class="headerlink" href="#process-bsp" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="storeroom.management.commands.storeroom_process_bsps.Command">
+<em class="property">class </em><code class="descclassname">storeroom.management.commands.storeroom_process_bsps.</code><code class="descname">Command</code><span class="sig-paren">(</span><em>stdout=None</em>, <em>stderr=None</em>, <em>no_color=False</em><span class="sig-paren">)</span><a class="headerlink" href="#storeroom.management.commands.storeroom_process_bsps.Command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django management command to migrate all imported BSP from storeroom(<a class="reference internal" href="../storeroom/models.html#storeroom.models.ImportRecord" title="storeroom.models.ImportRecord"><code class="xref py py-class docutils literal"><span class="pre">storeroom.models.ImportRecord</span></code></a>)
+to actual instances (<a class="reference internal" href="../market/models.html#market.models.BusinessServicePoint" title="market.models.BusinessServicePoint"><code class="xref py py-class docutils literal"><span class="pre">market.models.BusinessServicePoint</span></code></a>).</p>
+<p><strong>Parameters:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">limit</span></code>: (Default 10) Number od imports to be processed.</li>
+</ul>
+</div></blockquote>
+<p>Command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">storeroom_process_bsps</span> <span class="o">--</span><span class="n">limit</span> <span class="mi">100</span>
+</pre></div>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</div>
+<div class="section" id="process-geolocation">
+<h2>Process GeoLocation<a class="headerlink" href="#process-geolocation" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="storeroom.management.commands.storeroom_process_geolocations.Command">
+<em class="property">class </em><code class="descclassname">storeroom.management.commands.storeroom_process_geolocations.</code><code class="descname">Command</code><span class="sig-paren">(</span><em>stdout=None</em>, <em>stderr=None</em>, <em>no_color=False</em><span class="sig-paren">)</span><a class="headerlink" href="#storeroom.management.commands.storeroom_process_geolocations.Command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django management command to migrate all imported geolocation records to GeoLocation collection.</p>
+<p><strong>Parameters:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">limit</span></code>: (Default 100) Number od imports to be processed.</li>
+</ul>
+</div></blockquote>
+<p>Command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">storeroom_process_geolocations</span> <span class="o">--</span><span class="n">limit</span> <span class="mi">1000</span>
+</pre></div>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</div>
+<div class="section" id="process-responses-in-queue">
+<h2>Process Responses in Queue<a class="headerlink" href="#process-responses-in-queue" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="storeroom.management.commands.storeroom_process_responses.Command">
+<em class="property">class </em><code class="descclassname">storeroom.management.commands.storeroom_process_responses.</code><code class="descname">Command</code><span class="sig-paren">(</span><em>stdout=None</em>, <em>stderr=None</em>, <em>no_color=False</em><span class="sig-paren">)</span><a class="headerlink" href="#storeroom.management.commands.storeroom_process_responses.Command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django management command to process form responses in queue(<a class="reference internal" href="../storeroom/models.html#storeroom.models.ResponseQueue" title="storeroom.models.ResponseQueue"><code class="xref py py-class docutils literal"><span class="pre">storeroom.models.ResponseQueue</span></code></a>)</p>
+<p><strong>Parameters:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">limit</span></code>: (Default 100) Number odfimports to be processed.</li>
+</ul>
+</div></blockquote>
+<p>Command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">storeroom_process_responses</span> <span class="o">--</span><span class="n">limit</span> <span class="mi">100</span>
+</pre></div>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../accounts/index.html" class="btn btn-neutral float-right" title="Accounts" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="algorithms.html" class="btn btn-neutral" title="Algorithms" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Gagandeep Singh.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

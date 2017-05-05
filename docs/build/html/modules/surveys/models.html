@@ -1,0 +1,435 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Models &mdash; feedvay 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Survey" href="index.html"/>
+        <link rel="next" title="Decorators" href="decorators.html"/>
+        <link rel="prev" title="Survey" href="index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> feedvay
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../main/index.html">Main App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../management_commands/index.html">Management Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../accounts/index.html">Accounts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../clients/index.html">Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../console/index.html">Console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../critics/index.html">Critics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feedback/index.html">Feedback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../form_builder/index.html">Form builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geography/index.html">Geography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../languages/index.html">Languages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../market/index.html">Market</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../owlery/index.html">Owlery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reports/index.html">Reports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../storeroom/index.html">Store Room</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Survey</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#types-of-survey">Types of survey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surveyor-who-can-conduct-a-survey">Surveyor: Who can conduct a survey?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#respondents-types-of-target-audience">Respondents: Types of target audience</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="decorators.html">Decorators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="forms.html">Forms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="views.html">Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html">API Resources</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities/index.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../watchdog/index.html">Watchdog</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">feedvay</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Survey</a> &raquo;</li>
+      
+    <li>Models</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/modules/surveys/models.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="models">
+<h1>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h1>
+<p>List of database models (MySQL &amp; MongoDb) for survey app.</p>
+<span class="target" id="module-surveys.models"></span><dl class="class">
+<dt id="surveys.models.Survey">
+<em class="property">class </em><code class="descclassname">surveys.models.</code><code class="descname">Survey</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.Survey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to define a survey.</p>
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">Simple survey will not allow multiple survey phases.</p>
+</li>
+<li><p class="first">Survey unique id is always attached with survey that can be shared to respondents. But only
+<code class="docutils literal"><span class="pre">public</span></code> and <code class="docutils literal"><span class="pre">private</span></code> survey are allowed to be answers.</p>
+</li>
+<li><dl class="first docutils">
+<dt>Surveyor type:</dt>
+<dd><ul class="first last simple">
+<li><strong>Organization</strong>: Field <code class="docutils literal"><span class="pre">organization</span></code> is mandatory.</li>
+<li><strong>Brand</strong>: Field <code class="docutils literal"><span class="pre">brand</span></code> is mandatory.</li>
+<li><strong>Individual</strong>: <code class="docutils literal"><span class="pre">created_by</span></code> is used as surveyor.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first">Survey with audience as <code class="docutils literal"><span class="pre">public</span></code> is only visible to the public, rest are hidden.</p>
+</li>
+<li><p class="first">Audience filer to automatically set to {} if audience type is <code class="docutils literal"><span class="pre">self</span></code>.</p>
+</li>
+<li><p class="first">Survey with status <code class="docutils literal"><span class="pre">draft</span></code> &amp; <code class="docutils literal"><span class="pre">paused</span></code> are not visible to the public.</p>
+</li>
+</ul>
+</div></blockquote>
+<p><strong>State chart diagram for survey status</strong>:</p>
+<blockquote>
+<div><img alt="../../_images/survey_statechart.jpg" src="../../_images/survey_statechart.jpg" />
+</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="surveys.models.Survey.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.Survey.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="surveys.models.Survey.generate_uid">
+<em class="property">static </em><code class="descname">generate_uid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.Survey.generate_uid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to generate a unique survey id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal"><span class="pre">Survey.SURVEY_UID_LEN</span></code> letters long unique id.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="surveys.models.Survey.has_gps_enabled">
+<code class="descname">has_gps_enabled</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.Survey.has_gps_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to tell if this survey has any survey phase that has gps enabled.
+:return: True/False</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="surveys.models.Survey.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.Survey.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="surveys.models.Survey.trans_pause">
+<code class="descname">trans_pause</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.Survey.trans_pause" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transition edge to pause a survey after it has been published. Puases survey are not executable.
+This is used when user wants to halt a survey for sometime.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="surveys.models.Survey.trans_ready">
+<code class="descname">trans_ready</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.Survey.trans_ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transition edge to publish a survey. On publishing, survey is active &amp; will automatically start
+as per <code class="docutils literal"><span class="pre">start_date</span></code> &amp; <code class="docutils literal"><span class="pre">end_date</span></code>.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="surveys.models.Survey.trans_resume">
+<code class="descname">trans_resume</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.Survey.trans_resume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transition edge to resume a paused survey. After resuming, it will be visible to public.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="surveys.models.Survey.trans_stop">
+<code class="descname">trans_stop</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.Survey.trans_stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transition edge to stop a survey. A survey after stop cannot be restarted.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="surveys.models.Survey.update_qrcode">
+<code class="descname">update_qrcode</code><span class="sig-paren">(</span><em>auto_save=True</em><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.Survey.update_qrcode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to update survey qrcode.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="surveys.models.SurveyCategory">
+<em class="property">class </em><code class="descclassname">surveys.models.</code><code class="descname">SurveyCategory</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.SurveyCategory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to store categories of the survey. This creates a first impression of the survey by identifying its type.
+This allows users to search survey of their interest. Also, it can be used to provide pre-defined templates
+before user starts creating questionnaire.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="surveys.models.SurveyCategory.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.SurveyCategory.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="surveys.models.SurveyCategory.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>update_theme=False</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.SurveyCategory.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="surveys.models.SurveyPhase">
+<em class="property">class </em><code class="descclassname">surveys.models.</code><code class="descname">SurveyPhase</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.SurveyPhase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to define survey phase. Each survey must has a phase whether it is simple or complex.
+Since, for complex survey with multiple phases that has its own separate form, it is the phase
+to which form is attached and not the survey itself.</p>
+<dl class="docutils">
+<dt><strong>Points</strong>:</dt>
+<dd><ul class="first last simple">
+<li>Form is attached to the survey phase and not the survey.</li>
+<li>For <strong>Simple</strong> survey there can only be one phase whereas for <strong>comples</strong> survey there is no
+limitation in the phases.</li>
+<li>Order of the phase is determined by the field <code class="docutils literal"><span class="pre">order</span></code>. Phase with lowest order
+is conducted first follwed by second least and so on.</li>
+<li>All child phases must belong to same survey.</li>
+</ul>
+</dd>
+</dl>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="surveys.models.SurveyPhase.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.SurveyPhase.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="surveys.models.SurveyPhase.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>update_theme=False</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.SurveyPhase.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="surveys.models.SurveyResponse">
+<em class="property">class </em><code class="descclassname">surveys.models.</code><code class="descname">SurveyResponse</code><span class="sig-paren">(</span><em>*args</em>, <em>**values</em><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.SurveyResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to store a survey response. It inherits all properties of <a class="reference internal" href="../form_builder/models.html#form_builder.models.BaseResponse" title="form_builder.models.BaseResponse"><code class="xref py py-class docutils literal"><span class="pre">form_builder.models.BaseResponse</span></code></a>.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="surveys.models.SurveyTag">
+<em class="property">class </em><code class="descclassname">surveys.models.</code><code class="descname">SurveyTag</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.SurveyTag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic tags names for surveys.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="surveys.models.SurveyTag.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.SurveyTag.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to clean &amp; validate data fields.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="surveys.models.SurveyTag.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>update_theme=False</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#surveys.models.SurveyTag.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-save method for this model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="decorators.html" class="btn btn-neutral float-right" title="Decorators" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Survey" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Gagandeep Singh.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

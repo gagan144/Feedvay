@@ -1,0 +1,315 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Models &mdash; feedvay 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Feedback" href="index.html"/>
+        <link rel="next" title="Resource API" href="api.html"/>
+        <link rel="prev" title="Feedback" href="index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> feedvay
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../main/index.html">Main App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../management_commands/index.html">Management Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../accounts/index.html">Accounts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../clients/index.html">Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../console/index.html">Console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../critics/index.html">Critics</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Feedback</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html">Resource API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="views.html">Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operations.html">Operations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../form_builder/index.html">Form builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geography/index.html">Geography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../languages/index.html">Languages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../market/index.html">Market</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../owlery/index.html">Owlery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reports/index.html">Reports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../storeroom/index.html">Store Room</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../surveys/index.html">Survey</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities/index.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../watchdog/index.html">Watchdog</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">feedvay</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Feedback</a> &raquo;</li>
+      
+    <li>Models</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/modules/feedback/models.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="models">
+<h1>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h1>
+<p>List of database models (MySQL &amp; MongoDb) for feedback app.</p>
+<span class="target" id="module-feedback.models"></span><dl class="class">
+<dt id="feedback.models.BspFeedbackForm">
+<em class="property">class </em><code class="descclassname">feedback.models.</code><code class="descname">BspFeedbackForm</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#feedback.models.BspFeedbackForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to define a Business or Service Point feedback questionnaire for an organization.
+An organization can create any number of feedback questionnaire ad attach them to a
+BSP.</p>
+<p>This model inherits <a class="reference internal" href="../form_builder/models.html#form_builder.models.Form" title="form_builder.models.Form"><code class="xref py py-class docutils literal"><span class="pre">form_builder.models.Form</span></code></a> model since most of the properties for
+a feedback questionnaire are same, almost complete. At database layer, this means this table
+has unique foreign key to Form table, so for every &#8216;BspFeedbackForm&#8217; there will be a &#8216;Form&#8217;.
+All couple tables with &#8216;Form&#8217; remains valid for this model also.</p>
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">Feedback questionnaire has no state cycle. They remain as free floating questionnaire.
+Any BSP attached to it uses this for displaying questionnaire form.</p>
+</li>
+<li><p class="first">This nature allows few flexibilities:</p>
+<blockquote>
+<div><ul class="simple">
+<li>All BSPs are not constrained to have common questionnaire. Different types of
+BSP or different categories of same BSP type can have different questionnaire.
+For example, restaurants for a state can have separate questionnaire tahn BSPs for some
+other state.</li>
+<li>Also, this allows flexibility to change./update questionnaire as per need.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Hence, a feedback questionnaire is not directly accessible that means it is always accessed via
+BSP. The BSP defines what questionnaire to display as per the association.</p>
+</li>
+<li><p class="first">Feedback has no specific audience. It is open to everyone.</p>
+</li>
+<li><p class="first">Since BSPs can be associated to various questionnaires or a BSP might change its questions midway,
+this introduces some complexity in maintaining question uniqueness across questionnaires. It is likely to
+happen that for example; a question with label &#8216;cleanliness&#8217; might be present in two questionnaires with
+slightly different context such as answer type. One can be a star rating, while other can be a multiple
+choice single select question. Whatever the case may be, while displaying a consolidated report, same label
+can have different type and answer values like in this case numeric and string.</p>
+</li>
+<li><p class="first">So, any changes made in questions or questionnaire itself will not effect a BSP feedback response. Whatever
+was captures obsolete or not will be displayed.</p>
+</li>
+</ul>
+</div></blockquote>
+<p><strong>Fields guidelines</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">title</span></code> is although mandatory, but is not used in feedback. In this case, title will be used
+as name of the form for user usage only.</li>
+<li><code class="docutils literal"><span class="pre">user_notes</span></code> will be used to describe questionnaire for user own usage only.</li>
+</ul>
+</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="feedback.models.BspFeedbackForm.get_attached_bsps">
+<code class="descname">get_attached_bsps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feedback.models.BspFeedbackForm.get_attached_bsps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to return all BSPs attached to this feedback form.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List&lt;<a class="reference internal" href="../market/models.html#market.models.BusinessServicePoint" title="market.models.BusinessServicePoint"><code class="xref py py-class docutils literal"><span class="pre">market.models.BusinessServicePoint</span></code></a>&gt;</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="feedback.models.BspFeedbackResponse">
+<em class="property">class </em><code class="descclassname">feedback.models.</code><code class="descname">BspFeedbackResponse</code><span class="sig-paren">(</span><em>*args</em>, <em>**values</em><span class="sig-paren">)</span><a class="headerlink" href="#feedback.models.BspFeedbackResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to store BSP feedback response. It inherits all properties of <a class="reference internal" href="../form_builder/models.html#form_builder.models.BaseResponse" title="form_builder.models.BaseResponse"><code class="xref py py-class docutils literal"><span class="pre">form_builder.models.BaseResponse</span></code></a>.</p>
+<p><strong>Flow for BSP Feedback Response save</strong>:</p>
+<blockquote>
+<div><img alt="../../_images/bsp_response_save_flow.jpg" src="../../_images/bsp_response_save_flow.jpg" />
+</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="api.html" class="btn btn-neutral float-right" title="Resource API" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Feedback" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Gagandeep Singh.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

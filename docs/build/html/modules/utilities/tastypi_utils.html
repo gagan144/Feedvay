@@ -1,0 +1,304 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tastypie utilities &mdash; feedvay 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Utilities" href="index.html"/>
+        <link rel="next" title="Theme" href="theme.html"/>
+        <link rel="prev" title="Jsonobject" href="jsonobject_utils.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> feedvay
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../main/index.html">Main App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../management_commands/index.html">Management Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../accounts/index.html">Accounts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../clients/index.html">Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../console/index.html">Console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../critics/index.html">Critics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feedback/index.html">Feedback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../form_builder/index.html">Form builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geography/index.html">Geography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../languages/index.html">Languages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../market/index.html">Market</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../owlery/index.html">Owlery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reports/index.html">Reports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../storeroom/index.html">Store Room</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../surveys/index.html">Survey</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Utilities</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="abstract_models.html">Abstract models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_utils.html">Api utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="aws.html">AWS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="custom_storages.html">Custom Storages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="db_mongo.html">MongoDb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="decorators.html">Decorators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fcm_utils.html">FCM utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jsonobject_utils.html">Jsonobject</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Tastypie utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="theme.html">Theme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="templatetags.html">Template tags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="timezone_utils.html">Timezone utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validators.html">Validators</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../watchdog/index.html">Watchdog</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">feedvay</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Utilities</a> &raquo;</li>
+      
+    <li>Tastypie utilities</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/modules/utilities/tastypi_utils.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tastypie-utilities">
+<h1>Tastypie utilities<a class="headerlink" href="#tastypie-utilities" title="Permalink to this headline">¶</a></h1>
+<p>Methods and utilities for django tastypie resources.</p>
+<span class="target" id="module-utilities.tastypie_utils"></span><dl class="class">
+<dt id="utilities.tastypie_utils.GenericTastypieObject">
+<em class="property">class </em><code class="descclassname">utilities.tastypie_utils.</code><code class="descname">GenericTastypieObject</code><span class="sig-paren">(</span><em>initial=None</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.tastypie_utils.GenericTastypieObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic object to shove data in/get data for tastypie resources.</p>
+<p>Link: <a class="reference external" href="http://django-tastypie.readthedocs.io/en/latest/non_orm_data_sources.html">http://django-tastypie.readthedocs.io/en/latest/non_orm_data_sources.html</a></p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="utilities.tastypie_utils.NoPaginator">
+<em class="property">class </em><code class="descclassname">utilities.tastypie_utils.</code><code class="descname">NoPaginator</code><span class="sig-paren">(</span><em>request_data</em>, <em>objects</em>, <em>resource_uri=None</em>, <em>limit=None</em>, <em>offset=0</em>, <em>max_limit=1000</em>, <em>collection_name='objects'</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.tastypie_utils.NoPaginator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django tastypie paginator to completely disable pagination. Use this paginator in the
+resource meta option <code class="docutils literal"><span class="pre">paginator_class</span></code>.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="utilities.tastypie_utils.OrgConsoleSessionAuthentication">
+<em class="property">class </em><code class="descclassname">utilities.tastypie_utils.</code><code class="descname">OrgConsoleSessionAuthentication</code><span class="sig-paren">(</span><em>required_permissions</em>, <em>all_required=True</em>, <em>allow_bypass=False</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.tastypie_utils.OrgConsoleSessionAuthentication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django tastypie session authentication for resources used in organization console.
+This class extends <code class="xref py py-class docutils literal"><span class="pre">tastypie.authentication.SessionAuthentication</span></code>. It first authenticates
+user session and then check presence of <code class="docutils literal"><span class="pre">curr_org</span></code> in <code class="docutils literal"><span class="pre">request</span></code> as created by
+<a class="reference internal" href="../console/middleware.html#console.middleware.OrgConsoleMiddleware" title="console.middleware.OrgConsoleMiddleware"><code class="xref py py-class docutils literal"><span class="pre">console.middleware.OrgConsoleMiddleware</span></code></a> middleware. If the variable is found,
+access is authenticated otherwise authentication fails.</p>
+<p>Moreover, it also verifies if user has certain permissions to access the resource. If not,
+authentication fails. It permitted, it set <code class="docutils literal"><span class="pre">permissions</span></code> in <code class="docutils literal"><span class="pre">request</span></code>.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="utilities.tastypie_utils.OrgConsoleSessionAuthentication.is_authenticated">
+<code class="descname">is_authenticated</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.tastypie_utils.OrgConsoleSessionAuthentication.is_authenticated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Authenticates user session and brand.
+:return: Returns True if everything this is ok else False.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="utilities.tastypie_utils.StaffSessionAuthentication">
+<em class="property">class </em><code class="descclassname">utilities.tastypie_utils.</code><code class="descname">StaffSessionAuthentication</code><span class="sig-paren">(</span><em>require_active=True</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.tastypie_utils.StaffSessionAuthentication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django tastypie session authentication for resources to allow access only to staff user.
+This class extends <code class="xref py py-class docutils literal"><span class="pre">tastypie.authentication.SessionAuthentication</span></code>. It first authenticates
+user session and then checks staff privilages.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="utilities.tastypie_utils.StaffSessionAuthentication.is_authenticated">
+<code class="descname">is_authenticated</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.tastypie_utils.StaffSessionAuthentication.is_authenticated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Authenticates staff user session.
+:return: Returns True if user is staff else False</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="utilities.tastypie_utils.SurveySessionAuthentication">
+<em class="property">class </em><code class="descclassname">utilities.tastypie_utils.</code><code class="descname">SurveySessionAuthentication</code><span class="sig-paren">(</span><em>require_active=True</em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.tastypie_utils.SurveySessionAuthentication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django tastypie session authentication to allow access to permissible survey resources.</p>
+<p>TODO: Implementation pending</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="theme.html" class="btn btn-neutral float-right" title="Theme" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="jsonobject_utils.html" class="btn btn-neutral" title="Jsonobject" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Gagandeep Singh.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

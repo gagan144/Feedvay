@@ -1,0 +1,576 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Models &mdash; feedvay 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="feedvay 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Form builder" href="index.html"/>
+        <link rel="next" title="Form exceptions" href="form_exceptions.html"/>
+        <link rel="prev" title="Form validators" href="validators.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> feedvay
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../main/index.html">Main App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../management_commands/index.html">Management Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../accounts/index.html">Accounts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../clients/index.html">Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../console/index.html">Console</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../critics/index.html">Critics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feedback/index.html">Feedback</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Form builder</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#components">Components</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="form_exceptions.html">Form exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.html">Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="views.html">Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="templatetags.html">Template tags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operations.html">Operations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../geography/index.html">Geography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../languages/index.html">Languages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../market/index.html">Market</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../owlery/index.html">Owlery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reports/index.html">Reports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../storeroom/index.html">Store Room</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../surveys/index.html">Survey</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utilities/index.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../watchdog/index.html">Watchdog</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">feedvay</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Form builder</a> &raquo;</li>
+      
+    <li>Models</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/modules/form_builder/models.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="models">
+<h1>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h1>
+<p>List of database models (MySQL &amp; MongoDb) for form builder app.</p>
+<span class="target" id="module-form_builder.models"></span><dl class="class">
+<dt id="form_builder.models.BaseResponse">
+<em class="property">class </em><code class="descclassname">form_builder.models.</code><code class="descname">BaseResponse</code><span class="sig-paren">(</span><em>*args</em>, <em>**values</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.BaseResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract mongoDb model to store response for a form.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This is only an abstract model. This does not map any collection.</p>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="class">
+<dt id="form_builder.models.BaseResponse.Answer">
+<em class="property">class </em><code class="descname">Answer</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.BaseResponse.Answer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Response embedded document to an answer to the question in details. This includes
+various meta information for an answer.</p>
+<p><strong>Specifications for ``ai`` field</strong>:</p>
+<blockquote>
+<div><div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;&lt;algo_key&gt;&quot;</span><span class="p">:{</span>
+        <span class="nt">&quot;pending&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>The structure is created during response creation after analyzing corresponding FormField.</li>
+<li>All process looks for its <code class="docutils literal"><span class="pre">algo_key</span></code> to check if this answer must be analyzed or not. This happens
+when the process gets a green light to proceed after checking in <code class="docutils literal"><span class="pre">response.process_flags</span></code>.</li>
+<li>If <code class="docutils literal"><span class="pre">algo_key.pending</span></code> is true, it means answer is yet to be procceed, so process it.
+Otherwise, if false, it means answer must have already been processed.</li>
+<li>Results are store in <code class="docutils literal"><span class="pre">algo_key.results</span></code> mostly in form of json. Structure varies as per the algorithm result.</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.models.BaseResponse.EndPointInformation">
+<em class="property">class </em><code class="descclassname">BaseResponse.</code><code class="descname">EndPointInformation</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.BaseResponse.EndPointInformation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Response embedded document to capture various information about response end point.
+An end point is source from where the response originated. It can be a web client,
+a mobile hand-held device or any other device capable to generating response.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Do not change end point type enum. These are hardcoded in the device or web client scripts.</p>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.models.BaseResponse.LocationInformation">
+<em class="property">class </em><code class="descclassname">BaseResponse.</code><code class="descname">LocationInformation</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.BaseResponse.LocationInformation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Response embedded document to capture location information for a response</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.models.BaseResponse.ProcessFlags">
+<em class="property">class </em><code class="descclassname">BaseResponse.</code><code class="descname">ProcessFlags</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.BaseResponse.ProcessFlags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Response embedded document to log pending process that are yet to be applied on this response.
+Please note that this is not process logger. It simply specifies what process are still pending.
+Each process search for its key and uses its value to decide whether it must be applied on this response
+or not.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This document only contains pending process keys. When the process has been applied, it
+removes its key from this document.</p>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.models.BaseResponse.ResponseFlags">
+<em class="property">class </em><code class="descclassname">BaseResponse.</code><code class="descname">ResponseFlags</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.BaseResponse.ResponseFlags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Response embedded document to capture various types of flags related to the response.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.models.BaseResponse.SuspectReason">
+<em class="property">class </em><code class="descclassname">BaseResponse.</code><code class="descname">SuspectReason</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.BaseResponse.SuspectReason" title="Permalink to this definition">¶</a></dt>
+<dd><p>Response embedded document to record reasons for suspected response.
+<strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.models.BaseResponse.UserInformation">
+<em class="property">class </em><code class="descclassname">BaseResponse.</code><code class="descname">UserInformation</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.BaseResponse.UserInformation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Response embedded document to capture user information.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="form_builder.models.BaseResponse.get_answer_sheet_data">
+<code class="descclassname">BaseResponse.</code><code class="descname">get_answer_sheet_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.BaseResponse.get_answer_sheet_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to create answer sheet for this response for display. The order of the question is
+as per the order in the questionnaire.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">JSON Answer sheet.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Answer sheet JSON format</strong>:</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;answers&quot;</span><span class="p">:[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;question_text&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;question text&gt;&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;answer value&gt;&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;other_answer&quot;</span><span class="p">:{</span>
+                <span class="nt">&quot;question_text&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;question text&gt;&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;answer value&gt;&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;ai&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+
+    <span class="p">],</span>
+    <span class="nt">&quot;obsolete_answers&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;question_text&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;question text&gt;&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;answer value&gt;&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;other_answer&quot;</span><span class="p">:{</span>
+                <span class="nt">&quot;question_text&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;question text&gt;&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;answer value&gt;&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;ai&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+
+    <span class="p">],</span>
+    <span class="nt">&quot;constants&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;question_text&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;question text&gt;&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;answer value&gt;&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+
+    <span class="p">],</span>
+    <span class="nt">&quot;calculated_fields&quot;</span><span class="p">:[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;question_text&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;question text&gt;&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;answer value&gt;&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="form_builder.models.BaseResponse.get_answers_lookup">
+<code class="descclassname">BaseResponse.</code><code class="descname">get_answers_lookup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.BaseResponse.get_answers_lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to get answer lookup dictionary that contains each answer information in detail.
+This uses <code class="docutils literal"><span class="pre">response.list_answers</span></code> to create lookup dict.
+:return: Lookup dict for format: { &#8220;&lt;label&gt;&#8221;: { &lt;Answer embedded doc&gt; } }</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="form_builder.models.BaseResponse.get_duration_time">
+<code class="descclassname">BaseResponse.</code><code class="descname">get_duration_time</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.BaseResponse.get_duration_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to return duration in time format HH:MM:SS.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="form_builder.models.BaseResponse.save">
+<code class="descclassname">BaseResponse.</code><code class="descname">save</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.BaseResponse.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save method for a response.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="form_builder.models.BaseResponse.suspicion_add">
+<code class="descclassname">BaseResponse.</code><code class="descname">suspicion_add</code><span class="sig-paren">(</span><em>type</em>, <em>text</em>, <em>user_id</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.BaseResponse.suspicion_add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to add suspicion to this response.
+:param type: Type of suspicion
+:param text: text of suspicion</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="form_builder.models.BaseResponse.suspicion_remove">
+<code class="descclassname">BaseResponse.</code><code class="descname">suspicion_remove</code><span class="sig-paren">(</span><em>reason_id</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.BaseResponse.suspicion_remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to remove a suspicion reason.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>reason_id</strong> &#8211; Reason id to be removed</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if successful, False if id not found</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.models.Form">
+<em class="property">class </em><code class="descclassname">form_builder.models.</code><code class="descname">Form</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.Form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to define a form.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+<dl class="method">
+<dt id="form_builder.models.Form.get_formquestions">
+<code class="descname">get_formquestions</code><span class="sig-paren">(</span><em>only_current=True</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.Form.get_formquestions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to return form questions for this form.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>only_current</strong> &#8211; If True, returns only those questions which are currently in the form.
+Otherwise returns all questions including those which have been changed.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List&lt;<a class="reference internal" href="#form_builder.models.FormQuestion" title="form_builder.models.FormQuestion"><code class="xref py py-class docutils literal"><span class="pre">form_builder.models.FormQuestion</span></code></a>&gt;</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="form_builder.models.Form.validate_form">
+<code class="descname">validate_form</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.Form.validate_form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate form by analyzing schema, unique ids and various other necessary validations and
+return list id translation ids.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.models.FormQuestion">
+<em class="property">class </em><code class="descclassname">form_builder.models.</code><code class="descname">FormQuestion</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.FormQuestion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to store all form questions(fields) irrespective of order or conditions.
+Thus, this model provides flat list of all fields used in the form.</p>
+<p>Moreover, it also keeps a track of previous fields that have been either updated or removed.
+But this model cannot be used as audit trail since, it overrides fields to latest configurations
+if its label &amp; data type class has not been changed.</p>
+<p><strong>Uniqueness:</strong></p>
+<blockquote>
+<div><code class="docutils literal"><span class="pre">form_id</span></code>, <code class="docutils literal"><span class="pre">label</span></code>, <code class="docutils literal"><span class="pre">field_class</span></code></div></blockquote>
+<p><strong>Logic</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Before inserting new record, table it looked up form any previous record with
+key consisting of (form_id, label, field_class).</li>
+<li>If found, this record is updated with new configurations settings.</li>
+<li>If not found, new entry is made. Old one automatically get obsolete as there
+is new record with latest form_version.</li>
+</ul>
+</div></blockquote>
+<p><strong>Points</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>To obtains list of all fields currently present in the form, query with
+key (<code class="docutils literal"><span class="pre">form_id</span></code>, <code class="docutils literal"><span class="pre">form_version</span></code>)</li>
+<li>To obtains list of all fields that are or were in the form, query with
+<code class="docutils literal"><span class="pre">form_id</span></code>.</li>
+</ul>
+</div></blockquote>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.models.Theme">
+<em class="property">class </em><code class="descclassname">form_builder.models.</code><code class="descname">Theme</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.Theme" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a model for form theme.
+A theme consist of set of html templates for various components of the form
+such as base html, various field rendering htmls etc.</p>
+<p>All template html files related to this theme must be kept under the directory
+<code class="docutils literal"><span class="pre">/form_builder/templates/themes/[code]/</span></code></p>
+<p><strong>The structure of this directory is as follows:</strong></p>
+<blockquote>
+<div><ul>
+<li><p class="first">/form_builder/templates/themes/[code]/</p>
+<blockquote>
+<div><ul>
+<li><p class="first">form_base.html</p>
+</li>
+<li><p class="first">fields</p>
+<blockquote>
+<div><ul class="simple">
+<li>html_text.html</li>
+<li>html_numeric.html</li>
+<li>html_&lt;widget_name&gt;.html   # Refer &#8216;form_builder.widgets.py&#8217;</li>
+<li>error_messages.html</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<p>All files under &#8216;fields&#8217; directory must essentially define templates for every
+widget variable in form_builder.widgets.FieldWidgets</p>
+<p>A Theme always has a skin with code &#8216;default&#8217; which is created by this theme model post save in case it iss absent.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="form_builder.models.ThemeSkin">
+<em class="property">class </em><code class="descclassname">form_builder.models.</code><code class="descname">ThemeSkin</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.ThemeSkin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a model for various skin of a form theme. A skin is essentially a variation in
+look and feel of the page and is mostly defined by css &amp; images.</p>
+<p>All css, js or image files must be kept under the directory
+<code class="docutils literal"><span class="pre">/static/themes/[code]/</span></code>
+and must be implemented by <code class="docutils literal"><span class="pre">form_base.html</span></code> of that theme</p>
+<p>By Default, a skin with code <code class="docutils literal"><span class="pre">default</span></code> is created for evert theme by &#8216;Theme&#8217; model.</p>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="form_builder.models.iterate_form_fields">
+<code class="descclassname">form_builder.models.</code><code class="descname">iterate_form_fields</code><span class="sig-paren">(</span><em>schema</em><span class="sig-paren">)</span><a class="headerlink" href="#form_builder.models.iterate_form_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Global method to recursively iterate over fields in form schema.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>schema</strong> &#8211; Form schema</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Field</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authors</strong>: Gagandeep Singh</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="form_exceptions.html" class="btn btn-neutral float-right" title="Form exceptions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="validators.html" class="btn btn-neutral" title="Form validators" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Gagandeep Singh.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

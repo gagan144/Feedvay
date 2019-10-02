@@ -41,9 +41,9 @@ Feedvay is a full stack development project primarily based on **Python-Django**
 
 ## Documentation
 
-Check out the complete [Sphinx](docs/build/html/modules) documentation of the project containing details of the the modules and various diagrams & illustrations.
+Check out the complete [Sphinx](http://htmlpreview.github.io/?https://github.com/gagan144/Feedvay/blob/master/docs/build/html/index.html) documentation of the project containing details of the the modules and various diagrams & illustrations.
 
-[![SphinxDocs](_readme/images/Feedvay_SphinxDoc.png)](docs/build/html/modules)
+[![SphinxDocs](_readme/images/Feedvay_SphinxDoc.png)](http://htmlpreview.github.io/?https://github.com/gagan144/Feedvay/blob/master/docs/build/html/index.html)
 
 ## Screenshots
 
